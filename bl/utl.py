@@ -2,6 +2,7 @@
 #
 # 
 
+import bl
 import json
 import html
 import html.parser
@@ -12,7 +13,6 @@ import stat
 import string
 import types
 import urllib
-import bl
 
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode, urlunparse
@@ -192,7 +192,7 @@ def touch(fname):
 
 def useragent():
     from ob import k
-    return 'Mozilla/5.0 (X11; Linux x86_64) %s +http://bitbucket.org/bthate/%s)' % (k.cfg.name.upper(), k.cfg.name)
+    return 'Mozilla/5.0 (X11; Linux x86_64) %s +http://bitbucket.org/bthate/%s)' % (k.cfg.name.upper(), k.cfg.name.lower())
 
 def unescape(text):
     import html

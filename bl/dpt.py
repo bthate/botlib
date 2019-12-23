@@ -3,7 +3,6 @@
 # 
 
 import bl
-import bl.err
 
 def dispatch(handler, event):
     try:

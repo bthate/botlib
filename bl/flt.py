@@ -43,7 +43,6 @@ class Fleet(bl.pst.Persist):
             if m not in repr(b):
                 continue
             return b
-            break
 
     def remove(self, bot):
         self.bots.remove(bot)

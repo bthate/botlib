@@ -2,11 +2,11 @@
 #
 # 
 
+import bl
 import logging
 import queue
 import threading
 import types
-import bl
 
 def __dir__():
     return ("Task", "Launcher")

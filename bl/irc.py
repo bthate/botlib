@@ -2,6 +2,7 @@
 #
 # 
 
+import bl
 import logging
 import os
 import queue
@@ -11,7 +12,6 @@ import sys
 import textwrap
 import time
 import threading
-import bl
 import _thread
 
 def __dir__():
@@ -22,14 +22,14 @@ lock = _thread.allocate_lock()
 default = {
            "blocking": False,
            "channel": "",
-           "nick": "blbot",
+           "nick": "botlib",
            "ipv6": False,
            "port": 6667,
            "server": "",
            "sleep": 5.0,
            "ssl": False,
-           "realname": "blbot",
-           "username": "blbot",
+           "realname": "botlib",
+           "username": "botlib",
           }
           
 def init():

@@ -24,7 +24,7 @@ class Timers(bl.pst.Persist):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._stopped = False
-        self.cfg = bl.cls.Cfg(default)
+        self.cfg = bl.cfg.Cfg(default)
         self.timers = bl.obj.Object()
 
     def loop(self):
@@ -83,7 +83,7 @@ class Timer(bl.pst.Persist):
 
     def run(self, *args, **kwargs) -> None:
         self.state.latest = time.time()
-        k.launch(self._func, *args, **kwargs)
+        bl.k.launch(self._func, *args, **kwargs)
 
     def exit(self):
         if self.timer:
@@ -93,4 +93,4 @@ class Repeater(Timer):
 
     def run(self, *args, **kwargs):
         self._func(*args, **kwargs)
-        return k.launch(self.start)
+        return bl.k.launch(self.start)

@@ -4,18 +4,14 @@
 
 import argparse
 import atexit
+import bl
 import logging
 import optparse
 import os
 import readline
 import time
-import bl
-import bl.log
 
 cmds = []
-
-from bl.trc import get_exception 
-from bl.trm import reset, save
 
 HISTFILE = ""
 
@@ -54,14 +50,14 @@ def enable_history():
     atexit.register(close_history)
 
 def execute(main):
-    save()
+    bl.trm.save()
     try:
         main()
     except KeyboardInterrupt:
         print("")
     except Exception:
         logging.error(get_exception())
-    reset()
+    bl.trm.reset()
     close_history()
 
 def get_completer():
@@ -79,8 +75,8 @@ def make_opts(ns, options, **kwargs):
     parser.add_argument('args', nargs='*')
     parser.parse_known_args(namespace=ns)
   
-def parse_cli(name="blbot", version=None, opts=[], wd=None, level="error"):
-    cfg = bl.cfg.Cfg()
+def parse_cli(name="botlib", version=None, opts=[], wd=None, level="error"):
+    cfg = bl.cfg.Cfg(bl.default)
     make_opts(cfg, opts)
     cfg.debug = False
     cfg.name = name
@@ -95,7 +91,7 @@ def parse_cli(name="blbot", version=None, opts=[], wd=None, level="error"):
         bl.utl.cdir(sp)
     bl.workdir = cfg.workdir
     bl.log.level(cfg.level or level, cfg.logdir)
-    bl.obj.update(bl.k.cfg, cfg, [], False)
+    bl.update(bl.k.cfg, cfg, [], False)
     logging.warning("%s started (%s) at %s" % (cfg.name.upper(), cfg.level or level, time.ctime(time.time())))
     logging.warning("logging at %s" % bl.log.logfiled)
     return bl.k.cfg
@@ -108,7 +104,7 @@ def set_completer(commands):
     atexit.register(lambda: readline.set_completer(None))
 
 def writepid():
-    path = os.path.join(bl.k.cfg.workdir, "blbot.pid")
+    path = os.path.join(bl.k.cfg.workdir, "botlib.pid")
     f = open(path, 'w')
     f.write(str(os.getpid()))
     f.flush()

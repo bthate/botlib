@@ -2,12 +2,12 @@
 #
 # 
 
+import bl
 import datetime
 import os
 import random
 import time
 import urllib
-import bl
 
 try:
     import feedparser
@@ -140,7 +140,7 @@ fetcher = Fetcher()
 def get_feed(url):
     result = ""
     if bl.k.cfg.debug:
-        return [bl.obj.Object(), bl.obj.Object()]
+        return [bl.Object(), bl.Object()]
     result = bl.utl.get_url(url).data
     if gotparser:
         result = feedparser.parse(result)
@@ -148,7 +148,7 @@ def get_feed(url):
             for entry in result["entries"]:
                 yield entry
     else:
-        return [bl.obj.Object(), bl.obj.Object()]
+        return [bl.Object(), bl.Object()]
     
 def file_time(timestamp):
     return str(datetime.datetime.fromtimestamp(timestamp)).replace(" ", os.sep) + "." + str(random.randint(111111, 999999))

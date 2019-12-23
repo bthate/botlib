@@ -3,12 +3,19 @@
 # 
 
 import bl
+import random
+import time
 import types
 import unittest
 
-from bl import k
+def test():
+    print("yooo!")
 
-examples = bl.obj.Object()
+def randomarg():
+    t = random.choice(types.__all__)
+    return types.new_class(t)()
+
+examples = bl.Object()
 examples.find = "find todo"
 examples.last = "last cfg"
 examples.tommorrow = "tomorrow take some time off."
@@ -34,8 +41,8 @@ examples.cfg = "cfg irc"
 examples.announce = "announce bla"
 examples.alias = "alias l cmnds"
 
-varnames = bl.obj.Object()
-varnames.object = bl.obj.Object(txt="test", date="Sat Jan 14 00:02:29 2017")
+varnames = bl.Object()
+varnames.object = bl.Object()
 varnames.daystring = "2017-08-29 16:34:23.837288"
 varnames.seconds = 60
 varnames.daystr = "Sat Jan 14 00:02:29 2017"
@@ -52,12 +59,12 @@ varnames.signature = "1e7f50d2015ac2ddc1f2ae8cf8ed6dfd896cab71"
 varnames.u = "bart!~bart@localhost"
 varnames.jid = "monitor@localhost/blamekker"
 varnames.url = "http://localhost"
-varnames.obj = bl.obj.Object(txt="version")
+varnames.obj = bl.Object()
 varnames.func = test
 varnames.timestamp = time.time()
 varnames.origin = "root@shell"
 varnames.perm = "OPER"
-varnames.o = bl.obj.Object(txt="test")
+varnames.o = bl.Object()
 varnames.depth = 2
 varnames.keys = ["test", "txt"]
 varnames.uniqs = ["bla"]
@@ -74,7 +81,7 @@ class Test_Cmnds(unittest.TestCase):
         thrs = []
         nrloops = 10
         for x in range(nrloops):
-            thr = k.launch(testcmnds, event)
+            thr = bl.k.launch(testcmnds, event)
             thr.join()
 
     def test_func(self):
@@ -84,7 +91,7 @@ class Test_Cmnds(unittest.TestCase):
         thrs = []
         nrloops = 10
         for x in range(nrloops):
-            thr = k.launch(functest, event)
+            thr = bl.k.launch(functest, event)
             thr.join()
 
     def test_cmnd(self):
@@ -94,22 +101,15 @@ class Test_Cmnds(unittest.TestCase):
         thrs = []
         nrloops = 10
         for x in range(nrloops):
-            thr = k.launch(cmndrun, event)
+            thr = bl.k.launch(cmndrun, event)
             thr.join()
-        
 
-def test():
-    print("yooo!")
-
-def randomarg():
-    t = random.choice(types.__all__)
-    return types.new_class(t)()
     
 def cmndrun(event):
-    for name in sorted(k.modules):
+    for name in sorted(bl.k.modules.values()):
         if name in ["bl.test", "bl.rss"]:
             continue
-        mod = k.load_mod(name)
+        mod = bl.k.load_mod(name)
         for n in dir(mod):
            if n in exclude:
                continue
@@ -117,17 +117,17 @@ def cmndrun(event):
            if func and type(func) in [types.FunctionType, types.MethodType]:
                if "event" in func.__code__.co_varnames:
                    e = bl.evt.Event()
-                   e._funcs.append(func)
+                   e._func = func
                    e.origin = "root@shell"
                    e.server = "localhost"
                    e.btype = "cli"
-                   k.put(e)
+                   bl.k.put(e)
 
 def functest(event):
-    for name in sorted(k.modules):
+    for name in sorted(bl.k.modules.values()):
         if name in ["bl.test", "bl.rss"]:
             continue
-        mod = k.load_mod(name)
+        mod = bl.k.load_mod(name)
         keys = dir(mod)
         random.shuffle(keys)
         for n in keys:
@@ -148,7 +148,7 @@ def functest(event):
                        logging.error(get_exception())
                
 def testcmnds(event):
-    keys = list(kernel.cmds)
+    keys = list(bl.k.cmds)
     random.shuffle(keys)
     for cmnd in keys:
         if cmnd in exclude:
@@ -157,13 +157,14 @@ def testcmnds(event):
             name = "email"
         else:
             name = randomarg()
-        e = bl.evt.Event(event)
-        e.btype = event.btype
-        e.server = event.server
-        cmnd = examples.get(cmnd, cmnd)
+        e = bl.evt.Event()
+        bl.update(e, event)
+        e.orig = event.orig
+        e.server = "localhost"
+        cmnd = bl.get(examples, cmnd, cmnd)
         e.txt = "%s %s" % (cmnd, name)
         e.origin = "root@shell"
-        k.put(e)
+        bl.k.put(e)
 
 exclude = ["exit", "loglevel", "reboot", "real_reboot", "fetcher", "synchronize", "init", "shutdown", "wrongxml","mbox", "testcmnds", "runkernel", "functest", "cmndrun"]
 outtxt = u"Đíť ìš éèñ ëņċøďıńğŧęŝţ· .. にほんごがはなせません .. ₀0⁰₁1¹₂2²₃3³₄4⁴₅5⁵₆6⁶₇7⁷₈8⁸₉9⁹ .. ▁▂▃▄▅▆▇▉▇▆▅▄▃▂▁ .. .. uǝʌoqǝʇsɹǝpuo pɐdı ǝɾ ʇpnoɥ ǝɾ"

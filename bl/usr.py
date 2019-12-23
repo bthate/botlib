@@ -63,7 +63,7 @@ class Users(bl.pst.Persist):
         user = User()
         user.user = origin
         user.perms = ["OPER", "USER"]
-        bl.obj.set(Users.cache, origin, user)
+        bl.set(Users.cache, origin, user)
         return user
 
     def perm(self, origin, permission):
@@ -84,6 +84,6 @@ def meet(event):
     except ValueError:
         event.reply("meet origin [permissions]")
         return
-    origin = bl.obj.get(bl.k.users.userhosts, origin, origin)
+    origin = bl.get(bl.k.users.userhosts, origin, origin)
     u = bl.k.users.meet(origin, perms)
     event.reply("added %s" % u.user)

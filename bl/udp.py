@@ -2,9 +2,9 @@
 #
 # 
 
+import bl
 import socket
 import time
-import bl
 
 def __dir__():
     return ("UDP", "Cfg", "init") 

@@ -2,9 +2,8 @@
 #
 # 
 
-import json
 import bl
-import bl.typ
+import json
 
 class Object:
 

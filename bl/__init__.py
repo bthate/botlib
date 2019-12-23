@@ -6,11 +6,13 @@ __version__ = 72
 
 workdir = ""
 
+import bl.obj
+from bl.obj import Object, get, keys, set, update
+
+import bl.all
 import logging
 import time
-import bl.all
 
-from bl.obj import Object, get, keys, set, update
 
 def __dir__():
     return ("Cfg", "Kernel", "Object", "get", "set", "last", "update", "workdir", "k")
@@ -20,12 +22,15 @@ default = {
            "doexec": False,
            "exclude": "",
            "kernel": False,
+           "level": "",
+           "logdir": "",
            "modules": "",
            "options": "",
            "owner": "",
            "prompting": True,
            "shell": False,
-           "verbose": False
+           "verbose": False,
+           "workdir": ""
           }
 
 class Cfg(bl.cfg.Cfg):
@@ -44,7 +49,7 @@ class Kernel(bl.hdl.Handler):
         self._outputed = False
         self._started = False
         self.prompt = True
-        self.state = bl.obj.Object()
+        self.state = bl.Object()
         self.state.started = False
         self.state.starttime = time.time()
         self.verbose = True
@@ -55,8 +60,6 @@ class Kernel(bl.hdl.Handler):
     def cmd(self, txt, origin=""):
         if not txt:
             return
-        import bl.csl
-        import bl.dpt
         self.cfg.prompting = False
         c = bl.csl.Console()
         c.start(False, False, False)
@@ -144,6 +147,6 @@ k = Kernel()
 def last(o, skip=True):
     val = k.db.last(str(str(bl.typ.get_type(o))))
     if val:
-        bl.obj.update(o, val)
+        bl.update(o, val)
         o.__path__ = val.__path__
         return o.__path__

@@ -2,10 +2,10 @@
 #
 # 
 
+import bl
 import os
 import time
 import threading
-import bl
 
 def show(event):
     if not event.args:
@@ -15,8 +15,8 @@ def show(event):
     cmd = event.args[0]
     if cmd == "cfg":
         if len(event.args) == 2:
-            config = bl.k.db.last("%s.%s.Cfg" % ("obi", event.args[1].lower()))
-            event.reply(config)
+            c = bl.k.db.last("%s.%s.Cfg" % ("bl", event.args[1].lower()))
+            event.reply(c)
         else:
             event.reply(bl.k.cfg)
     elif cmd == "cmds":

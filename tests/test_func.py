@@ -2,14 +2,7 @@
 #
 # 
 
-from bl.event import Event
-from bl.error import ENODATE
-from bl.object import Object
-from bl.space import cfg, fleet, kernel, launcher, users
-from bl.options import opts_defs
-from bl.trace import get_exception
-from bl.utils import stripped, sname
-
+import bl
 import os
 import logging
 import termios
@@ -22,13 +15,13 @@ import unittest
 class Test_Func(unittest.TestCase):
 
     def test_func(self):
-        event = Event()
+        event = bl.evt.Event()
         event.origin = "root@shell"
         event.txt = ""
         thrs = []
         nrloops = 10
         for x in range(nrloops):
-            thr = launcher.launch(functest, x)
+            thr = bl.k.launch(functest, x)
             thr.join()
 
 def randomarg(name):
@@ -36,11 +29,11 @@ def randomarg(name):
     return types.new_class(t)()
     
 def functest(nr):
-    names = sorted(kernel.modules("bl"))
+    names = sorted(bl.k.modules.values())
     for x in range(nr):
         random.shuffle(names)
         for name in names:
-            mod = kernel.load(name)
+            mod = bl.k.load_mod(name)
             keys = dir(mod)
             random.shuffle(keys)
             for key in keys:
@@ -58,4 +51,3 @@ def functest(nr):
                                 func(*arglist[:nrvar])
                             except:
                                 logging.error(get_exception())
-               

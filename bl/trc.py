@@ -2,10 +2,10 @@
 #
 # 
 
+import bl
 import os
 import sys
 import traceback
-import bl
 import _thread
 
 def get_exception(txt="", sep=""):

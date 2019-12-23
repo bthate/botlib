@@ -1,4 +1,7 @@
 #!/usr/bin/python3 -u
+# BOTLIB - Framework to program bots.
+#
+# 
 
 import os, sys ; sys.path.insert(0, os.getcwd())
 
@@ -45,7 +48,7 @@ def daemon():
     os.dup2(se.fileno(), sys.stderr.fileno())
 
 def main():
-    bl.shl.parse_cli("bot", bl.__version__, opts)
+    bl.shl.parse_cli("bl", bl.__version__, opts)
     if not bl.k.cfg.modules:
         bl.k.cfg.modules = "irc,shw,ent,rss,udp" 
     if bl.k.cfg.daemon:

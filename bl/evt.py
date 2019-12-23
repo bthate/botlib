@@ -5,14 +5,13 @@
 import time
 import threading
 import bl
-import bl.tms
 
 def __dir__():
     return ("Command", "Event", "Token", "aliases")
 
 aliases = {}
 
-class Token(bl.obj.Object):
+class Token(bl.Object):
 
     def __init__(self):
         super().__init__()
@@ -52,7 +51,7 @@ class Token(bl.obj.Object):
         except ValueError:
             pass
         if nr == 1:
-            self.match = bl.obj.get(bl.k.names, word, word)
+            self.match = bl.get(bl.k.names, word, word)
             self.arg = word
             return
         if "http" in word:
@@ -254,4 +253,3 @@ class Event(Command):
     def show(self):
         for line in self.result:
             bl.k.fleet.echo(self.orig, self.channel, line, self.type)
-

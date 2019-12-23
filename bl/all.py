@@ -2,6 +2,7 @@
 #
 # 
 
+import bl.utl
 import bl.obj 
 import bl.pst
 import bl.cfg
@@ -31,4 +32,3 @@ import bl.shw
 import bl.tms
 import bl.trm
 import bl.udp
-import bl.utl

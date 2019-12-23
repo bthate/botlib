@@ -2,18 +2,16 @@
 #
 # 
 
+import bl
 import datetime
 import json
 import json.decoder
 import os
-import bl
-import bl.obj
-import bl.utl
 import _thread
 
 lock = _thread.allocate_lock()
 
-class Persist(bl.obj.Object):
+class Persist(bl.Object):
 
     def load(self, path):
         assert path
@@ -26,7 +24,7 @@ class Persist(bl.obj.Object):
                 val = json.load(ofile, object_hook=hooked)
             except json.decoder.JSONDecodeError:
                 raise bl.err.EJSON(lpath)
-            bl.obj.update(self, val)
+            bl.update(self, val)
         self.__path__ = path
         return self
 
@@ -55,6 +53,6 @@ def hooked(d):
         t = d["_type"]
         o = bl.typ.get_cls(t)()
     else:
-        o = bl.obj.Object()
-    bl.obj.update(o, d)
+        o = bl.Object()
+    bl.update(o, d)
     return o

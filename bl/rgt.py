@@ -3,9 +3,6 @@
 # 
 
 import bl
-import bl.pst
-
-from bl.obj import get, set, update
 
 def __dir__():
     return ("Register")
@@ -13,7 +10,7 @@ def __dir__():
 class Register(bl.pst.Persist):
 
     def get(self, k):
-        return get(self, k)
+        return bl.get(self, k)
 
     def register(self, k, v):
-        set(self, k, v)
+        bl.set(self, k, v)

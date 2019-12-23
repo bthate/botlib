@@ -2,10 +2,9 @@
 #
 # 
 
+import bl
 import importlib
 import types
-import bl
-import bl.utl
 
 def get_cls(name):
     modname, clsname = name.rsplit(".", 1)

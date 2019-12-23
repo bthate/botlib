@@ -2,10 +2,10 @@
 #
 # 
 
+import bl
 import logging
 import logging.handlers
 import os
-import bl
 
 logfiled = ""
 
@@ -21,7 +21,7 @@ def level(loglevel="", logdir="", logfile="", nostream=False):
     if not loglevel:
         loglevel = "error"
     if not logfile:
-        logfile = "bl.log"
+        logfile = "botlib.log"
     logdir = logdir or os.path.join(bl.workdir, "logs")
     logfile = logfiled = os.path.join(logdir, logfile)
     if not os.path.exists(logfile):

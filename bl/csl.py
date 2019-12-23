@@ -4,8 +4,6 @@
 
 import sys
 import bl
-import bl.evt
-import bl.hdl
 
 def __dir__():
     return ("Console",)

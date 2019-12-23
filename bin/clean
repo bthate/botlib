@@ -1,1 +1,5 @@
-rm -fR testdata runwtf runwtf.tar.gz init.d/*~  build dist wtfbot.egg-info *~  bin/*~ wtf/*~ wtf/__pycache__
+# BOTLIB - Framework to program bots.
+#
+# 
+
+rm -fR testdata runbl runbl.tar.gz init.d/*~  build dist botlib.egg-info *~  bin/*~ bl/*~ bl/__pycache__ tests/*~ tests/__pycache__
