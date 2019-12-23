@@ -7,13 +7,11 @@ import time
 import typing
 import bl
 
-from bl import k
-
 def __dir__():
     return ("Repeater", "Timer", "Timers")
 
 def dummy():
-    if k.cfg.verbose:
+    if bl.k.cfg.verbose:
         print("yo!")
 
 default = {
@@ -44,8 +42,7 @@ class Timers(bl.pst.Persist):
                 del self.timers[r]
 
     def start(self):
-        for evt in k.db.all("bl.clk.Timers"):
-            print(evt, type(evt))
+        for evt in bl.k.db.all("bl.clk.Timers"):
             e = bl.evt.Event()
             bl.obj.update(e, evt)
             if "done" in e and e.done:
@@ -54,7 +51,7 @@ class Timers(bl.pst.Persist):
                 continue
             if time.time() < int(e.time):
                 self.timers[e.time] = e
-        return k.launch(self.loop)
+        return bl.k.launch(self.loop)
 
     def stop(self):
         self._stopped = True

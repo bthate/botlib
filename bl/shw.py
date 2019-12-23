@@ -58,7 +58,7 @@ def show(event):
         event.reply(bl.tms.elapsed(time.time() - bl.k.state.starttime))
     elif cmd == "version":
         res = []
-        res.append("WTFBOT %s" % bl.__version__)
+        res.append("BOTLIB %s" % bl.__version__)
         for name, mod in bl.k.table.items():
             if not mod:
                 continue

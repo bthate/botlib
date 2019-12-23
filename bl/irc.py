@@ -12,10 +12,7 @@ import textwrap
 import time
 import threading
 import bl
-import bl.bot
 import _thread
-
-from bl import k
 
 def __dir__():
     return ('Cfg', 'DCC', 'DEvent', 'Event', 'IRC', 'init', "errored", "noticed", "privmsged")
@@ -38,19 +35,19 @@ default = {
 def init():
     bot = IRC()
     bl.last(bot.cfg)
-    if k.cfg.prompting:
+    if bl.k.cfg.prompting:
         try:
-            server, channel, nick = k.cfg.args
+            server, channel, nick = bl.k.cfg.args
             bot.cfg.server = server
             bot.cfg.channel = channel
             bot.cfg.nick = nick
             bot.cfg.save()
         except ValueError:
-            raise bl.err.EINIT("%s <server> <channel> <nick>" % k.cfg.name)
+            raise bl.err.EINIT("%s <server> <channel> <nick>" % bl.k.cfg.name)
     bot.start()
     return bot
 
-class Cfg(bl.cls.Cfg):
+class Cfg(bl.cfg.Cfg):
 
     pass
 
@@ -342,7 +339,7 @@ class DCC(bl.bot.Bot):
         else:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((addr, port))
-        s.send(bytes('Welcome to %s %s !!\n' % (k.cfg.name.upper(), event.nick), "utf-8"))
+        s.send(bytes('Welcome to %s %s !!\n' % (bl.k.cfg.name.upper(), event.nick), "utf-8"))
         s.setblocking(True)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s
@@ -361,7 +358,7 @@ class DCC(bl.bot.Bot):
         e.channel = self.origin
         e.orig = repr(self)
         e.origin = self.origin or "root@dcc"
-        k.handle(e)
+        bl.k.handle(e)
         return e
 
     def say(self, channel, txt, type="chat"):
@@ -395,26 +392,26 @@ def noticed(handler, event):
     if event.command != "NOTICE":
         return
     if event.txt.startswith("VERSION"):
-        txt = "\001VERSION %s %s - %s\001" % (k.cfg.name, __version__, k.cfg.description)
+        txt = "\001VERSION %s %s - %s\001" % (bl.k.cfg.name, __version__, bl.k.cfg.description)
         handler.command("NOTICE", event.channel, txt)
 
 def privmsged(handler, event):
     if event.command != "PRIVMSG":
         return
-    if event.origin != k.cfg.owner:
-        bl.obj.set(k.users.userhosts, event.nick, event.origin)
+    if event.origin != bl.k.cfg.owner:
+        bl.obj.set(bl.k.users.userhosts, event.nick, event.origin)
     if event.txt.startswith("DCC CHAT"):
-        if not k.users.allowed(event.origin, "USER"):
+        if not bl.k.users.allowed(event.origin, "USER"):
             return
         try:
             dcc = DCC()
             dcc.encoding = "utf-8"
-            k.launch(dcc.connect, event)
+            bl.k.launch(dcc.connect, event)
             return
         except ConnectionRefusedError:
             return
     if event.txt and event.txt[0] == handler.cc:
-        if not k.users.allowed(event.origin, "USER"):
+        if not bl.k.users.allowed(event.origin, "USER"):
             logging.error("deny %s" % event.origin)
             return
-        k.put(event)
+        bl.k.put(event)

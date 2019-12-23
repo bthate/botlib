@@ -3,9 +3,6 @@
 import os, sys ; sys.path.insert(0, os.getcwd())
 
 import bl
-import bl.evt
-import lb.shl
-from bl import k
 
 bl.evt.aliases = {
            "cmds": "show cmds",
@@ -49,13 +46,13 @@ def daemon():
 
 def main():
     bl.shl.parse_cli("bot", bl.__version__, opts)
-    if not k.cfg.modules:
-        k.cfg.modules = "irc,shw,ent,rss,udp" 
-    if k.cfg.daemon:
-        k.cfg.kernel = True
+    if not bl.k.cfg.modules:
+        bl.k.cfg.modules = "irc,shw,ent,rss,udp" 
+    if bl.k.cfg.daemon:
+        bl.k.cfg.kernel = True
         daemon()
-    k.start()
-    k.wait()
+    bl.k.start()
+    bl.k.wait()
 
 bl.shl.execute(main)
 os._exit(0)

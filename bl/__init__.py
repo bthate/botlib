@@ -8,17 +8,9 @@ workdir = ""
 
 import logging
 import time
-import bl.cfg
-import bl.csl
-import bl.dbs
-import bl.dpt
-import bl.err
-import bl.flt
-import bl.hdl
-import bl.typ
-import bl.usr
+import bl.all
 
-from bl.obj import Object, get, set, update
+from bl.obj import Object, get, keys, set, update
 
 def __dir__():
     return ("Cfg", "Kernel", "Object", "get", "set", "last", "update", "workdir", "k")

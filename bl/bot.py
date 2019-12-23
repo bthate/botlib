@@ -5,12 +5,10 @@
 import sys
 import bl
 
-from bl import k
-
 def __dir__():
     return ('Bot', 'Cfg')
 
-class Cfg(bl.cls.Cfg):
+class Cfg(bl.cfg.Cfg):
 
     def __init__(self):
         super().__init__()
@@ -49,4 +47,4 @@ class Bot(bl.hdl.Handler):
     def start(self, handler=True, input=False, output=False):
         self.register(bl.dpt.dispatch)
         super().start(handler, input, output)
-        k.fleet.add(self)
+        bl.k.fleet.add(self)

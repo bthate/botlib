@@ -80,7 +80,7 @@ def make_opts(ns, options, **kwargs):
     parser.parse_known_args(namespace=ns)
   
 def parse_cli(name="blbot", version=None, opts=[], wd=None, level="error"):
-    cfg = bl.cls.Cfg()
+    cfg = bl.cfg.Cfg()
     make_opts(cfg, opts)
     cfg.debug = False
     cfg.name = name

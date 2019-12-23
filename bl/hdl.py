@@ -2,16 +2,12 @@
 #
 # 
 
+import bl
 import inspect
 import pkgutil
 import queue
 import time
 import threading
-import bl
-import bl.ldr
-import bl.thr
-
-from bl.obj import Object, get,update
 
 def __dir__():
     return ("Handler",)
@@ -28,7 +24,7 @@ class Handler(bl.ldr.Loader, bl.thr.Launcher):
         self._threaded = True
         self._type = bl.typ.get_type(self)
         self.classes = []
-        self.cmds = bl.cls.Register()
+        self.cmds = bl.rgt.Register()
         self.handlers = []
         self.modules = {}
         self.names = {}
@@ -38,10 +34,10 @@ class Handler(bl.ldr.Loader, bl.thr.Launcher):
         self.state.nrsend = 0
 
     def get_cmd(self, cmd):
-        return get(self.cmds, cmd, None)
+        return bl.get(self.cmds, cmd, None)
 
     def get_handler(self, cmd):
-        return get(self.handler, cmd, None)
+        return bl.get(self.handler, cmd, None)
 
     def handle(self, e):
         for h in self.handlers:
@@ -118,7 +114,7 @@ class Handler(bl.ldr.Loader, bl.thr.Launcher):
 
     def sync(self, other):
         self.handlers = other.handlers
-        update(self.cmds, other.cmds)
+        bl.update(self.cmds, other.cmds)
 
     def walk(self, pkgname):
         mod = self.load_mod(pkgname)

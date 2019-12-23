@@ -16,7 +16,7 @@ untar, cd into the directory and run:
  > ./bin/bot -m rss,entry,show localhost \#dunkbots bot
 
 to have it connect to irc, join the channel and do nothing, users have to be !meet <nick> before they can give commands.
-WTFBOT does it self not depend, you might need to install feedparser yourself to have rss working.
+BOTLIB does it self not depend, you might need to install feedparser yourself to have rss working.
 
 you can also download with pip3 and install globally.
 
@@ -109,7 +109,7 @@ you can also use the full userhost as a argument to meet:
 M O D U L E S
 
 
-WTFBOT contains the following modules:
+BOTLIB contains the following modules:
 
 ::
 
