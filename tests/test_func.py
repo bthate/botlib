@@ -2,13 +2,13 @@
 #
 # 
 
-from botlib.event import Event
-from botlib.error import ENODATE
-from botlib.object import Object
-from botlib.space import cfg, fleet, kernel, launcher, users
-from botlib.options import opts_defs
-from botlib.trace import get_exception
-from botlib.utils import stripped, sname
+from bl.event import Event
+from bl.error import ENODATE
+from bl.object import Object
+from bl.space import cfg, fleet, kernel, launcher, users
+from bl.options import opts_defs
+from bl.trace import get_exception
+from bl.utils import stripped, sname
 
 import os
 import logging
@@ -36,7 +36,7 @@ def randomarg(name):
     return types.new_class(t)()
     
 def functest(nr):
-    names = sorted(kernel.modules("botlib"))
+    names = sorted(kernel.modules("bl"))
     for x in range(nr):
         random.shuffle(names)
         for name in names:

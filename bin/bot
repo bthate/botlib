@@ -1,29 +1,61 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3 -u
 
-""" botlib's main bot program """
+import os, sys ; sys.path.insert(0, os.getcwd())
 
-import os; import sys; sys.path.insert(0, os.getcwd())
+import bl
+import bl.evt
+import lb.shl
+from bl import k
 
-from botlib.utils import parse_cli, reset, startup, enable_history
-from botlib.space import kernel, exceptions
-from botlib import __version__
+bl.evt.aliases = {
+           "cmds": "show cmds",
+           "f": "find",
+           "l": "log",
+           "ps": "show tasks",
+           "t": "todo",
+           "u": "show uptime",
+           "v": "show version"
+           }
 
-startup()
+opts = [
+    ('-b', '--background', 'store_true', False, 'run in daemon mode.', 'daemon'),
+    ('-d', '--datadir', 'store', str, 'set working directory.', 'workdir'),
+    ('-m', '--modules', 'store', str, 'modules to load.', 'modules'),
+    ('-x', '--exec', 'store_true', False, 'execute command.', 'doexec'),
+    ('-o', '--options', "store", str, "options to use.", 'options'),
+    ('-k', '--kernel', "store_true", False, "read from previous kernel config.", 'kernel'),
+    ('-p', '--prompting', "store_false", True, "disable prompting for initial values.", 'prompting'),
+    ('-s', '--save', 'store_true', False, 'save configuration files.', 'dosave'),
+    ('-z', '--shell', 'store_true', False, 'disable shell.', 'shell'),
+    ('-e', '--exclude', 'store', str, 'exclude modules.', 'exclude'),
+    ('-l', '--loglevel', 'store', str, 'set loglevel.', 'level'),
+    ('-a', '--logdir', "store", str, "directory to find the logfiles.", 'logdir'),
+    ('-v', '--verbose', 'store_true', False, 'enable verbose mode.', 'verbose')
+]
+
+def daemon():
+    pid = os.fork()
+    if pid != 0:
+        bl.trm.reset()
+        os._exit(0)
+    os.setsid()
+    os.umask(0)
+    si = open("/dev/null", 'r')
+    so = open("/dev/null", 'a+')
+    se = open("/dev/null", 'a+')
+    os.dup2(si.fileno(), sys.stdin.fileno())
+    os.dup2(so.fileno(), sys.stdout.fileno())
+    os.dup2(se.fileno(), sys.stderr.fileno())
 
 def main():
-    """ init config, create bot, start kernel, wait for completion and shutdown the bot """
-    cfg = parse_cli()
-    cfg.name = "BOTLIB"
-    cfg.version = __version__
-    enable_history()
-    kernel.boot(cfg)
-    kernel.wait()
-    kernel.shutdown()
+    bl.shl.parse_cli("bot", bl.__version__, opts)
+    if not k.cfg.modules:
+        k.cfg.modules = "irc,shw,ent,rss,udp" 
+    if k.cfg.daemon:
+        k.cfg.kernel = True
+        daemon()
+    k.start()
+    k.wait()
 
-if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("")
-    reset()
-    os._exit(0)
+bl.shl.execute(main)
+os._exit(0)

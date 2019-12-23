@@ -1,71 +1,183 @@
-README
-######
+R E A D M E
 
-BOTLIB is a python3 framework to use if you want to program IRC or XMPP bots.
 
-provides:
+BOTLIB is a library to program bots and contains no copyright or LICENSE. 
 
-| CLI, IRC and XMPP bots.
 
-| Object class 		- save/load to/from a JSON file.
-| ReST server 		- serve saved object’s over HTTP.
-| RSS fetcher 		- echo rss feeds to IRC channels.
-| UDP server 		- udp to bot to IRC channel.
-| Watcher server 	- run tail -f and have output send to IRC channel.
-| Email scanning 	- scan mbox format to searchable BOTLIB objects.
-| JSON backend 		- objects are stored as json string in files on the fs.
-| Db	 		- iteration over stored objects.
-| Timestamp		- time based filenames gives logging capabilities
-| Future		- future sensors should provide entry to the logger.
+I N S T A L L
 
-setup:
 
-| Set export PYTHONPATH=”.” if the bot cannot be found by the python interpreter.
-| Set export PYTHONIOENCODING=”utf-8” if your shell has problems with handling utf-8 strings.
-| For the XMPP server use a ~/.sleekpass file with the password in it
+download the tarball from pypi, https://pypi.org/project/botlib/#files
 
-source:
+untar, cd into the directory and run:
 
-| botlib		- botlib package.
-| botlib.bot		- bot base class.
-| botlib.cli 		- command line interfacce bot, gives a shell prompt to issue bot commands.
-| botlib.clock 		- timer, repeater and other clock based classes.
-| botlib.cmnds 		- botlib basic commands.
-| botlib.compose 	- construct a object into it’s type.
-| botlib.engine 	- select.epoll event loop, easily interrup_table esp. versus a blocking event loop.
-| botlib.db 		- JSON file db.
-| botlib.error 		- botlib exceptions.
-| botlib.event 		- event handling classes.
-| botlib.fleet 		- fleet is a list of bots.
-| botlib.handler 	- schedule events.
-| botlib.irc 		- IRC bot class.
-| botlib.kernel 	- program boot and module loading.
-| botlib.launcher 	- a launcher launches threads (or tasks in this case).
-| botlib.log 		- log module to set standard format of logging.
-| botlib.object 	- JSON file backed object with dotted access.
-| botlib.raw 		- raw output using print.
-| botlib.rss 		- rss module.
-| botlib.selector 	- functions used in code to select what objects to use.
-| botlib.task 		- adapted thread to add extra functionality to threads.
-| botlib.trace 		- functions concering stack trace.
-| botlib.users 		- class to access user records.
-| botlib.xmpp 		- XMPP bot class.
-| botlib.register 	- object with list for multiple values.
-| botlib.rest 		- rest interface.
-| botlib.runner 	- threaded loop to run tasks on.
-| botlib.space 		- central module to store objects in.
-| botlib.static 	- static definitions.
-| botlib.template 	- cfg objects containing default values for various services and plugins.
-| botlib.test 		- plugin containing test commands and classes.
-| botlib.udp 		- relay txt through a udp port listener.
-| botlib.utils 		- lib local helper functions.
-| botlib.url 		- functions that fetch data from url.
-| botlib.watcher 	- watch files.
+::
 
-contact:
+ > ./bin/bot -m rss,entry,show localhost \#dunkbots bot
 
-| Bart Thate
-| botfather on #dunkbot irc.freenode.net
-| bthate@dds.nl, thatebart@gmail.com
+to have it connect to irc, join the channel and do nothing, users have to be !meet <nick> before they can give commands.
+WTFBOT does it self not depend, you might need to install feedparser yourself to have rss working.
 
-BOTLIB is code released in the Public Domain - https://bitbucket.org/bthate/botlib
+you can also download with pip3 and install globally.
+
+::
+
+ > sudo pip3 install botlib --upgrade
+
+if you want to develop on the bot clone the source at github.:
+
+::
+
+ > git clone https://github.com/bthate/botlib
+ > cd botlib
+ > sudo python3 setup.py install
+
+
+I R C
+
+
+for IRC use <server> <channel> <nick> and the bot will connect and join the channel:
+
+::
+
+ > bot -m rss,entry,show irc.freenode.net \#dunkbots bot
+
+you can use the -b option to start the bot in the background and logfiles can be found in ~/.bot/logs.
+
+
+B O O T
+
+
+if you want to have the daemon started at boot, run:
+
+::
+
+ > sudo init.d/install
+
+this will install an botlib service and starts BOTLIB on boot.
+
+
+R S S
+
+
+add url:
+
+::
+
+ > bot -x rss https://news.ycombinator.com/rss
+ ok 1
+
+you can use the find command to see what urls are registered:
+
+::
+
+ > bot -x rss
+ 0 https://news.ycombinator.com/rss
+
+
+
+U D P
+
+
+using udp to relay text into a channel, start the bot with -m udp and use
+the obudp program to send text to the UDP to channel server:
+
+::
+
+ > tail -f ~/.bot/logs/bot.log | obudp 
+
+
+U S E R S
+
+
+the default shell user is root@shell and gives access to all the commands that are available.
+if you want to use users to control access to commands use the --users option.
+
+::
+
+ > meet bart
+ ~bart@localhost added.
+
+you can also use the full userhost as a argument to meet:
+
+::
+
+ > meet user@server
+ user user@server created
+
+
+M O D U L E S
+
+
+WTFBOT contains the following modules:
+
+::
+
+
+ bl.all			- contains all sub modules
+ bl.bot			- base bot.
+ bl.clk			- clock functions.
+ bl.cfg			- config related stuff.
+ bl.csl			- console.
+ bl.dbs			- database.
+ bl.dft			- defaults.			
+ bl.dpt			- dispatch
+ bl.err			- errors.
+ bl.flt			- list of bots.
+ bl.ent			- entry.
+ bl.evt			- event.
+ bl.hdl			- handler.
+ bl.irc			- IRC.
+ bl.ldr			- module loader.
+ bl.log			- logging.
+ bl.obj			- objects.
+ bl.pst			- persitence.
+ bl.rgt		        - register.
+ bl.rss			- RSS feeds to channel.
+ bl.shl			- shell.
+ bl.shw			- show runtime status.
+ bl.tms			- time related.
+ bl.trm			- terminal code.
+ bl.thr			- threads.
+ bl.trc			- trace.
+ bl.typ			- typing.
+ bl.udp			- incoming udp to channel.
+ bl.usr			- users.
+ bl.utl			- utilities.
+
+
+C O D E
+
+
+if you want to add your own modules to the bot, you can put your .py files in a "mods" directory and use the -m option to point to that directory.
+
+::
+
+ > wtfbot -m mods -p
+
+basic code is a function that gets an event as a argument:
+
+::
+
+ def command(event):
+     << your code here >>
+
+to give feedback to the user use the event.reply(txt) method:
+
+::
+
+ def command(event):
+     event.reply("yooo %s" % event.origin)
+
+
+have fun coding ;]
+
+
+I N F O
+
+
+you can contact me on IRC/freenode/#dunkbots.
+
+| Bart Thate (bthate@dds.nl, thatebart@gmail.com)
+| botfather on #dunkbots irc.freenode.net
+    

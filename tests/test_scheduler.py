@@ -2,8 +2,8 @@
 #
 # 
 
-from botlib.event import Event
-from botlib.space import cfg, kernel, template
+from bl.event import Event
+from bl.space import cfg, kernel, template
 
 import unittest
 

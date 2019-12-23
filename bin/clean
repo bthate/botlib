@@ -1,0 +1,1 @@
+rm -fR testdata runwtf runwtf.tar.gz init.d/*~  build dist wtfbot.egg-info *~  bin/*~ wtf/*~ wtf/__pycache__

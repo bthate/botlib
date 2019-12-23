@@ -2,54 +2,99 @@
 #
 # 
 
-from botlib.event import Event
-from botlib.error import ENODATE
-from botlib.object import Object
-from botlib.space import cfg, fleet, kernel, launcher, users
-from botlib.options import opts_defs
-from botlib.trace import get_exception
-from botlib.utils import stripped, sname
-from botlib.template import varnames, examples
-
-import os
-import logging
-import termios
-import string
-import random
-import time
+import bl
 import types
 import unittest
+
+from bl import k
+
+examples = bl.obj.Object()
+examples.find = "find todo"
+examples.last = "last cfg"
+examples.tommorrow = "tomorrow take some time off."
+examples.deleted = "deleted rss"
+examples.log = "log wakker"
+examples.rss = "http://nos.nl"
+examples.todo = "todo code some code"
+examples.user = "user root@shell"
+examples.timer = "timer 23.35 blablabla"
+examples.show = "show fleet"
+examples.shop = "shop bacon"
+examples.rm = "rm rss[0]"
+examples.restore = "restore rss[0]"
+examples.reload = "reload cmnds"
+examples.perm = "perm root@shell oper"
+examples.meet = "meet root@shell oper"
+examples.mbox = "mbox ~/25-1-2013"
+examples.loglevel = "loglevel info"
+examples.first = "first cfg"
+examples.dump = "dump todo"
+examples.delperm = "delperm root@shell oper"
+examples.cfg = "cfg irc"
+examples.announce = "announce bla"
+examples.alias = "alias l cmnds"
+
+varnames = bl.obj.Object()
+varnames.object = bl.obj.Object(txt="test", date="Sat Jan 14 00:02:29 2017")
+varnames.daystring = "2017-08-29 16:34:23.837288"
+varnames.seconds = 60
+varnames.daystr = "Sat Jan 14 00:02:29 2017"
+varnames.txt = "i told you so !!"
+varnames.path = "data/runtime/kernel"
+varnames.optionlist = "-b -a -l info"
+varnames.level = "info"
+varnames.error = "info"
+varnames.fd = 1
+varnames.event = bl.evt.Event()
+#varnames.old = termios.tcgetattr(1)
+varnames.text = "blablabla mekker"
+varnames.signature = "1e7f50d2015ac2ddc1f2ae8cf8ed6dfd896cab71"
+varnames.u = "bart!~bart@localhost"
+varnames.jid = "monitor@localhost/blamekker"
+varnames.url = "http://localhost"
+varnames.obj = bl.obj.Object(txt="version")
+varnames.func = test
+varnames.timestamp = time.time()
+varnames.origin = "root@shell"
+varnames.perm = "OPER"
+varnames.o = bl.obj.Object(txt="test")
+varnames.depth = 2
+varnames.keys = ["test", "txt"]
+varnames.uniqs = ["bla"]
+varnames.ignore = {"test": "mekker"}
+varnames.notwant = {"test": "mekker"}
+varnames.want = {"test": "mekker"}
 
 class Test_Cmnds(unittest.TestCase):
 
     def test_run(self):
-        event = Event()
+        event = bl.evt.Event()
         event.origin = "root@shell"
         event.txt = ""
         thrs = []
         nrloops = 10
         for x in range(nrloops):
-            thr = launcher.launch(testcmnds, event)
+            thr = k.launch(testcmnds, event)
             thr.join()
 
     def test_func(self):
-        event = Event()
+        event = bl.evt.Event()
         event.origin = "root@shell"
         event.txt = ""
         thrs = []
         nrloops = 10
         for x in range(nrloops):
-            thr = launcher.launch(functest, event)
+            thr = k.launch(functest, event)
             thr.join()
 
     def test_cmnd(self):
-        event = Event()
+        event = bl.evt.Event()
         event.origin = "root@shell"
         event.txt = ""
         thrs = []
         nrloops = 10
         for x in range(nrloops):
-            thr = launcher.launch(cmndrun, event)
+            thr = k.launch(cmndrun, event)
             thr.join()
         
 
@@ -61,28 +106,28 @@ def randomarg():
     return types.new_class(t)()
     
 def cmndrun(event):
-    for name in sorted(kernel.modules("botlib")):
-        if name in ["botlib.test", "botlib.rss"]:
+    for name in sorted(k.modules):
+        if name in ["bl.test", "bl.rss"]:
             continue
-        mod = kernel.load(name)
+        mod = k.load_mod(name)
         for n in dir(mod):
            if n in exclude:
                continue
            func = getattr(mod, n, None)
            if func and type(func) in [types.FunctionType, types.MethodType]:
                if "event" in func.__code__.co_varnames:
-                   e = Event()
+                   e = bl.evt.Event()
                    e._funcs.append(func)
                    e.origin = "root@shell"
                    e.server = "localhost"
                    e.btype = "cli"
-                   kernel.put(e)
+                   k.put(e)
 
 def functest(event):
-    for name in sorted(kernel.modules("botlib")):
-        if name in ["botlib.test", "botlib.rss"]:
+    for name in sorted(k.modules):
+        if name in ["bl.test", "bl.rss"]:
             continue
-        mod = kernel.load(name)
+        mod = k.load_mod(name)
         keys = dir(mod)
         random.shuffle(keys)
         for n in keys:
@@ -103,7 +148,7 @@ def functest(event):
                        logging.error(get_exception())
                
 def testcmnds(event):
-    keys = list(kernel.list("botlib"))
+    keys = list(kernel.cmds)
     random.shuffle(keys)
     for cmnd in keys:
         if cmnd in exclude:
@@ -112,14 +157,13 @@ def testcmnds(event):
             name = "email"
         else:
             name = randomarg()
-        e = Event(event)
+        e = bl.evt.Event(event)
         e.btype = event.btype
         e.server = event.server
         cmnd = examples.get(cmnd, cmnd)
         e.txt = "%s %s" % (cmnd, name)
         e.origin = "root@shell"
-        e.parse()
-        kernel.put(e)
+        k.put(e)
 
 exclude = ["exit", "loglevel", "reboot", "real_reboot", "fetcher", "synchronize", "init", "shutdown", "wrongxml","mbox", "testcmnds", "runkernel", "functest", "cmndrun"]
 outtxt = u"Đíť ìš éèñ ëņċøďıńğŧęŝţ· .. にほんごがはなせません .. ₀0⁰₁1¹₂2²₃3³₄4⁴₅5⁵₆6⁶₇7⁷₈8⁸₉9⁹ .. ▁▂▃▄▅▆▇▉▇▆▅▄▃▂▁ .. .. uǝʌoqǝʇsɹǝpuo pɐdı ǝɾ ʇpnoɥ ǝɾ"

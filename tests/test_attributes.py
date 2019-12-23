@@ -2,7 +2,7 @@
 #
 # 
 
-from botlib.object import Object
+from bl.obj import Object
 
 import unittest
 import time

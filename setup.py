@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-""" botlib setup.py """
+""" bl setup.py """
 
 import os
 import sys
@@ -21,9 +21,9 @@ except Exception as ex:
     os._exit(1)
 
 setup(
-    name='botlib',
+    name='bl',
     version='18',
-    url='https://bitbucket.org/bthate/botlib',
+    url='https://bitbucket.org/bthate/bl',
     author='Bart Thate',
     author_email='bthate@dds.nl',
     description="Framework to program bots",
@@ -32,8 +32,8 @@ setup(
     zip_safe=False,
     install_requires=["sleekxmpp", "feedparser", "dnspython", "pyasn1", "pyasn1_modules"],
     scripts=["bin/bot", "bin/bot-udp"],
-    packages=['botlib'],
-    extra_path="botlib",
+    packages=['bl'],
+    extra_path="bl",
     long_description='''
 README
 ######
@@ -63,41 +63,41 @@ setup:
 
 source:
 
-| botlib		- botlib package.
-| botlib.bot		- bot base class.
-| botlib.cli 		- command line interfacce bot, gives a shell prompt to issue bot commands.
-| botlib.clock 		- timer, repeater and other clock based classes.
-| botlib.cmnds 		- botlib basic commands.
-| botlib.compose 	- construct a object into it’s type.
-| botlib.engine 	- select.epoll event loop, easily interrup_table esp. versus a blocking event loop.
-| botlib.db 		- JSON file db.
-| botlib.error 		- botlib exceptions.
-| botlib.event 		- event handling classes.
-| botlib.fleet 		- fleet is a list of bots.
-| botlib.handler 	- schedule events.
-| botlib.irc 		- IRC bot class.
-| botlib.kernel 	- program boot and module loading.
-| botlib.launcher 	- a launcher launches threads (or tasks in this case).
-| botlib.log 		- log module to set standard format of logging.
-| botlib.object 	- JSON file backed object with dotted access.
-| botlib.raw 		- raw output using print.
-| botlib.rss 		- rss module.
-| botlib.selector 	- functions used in code to select what objects to use.
-| botlib.task 		- adapted thread to add extra functionality to threads.
-| botlib.trace 		- functions concering stack trace.
-| botlib.users 		- class to access user records.
-| botlib.xmpp 		- XMPP bot class.
-| botlib.register 	- object with list for multiple values.
-| botlib.rest 		- rest interface.
-| botlib.runner 	- threaded loop to run tasks on.
-| botlib.space 		- central module to store objects in.
-| botlib.static 	- static definitions.
-| botlib.template 	- cfg objects containing default values for various services and plugins.
-| botlib.test 		- plugin containing test commands and classes.
-| botlib.udp 		- relay txt through a udp port listener.
-| botlib.utils 		- lib local helper functions.
-| botlib.url 		- functions that fetch data from url.
-| botlib.watcher 	- watch files.
+| bl		- bl package.
+| bl.bot		- bot base class.
+| bl.cli 		- command line interfacce bot, gives a shell prompt to issue bot commands.
+| bl.clock 		- timer, repeater and other clock based classes.
+| bl.cmnds 		- bl basic commands.
+| bl.compose 	- construct a object into it’s type.
+| bl.engine 	- select.epoll event loop, easily interrup_table esp. versus a blocking event loop.
+| bl.db 		- JSON file db.
+| bl.error 		- bl exceptions.
+| bl.event 		- event handling classes.
+| bl.fleet 		- fleet is a list of bots.
+| bl.handler 	- schedule events.
+| bl.irc 		- IRC bot class.
+| bl.kernel 	- program boot and module loading.
+| bl.launcher 	- a launcher launches threads (or tasks in this case).
+| bl.log 		- log module to set standard format of logging.
+| bl.object 	- JSON file backed object with dotted access.
+| bl.raw 		- raw output using print.
+| bl.rss 		- rss module.
+| bl.selector 	- functions used in code to select what objects to use.
+| bl.task 		- adapted thread to add extra functionality to threads.
+| bl.trace 		- functions concering stack trace.
+| bl.users 		- class to access user records.
+| bl.xmpp 		- XMPP bot class.
+| bl.register 	- object with list for multiple values.
+| bl.rest 		- rest interface.
+| bl.runner 	- threaded loop to run tasks on.
+| bl.space 		- central module to store objects in.
+| bl.static 	- static definitions.
+| bl.template 	- cfg objects containing default values for various services and plugins.
+| bl.test 		- plugin containing test commands and classes.
+| bl.udp 		- relay txt through a udp port listener.
+| bl.utils 		- lib local helper functions.
+| bl.url 		- functions that fetch data from url.
+| bl.watcher 	- watch files.
 
 contact:
 
@@ -105,7 +105,7 @@ contact:
 | botfather on #dunkbot irc.freenode.net
 | bthate@dds.nl, thatebart@gmail.com
 
-BOTLIB is code released in the Public Domain - https://bitbucket.org/bthate/botlib
+BOTLIB is code released in the Public Domain - https://bitbucket.org/bthate/bl
 
 
 ''',
