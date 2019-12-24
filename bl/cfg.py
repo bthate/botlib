@@ -5,7 +5,7 @@
 import bl
 
 def __dir__():
-    return ("Cfg",)
+    return ("Cfg", "cfg")
 
 class Cfg(bl.pst.Persist):
 
@@ -18,10 +18,18 @@ def cfg(event):
     if not event.args:
         event.reply(bl.k.cfg)
         return
-    try:
-        bl.last(bl.k.cfg)
-        bl.set(bl.k.cfg, event.args[0], event.args[1])
+    if len(event.args) >= 1:
+        cn = "bl.%s.Cfg" % event.args[0]
+        l = bl.k.db.last(cn)
+        if not l:
+            event.reply("no %s config found." % event.args[0])
+            return
+        if len(event.args) == 1:
+            event.reply(l)
+            return
+        if len(event.args) == 2:
+            event.reply(bl.get(l, event.args[1]))
+            return
+        bl.set(l, event.args[0], event.args[1])
         bl.k.cfg.save()
         event.reply("ok")
-    except IndexError:
-        event.reply("cfg %s value" % "|".join(bl.keys(k.cfg)))
