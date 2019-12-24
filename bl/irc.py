@@ -281,6 +281,17 @@ class IRC(bl.Bot):
         self.raw("NICK %s" % nick)
         self.raw("USER %s %s %s :%s" % (self.cfg.username or "obi", server, server, self.cfg.realname or "obi"))
 
+    def output(self):
+        self._outputed = True
+        while not self._stopped:
+            channel, txt, type = self._outqueue.get()
+            if txt:
+                if self.sleep:
+                    if (time.time() - self.state.last) < 3.0:
+                        time.sleep(1.0 * (self.state.nrsend % 10))
+                self._say(channel, txt, type)
+
+
     def raw(self, txt):
         txt = txt.rstrip()
         logging.info(txt)

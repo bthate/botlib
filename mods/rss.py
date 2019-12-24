@@ -153,7 +153,7 @@ def get_feed(url):
 def file_time(timestamp):
     return str(datetime.datetime.fromtimestamp(timestamp)).replace(" ", os.sep) + "." + str(random.randint(111111, 999999))
 
-def delete(event):
+def del(event):
     if not event.args:
         event.reply("delete <match>")
         return
@@ -168,7 +168,7 @@ def delete(event):
         rss.save()
     event.reply("ok %s" % nr)
 
-def display(event):
+def dpl(event):
     if len(event.args) < 2:
         event.reply("display <feed> key1,key2,etc.")
         return
@@ -206,7 +206,7 @@ def feed(event):
     if not nr:
         event.reply("no results found")
  
-def fetch(event):
+def ftc(event):
     res = fetcher.run()
     event.reply("fetched %s" % ",".join([str(x) for x in res]))
 

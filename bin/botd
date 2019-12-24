@@ -7,15 +7,9 @@ import os, sys ; sys.path.insert(0, os.getcwd())
 
 import bl
 
-bl.evt.aliases = {
-           "cmds": "show cmds",
-           "f": "find",
-           "l": "log",
-           "ps": "show tasks",
-           "t": "todo",
-           "u": "show uptime",
-           "v": "show version"
-           }
+from bl import cfg, k
+from bl.shl import parse_cli
+from bl.trm import execute, reset, save
 
 opts = [
     ('-b', '--background', 'store_true', False, 'run in daemon mode.', 'daemon'),
@@ -36,7 +30,7 @@ opts = [
 def daemon():
     pid = os.fork()
     if pid != 0:
-        bl.trm.reset()
+        reset()
         os._exit(0)
     os.setsid()
     os.umask(0)
@@ -48,14 +42,12 @@ def daemon():
     os.dup2(se.fileno(), sys.stderr.fileno())
 
 def main():
-    bl.shl.parse_cli("bot", bl.__version__, opts)
-    if not bl.cfg.modules:
-        bl.cfg.modules = "cfg,irc,shw,ent,rss,udp" 
-    if bl.cfg.daemon:
-        bl.cfg.kernel = True
-        daemon()
-    bl.k.start()
-    bl.k.wait()
+    parse_cli("botd", __version__, opts)
+    cfg.kernel = True
+    cfg.parsing = False
+    daemon()
+    k.start()
+    k.wait()
 
-bl.shl.execute(main)
+execute(main)
 os._exit(0)

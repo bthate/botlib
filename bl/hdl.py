@@ -3,6 +3,9 @@
 # event handler.
 
 import bl
+import bl.ldr
+import bl.thr
+import bl.typ
 import inspect
 import pkgutil
 import queue
@@ -32,6 +35,7 @@ class Handler(bl.ldr.Loader, bl.thr.Launcher):
         self.state = bl.Object()
         self.state.last = time.time()
         self.state.nrsend = 0
+        self.verbose = True
 
     def get_cmd(self, cmd):
         return bl.get(self.cmds, cmd, None)
@@ -68,11 +72,8 @@ class Handler(bl.ldr.Loader, bl.thr.Launcher):
         self._outputed = True
         while not self._stopped:
             channel, txt, type = self._outqueue.get()
-            if txt:
-                if self.sleep:
-                    if (time.time() - self.state.last) < 3.0:
-                        time.sleep(1.0 * (self.state.nrsend % 10))
-                self._say(channel, txt, type)
+            if self.verbose:
+                print(txt)
 
     def poll(self):
         raise bl.err.ENOTIMPLEMENTED

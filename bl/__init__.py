@@ -6,17 +6,17 @@ __version__ = 72
 
 workdir = ""
 
-import bl.obj
-from bl.obj import Object, get, keys, set, update
-
-import bl.all
 import logging
 import time
 
-from bl.bot import Bot
-from bl.evt.Event import Event
-from bl.pst.Persist import Persist
+import bl.obj
+
+from bl.obj import Object, get, keys, set, update
+
+import bl.pst
+
 from bl.utl import locked
+from bl.pst import Persist
 
 def __dir__():
     return ("Cfg", "Event", "Kernel", "Persist", "Object", "cfg", "db", "fleet", "get", "k", "last", "locked", "set", "update", "workdir")
@@ -44,6 +44,7 @@ class Cfg(Persist):
         if cfg:
             bl.update(self, cfg)
 
+
 class Default(Persist):
 
     def __init__(self, cfg=None):
@@ -56,15 +57,15 @@ class Default(Persist):
             bl.set(self, k, "")
         return bl.get(self, k)
 
-class Kernel(bl.hdl.Handler):
+import bl.hdl
+
+class Kernel(bl.hdl.Handler, Persist):
 
     def __init__(self):
         super().__init__()
         self._outputed = False
         self._started = False
         self.prompt = True
-        state.started = False
-        state.starttime = time.time()
         self.verbose = True
 
     def add(self, bot):
@@ -76,12 +77,12 @@ class Kernel(bl.hdl.Handler):
         cfg.prompting = False
         c = bl.csl.Console()
         c.start(False, False, False)
-        e = bl.evt.Event()
+        e = Event()
         e.txt = txt
         e.options = cfg.options
         e.orig = repr(c)
         e.origin = origin or "root@shell"
-        self.register(bl.dpt.dispatch)
+        self.register(dispatch)
         self.prompt = False
         self.add(c)
         self.handle(e)
@@ -110,17 +111,15 @@ class Kernel(bl.hdl.Handler):
         if self._started:
             return
         self._started = True
-        if cfg.doexec:
-            self.init(cfg.modules)
-            self.cmd(cfg.txt)
-            return
+        state.started = False
+        state.starttime = time.time()
         if cfg.owner:
             self.users.oper(cfg.owner)
         if cfg.kernel:
             bl.last(cfg)
-        self.init(cfg.modules)
-        self.register(bl.dpt.dispatch)
         super().start(True, False, False)
+        self.register(bl.dispatch)
+        self.init(cfg.modules)
 
     def wait(self):
         if cfg.doexec:
@@ -143,6 +142,10 @@ class Register(bl.pst.Persist):
 
     def register(self, k, v):
         bl.set(self, k, v)
+
+import bl.dbs
+import bl.flt
+import bl.usr
 
 k = Kernel()
 cfg = Cfg(default)
@@ -173,3 +176,8 @@ def last(o, skip=True):
         bl.update(o, val)
         o.__path__ = val.__path__
         return o.__path__
+
+from bl.bot import Bot
+import bl.evt
+from bl.evt import Event
+import bl.all

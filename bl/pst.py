@@ -3,6 +3,7 @@
 # persistence.
 
 import bl
+import bl.utl
 import datetime
 import json
 import json.decoder
@@ -13,7 +14,7 @@ lock = _thread.allocate_lock()
 
 class Persist(bl.Object):
 
-    @bl.locked(lock)
+    @bl.utl.locked(lock)
     def load(self, path):
         assert path
         assert bl.workdir
@@ -29,7 +30,7 @@ class Persist(bl.Object):
         self.__path__ = path
         return self
 
-    @bl.locked(lock)
+    @bl.utl.locked(lock)
     def save(self, path="", stime=None):
         assert bl.workdir
         self._type = bl.typ.get_type(self)

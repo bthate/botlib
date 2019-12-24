@@ -8,7 +8,7 @@ import bl
 def __dir__():
     return ("Console",)
 
-class Console(bl.hdl.Handler):
+class Console(bl.hdl.Handler, bl.pst.Persist):
 
     def __init__(self):
         super().__init__()
@@ -19,7 +19,7 @@ class Console(bl.hdl.Handler):
 
     def poll(self) -> None:
         e = bl.evt.Event()
-        e.options = bl.k.cfg.options
+        e.options = bl.cfg.options
         e.orig = repr(self)
         e.origin = "root@shell"
         e.txt = input("> ")
@@ -44,5 +44,5 @@ class Console(bl.hdl.Handler):
         self.raw(txt)
  
     def start(self, handler=False, input=True, output=False) -> None:
-        bl.k.add(self)
+        bl.fleet.add(self)
         super().start(handler, input, output)
