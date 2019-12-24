@@ -1,8 +1,0 @@
-[Unit]
-Description=botlib
-
-[Service]
-ExecStart=/usr/local/bin/botd -k -p -d /var/lib/botlib --logdir /var/log/botlib -l debug
-
-[Install]
-WantedBy=multi-user.target
