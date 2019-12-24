@@ -1,9 +1,10 @@
-import logging
+# BOTLIB - Framework to program bots.
+#
+# 
+
+import bl
 import os
 import unittest
-
-from ob import workdir
-from ob.pst import Persist
 
 class ENOTCOMPAT(Exception):
     pass
@@ -11,20 +12,20 @@ class ENOTCOMPAT(Exception):
 class Test_Core(unittest.TestCase):
 
     def test_load2(self):
-        o = Persist()
+        o = bl.pst.Persist()
         o.bla = "mekker"
         p = o.save()
-        oo = Persist().load(p)
+        oo = bl.pst.Persist().load(p)
         self.assertEqual(oo.bla, "mekker")
 
     def test_save(self):
-        o = Persist()
+        o = bl.pst.Persist()
         p = o.save()
-        self.assertTrue(os.path.exists(os.path.join(workdir, "store", p)))
+        self.assertTrue(os.path.exists(os.path.join(bl.workdir, "store", p)))
 
     def test_subitem(self):
-        o = Persist()
-        o.test = Persist()
+        o = bl.pst.Persist()
+        o.test = bl.pst.Persist()
         p = o.save()
-        oo = Persist().load(p)
-        self.assertTrue(type(oo.test), Persist)
+        oo = bl.pst.Persist().load(p)
+        self.assertTrue(type(oo.test), bl.pst.Persist)

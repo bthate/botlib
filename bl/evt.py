@@ -2,9 +2,9 @@
 #
 # 
 
+import bl
 import time
 import threading
-import bl
 
 def __dir__():
     return ("Command", "Event", "Token", "aliases")
@@ -117,7 +117,7 @@ class Command(bl.pst.Persist):
         spl = txt.split()
         if spl and spl[0] in aliases:
             cmd = spl[0]
-            v = bl.obj.get(aliases, cmd, None)
+            v = bl.get(aliases, cmd, None)
             if v:
                 spl[0] = v
         return " ".join(spl)
@@ -136,7 +136,7 @@ class Command(bl.pst.Persist):
         nr = -1
         self.args = []
         self.dkeys = []
-        self.options = options or self.options or ""
+        self.options = options or self.options or bl.k.cfg.options
         words = txt.split()
         tokens = []
         nr = -1

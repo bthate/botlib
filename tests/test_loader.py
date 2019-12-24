@@ -10,6 +10,6 @@ class Test_Loader(unittest.TestCase):
         l = bl.ldr.Loader()
         l.load_mod("bl.ldr")
         p = l.save()
-        ll = Loader()
+        ll = bl.ldr.Loader()
         ll.load(p)
         self.assertTrue("bl.ldr" in ll.table)

@@ -29,7 +29,10 @@ class Thr(threading.Thread):
 
     def run(self):
         func, args = self._queue.get()
-        self._result = func(*args)
+        try:
+            self._result = func(*args)
+        except Exception as ex:
+            logging.error(bl.trc.get_exception())
 
     def join(self, timeout=None):
         super().join(timeout)
@@ -44,8 +47,8 @@ class Launcher:
         self._stopped = False
 
     def launch(self, func, *args, **kwargs):
-        if bl.k.cfg.verbose:
-            logging.error("launch %s %s (%s)" % (bl.utl.get_name(func), " ".join([str(x) for x in args]), bl.trc.get_from(2)))
+        #if bl.k.cfg.verbose:
+        #    logging.error("launch %s %s (%s)" % (bl.utl.get_name(func), " ".join([str(x) for x in args]), bl.trc.get_from(2)))
         name = ""
         try:
             name = kwargs.get("name", args[0].name or args[0].txt)

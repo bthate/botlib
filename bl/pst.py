@@ -13,6 +13,7 @@ lock = _thread.allocate_lock()
 
 class Persist(bl.Object):
 
+    @bl.utl.locked(lock)
     def load(self, path):
         assert path
         assert bl.workdir
@@ -22,8 +23,8 @@ class Persist(bl.Object):
         with open(lpath, "r") as ofile:
             try:
                 val = json.load(ofile, object_hook=hooked)
-            except json.decoder.JSONDecodeError:
-                raise bl.err.EJSON(lpath)
+            except json.decoder.JSONDecodeError as ex:
+                raise bl.err.EJSON(str(ex) + " " + lpath)
             bl.update(self, val)
         self.__path__ = path
         return self

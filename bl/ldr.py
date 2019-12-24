@@ -9,7 +9,7 @@ import typing
 def __dir__():
     return ("Loader",)
 
-class Loader(bl.obj.Object):
+class Loader(bl.pst.Persist):
 
     def __init__(self):
         super().__init__()

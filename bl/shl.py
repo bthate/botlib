@@ -83,15 +83,13 @@ def parse_cli(name="botlib", version=None, opts=[], wd=None, level="error"):
     cfg.version = version
     cfg.workdir = cfg.workdir or wd or bl.utl.hd(".%s" % cfg.name)
     cfg.logdir = cfg.logdir or os.path.join(cfg.workdir, "logs")
-    cfg.options = ""
-    cfg.owner = ""
     cfg.txt = " ".join(cfg.args)
     sp = os.path.join(cfg.workdir, "store") + os.sep
     if not os.path.exists(sp):
         bl.utl.cdir(sp)
     bl.workdir = cfg.workdir
     bl.log.level(cfg.level or level, cfg.logdir)
-    bl.update(bl.k.cfg, cfg, [], False)
+    bl.update(bl.k.cfg, cfg)
     logging.warning("%s started (%s) at %s" % (cfg.name.upper(), cfg.level or level, time.ctime(time.time())))
     logging.warning("logging at %s" % bl.log.logfiled)
     return bl.k.cfg

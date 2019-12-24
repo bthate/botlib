@@ -3,6 +3,7 @@
 # 
 
 import bl
+import logging
 
 def dispatch(handler, event):
     try:
@@ -13,6 +14,9 @@ def dispatch(handler, event):
     event._func = handler.get_cmd(event.chk)
     if event._func:
         event._calledfrom = str(event._func)
-        event._func(event)
+        try:
+            event._func(event)
+        except Exception as ex:
+            logging.error(bl.trc.get_exception())
         event.show()
     event.ready()

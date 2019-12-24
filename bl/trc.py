@@ -20,7 +20,7 @@ def get_exception(txt="", sep=""):
         mod = []
         for elememt in plugfile[::-1]:
             mod.append(elememt)
-            if elememt == "ob":
+            if elememt == "bl":
                 break
         ownname = '.'.join(mod[::-1])
         result += "%s:%s %s %s " % (ownname, linenr, func, sep)

@@ -13,6 +13,15 @@ import shutil
 import time
 import unittest
 
+opts = [
+    ('-d', '--datadir', 'store', str, 'set working directory.', 'workdir'),
+    ('-m', '--modules', 'store', str, 'modules to load.', 'modules'),
+    ('-o', '--options', "store", str, "options to use.", 'options'),
+    ('-l', '--loglevel', 'store', str, 'set loglevel.', 'level'),
+    ('-v', '--verbose', 'store_true', False, 'enable verbose mode.', 'verbose')
+]
+
+
 def initialize():
     bl.utl.cdir("testdata")
     bl.k.users.oper("test@shell")
@@ -32,7 +41,7 @@ def main():
         shutil.rmtree("testdata")
     except:
         pass
-    bl.shl.parse_cli(wd="testdata")
+    bl.shl.parse_cli("test", 1, opts, wd="testdata")
     bl.workdir = "testdata"
     bl.log.level("debug")
     initialize()
