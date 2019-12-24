@@ -1,6 +1,6 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# persistence.
 
 import bl
 import datetime
@@ -13,7 +13,7 @@ lock = _thread.allocate_lock()
 
 class Persist(bl.Object):
 
-    @bl.utl.locked(lock)
+    @bl.locked(lock)
     def load(self, path):
         assert path
         assert bl.workdir
@@ -29,7 +29,7 @@ class Persist(bl.Object):
         self.__path__ = path
         return self
 
-    @bl.utl.locked(lock)
+    @bl.locked(lock)
     def save(self, path="", stime=None):
         assert bl.workdir
         self._type = bl.typ.get_type(self)

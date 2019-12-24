@@ -1,6 +1,6 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# threading.
 
 import bl
 import logging
@@ -47,8 +47,6 @@ class Launcher:
         self._stopped = False
 
     def launch(self, func, *args, **kwargs):
-        #if bl.k.cfg.verbose:
-        #    logging.error("launch %s %s (%s)" % (bl.utl.get_name(func), " ".join([str(x) for x in args]), bl.trc.get_from(2)))
         name = ""
         try:
             name = kwargs.get("name", args[0].name or args[0].txt)

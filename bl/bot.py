@@ -1,6 +1,6 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# bot base class 
 
 import sys
 import bl
@@ -8,7 +8,7 @@ import bl
 def __dir__():
     return ('Bot', 'Cfg')
 
-class Cfg(bl.cfg.Cfg):
+class Cfg(bl.Cfg):
 
     def __init__(self):
         super().__init__()
@@ -47,4 +47,4 @@ class Bot(bl.hdl.Handler):
     def start(self, handler=True, input=False, output=False):
         self.register(bl.dpt.dispatch)
         super().start(handler, input, output)
-        bl.k.fleet.add(self)
+        bl.fleet.add(self)

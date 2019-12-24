@@ -7,7 +7,7 @@ import bl
 def __dir__():
     return ("Fleet",)
 
-class Fleet(bl.pst.Persist):
+class Fleet(bl.Persist):
 
     def __init__(self):
         super().__init__()

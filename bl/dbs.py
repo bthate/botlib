@@ -1,6 +1,6 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# databases. 
 
 import os
 import time
@@ -12,7 +12,7 @@ def __dir__():
 
 lock = _thread.allocate_lock()
 
-class Db(bl.pst.Persist):
+class Db(bl.Persist):
 
     def all(self, otype, selector=None, index=None, delta=0):
         if not selector:
@@ -82,7 +82,7 @@ class Db(bl.pst.Persist):
                 return s[-1][-1]
         return None
 
-@bl.utl.locked(lock)
+@bl.locked(lock)
 def hook(fn):
     t = fn.split(os.sep)[0]
     if not t:

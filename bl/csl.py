@@ -1,6 +1,6 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# console code.
 
 import sys
 import bl

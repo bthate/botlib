@@ -1,6 +1,6 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# event handler.
 
 import bl
 import inspect
@@ -24,12 +24,12 @@ class Handler(bl.ldr.Loader, bl.thr.Launcher):
         self._threaded = True
         self._type = bl.typ.get_type(self)
         self.classes = []
-        self.cmds = bl.rgt.Register()
+        self.cmds = bl.Register()
         self.handlers = []
         self.modules = {}
         self.names = {}
         self.sleep = False
-        self.state = bl.obj.Object()
+        self.state = bl.Object()
         self.state.last = time.time()
         self.state.nrsend = 0
 
@@ -85,7 +85,7 @@ class Handler(bl.ldr.Loader, bl.thr.Launcher):
             self.handlers.append(handler)
 
     def say(self, channel, txt, type="chat"):
-        raise ENOTIMPLEMENTED
+        raise bl.err.ENOTIMPLEMENTED
 
     def scan(self, mod):
         for key, o in inspect.getmembers(mod, inspect.isfunction):
@@ -94,7 +94,7 @@ class Handler(bl.ldr.Loader, bl.thr.Launcher):
                     self.cmds.register(key, o)
                     self.modules[key] = o.__module__
         for key, o in inspect.getmembers(mod, inspect.isclass):
-            if issubclass(o, bl.pst.Persist):
+            if issubclass(o, bl.Persist):
                 t = bl.typ.get_type(o)
                 if t not in self.classes:
                     self.classes.append(t)

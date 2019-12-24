@@ -112,7 +112,7 @@ def get_name(o):
     return n
 
 def get_tinyurl(url):
-    if bl.k.cfg.debug:
+    if bl.cfg.debug:
         return url
     postarray = [
         ('submit', 'submit'),
@@ -150,7 +150,7 @@ def kill(thrname):
             task.stop()
 
 def fnlast(otype):
-    fns = list(bl.names(otype))
+    fns = list(bl.dbs.names(otype))
     if fns:
         return fns[-1]
 

@@ -1,24 +1,23 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# user management.
 
 import bl
 
 def __dir__():
     return ("User", "Users", "meet")
 
-class User(bl.pst.Persist):
+class User(bl.Persist):
 
     def __init__(self):
         super().__init__()
         self.user = ""
         self.perms = []
 
-class Users(bl.pst.Persist):
+class Users(bl.Persist):
 
-    cache = bl.pst.Persist()
-    db = bl.dbs.Db()
-    userhosts = bl.pst.Persist()
+    cache = bl.Object()
+    userhosts = bl.Object()
 
     def allowed(self, origin, perm):
         perm = perm.upper()
@@ -39,7 +38,7 @@ class Users(bl.pst.Persist):
 
     def get_users(self, origin=""):
         s = {"user": origin}
-        return self.db.all("bl.usr.User", s)
+        return bl.db.all("bl.usr.User", s)
 
     def get_user(self, origin):
         u =  list(self.get_users())
@@ -74,16 +73,3 @@ class Users(bl.pst.Persist):
             user.perms.append(permission.upper())
             user.save()
         return user
-
-def meet(event):
-    if not event.args:
-        event.reply("meet origin [permissions]")
-        return
-    try:
-        origin, *perms = event.args[:]
-    except ValueError:
-        event.reply("meet origin [permissions]")
-        return
-    origin = bl.get(bl.k.users.userhosts, origin, origin)
-    u = bl.k.users.meet(origin, perms)
-    event.reply("added %s" % u.user)

@@ -1,8 +1,7 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# tracebacks and exception catcher.
 
-import bl
 import os
 import sys
 import traceback

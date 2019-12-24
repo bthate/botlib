@@ -13,9 +13,13 @@ import bl.all
 import logging
 import time
 
+from bl.bot import Bot
+from bl.evt.Event import Event
+from bl.pst.Persist import Persist
+from bl.utl import locked
 
 def __dir__():
-    return ("Cfg", "Kernel", "Object", "get", "set", "last", "update", "workdir", "k")
+    return ("Cfg", "Event", "Kernel", "Persist", "Object", "cfg", "db", "fleet", "get", "k", "last", "locked", "set", "update", "workdir")
 
 default = {
            "dosave": False,
@@ -33,39 +37,48 @@ default = {
            "workdir": ""
           }
 
-class Cfg(bl.cfg.Cfg):
+class Cfg(Persist):
 
-    pass
+    def __init__(self, cfg=None):
+        super().__init__()
+        if cfg:
+            bl.update(self, cfg)
+
+class Default(Persist):
+
+    def __init__(self, cfg=None):
+        super().__init__()
+        if cfg:
+            bl.update(self, cfg)
+
+    def __getattr__(self, k):
+        if not k in self:
+            bl.set(self, k, "")
+        return bl.get(self, k)
 
 class Kernel(bl.hdl.Handler):
-
-    cfg = Cfg(default)
-    db = bl.dbs.Db()
-    fleet = bl.flt.Fleet()
-    users = bl.usr.Users()
 
     def __init__(self):
         super().__init__()
         self._outputed = False
         self._started = False
         self.prompt = True
-        self.state = bl.Object()
-        self.state.started = False
-        self.state.starttime = time.time()
+        state.started = False
+        state.starttime = time.time()
         self.verbose = True
 
     def add(self, bot):
-        self.fleet.add(bot)
+        fleet.add(bot)
 
     def cmd(self, txt, origin=""):
         if not txt:
             return
-        self.cfg.prompting = False
+        cfg.prompting = False
         c = bl.csl.Console()
         c.start(False, False, False)
         e = bl.evt.Event()
         e.txt = txt
-        e.options = self.cfg.options
+        e.options = cfg.options
         e.orig = repr(c)
         e.origin = origin or "root@shell"
         self.register(bl.dpt.dispatch)
@@ -78,16 +91,16 @@ class Kernel(bl.hdl.Handler):
         if not modstr:
             return
         ok = True
-        for mod in get_mods(self, modstr):
+        for mod in bl.utl.get_mods(self, modstr):
             if "init" not in dir(mod):
                 continue
             n = bl.utl.get_name(mod)
-            if self.cfg.exclude and n in self.cfg.exclude.split(","):
+            if cfg.exclude and n in cfg.exclude.split(","):
                 continue
             try:
                 mod.init()
             except bl.err.EINIT as ex:
-                if not self.cfg.doexec and not self.cfg.shell and not self.cfg.kernel:
+                if not cfg.doexec and not cfg.shell and not cfg.kernel:
                     print(str(ex))
                     ok = False
                     break
@@ -97,24 +110,24 @@ class Kernel(bl.hdl.Handler):
         if self._started:
             return
         self._started = True
-        if self.cfg.doexec:
-            self.init(self.cfg.modules)
-            self.cmd(self.cfg.txt)
+        if cfg.doexec:
+            self.init(cfg.modules)
+            self.cmd(cfg.txt)
             return
-        if self.cfg.owner:
-            self.users.oper(self.cfg.owner)
-        if self.cfg.kernel:
-            bl.last(self.cfg)
-        self.init(self.cfg.modules)
+        if cfg.owner:
+            self.users.oper(cfg.owner)
+        if cfg.kernel:
+            bl.last(cfg)
+        self.init(cfg.modules)
         self.register(bl.dpt.dispatch)
         super().start(True, False, False)
 
     def wait(self):
-        if self.cfg.doexec:
+        if cfg.doexec:
             return
-        if not self.cfg.kernel and self.cfg.dosave:
-            self.cfg.save()
-        if self.cfg.kernel or self.cfg.shell or (self.cfg.prompting and self.cfg.args):
+        if not cfg.kernel and cfg.dosave:
+            cfg.save()
+        if cfg.kernel or cfg.shell or (cfg.prompting and cfg.args):
             bl.shl.writepid()
             bl.shl.set_completer(self.cmds)
             bl.shl.enable_history()
@@ -123,29 +136,39 @@ class Kernel(bl.hdl.Handler):
             while not self._stopped:
                 time.sleep(1.0)
 
-def get_mods(h, ms):
-    modules = []
-    for mn in ms.split(","):
-        if not mn:
-            continue
-        m = None
-        try:
-            m = h.walk(mn)
-        except ModuleNotFoundError as ex:
-            pass
-        if not m:
-            try:
-                m = h.walk("bl.%s" % mn)
-            except ModuleNotFoundError as ex:
-                pass
-        if m:
-            modules.extend(m)
-    return modules
+class Register(bl.pst.Persist):
+
+    def get(self, k):
+        return bl.get(self, k)
+
+    def register(self, k, v):
+        bl.set(self, k, v)
 
 k = Kernel()
+cfg = Cfg(default)
+db = bl.dbs.Db()
+fleet = bl.flt.Fleet()
+state = bl.Object()
+users = bl.usr.Users()
+
+def dispatch(handler, event):
+    try:
+        event.parse()
+    except bl.err.ENOTXT:
+        event.ready()
+        return
+    event._func = handler.get_cmd(event.chk)
+    if event._func:
+        event._calledfrom = str(event._func)
+        event._func(event)
+        event.show()
+    event.ready()
+
+def launch(func, *args):
+    return k.launch(func, *args)
 
 def last(o, skip=True):
-    val = k.db.last(str(str(bl.typ.get_type(o))))
+    val = db.last(str(str(bl.typ.get_type(o))))
     if val:
         bl.update(o, val)
         o.__path__ = val.__path__

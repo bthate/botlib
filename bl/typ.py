@@ -1,8 +1,7 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# types.
 
-import bl
 import importlib
 import types
 

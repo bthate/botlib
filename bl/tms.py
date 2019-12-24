@@ -1,6 +1,6 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# time related code.
 
 import datetime
 import os

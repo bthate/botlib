@@ -1,6 +1,6 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# logging.
 
 import bl
 import logging

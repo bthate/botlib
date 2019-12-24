@@ -1,6 +1,6 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# show runtime data.
 
 import bl
 import os
@@ -11,27 +11,27 @@ def show(event):
     if not event.args:
         event.reply("cfg|cmds|fleet|kernel|ls|pid|tasks|version")
         return
-    bot = bl.k.fleet.get_bot(event.orig)
+    bot = bl.fleet.get_bot(event.orig)
     cmd = event.args[0]
     if cmd == "cfg":
         if len(event.args) == 2:
-            c = bl.k.db.last("%s.%s.Cfg" % ("bl", event.args[1].lower()))
+            c = bl.db.last("%s.%s.Cfg" % ("bl", event.args[1].lower()))
             event.reply(c)
         else:
-            event.reply(bl.k.cfg)
+            event.reply(bl.cfg)
     elif cmd == "cmds":
-        event.reply("|".join(sorted(bl.k.cmds)))
+        event.reply("|".join(sorted(bl.cmds)))
     elif cmd == "fleet":
         try:
             index = int(event.args[1])
-            event.reply(bl.k.fleet.bots[index])
+            event.reply(bl.fleet.bots[index])
             return
         except (ValueError, IndexError):
-            event.reply([bl.typ.get_type(x) for x in bl.k.fleet.bots])
+            event.reply([bl.typ.get_type(x) for x in bl.fleet.bots])
     elif cmd == "kernel":
         event.reply(bl.k)
     elif cmd == "ls":
-        event.reply("|".join(os.listdir(os.path.join(bl.k.cfg.workdir, "store"))))
+        event.reply("|".join(os.listdir(os.path.join(bl.cfg.workdir, "store"))))
     elif cmd == "pid":
         event.reply(str(os.getpid()))
     elif cmd == "tasks":
@@ -41,12 +41,12 @@ def show(event):
             if str(thr).startswith("<_"):
                 continue
             d = vars(thr)
-            o = bl.obj.Object()
-            bl.obj.update(o, d)
+            o = bl.Object()
+            bl.update(o, d)
             if getattr(o, "sleep", None):
                 up = o.sleep - int(time.time() - o.state.latest)
             else:
-                up = int(time.time() - bl.k.state.starttime)
+                up = int(time.time() - bl.state.starttime)
             result.append((up, thr.getName(), o))
         nr = -1
         for up, thrname, o in sorted(result, key=lambda x: x[0]):
@@ -55,7 +55,7 @@ def show(event):
             if res.strip():
                 event.reply(res)
     elif cmd == "uptime":
-        event.reply(bl.tms.elapsed(time.time() - bl.k.state.starttime))
+        event.reply(bl.tms.elapsed(time.time() - bl.state.starttime))
     elif cmd == "version":
         res = []
         res.append("BOTLIB %s" % bl.__version__)

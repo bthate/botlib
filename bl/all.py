@@ -1,11 +1,10 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# include all modules 
 
 import bl.utl
 import bl.obj 
 import bl.pst
-import bl.cfg
 import bl.ldr
 import bl.thr
 import bl.hdl

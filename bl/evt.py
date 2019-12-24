@@ -83,7 +83,7 @@ class Token(bl.Object):
             self.selector = word
             self.value = None
 
-class Command(bl.pst.Persist):
+class Command(bl.Persist):
 
     def __init__(self):
         super().__init__()
@@ -136,7 +136,7 @@ class Command(bl.pst.Persist):
         nr = -1
         self.args = []
         self.dkeys = []
-        self.options = options or self.options or bl.k.cfg.options
+        self.options = options or self.options or bl.cfg.options
         words = txt.split()
         tokens = []
         nr = -1
@@ -252,4 +252,4 @@ class Event(Command):
 
     def show(self):
         for line in self.result:
-            bl.k.fleet.echo(self.orig, self.channel, line, self.type)
+            bl.fleet.echo(self.orig, self.channel, line, self.type)

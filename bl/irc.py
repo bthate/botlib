@@ -35,23 +35,23 @@ default = {
 def init():
     bot = IRC()
     bl.last(bot.cfg)
-    if bl.k.cfg.prompting:
+    if bl.cfg.prompting:
         try:
-            server, channel, nick = bl.k.cfg.args
+            server, channel, nick = bl.cfg.args
             bot.cfg.server = server
             bot.cfg.channel = channel
             bot.cfg.nick = nick
             bot.cfg.save()
         except ValueError:
-            raise bl.err.EINIT("%s <server> <channel> <nick>" % bl.k.cfg.name)
+            raise bl.err.EINIT("%s <server> <channel> <nick>" % bl.cfg.name)
     bot.start()
     return bot
 
-class Cfg(bl.cfg.Cfg):
+class Cfg(bl.Cfg):
 
     pass
 
-class Event(bl.evt.Event):
+class Event(bl.Event):
 
     def __init__(self):
         super().__init__()
@@ -63,7 +63,7 @@ class Event(bl.evt.Event):
         self.orig = ""
         self.target = ""
 
-class DEvent(bl.evt.Event):
+class DEvent(bl.Event):
 
     def __init__(self):
         super().__init__()
@@ -90,7 +90,7 @@ class TextWrap(textwrap.TextWrapper):
         self.tabsize = 4
         self.width = 480
 
-class IRC(bl.bot.Bot):
+class IRC(bl.Bot):
 
     def __init__(self):
         super().__init__()
@@ -102,7 +102,7 @@ class IRC(bl.bot.Bot):
         self.cc = "!"
         self.cfg = Cfg(default)
         self.channels = []
-        self.state = bl.obj.Object()
+        self.state = bl.Object()
         self.state.error = ""
         self.state.last = 0
         self.state.lastline = ""
@@ -191,7 +191,7 @@ class IRC(bl.bot.Bot):
         o.rest = " ".join(o.args)
         return o
 
-    @bl.utl.locked(lock)
+    @bl.locked(lock)
     def _say(self, channel, txt, mtype="chat"):
         wrapper = TextWrap()
         for line in txt.split("\n"):
@@ -304,14 +304,14 @@ class IRC(bl.bot.Bot):
             return
         if self.cfg.channel:
             self.channels.append(self.cfg.channel)
-        self.register(dispatch_irc)
+        self.register(bl.dispatch)
         self.register(errored)
         self.register(privmsged)
         self.register(noticed)
         self.connect()
         super().start(True, True, True)
 
-class DCC(bl.bot.Bot):
+class DCC(bl.Bot):
 
     def __init__(self):
         super().__init__()
@@ -339,7 +339,7 @@ class DCC(bl.bot.Bot):
         else:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((addr, port))
-        s.send(bytes('Welcome to %s %s !!\n' % (bl.k.cfg.name.upper(), event.nick), "utf-8"))
+        s.send(bytes('Welcome to %s %s !!\n' % (bl.cfg.name.upper(), event.nick), "utf-8"))
         s.setblocking(True)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s
@@ -367,19 +367,6 @@ class DCC(bl.bot.Bot):
     def start(self):
         super().start(False, True, False)
 
-def dispatch_irc(handler, event):
-    try:
-        event.parse()
-    except bl.err.ENOTXT:
-        event.ready()
-        return
-    event._func = handler.get_cmd(event.chk)
-    if event._func:
-        event._calledfrom = str(event._func)
-        event._func(event)
-        event.show()
-    event.ready()
-
 def errored(handler, event):
     if event.command != "ERROR":
         return
@@ -392,13 +379,13 @@ def noticed(handler, event):
     if event.command != "NOTICE":
         return
     if event.txt.startswith("VERSION"):
-        txt = "\001VERSION %s %s - %s\001" % (bl.k.cfg.name, __version__, bl.k.cfg.description)
+        txt = "\001VERSION %s %s - %s\001" % (bl.cfg.name, __version__, bl.cfg.description)
         handler.command("NOTICE", event.channel, txt)
 
 def privmsged(handler, event):
     if event.command != "PRIVMSG":
         return
-    if event.origin != bl.k.cfg.owner:
+    if event.origin != bl.cfg.owner:
         bl.obj.set(bl.k.users.userhosts, event.nick, event.origin)
     if event.txt.startswith("DCC CHAT"):
         if not bl.k.users.allowed(event.origin, "USER"):

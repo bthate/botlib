@@ -1,15 +1,14 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# module loader.
 
-import bl
 import importlib
 import typing
 
 def __dir__():
     return ("Loader",)
 
-class Loader(bl.pst.Persist):
+class Loader(object):
 
     def __init__(self):
         super().__init__()

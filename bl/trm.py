@@ -1,6 +1,6 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# terminal code.
 
 import atexit
 import sys

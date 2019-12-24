@@ -1,6 +1,6 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# shell related code.
 
 import argparse
 import atexit
@@ -56,7 +56,7 @@ def execute(main):
     except KeyboardInterrupt:
         print("")
     except Exception:
-        logging.error(get_exception())
+        logging.error(bl.trc.get_exception())
     bl.trm.reset()
     close_history()
 
@@ -76,7 +76,7 @@ def make_opts(ns, options, **kwargs):
     parser.parse_known_args(namespace=ns)
   
 def parse_cli(name="botlib", version=None, opts=[], wd=None, level="error"):
-    cfg = bl.cfg.Cfg(bl.default)
+    cfg = bl.Cfg(bl.default)
     make_opts(cfg, opts)
     cfg.debug = False
     cfg.name = name
@@ -89,10 +89,10 @@ def parse_cli(name="botlib", version=None, opts=[], wd=None, level="error"):
         bl.utl.cdir(sp)
     bl.workdir = cfg.workdir
     bl.log.level(cfg.level or level, cfg.logdir)
-    bl.update(bl.k.cfg, cfg)
+    bl.update(bl.cfg, cfg)
     logging.warning("%s started (%s) at %s" % (cfg.name.upper(), cfg.level or level, time.ctime(time.time())))
     logging.warning("logging at %s" % bl.log.logfiled)
-    return bl.k.cfg
+    return bl.cfg
 
 def set_completer(commands):
     global cmds
@@ -102,7 +102,7 @@ def set_completer(commands):
     atexit.register(lambda: readline.set_completer(None))
 
 def writepid():
-    path = os.path.join(bl.k.cfg.workdir, "botlib.pid")
+    path = os.path.join(bl.cfg.workdir, "botlib.pid")
     f = open(path, 'w')
     f.write(str(os.getpid()))
     f.flush()

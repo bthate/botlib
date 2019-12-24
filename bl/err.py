@@ -1,6 +1,6 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# errors. 
 
 class EBLOCKING(Exception):
 

@@ -48,11 +48,11 @@ def daemon():
     os.dup2(se.fileno(), sys.stderr.fileno())
 
 def main():
-    bl.shl.parse_cli("botlib", bl.__version__, opts)
-    if not bl.k.cfg.modules:
-        bl.k.cfg.modules = "cfg,irc,shw,ent,rss,udp" 
-    if bl.k.cfg.daemon:
-        bl.k.cfg.kernel = True
+    bl.shl.parse_cli("bot", bl.__version__, opts)
+    if not bl.cfg.modules:
+        bl.cfg.modules = "cfg,irc,shw,ent,rss,udp" 
+    if bl.cfg.daemon:
+        bl.cfg.kernel = True
         daemon()
     bl.k.start()
     bl.k.wait()

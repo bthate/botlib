@@ -1,6 +1,6 @@
 # BOTLIB - Framework to program bots.
 #
-# 
+# big O Object.
 
 import bl
 import json
