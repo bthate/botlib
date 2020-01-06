@@ -1,26 +1,35 @@
-import bl
+# BOTD - python3 IRC channel daemon.
+#
+# fuzzer tests.
+
 import logging
 import random
 import unittest
 
-bl.k.cfg.prompt = False
-bl.k.walk("bl")
-bl.k.users.oper("test@shell")
+from bl.krn import Kernel
+from bl.typ import get_cls
+from bl.usr import Users
+
+k = Kernel()
+k.cfg.prompt = False
+k.walk("botd")
+k.start()
+
+users = Users()
+users.oper("test@shell")
 
 class Test_Fuzzer(unittest.TestCase):
 
     def test_fuzzer1(self):
-        for key in bl.k.modules:
-            for n in bl.k.names:
-                t = bl.k.names[n]
+        for t in k.names.values():
+            for key in k.names:
                 try:
-                    e = bl.typ.get_cls(t)()
-                    e.txt = key + " " + random.choice(list(bl.k.names))
-                    e.parse(e.txt)
-                    e.orig = repr(b)
+                    e = get_cls(t)()
+                    e.verbose = k.cfg.verbose
+                    e.txt = key + " " + random.choice(k.names.values())
+                    e.orig = repr(k)
                     e.origin = "test@shell"
-                    e.update(o)
-                    v = bl.k.get_cmd(key)
+                    v = k.get_cmd(key)
                     if v:
                         v(e)
                 except AttributeError:

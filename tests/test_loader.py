@@ -1,15 +1,39 @@
-""" loader tests. """
+# BOTD - python3 IRC channel daemon.
+#
+# loader tests.
 
 import bl
 import os
 import unittest
 
+from bl.ldr import Loader
+
 class Test_Loader(unittest.TestCase):
 
     def test_loadmod(self):
-        l = bl.ldr.Loader()
-        l.load_mod("bl.ldr")
+        l = Loader()
+        l.walk("bl.ldr")
         p = l.save()
-        ll = bl.ldr.Loader()
+        ll = Loader()
         ll.load(p)
-        self.assertTrue("bl.ldr" in ll.table)
+        self.assertTrue("cmds" in ll)
+
+    def test_getmods1(self):
+        l = Loader()
+        mods = l.walk("bl")
+        self.assertTrue("bl.flt" in [x.__name__ for x in mods])
+
+    def test_getmods2(self):
+        l = Loader()
+        mods = l.walk("botd")
+        self.assertTrue("botd.cmd" in [x.__name__ for x in mods])
+
+    def test_bl(self):
+        l = Loader()
+        l.walk("bl")
+        self.assertTrue("bl.obj.Object" in l.names.values())
+
+    def test_botd(self):
+        l = Loader()
+        l.walk("botd")
+        self.assertTrue("botd.udp.UDP" in l.names.values())

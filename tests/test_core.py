@@ -1,10 +1,12 @@
-# BOTLIB - Framework to program bots.
+# BOTD - python3 IRC channel daemon.
 #
-# 
+# test load/save
 
-import bl
+import json
 import os
 import unittest
+
+from bl.obj import Object, workdir
 
 class ENOTCOMPAT(Exception):
     pass
@@ -12,20 +14,29 @@ class ENOTCOMPAT(Exception):
 class Test_Core(unittest.TestCase):
 
     def test_load2(self):
-        o = bl.pst.Persist()
+        o = Object()
         o.bla = "mekker"
         p = o.save()
-        oo = bl.pst.Persist().load(p)
+        oo = Object().load(p)
         self.assertEqual(oo.bla, "mekker")
 
     def test_save(self):
-        o = bl.pst.Persist()
+        o = Object()
         p = o.save()
-        self.assertTrue(os.path.exists(os.path.join(bl.workdir, "store", p)))
+        self.assertTrue(os.path.exists(os.path.join(workdir, "store", p)))
 
     def test_subitem(self):
-        o = bl.pst.Persist()
-        o.test = bl.pst.Persist()
+        o = Object()
+        o.test2 = Object()
         p = o.save()
-        oo = bl.pst.Persist().load(p)
-        self.assertTrue(type(oo.test), bl.pst.Persist)
+        oo = Object()
+        oo.load(p)
+        self.assertTrue(type(oo.test2), Object)
+
+    def test_subitem2(self):
+        o = Object()
+        o.test = Object()
+        o.test.bla = "test"
+        p = o.save()
+        oo = Object().load(p)
+        self.assertTrue(type(oo.test.bla), "test")

@@ -1,15 +1,15 @@
-""" database tests """
+# BOTD - python3 IRC channel daemon.
+#
+# database tests.
 
 import unittest
 
-from ob import k
+from bl.dbs import Db
+from bl.err import ENOFILE
 
 class Test_Store(unittest.TestCase):
 
     def test_emptyargs(self):
-        res = k.db.find("", {})
-        self.assertEqual(list(res), [])
-
-    def test_emptyargs2(self):
-        res = k.db.find("", {})
-        self.assertEqual(list(res), [])
+        db = Db()
+        res = list(db.find("", {}))
+        self.assertEqual(res, [])

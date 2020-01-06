@@ -1,8 +1,7 @@
-# BOTLIB - Framework to program bots.
+# BOTD - python3 IRC channel daemon.
 #
-# 
+# test commands as functions.
 
-import bl
 import os
 import logging
 import termios
@@ -12,16 +11,22 @@ import time
 import types
 import unittest
 
+from bl.krn import Kernel
+from bl.hdl import Event
+from bl.thr import launch
+
+k = Kernel()
+
 class Test_Func(unittest.TestCase):
 
     def test_func(self):
-        event = bl.evt.Event()
+        event = Event()
         event.origin = "root@shell"
         event.txt = ""
         thrs = []
         nrloops = 10
         for x in range(nrloops):
-            thr = bl.k.launch(functest, x)
+            thr = launch(functest, x)
             thr.join()
 
 def randomarg(name):
@@ -29,11 +34,11 @@ def randomarg(name):
     return types.new_class(t)()
     
 def functest(nr):
-    names = sorted(bl.k.modules.values())
+    names = k.get_mn("botd")
     for x in range(nr):
         random.shuffle(names)
         for name in names:
-            mod = bl.k.load_mod(name)
+            mod = k.walk(name)
             keys = dir(mod)
             random.shuffle(keys)
             for key in keys:

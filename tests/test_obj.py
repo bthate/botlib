@@ -1,10 +1,12 @@
-""" object unittests. """
+# BOTD - python3 IRC channel daemon.
+#
+# object tests.
 
 import os
 import time
 import unittest
 
-from ob import Object
+from bl.obj import Object
 
 class Test_Object(unittest.TestCase):
 
@@ -12,6 +14,10 @@ class Test_Object(unittest.TestCase):
         o = Object()
         with self.failUnlessRaises(AttributeError):
             o.blabla
+
+    def test_iter(self):
+        o = Object()
+        self.assertTrue("bla" not in o)
 
     def test_construct(self):
         o = Object()

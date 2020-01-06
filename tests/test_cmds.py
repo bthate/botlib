@@ -1,12 +1,18 @@
-# BOTLIB - Framework to program bots.
+# BOTD - python3 IRC channel daemon.
 #
-# 
+# test commands.
 
-import bl
 import random
 import time
 import types
 import unittest
+
+from bl.obj import Object
+from bl.hdl import Event
+from bl.krn import Kernel
+from bl.thr import launch
+
+k = Kernel()
 
 def test():
     print("yooo!")
@@ -15,7 +21,7 @@ def randomarg():
     t = random.choice(types.__all__)
     return types.new_class(t)()
 
-examples = bl.Object()
+examples = Object()
 examples.find = "find todo"
 examples.last = "last cfg"
 examples.tommorrow = "tomorrow take some time off."
@@ -41,8 +47,8 @@ examples.cfg = "cfg irc"
 examples.announce = "announce bla"
 examples.alias = "alias l cmnds"
 
-varnames = bl.Object()
-varnames.object = bl.Object()
+varnames = Object()
+varnames.object = Object()
 varnames.daystring = "2017-08-29 16:34:23.837288"
 varnames.seconds = 60
 varnames.daystr = "Sat Jan 14 00:02:29 2017"
@@ -52,19 +58,19 @@ varnames.optionlist = "-b -a -l info"
 varnames.level = "info"
 varnames.error = "info"
 varnames.fd = 1
-varnames.event = bl.evt.Event()
+varnames.event = Event()
 #varnames.old = termios.tcgetattr(1)
 varnames.text = "blablabla mekker"
 varnames.signature = "1e7f50d2015ac2ddc1f2ae8cf8ed6dfd896cab71"
 varnames.u = "bart!~bart@localhost"
 varnames.jid = "monitor@localhost/blamekker"
 varnames.url = "http://localhost"
-varnames.obj = bl.Object()
+varnames.obj = Object()
 varnames.func = test
 varnames.timestamp = time.time()
 varnames.origin = "root@shell"
 varnames.perm = "OPER"
-varnames.o = bl.Object()
+varnames.o = Object()
 varnames.depth = 2
 varnames.keys = ["test", "txt"]
 varnames.uniqs = ["bla"]
@@ -75,59 +81,61 @@ varnames.want = {"test": "mekker"}
 class Test_Cmnds(unittest.TestCase):
 
     def test_run(self):
-        event = bl.evt.Event()
+        event = Event()
+        event.verbose = k.cfg.verbose
         event.origin = "root@shell"
         event.txt = ""
         thrs = []
-        nrloops = 10
+        nrloops = 1
         for x in range(nrloops):
-            thr = bl.k.launch(testcmnds, event)
+            thr = launch(testcmnds, event)
             thr.join()
 
     def test_func(self):
-        event = bl.evt.Event()
+        event = Event()
         event.origin = "root@shell"
+        event.verbose = k.cfg.verbose
         event.txt = ""
         thrs = []
-        nrloops = 10
+        nrloops = 1
         for x in range(nrloops):
-            thr = bl.k.launch(functest, event)
+            thr = launch(functest, event)
             thr.join()
 
     def test_cmnd(self):
-        event = bl.evt.Event()
+        event = Event()
         event.origin = "root@shell"
         event.txt = ""
+        event.verbose = k.cfg.verbose
         thrs = []
-        nrloops = 10
+        nrloops = 1
         for x in range(nrloops):
-            thr = bl.k.launch(cmndrun, event)
+            thr = launch(cmndrun, event)
             thr.join()
-
     
 def cmndrun(event):
-    for name in sorted(bl.k.modules.values()):
-        if name in ["bl.test", "bl.rss"]:
+    mods = k.table.values()
+    for mod in mods:
+        if mod.__name__ in ["botd.rss",]:
             continue
-        mod = bl.k.load_mod(name)
         for n in dir(mod):
            if n in exclude:
                continue
            func = getattr(mod, n, None)
            if func and type(func) in [types.FunctionType, types.MethodType]:
                if "event" in func.__code__.co_varnames:
-                   e = bl.evt.Event()
+                   e = Event()
                    e._func = func
+                   e.verbose = k.cfg.verbose
                    e.origin = "root@shell"
                    e.server = "localhost"
                    e.btype = "cli"
-                   bl.k.put(e)
+                   k.dispatch(e)
 
 def functest(event):
-    for name in sorted(bl.k.modules.values()):
-        if name in ["bl.test", "bl.rss"]:
+    for name, mod in k.table.items():
+        if name in ["botd.rss"]:
             continue
-        mod = bl.k.load_mod(name)
         keys = dir(mod)
         random.shuffle(keys)
         for n in keys:
@@ -148,7 +156,7 @@ def functest(event):
                        logging.error(get_exception())
                
 def testcmnds(event):
-    keys = list(bl.k.cmds)
+    keys = list(k.cmds)
     random.shuffle(keys)
     for cmnd in keys:
         if cmnd in exclude:
@@ -157,14 +165,15 @@ def testcmnds(event):
             name = "email"
         else:
             name = randomarg()
-        e = bl.evt.Event()
-        bl.update(e, event)
+        e = Event()
+        e.update(event)
+        e.verbose = k.cfg.verbose
         e.orig = event.orig
         e.server = "localhost"
-        cmnd = bl.get(examples, cmnd, cmnd)
+        cmnd = examples.get(cmnd, cmnd)
         e.txt = "%s %s" % (cmnd, name)
         e.origin = "root@shell"
-        bl.k.put(e)
+        k.dispatch(e)
 
 exclude = ["exit", "loglevel", "reboot", "real_reboot", "fetcher", "synchronize", "init", "shutdown", "wrongxml","mbox", "testcmnds", "runkernel", "functest", "cmndrun"]
 outtxt = u"Đíť ìš éèñ ëņċøďıńğŧęŝţ· .. にほんごがはなせません .. ₀0⁰₁1¹₂2²₃3³₄4⁴₅5⁵₆6⁶₇7⁷₈8⁸₉9⁹ .. ▁▂▃▄▅▆▇▉▇▆▅▄▃▂▁ .. .. uǝʌoqǝʇsɹǝpuo pɐdı ǝɾ ʇpnoɥ ǝɾ"
