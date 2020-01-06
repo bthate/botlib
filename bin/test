@@ -1,7 +1,7 @@
 #!/usr/bin/python3
-# BOTLIB - Framework to program bots.
+# BOTD - python3 IRC channel daemon.
 #
-# 
+# run unittests.
 
 __version__ = 1
 
@@ -13,27 +13,40 @@ import shutil
 import time
 import unittest
 
+from bl.obj import Object, starttime
+from bl.krn import Kernel
+from bl.log import level
+from bl.shl import execute, parse_cli
+from bl.tms import elapsed
+from bl.trc import get_exception
+from bl.trm import termsave, termreset
+from bl.typ import get_cls
+from bl.usr import Users
+from bl.utl import cdir
+
 opts = [
-    ('-d', '--datadir', 'store', str, 'set working directory.', 'workdir'),
-    ('-m', '--modules', 'store', str, 'modules to load.', 'modules'),
-    ('-o', '--options', "store", str, "options to use.", 'options'),
-    ('-l', '--loglevel', 'store', str, 'set loglevel.', 'level'),
+    ('-d', '--datadir', 'store', str, "", 'set working directory.', 'workdir'),
+    ('-m', '--modules', 'store', str, "", 'modules to load.', 'modules'),
+    ('-o', '--options', "store", str, "", "options to use.", 'options'),
+    ('-l', '--loglevel', 'store', str, "", 'set loglevel.', 'level'),
     ('-v', '--verbose', 'store_true', False, 'enable verbose mode.', 'verbose')
 ]
 
+k = Kernel()
 
-def initialize():
-    bl.utl.cdir("testdata")
-    bl.k.users.oper("test@shell")
-    bl.k.cfg.prompt = False
-    bl.k.walk("bl")
-    bl.k.start()
-    for c in bl.k.classes:
+def initialize(cfg):
+    cdir("testdata")
+    k.users.oper("test@shell")
+    k.cfg.prompt = False
+    k.walk("bl")
+    k.walk("botd")
+    k.start()
+    for c in k.names.values():
         try:
-            o = bl.typ.get_cls(c)()
+            o = get_cls(c)()
             o.txt = "yo!"
             o.save()
-        except TypeError as ex:
+        except (AttributeError, TypeError) as ex:
             pass
 
 def main():
@@ -41,22 +54,22 @@ def main():
         shutil.rmtree("testdata")
     except:
         pass
-    bl.shl.parse_cli("test", 1, opts, wd="testdata")
-    bl.workdir = "testdata"
-    bl.log.level("debug")
-    initialize()
-    bl.k.cfg.exclude = "mdl,rss"
-    bl.k.cfg.debug = True
-    bl.log.level(bl.k.cfg.level)
+    cfg = parse_cli("test", __version__, opts)
+    bl.obj.workdir = "testdata"
+    k.cfg.update(cfg)
+    level("error")
+    initialize(cfg)
+    k.cfg.debug = True
+    level(k.cfg.level)
     test_path = os.getcwd() + os.sep + "tests"
     p = ""
-    if bl.k.cfg.args:
-        p = "test_%s*" % bl.k.cfg.args[0]
+    if k.cfg.args:
+        p = "test_%s*" % k.cfg.args[0]
     if not p:
         p = "test_*"
     suite = unittest.loader.TestLoader().discover(test_path, pattern=p)
     unittest.TextTestRunner(verbosity=3).run(suite)
    
-bl.shl.execute(main)
-print(bl.tms.elapsed(time.time() - bl.k.state.starttime))
+execute(main)
+print(elapsed(time.time() - starttime))
 os._exit(0)
