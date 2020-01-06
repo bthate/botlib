@@ -116,11 +116,20 @@ class Kernel(Loader):
 
 class Kernels(Object):
 
+    kernels = []
     nr = 0
 
     def add(self, kernel):
-        self[str(Kernels.nr)] = kernel
-        Kernels.nr += 1
+        logging.warning("add %s" % get_name(kernel))
+        if kernel not in Kernels.kernels:
+            Kernels.kernels.append(kernel)
+            Kernels.nr += 1
+
+    def get(self, nr, default=None):
+        try:
+            return Kernels.kernels[nr]
+        except IndexError:
+            pass
 
 # runtime
 

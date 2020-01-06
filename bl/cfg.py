@@ -45,4 +45,4 @@ def cfg(event):
 
 # runtime
 
-k = kernels.get("0", None)
+k = kernels.get(0)

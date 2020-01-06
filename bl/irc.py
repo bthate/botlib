@@ -35,7 +35,7 @@ def init(k):
     if not bot.cfg.nick:
         bot.cfg.nick = "botlib"
     nogo = False
-    if k.cfg.prompting or (not bot.cfg.server or not bot.cfg.channel):
+    if k.cfg.prompting:
         try:
             server, channel, nick = k.cfg.args
         except ValueError:
@@ -412,4 +412,4 @@ class DCC(Bot):
 
 # runtime
 
-k = kernels.get("0", None)
+k = kernels.get(0)

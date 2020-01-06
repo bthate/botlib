@@ -54,6 +54,7 @@ class Loader(Object):
                     if key in self.cmds:
                         continue
                     self.cmds[key] = o
+                continue
             try:
                 sc = issubclass(o, Object)
                 if not sc:
@@ -66,6 +67,7 @@ class Loader(Object):
             self.names[n] = "%s.%s" % (mod.__name__, o.__name__)
 
     def walk(self, mns):
+        mods = []
         for mn in mns.split(","):
             if not mn:
                 continue
@@ -73,12 +75,13 @@ class Loader(Object):
             loc = m.__spec__.submodule_search_locations
             if not loc:
                 self.introspect(m)
-                yield m
+                mods.append(m)
                 continue
             for md in loc:
                 for x in os.listdir(md):
                     if x.endswith(".py"):
                         mmn = "%s.%s" % (mn, x[:-3])
-                        m = self.direct(mmn)
+                        m = self.get_mod(mmn)
                         self.introspect(m)
-                        yield m
+                        mods.append(m)
+        return mods

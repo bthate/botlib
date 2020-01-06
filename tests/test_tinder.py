@@ -21,8 +21,7 @@ class Param(Object):
 
     pass
 
-k = kernels.get("0", None)
-
+k = kernels.get(0)
 users = Users()
 users.oper("test@shell")
 

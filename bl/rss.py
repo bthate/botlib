@@ -244,4 +244,4 @@ def rss(event):
 # runtime
 
 fetcher = Fetcher()
-k = kernels.get("0", None)
+k = kernels.get(0)
