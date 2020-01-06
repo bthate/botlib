@@ -28,7 +28,7 @@ opts = [
 def main():
     cfg = parse_cli("bot", __version__, opts)
     k = Kernel(cfg)
-    k.init("cmd,ent,shw,irc")
+    k.init("cmd,irc")
     k.start()
     k.wait()
 

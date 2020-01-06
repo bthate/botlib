@@ -19,7 +19,7 @@ def __dir__():
 
 def init(kernel):
     csl = Console()
-    csl.cmds = kernel.cmds
+    #csl.cmds = kernel.cmds
     csl.start()
     return csl
 
