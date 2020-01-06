@@ -38,13 +38,12 @@ class Loader(Object):
 
     def get_mod(self, mn):
         try:
-            mod = self.direct(mn)
-        except ModuleNotFoundError as ex:
-            if self.cfg and self.cfg.name:
-                try:
-                    mod = self.direct("%s.%s" % (self.cfg.name, mn)) 
-                except ModuleNotFoundError:
-                    raise ex
+            mod = self.direct("bl.%s" % mn)
+        except ModuleNotFoundError:
+            try:
+                mod = self.direct(mn)
+            except ModuleNotFoundError as ex:
+                pass
         return mod
 
     def introspect(self, mod):
@@ -67,21 +66,19 @@ class Loader(Object):
             self.names[n] = "%s.%s" % (mod.__name__, o.__name__)
 
     def walk(self, mns):
-        mods = []
         for mn in mns.split(","):
             if not mn:
                 continue
-            mod = self.get_mod(mn)
-            loc = mod.__spec__.submodule_search_locations
+            m = self.get_mod(mn)
+            loc = m.__spec__.submodule_search_locations
             if not loc:
-                mods.append(mod)
-                self.introspect(mod)
+                self.introspect(m)
+                yield m
                 continue
             for md in loc:
                 for x in os.listdir(md):
                     if x.endswith(".py"):
                         mmn = "%s.%s" % (mn, x[:-3])
                         m = self.direct(mmn)
-                        mods.append(m)
                         self.introspect(m)
-        return mods
+                        yield m

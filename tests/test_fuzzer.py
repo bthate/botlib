@@ -1,4 +1,4 @@
-# BOTD - python3 IRC channel daemon.
+# BOTLIB - Framework to program bots (a botlib).
 #
 # fuzzer tests.
 
@@ -12,7 +12,7 @@ from bl.usr import Users
 
 k = Kernel()
 k.cfg.prompt = False
-k.walk("botd")
+k.walk("bl")
 k.start()
 
 users = Users()

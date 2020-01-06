@@ -8,11 +8,13 @@ import logging
 import time
 import bl
 
+from bl.err import EINIT
 from bl.flt import Fleet
 from bl.hdl import Event
 from bl.ldr import Loader
 from bl.obj import Cfg, Object
 from bl.shl import enable_history, set_completer, writepid
+from bl.thr import launch
 from bl.trc import get_exception
 from bl.usr import Users
 from bl.utl import get_name
@@ -74,19 +76,22 @@ class Kernel(Loader):
     def init(self, mns):
         mods = []
         for mod in self.walk(mns):
-            try:
-                mod.init(self)
+            if "init" in dir(mod):
+                try:
+                    mod.init(self)
+                except EINIT as ex:
+                    print(ex)
+                    self._skip = True
+                    return
                 mods.append(mod)
-            except (AttributeError, ModuleNotFoundError) as ex:
-                if mod.__name__ in str(ex):
-                    continue
-                raise
         return mods
 
     def register(self, k, v):
         self.cmds.set(k, v)
 
     def start(self):
+        if self._skip:
+            return
         if self.cfg.kernel:
             self.cfg.last()
             self.cfg.shell = False
@@ -99,7 +104,7 @@ class Kernel(Loader):
         if self.cfg.dosave:
             self.cfg.save()
         if self.cfg.shell:
-            self.init("bl.csl,botd.cmd")
+            self.init("bl.csl")
         elif not self.cfg.kernel:
             self._skip = True
 

@@ -1,4 +1,4 @@
-# BOTD - python3 IRC channel daemon.
+# BOTLIB - Framework to program bots (a botlib).
 #
 # loader tests.
 
@@ -23,11 +23,6 @@ class Test_Loader(unittest.TestCase):
         mods = l.walk("bl")
         self.assertTrue("bl.flt" in [x.__name__ for x in mods])
 
-    def test_getmods2(self):
-        l = Loader()
-        mods = l.walk("botd")
-        self.assertTrue("botd.cmd" in [x.__name__ for x in mods])
-
     def test_bl(self):
         l = Loader()
         l.walk("bl")
@@ -35,5 +30,5 @@ class Test_Loader(unittest.TestCase):
 
     def test_botd(self):
         l = Loader()
-        l.walk("botd")
-        self.assertTrue("botd.udp.UDP" in l.names.values())
+        l.walk("bl")
+        self.assertTrue("bl.udp.UDP" in l.names.values())

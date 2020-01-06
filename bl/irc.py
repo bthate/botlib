@@ -1,4 +1,4 @@
-# BOTD - python3 IRC channel daemon.
+# BOTLIB - Framework to program bots (a botlib).
 #
 # IRC bot. 
 
@@ -30,18 +30,18 @@ def __dir__():
 
 def init(k):
     bot = IRC()
-    bot.cfg.last()
+    if k.cfg.kernel:
+        bot.cfg.last()
     if not bot.cfg.nick:
-        bot.cfg.nick = "botd"
+        bot.cfg.nick = "botlib"
+    nogo = False
     if k.cfg.prompting or (not bot.cfg.server or not bot.cfg.channel):
         try:
             server, channel, nick = k.cfg.args
         except ValueError:
-            try:
-                server, channel = k.cfg.args
-                nick = "botd"
-            except ValueError:
-                raise bl.err.EINIT("%s <server> <channel> <nick>" % k.cfg.name)
+            nogo = True
+        if nogo:
+            raise bl.err.EINIT("%s <server> <channel> <nick>" % k.cfg.name)
         bot.cfg.server = server
         bot.cfg.channel = channel
         bot.cfg.nick = nick
@@ -58,13 +58,13 @@ class Cfg(Cfg):
     def __init__(self):
         super().__init__()
         self.channel = ""
-        self.nick = "botd"
+        self.nick = "botlib"
         self.ipv6 = False
         self.port = 6667
         self.server = ""
         self.ssl = False
-        self.realname = "botd"
-        self.username = "botd"
+        self.realname = "botlib"
+        self.username = "botlib"
 
 class Event(Event):
 
@@ -264,7 +264,7 @@ class IRC(Bot):
 
     def NOTICE(self, event):
         if event.txt.startswith("VERSION"):
-            txt = "\001VERSION %s %s - %s\001" % ("BOTD", "1", "python3 IRC channel daemon")
+            txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", "1", "python3 IRC channel daemon")
             self.command("NOTICE", event.channel, txt)
 
     def PRIVMSG(self, event):
@@ -326,7 +326,7 @@ class IRC(Bot):
     def logon(self, server, nick):
         self._connected.wait()
         self.raw("NICK %s" % nick)
-        self.raw("USER %s %s %s :%s" % (self.cfg.username or "botd", server, server, self.cfg.realname or "botd"))
+        self.raw("USER %s %s %s :%s" % (self.cfg.username or "botlib", server, server, self.cfg.realname or "botlib"))
 
     def output(self):
         self._outputed = True
@@ -385,7 +385,7 @@ class DCC(Bot):
         else:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((addr, port))
-        s.send(bytes('Welcome to BOTD %s !!\n' % event.nick, "utf-8"))
+        s.send(bytes('Welcome to BOTLIB %s !!\n' % event.nick, "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s

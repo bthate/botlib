@@ -1,4 +1,4 @@
-# BOTD - python3 IRC channel daemon.
+# BOTLIB - Framework to program bots (a botlib).
 #
 # scheduler tests
 
@@ -8,7 +8,7 @@ from bl.hdl import Event
 from bl.krn import Kernel
 
 k = Kernel()
-k.walk("botd.cmd")
+k.walk("bl")
 k.start()
 
 class Test_Scheduler(unittest.TestCase):
@@ -21,4 +21,4 @@ class Test_Scheduler(unittest.TestCase):
         e.verbose = k.cfg.verbose
         k.dispatch(e)
         e.wait()
-        self.assertTrue(e.result and "BOTD" in e.result[0])
+        self.assertTrue(e.result and "BOTLIB" in e.result[0])

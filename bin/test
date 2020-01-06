@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# BOTD - python3 IRC channel daemon.
+# BOTLIB - Framework to program bots (a botlib).
 #
 # run unittests.
 
@@ -39,7 +39,6 @@ def initialize(cfg):
     k.users.oper("test@shell")
     k.cfg.prompt = False
     k.walk("bl")
-    k.walk("botd")
     k.start()
     for c in k.names.values():
         try:

@@ -199,7 +199,7 @@ def touch(fname):
         pass
 
 def useragent():
-    return 'Mozilla/5.0 (X11; Linux x86_64) BOTD +http://git@github.com/bthate/botd)'
+    return 'Mozilla/5.0 (X11; Linux x86_64) BOTLIB +http://git@github.com/bthate/botlib)'
     
 def unescape(text):
     import html

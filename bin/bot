@@ -9,6 +9,7 @@ import os, sys ; sys.path.insert(0, os.getcwd())
 
 import logging
 
+from bl.err import EINIT
 from bl.krn import Kernel
 from bl.shl import execute, parse_cli
 
@@ -27,6 +28,7 @@ opts = [
 def main():
     cfg = parse_cli("bot", __version__, opts)
     k = Kernel(cfg)
+    k.init("cmd,ent,shw,irc")
     k.start()
     k.wait()
 
