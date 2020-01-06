@@ -1,4 +1,4 @@
-# BOTLIB - Framework to program bots.
+# BOTD - python3 IRC channel daemon.
 #
 # tracebacks and exception catcher.
 
@@ -6,6 +6,13 @@ import os
 import sys
 import traceback
 import _thread
+
+# defines
+
+def __dir__():
+    return ("get_exception", "get_from")
+
+# functions
 
 def get_exception(txt="", sep=""):
     exctype, excvalue, tb = sys.exc_info()

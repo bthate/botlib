@@ -1,8 +1,16 @@
-# BOTLIB - Framework to program bots.
+# BOTD - python3 IRC channel daemon.
 #
 # errors. 
 
+class EOVERLOAD(Exception):
+
+    pass
+
 class EBLOCKING(Exception):
+
+    pass
+
+class ENOCLASS(Exception):
 
     pass
 

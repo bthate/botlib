@@ -1,31 +1,38 @@
-# BOTLIB - Framework to program bots.
+# BOTD - python3 IRC channel daemon.
 #
-# clock module providin timers and repeaters 
+# clock module providing timers and repeaters 
 
 import threading
 import time
 import typing
-import bl
+
+from bl.dbs import Db
+from bl.hdl import Event
+from bl.obj import Cfg, Object
+from bl.thr import launch
+from bl.utl import get_name
+
+# defines
 
 def __dir__():
     return ("Repeater", "Timer", "Timers")
 
-def dummy():
-    if bl.cfg.verbose:
-        print("yo!")
+# classes
 
-default = {
-          "latest": 0,
-          "starttime": 0
-         }          
+class Cfg(Cfg):
 
-class Timers(bl.pst.Persist):
+    def __init__(self):
+        super().__init__()
+        self.latest =  0
+        self.starttime =  0
+
+class Timers(Object):
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__()
         self._stopped = False
-        self.cfg = bl.cfg.Cfg(default)
-        self.timers = bl.obj.Object()
+        self.cfg = Cfg()
+        self.timers = Object()
 
     def loop(self):
         while not self._stopped:
@@ -35,55 +42,59 @@ class Timers(bl.pst.Persist):
                 event = self.timers[t]
                 if time.time() > t:
                     self.cfg.latest = time.time()
-                    self.cfg.save()
+                    save(self.cfg)
                     event.raw(event.txt)
                     remove.append(t)
             for r in remove:
                 del self.timers[r]
 
     def start(self):
-        for evt in bl.db.all("bl.clk.Timers"):
-            e = bl.evt.Event()
-            bl.obj.update(e, evt)
+        db = Db()
+        for evt in db.all("bl.clk.Timers"):
+            e = Event()
+            e.update(evt)
             if "done" in e and e.done:
                 continue
             if "time" not in e:
                 continue
             if time.time() < int(e.time):
                 self.timers[e.time] = e
-        return bl.launch(self.loop)
+        return launch(self.loop)
 
     def stop(self):
         self._stopped = True
 
-class Timer(bl.pst.Persist):
+class Timer(Object):
 
-    def __init__(self, sleep, func, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__()
-        self._func = func
-        self._name = kwargs.get("name", bl.typ.get_name(func))
-        self.sleep = sleep
+        self.func = None
+        self.sleep = None
         self.args = args
         self.kwargs = kwargs
-        self.state = bl.Object()
-        bl.obj.update(self.state, default)
+        self.state = Object()
         self.timer = None
 
-    def start(self):
+    def start(self, sleep, func, name=""):
+        self.sleep = sleep
+        self.func = func
+        if not name:
+            name = get_name(func)
+        self.name = name
         timer = threading.Timer(self.sleep, self.run, self.args, self.kwargs)
-        timer.setName(self._name)
-        timer.sleep = self.sleep
+        timer.setName(self.name)
+        timer.sleep = sleep
         timer.state = self.state
         timer.state.starttime = time.time()
         timer.state.latest = time.time()
-        timer._func = self._func
+        timer.func = func
         timer.start()
         self.timer = timer
         return timer
 
-    def run(self, *args, **kwargs) -> None:
+    def run(self, *args, **kwargs):
         self.state.latest = time.time()
-        bl.launch(self._func, *args, **kwargs)
+        launch(self.func, *args, **kwargs)
 
     def exit(self):
         if self.timer:
@@ -92,5 +103,5 @@ class Timer(bl.pst.Persist):
 class Repeater(Timer):
 
     def run(self, *args, **kwargs):
-        self._func(*args, **kwargs)
-        return bl.launch(self.start)
+        self.func(*args, **kwargs)
+        return launch(self.start, self.sleep, self.func)

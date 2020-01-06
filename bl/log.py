@@ -1,13 +1,24 @@
-# BOTLIB - Framework to program bots.
+# BOTD - python3 IRC channel daemon.
 #
 # logging.
 
-import bl
 import logging
 import logging.handlers
 import os
 
+import bl
+import bl.obj
+
+from bl.utl import cdir, touch
+
+# defines
+
+def __dir__():
+    return ("DumpHandler", "level", "logfiled")
+    
 logfiled = ""
+
+# 
 
 class DumpHandler(logging.StreamHandler):
 
@@ -21,12 +32,12 @@ def level(loglevel="", logdir="", logfile="", nostream=False):
     if not loglevel:
         loglevel = "error"
     if not logfile:
-        logfile = "botlib.log"
-    logdir = logdir or os.path.join(bl.workdir, "logs")
+        logfile = "log"
+    logdir = logdir or os.path.join(bl.obj.workdir, "logs")
     logfile = logfiled = os.path.join(logdir, logfile)
     if not os.path.exists(logfile):
-        bl.utl.cdir(logfile)
-        bl.utl.touch(logfile)
+        cdir(logfile)
+        touch(logfile)
     datefmt = '%H:%M:%S'
     format_time = "%(asctime)-8s %(message)-70s"
     format_plain = "%(message)-0s"
@@ -56,12 +67,15 @@ def level(loglevel="", logdir="", logfile="", nostream=False):
             handler.setLevel(loglevel)
             logger.addHandler(handler)
         except ValueError:
-            logging.warn("worng level %s" % loglevel)
-            loglevel = "error"
+            logging.warn("wrong level %s" % loglevel)
+            loglevel = "ERROR"
     formatter2 = logging.Formatter(format_time, datefmt)
     filehandler = logging.handlers.TimedRotatingFileHandler(logfile, 'midnight')
     filehandler.propagate = False
     filehandler.setFormatter(formatter2)
-    filehandler.setLevel(loglevel)
+    try:
+        filehandler.setLevel(loglevel)
+    except ValueError:
+        pass
     logger.addHandler(filehandler)
     return logger

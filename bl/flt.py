@@ -1,17 +1,19 @@
-# BOTLIB - Framework to program bots.
+# BOTD - python3 IRC channel daemon.
 #
-# 
+# list of bots. 
 
-import bl
+from bl.obj import Object
+
+# defines
 
 def __dir__():
     return ("Fleet",)
 
-class Fleet(bl.Persist):
+# classes
 
-    def __init__(self):
-        super().__init__()
-        self.bots = []
+class Fleet(Object):
+
+    bots = []
 
     def __iter__(self):
         return iter(self.bots)
@@ -27,7 +29,7 @@ class Fleet(bl.Persist):
 
     def echo(self, bid, channel, txt, mtype="chat"):
         b = self.get_bot(bid)
-        if b and b.verbose:
+        if b:
             b.say(channel, txt, mtype)
 
     def get_bot(self, bid):

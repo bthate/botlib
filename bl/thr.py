@@ -1,4 +1,4 @@
-# BOTLIB - Framework to program bots.
+# BOTD - python3 IRC channel daemon.
 #
 # threading.
 
@@ -8,8 +8,15 @@ import queue
 import threading
 import types
 
+from bl.trc import get_exception
+from bl.utl import get_name
+
+# defines
+
 def __dir__():
-    return ("Task", "Launcher")
+    return ("Launcher", "Thr", "launch")
+
+# classes
 
 class Thr(threading.Thread):
 
@@ -32,7 +39,7 @@ class Thr(threading.Thread):
         try:
             self._result = func(*args)
         except Exception as ex:
-            logging.error(bl.trc.get_exception())
+            logging.error(get_exception())
 
     def join(self, timeout=None):
         super().join(timeout)
@@ -47,11 +54,12 @@ class Launcher:
         self._stopped = False
 
     def launch(self, func, *args, **kwargs):
+        logging.debug("launch %s" % get_name(func))
         name = ""
         try:
             name = kwargs.get("name", args[0].name or args[0].txt)
         except (AttributeError, IndexError):
-            name = bl.utl.get_name(func)
+            name = get_name(func)
         t = Thr(func, *args, name=name)
         t.start()
         return t
@@ -60,3 +68,9 @@ class Launcher:
         while not self._stopped:
             t = self._queue.get()
             t.start()
+
+# functions
+
+def launch(func, *args):
+    l = Launcher()
+    return l.launch(func, *args)

@@ -1,48 +1,85 @@
-# BOTLIB - Framework to program bots.
+# BOTD - python3 IRC channel daemon.
 #
 # console code.
 
-import sys
 import bl
+import sys
+import threading
+
+from bl.err import ENOTXT
+from bl.flt import Fleet
+from bl.krn import kernels
+from bl.hdl import Event, Handler
+from bl.thr import launch
+
+#defines
 
 def __dir__():
-    return ("Console",)
+    return ("Console", "init")
 
-class Console(bl.hdl.Handler, bl.pst.Persist):
+def init(kernel):
+    csl = Console()
+    csl.cmds = kernel.cmds
+    csl.start()
+    return csl
+
+# classes
+
+class Event(Event):
+
+    pass
+
+class Console(Handler):
 
     def __init__(self):
         super().__init__()
-        self.verbose = True
+        self._connected = threading.Event()
+        self._threaded = False
+        k.fleet.add(self)
         
-    def announce(self, txt: str) -> None:
+    def announce(self, txt):
         self.raw(txt)
 
-    def poll(self) -> None:
-        e = bl.evt.Event()
-        e.options = bl.cfg.options
+    def cmd(self, txt):
+        e = Event()
+        e.txt = txt
         e.orig = repr(self)
         e.origin = "root@shell"
+        self.dispatch(e)
+        e.wait()
+
+    def poll(self):
+        self._connected.wait()
+        e = Event()
+        e.origin = "root@shell"
+        e.orig = repr(self)
         e.txt = input("> ")
+        if not e.txt:
+            raise ENOTXT 
         return e
 
-    def input(self) -> None:
+    def input(self):
         while not self._stopped:
             try:
                 e = self.poll()
+            except ENOTXT:
+                continue
             except EOFError:
                 break
-            bl.k.put(e)
+            k.dispatch(e)
             e.wait()
 
-    def raw(self, txt: str) -> None:
-        if not self.verbose or not txt:
-            return
+    def raw(self, txt):
         sys.stdout.write(str(txt) + "\n")
         sys.stdout.flush()
 
-    def say(self, channel: str, txt: str, type="chat") -> None:
+    def say(self, channel, txt, type="chat"):
         self.raw(txt)
  
-    def start(self, handler=False, input=True, output=False) -> None:
-        bl.fleet.add(self)
-        super().start(handler, input, output)
+    def start(self):
+        launch(self.input)
+        self._connected.set()
+
+# runtime
+
+k = kernels.get("0", None)

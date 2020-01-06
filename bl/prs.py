@@ -1,17 +1,21 @@
-# BOTLIB - Framework to program bots.
+# BOTD - python3 IRC channel daemon.
 #
-# 
+# Event base class and command parsing
 
-import bl
 import time
 import threading
 
+import bl
+import bl.obj
+
+# defines
+
 def __dir__():
-    return ("Command", "Event", "Token", "aliases")
+    return ("Command", "Token")
 
-aliases = {}
+# classes
 
-class Token(bl.Object):
+class Token(bl.obj.Object):
 
     def __init__(self):
         super().__init__()
@@ -51,7 +55,6 @@ class Token(bl.Object):
         except ValueError:
             pass
         if nr == 1:
-            self.match = bl.get(bl.k.names, word, word)
             self.arg = word
             return
         if "http" in word:
@@ -83,7 +86,7 @@ class Token(bl.Object):
             self.selector = word
             self.value = None
 
-class Command(bl.Persist):
+class Command(bl.obj.Object):
 
     def __init__(self):
         super().__init__()
@@ -112,16 +115,6 @@ class Command(bl.Persist):
         self.time = 0
         self.txt = ""
 
-    def aliased(self, txt):
-        global aliases
-        spl = txt.split()
-        if spl and spl[0] in aliases:
-            cmd = spl[0]
-            v = bl.get(aliases, cmd, None)
-            if v:
-                spl[0] = v
-        return " ".join(spl)
-
     def parse(self, txt="", options=""):
         if not txt:
             txt = self.txt 
@@ -132,11 +125,10 @@ class Command(bl.Persist):
         txt = txt.replace("\001", "")
         if txt and self.cc == txt[0]:
             txt = txt[1:]
-        txt = self.aliased(txt)
         nr = -1
         self.args = []
         self.dkeys = []
-        self.options = options or self.options or bl.cfg.options
+        self.options = options or self.options
         words = txt.split()
         tokens = []
         nr = -1
@@ -209,47 +201,3 @@ class Command(bl.Persist):
         self.ready()
         return self
 
-class Event(Command):
-
-    def __init__(self, txt=""):
-        super().__init__()
-        self._calledfrom = None
-        self.channel = ""
-        self.chk = ""
-        self.dolog = False
-        self.type = "chat"
-        self.name = ""
-        self.sep = "\n"
-        self.txt = txt
-        if self.txt:
-            self.chk = self.txt.split()[0]
-
-    def display(self, o, txt=""):
-        if "k" in self.options:
-            self.reply("|".join(o))
-            return
-        if "d" in self.options:
-            self.reply(str(o))
-            return
-        full = False
-        if "f" in self.options:
-            full = True
-        if not full and self.dkeys:
-            txt += " " + bl.obj.format(o, self.dkeys, full)
-        else:
-            txt += " " + bl.obj.format(o, full=full)
-        if "t" in self.options:
-            try: 
-                txt += " %s" % bl.tms.days(o.__path__)
-            except Exception as ex:
-                pass
-        txt = txt.strip()
-        if txt:
-            self.reply(txt)
-
-    def reply(self, txt):
-        self.result.append(txt)
-
-    def show(self):
-        for line in self.result:
-            bl.fleet.echo(self.orig, self.channel, line, self.type)

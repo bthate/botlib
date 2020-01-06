@@ -1,27 +1,24 @@
-# BOTLIB - Framework to program bots.
+# BOTD - python3 IRC channel daemon.
 #
-# include all modules 
+# include all modules.
 
-import bl.utl
-import bl.obj 
-import bl.pst
+import bl.obj
+import bl.prs
 import bl.ldr
-import bl.thr
+import bl.flt
 import bl.hdl
-import bl.bot 
-import bl.clk
-import bl.csl
+import bl.utl
+import bl.thr
 import bl.dbs
 import bl.err
-import bl.flt
 import bl.log
 import bl.shl
 import bl.trc
 import bl.typ
-import bl.usr
-import bl.evt
-import bl.irc
 import bl.tms
 import bl.trm
-import bl.udp
-import bl.cmd
+import bl.clk
+import bl.usr
+import bl.krn
+import bl.csl
+

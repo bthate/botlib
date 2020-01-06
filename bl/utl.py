@@ -1,11 +1,12 @@
-# BOTLIB - Framework to program bots.
+# BOTD - python3 IRC channel daemon.
 #
-# 
+# utility functions.
 
 import bl
 import json
 import html
 import html.parser
+import logging
 import os
 import random
 import re
@@ -18,10 +19,17 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode, urlunparse
 from urllib.request import Request, urlopen
 
+from bl.trc import get_exception
+
+# defines
+
+def __dir__():
+    return ("cdir", "check_permissions", "consume", "fromfile", "get_name", "get_tinyurl", "get_url", "hd", "kill", "fnlast", "locked", "match", "randomname", "strip_html", "touch", "useragent", "unescape") 
+
 allowedchars = string.ascii_letters + string.digits + '_+/$.-'
 resume = {}
 
-from bl.trc import get_exception
+# functions
 
 def cdir(path):
     if os.path.exists(path):
@@ -68,6 +76,26 @@ def consume(elems):
         except ValueError:
             continue
 
+def edit(o, setter):
+    try:
+        setter = vars(setter)
+    except:
+        pass
+    if not setter:
+        setter = {}
+    count = 0
+    for key, value in setter.items():
+        count += 1
+        if "," in value:
+            value = value.split(",")
+        if value in ["True", "true"]:
+            o[key] = True
+        elif value in ["False", "false"]:
+            o[key] = False
+        else:
+            o[key] = value
+    return count
+
 def fromfile(f):
     try:
         fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -75,25 +103,6 @@ def fromfile(f):
     except:
         fcntl.flock(f, fcntl.LOCK_UN)
         raise
-
-def get_mods(h, ms):
-    modules = []
-    for mn in ms.split(","):
-        if not mn:
-            continue
-        m = None
-        try:
-            m = h.walk(mn)
-        except ModuleNotFoundError as ex:
-            pass
-        if not m:
-            try:
-                m = h.walk("bl.%s" % mn)
-            except ModuleNotFoundError as ex:
-                pass
-        if m:
-            modules.extend(m)
-    return modules
 
 def get_name(o):
     t = type(o)
@@ -112,8 +121,6 @@ def get_name(o):
     return n
 
 def get_tinyurl(url):
-    if bl.cfg.debug:
-        return url
     postarray = [
         ('submit', 'submit'),
         ('url', url),
@@ -128,6 +135,7 @@ def get_tinyurl(url):
             return i.groups()
 
 def get_url(*args):
+    logging.debug("GET %s" % args[0])
     url = urlunparse(urllib.parse.urlparse(args[0]))
     req = Request(url, headers={"User-Agent": useragent()})
     resp = urlopen(req)
@@ -150,7 +158,7 @@ def kill(thrname):
             task.stop()
 
 def fnlast(otype):
-    fns = list(bl.dbs.names(otype))
+    fns = list(names(otype))
     if fns:
         return fns[-1]
 
@@ -191,11 +199,18 @@ def touch(fname):
         pass
 
 def useragent():
-    from ob import k
-    return 'Mozilla/5.0 (X11; Linux x86_64) %s +http://bitbucket.org/bthate/%s)' % (k.cfg.name.upper(), k.cfg.name.lower())
-
+    return 'Mozilla/5.0 (X11; Linux x86_64) BOTD +http://git@github.com/bthate/botd)'
+    
 def unescape(text):
     import html
     import html.parser
     txt = re.sub(r"\s+", " ", text)
     return html.parser.HTMLParser().unescape(txt)
+
+def xdir(o, skip=""):
+    res = []
+    for k in dir(o):
+        if skip and skip in k:
+            continue
+        res.append(k)
+    return res
