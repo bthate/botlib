@@ -1,4 +1,4 @@
-# BOTLIB - Framework to program bots (a botlib).
+# BOTLIB - Framework to program bots.
 #
 # IRC bot. 
 
@@ -298,7 +298,7 @@ class IRC(Bot):
             except (ConnectionResetError, socket.timeout) as ex:
                 e = Event()
                 e._error = str(ex)
-                e.chk = "ERROR"
+                e.command = "ERROR"
                 return e
         e = self._parsing(self._buffer.pop(0))
         cmd = e.command

@@ -1,4 +1,4 @@
-# BOTLIB - Framework to program bots (a botlib).
+# BOTLIB - Framework to program bots.
 #
 # clock module providing timers and repeaters 
 

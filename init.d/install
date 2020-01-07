@@ -3,7 +3,7 @@
 #botctl -d /var/lib/botd cfg krn modules cmd,ent,irc,rss
 #botctl -d /var/lib/botd cfg irc server localhost
 #botctl -d /var/lib/botd cfg irc channel \#botd
-#botctl -d /var/lib/botd rss  https://news.ycombinator.com/rss
+#botctl -d /var/lib/botd rss https://news.ycombinator.com/rss
 cp init.d/botd.service /etc/systemd/system
 systemctl enable botd
 systemctl daemon-reload

@@ -1,4 +1,4 @@
-# BOTLIB - Framework to program bots (a botlib).
+# BOTLIB - Framework to program bots.
 #
 # big O Object.
 
@@ -175,9 +175,7 @@ class Object(O, collections.MutableMapping):
         assert workdir
         if stime:
             self._path = os.path.join(get_type(self), stime)
-            opath = os.path.join(workdir, "store", stime)
-        else:
-            opath = os.path.join(workdir, "store", self._path)
+        opath = os.path.join(workdir, "store", self._path)
         cdir(opath)
         logging.debug("save %s" % self._path)
         with open(opath, "w") as ofile:

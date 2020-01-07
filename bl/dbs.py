@@ -1,4 +1,4 @@
-# BOTLIB - Framework to program bots (a botlib).
+# BOTLIB - Framework to program bots.
 #
 # databases. 
 
@@ -87,6 +87,8 @@ class Db(Object):
 # functions
 
 def find(event):
+    from bl.krn import kernels
+    k = kernels.get("0", None)
     opts = os.listdir(os.path.join(k.cfg.workdir, "store"))
     try:
         match = event.txt.split(" ")[1]
@@ -133,7 +135,3 @@ def names(name, delta=None):
                     continue
             res.append(os.sep.join(fnn.split(os.sep)[1:]))
     return sorted(res, key=fntime)
-
-# runtime
-
-k = kernels.get("0", None)

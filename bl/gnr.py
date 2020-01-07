@@ -1,8 +1,6 @@
-# BOTLIB - Framework to program bots (a botlib).
+# BOTLIB - Framework to program bots.
 #
 # generic functios.
-
-# functions
 
 import json
 import _thread
@@ -10,6 +8,8 @@ import _thread
 from bl.utl import locked
 
 lock = _thread.allocate_lock()
+
+# functions
 
 def edit(o, setter):
     try:

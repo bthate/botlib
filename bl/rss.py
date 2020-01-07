@@ -72,12 +72,14 @@ class Fetcher(Object):
     def display(self, o):
         result = ""
         try:
-            dl = o.display_list
+            dl = o.display_list.split(",")
         except AttributeError:
             dl = []
         if not dl:
-            dl = self.cfg.display_list
+            dl = self.cfg.display_list.split(",")
         for key in dl:
+            if not key:
+                continue
             data = o.get(key, None)
             if key == "link" and self.cfg.tinyurl:
                 datatmp = get_tinyurl(data)
