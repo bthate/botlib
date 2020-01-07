@@ -30,17 +30,11 @@ def __dir__():
 
 def init(k):
     bot = IRC()
-    if k.cfg.kernel:
-        bot.cfg.last()
-    if not bot.cfg.nick:
-        bot.cfg.nick = "botlib"
-    nogo = False
+    bot.cfg.last()
     if k.cfg.prompting:
         try:
             server, channel, nick = k.cfg.args
         except ValueError:
-            nogo = True
-        if nogo:
             raise bl.err.EINIT("%s <server> <channel> <nick>" % k.cfg.name)
         bot.cfg.server = server
         bot.cfg.channel = channel
@@ -75,6 +69,7 @@ class Event(Event):
         self.command = ""
         self.nick = ""
         self.origin = ""
+        self.target = ""
 
 class DEvent(Event):
 
@@ -246,7 +241,7 @@ class IRC(Bot):
             logging.warning("connect #%s" % self.state.nrconnect)
             if self._connect():
                 break
-            time.sleep(nr * self.cfg.sleep)
+            time.sleep(nr * 3.0)
             nr += 1
         self.logon(self.cfg.server, self.cfg.nick)
 
@@ -259,7 +254,7 @@ class IRC(Bot):
     def ERROR(self, event):
         self.state.error = event
         self._connected.clear()
-        time.sleep(self.state.nrconnect * self.cfg.sleep)
+        time.sleep(self.state.nrconnect * 3.0)
         self.connect()
 
     def NOTICE(self, event):
@@ -298,7 +293,6 @@ class IRC(Bot):
             except (ConnectionResetError, socket.timeout) as ex:
                 e = Event()
                 e._error = str(ex)
-                e.command = "ERROR"
                 return e
         e = self._parsing(self._buffer.pop(0))
         cmd = e.command
@@ -312,9 +306,9 @@ class IRC(Bot):
         elif cmd == "PONG":
             self.state.pongcheck = False
         elif cmd == "433":
-            nick = e.target + "_"
+            nick = self.cfg.nick + "_"
             self.cfg.nick = nick
-            self.raw("NICK %s" % self.cfg.nick or "obi2")
+            self.raw("NICK %s" % self.cfg.nick or "botd")
         elif cmd == "ERROR":
             self.state.error = e
         return e

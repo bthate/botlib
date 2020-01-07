@@ -238,6 +238,10 @@ def rss(event):
         else:
             event.reply("rss <url>")
         return
+    url = event.args[0]
+    if db.find("bl.rss.Rss", {"rss": url}):
+        event.reply("%s is already entered.")
+        return
     o = Rss()
     o.rss = event.args[0]
     o.save()

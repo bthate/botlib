@@ -10,7 +10,7 @@ import os, sys ; sys.path.insert(0, os.getcwd())
 import logging
 
 from bl.err import EINIT
-from bl.krn import Kernel
+from bl.krn import Kernel, kernels
 from bl.shl import execute, parse_cli
 
 opts = [

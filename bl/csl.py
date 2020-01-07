@@ -19,7 +19,6 @@ def __dir__():
 
 def init(kernel):
     csl = Console()
-    #csl.cmds = kernel.cmds
     csl.start()
     return csl
 
@@ -35,7 +34,6 @@ class Console(Handler):
         super().__init__()
         self._connected = threading.Event()
         self._threaded = False
-        k.fleet.add(self)
         
     def announce(self, txt):
         self.raw(txt)
@@ -77,6 +75,7 @@ class Console(Handler):
         self.raw(txt)
  
     def start(self):
+        k.fleet.add(self)
         launch(self.input)
         self._connected.set()
 

@@ -15,7 +15,7 @@ setup(
     license='Public Domain',
     zip_safe=True,
     install_requires=["feedparser"],
-    packages=["botlib"],
+    packages=["bl"],
     scripts=["bin/bot", "bin/botctl", "bin/botd"],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: Public Domain',

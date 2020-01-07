@@ -1,11 +1,12 @@
 [ ! -d "/var/log/botd" ] && mkdir /var/log/botd
 [ ! -d "/var/lib/botd" ] && mkdir /var/lib/botd
-#botctl -d /var/lib/botd cfg krn modules cmd,ent,irc,rss
-#botctl -d /var/lib/botd cfg irc server localhost
-#botctl -d /var/lib/botd cfg irc channel \#botd
-#botctl -d /var/lib/botd rss https://news.ycombinator.com/rss
+python3 setup.py install
 cp init.d/botd.service /etc/systemd/system
 systemctl enable botd
 systemctl daemon-reload
 service botd start
-systemctl status botd
+systemctl status botd --no-pager
+botctl -d /var/lib/botd cfg krn modules cmd,ent,rss
+botctl -d /var/lib/botd cfg irc server localhost
+botctl -d /var/lib/botd cfg irc channel \#botd
+botctl -d /var/lib/botd rss https://news.ycombinator.com/rss

@@ -44,13 +44,16 @@ class Kernel(Loader):
         self._skip = False
         self.cfg.update(cfg or {})
         self.cfg.update(kwargs)
-        kernels.add(self)
-        
+        kernels.add(self)        
+
     def cmd(self, txt, origin=""):
         if not txt:
             return
         from bl.csl import Console
+        self.cfg.shell = False
+        self.cfg.prompting = False
         c = Console()
+        self.fleet.add(c)
         e = Event()
         e.txt = txt
         e.origin = origin
@@ -77,6 +80,7 @@ class Kernel(Loader):
         mods = []
         for mod in self.walk(mns):
             if "init" in dir(mod):
+                logging.warning("init %s" % mod.__name__)
                 try:
                     mod.init(self)
                 except EINIT as ex:
@@ -94,9 +98,8 @@ class Kernel(Loader):
             return
         if self.cfg.kernel:
             self.cfg.last()
-            self.cfg.shell = False
             self.cfg.prompting = False
-            self._skip = False
+            self.cfg.shell = False
         try:
             self.init(self.cfg.modules)
         except bl.err.EINIT as ex:
@@ -106,9 +109,7 @@ class Kernel(Loader):
         if self.cfg.dosave:
             self.cfg.save()
         if self.cfg.shell:
-            self.init("bl.csl")
-        elif not self.cfg.kernel:
-            self._skip = True
+            self.init("cmd,csl")
 
     def wait(self):
         if self._skip:
@@ -128,10 +129,7 @@ class Kernels(Object):
             Kernels.nr += 1
 
     def get(self, nr, default=None):
-        try:
-            return Kernels.kernels[nr]
-        except IndexError:
-            pass
+        return Kernels.kernels[nr]
 
 # runtime
 

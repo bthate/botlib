@@ -16,7 +16,7 @@ import bl.trm
 import bl.utl
 
 from bl.dft import defaults
-from bl.log import level
+from bl.log import level, logfiled
 from bl.obj import Cfg, Object
 from bl.trc import get_exception
 from bl.trm import termsave, termreset
@@ -107,8 +107,9 @@ def parse_cli(name, version=None, opts=[], **kwargs):
     sp = os.path.join(cfg.workdir, "store") + os.sep
     if not os.path.exists(sp):
         cdir(sp)
-    level(cfg.level or "error")
+    level(cfg.level or "error", cfg.logdir)
     logging.debug("%s started in %s at %s (%s)" % (cfg.name.upper(), cfg.workdir, time.ctime(time.time()), cfg.level))
+    logging.debug("logging in %s" % bl.log.logfiled)
     return cfg
 
 def set_completer(commands):
