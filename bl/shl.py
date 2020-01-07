@@ -15,6 +15,7 @@ import bl.log
 import bl.trm
 import bl.utl
 
+from bl.dft import defaults
 from bl.log import level
 from bl.obj import Cfg, Object
 from bl.trc import get_exception
@@ -25,18 +26,6 @@ from bl.utl import cdir, hd
 
 def __dir__():
     return ("HISTFILE", "close_history", "complete", "enable_history", "execute", "get_completer", "make_opts", "parse_cli", "set_completer", "writepid")
-
-default = {
-           "workdir": "",
-           "kernel": False,
-           "modules": "",
-           "options": "",
-           "prompting": True,
-           "dosave": False,
-           "level": "",
-           "logdir": "",
-           "shell": False
-}
 
 HISTFILE = ""
 
@@ -106,19 +95,12 @@ def make_opts(ns, options, **kwargs):
 def parse_cli(name, version=None, opts=[], **kwargs):
     ns = Object()
     make_opts(ns, opts)
-    cfg = Cfg(default)
+    d = defaults.get("krn")
+    cfg = Cfg(d)
     cfg.update(ns)
     cfg.update(kwargs)
-    if "kernel" not in cfg:
-        cfg.kernel = False
-    if "kernel" not in cfg:
-        cfg.dosave = False
-    if "kernel" not in cfg:
-        cfg.kernel = False
-    if "kernel" not in cfg:
-        cfg.kernel = False
     cfg.txt = " ".join(cfg.args)
-    cfg.workdir = cfg.workdir or hd(".%s" % name)
+    cfg.workdir = cfg.workdir or hd(".bot")
     cfg.name = name 
     cfg.version = version or __version__
     bl.obj.workdir = cfg.workdir

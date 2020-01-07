@@ -95,6 +95,8 @@ class Kernel(Loader):
         if self.cfg.kernel:
             self.cfg.last()
             self.cfg.shell = False
+            self.cfg.prompting = False
+            self._skip = False
         try:
             self.init(self.cfg.modules)
         except bl.err.EINIT as ex:

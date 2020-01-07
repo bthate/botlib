@@ -1,7 +1,7 @@
 #!/usr/bin/python3 -u
 # BOTLIB - Framework to program bots (a botlib).
 #
-# bin/bot 
+# bin/botctl
 
 __version__ = 1
 
@@ -24,7 +24,7 @@ opts = [
 ]
 
 def main():
-    cfg = parse_cli("botd", __version__, opts)
+    cfg = parse_cli("botctl", __version__, opts)
     k = Kernel(cfg)
     k.walk("cmd,shw,cfg")
     k.walk(cfg.modules)

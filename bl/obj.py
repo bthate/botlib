@@ -108,8 +108,8 @@ class Object(O, collections.MutableMapping):
         count = 0
         for key, value in setter.items():
             count += 1
-            if "," in value:
-                value = value.split(",")
+            #if "," in value:
+            #    value = value.split(",")
             if value in ["True", "true"]:
                 self[key] = True
             elif value in ["False", "false"]:

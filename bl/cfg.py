@@ -3,6 +3,7 @@
 # edit configuration. 
 
 from bl.dbs import Db
+from bl.dft import defaults
 from bl.krn import kernels
 from bl.typ import get_cls
 
@@ -17,21 +18,23 @@ def cfg(event):
     if not event.args:
         event.reply(str(k.cfg))
         return
-    cn = "botd.%s.Cfg" % event.args[0]
+    target = event.args[0]
+    cn = "bl.%s.Cfg" % target
     db = Db()
     l = db.last(cn)
     if not l:     
-        cn = "bl.%s.Cfg" % event.args[0]
-        l = db.last(cn)
-        if not l:
-            try:
-                cls = get_cls(cn)
-            except (AttributeError, ModuleNotFoundError):
-                event.reply("no %s found." % cn)
-                return
+        try:
+            cls = get_cls(cn)
+        except (AttributeError, ModuleNotFoundError):
+            event.reply("no %s found." % cn)
+            return
+        d = defaults.get(target, None)
+        if d:
+            l = cls(d)
+        else:
             l = cls()
-            l.save()
-            event.reply("created a %s file" % cn)
+        l.save()
+        event.reply("created a %s file" % cn)
     if len(event.args) == 1:
         event.reply(l)
         return

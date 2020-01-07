@@ -16,7 +16,7 @@ from bl.utl import locked
 # defines
 
 def __dir__():
-    return ("Db", "hook", "lock", "names")
+    return ("Db", "find", "hook", "lock", "names")
 
 lock = _thread.allocate_lock()
 
@@ -86,6 +86,26 @@ class Db(Object):
 
 # functions
 
+def find(event):
+    opts = os.listdir(os.path.join(k.cfg.workdir, "store"))
+    try:
+        match = event.txt.split(" ")[1]
+    except (IndexError, AttributeError):
+        event.reply("find %s" % "|".join([x.split(".")[-1].lower() for x in opts]))
+        return
+    opts = [x for x in opts if match in x.lower()]
+    c = 0
+    db = Db()
+    for opt in opts:
+        if len(event.txt.split()) > 2:
+           for arg in event.txt.split()[2:]:
+               selector = {arg: ""}
+        else:
+            selector = {"txt": ""}
+        for o in db.find(opt, selector):
+            event.display(o, str(c))
+            c += 1
+
 @locked(lock)
 def hook(fn):
     t = fn.split(os.sep)[0]
@@ -113,3 +133,7 @@ def names(name, delta=None):
                     continue
             res.append(os.sep.join(fnn.split(os.sep)[1:]))
     return sorted(res, key=fntime)
+
+# runtime
+
+k = kernels.get("0", None)
