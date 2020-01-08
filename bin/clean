@@ -2,4 +2,4 @@
 #
 # cleanup all non distro files
 
-rm -fR logs DEADJOE __pycache__ testdata runbot runbot.tar.gz init.d/*~  build dist bot.egg-info *~  bin/*~ extra/*~ extra/__pycache__ bl/*~ bl/__pycache__ tests/*~ tests/__pycache__
+rm -fR logs DEADJOE __pycache__ testdata runbot runbot.tar.gz init.d/*~  build dist botlib.egg-info *~  bin/*~  bl/*~ bl/__pycache__ tests/*~ tests/__pycache__
