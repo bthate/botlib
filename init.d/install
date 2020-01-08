@@ -6,7 +6,3 @@ systemctl enable botd
 systemctl daemon-reload
 service botd start
 systemctl status botd --no-pager
-botctl -d /var/lib/botd cfg krn modules cmd,ent,rss
-botctl -d /var/lib/botd cfg irc server localhost
-botctl -d /var/lib/botd cfg irc channel \#botd
-botctl -d /var/lib/botd rss https://news.ycombinator.com/rss

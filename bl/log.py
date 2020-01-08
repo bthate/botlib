@@ -32,7 +32,7 @@ def level(loglevel="", logdir="", logfile="", nostream=False):
     if not loglevel:
         loglevel = "error"
     if not logfile:
-        logfile = "botlog"
+        logfile = "bot.log"
     if not logdir:
         logdir = logfiled = os.path.join(bl.obj.workdir, "logs")
     else:

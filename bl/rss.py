@@ -227,20 +227,18 @@ def fetch(event):
     event.reply("fetched %s" % ",".join([str(x) for x in res]))
 
 def rss(event):
+    db = Db()
     if not event.args or "http" not in event.args[0]:
         nr = 0
-        db = Db()
-        res = list(db.find("bl.rss.Rss", {"rss": ""}))
-        if res:
-            for o in res:
-                event.reply("%s %s" % (nr, o.rss))
-                nr += 1
-        else:
+        for o in db.find("bl.rss.Rss", {"rss": ""}):
+            event.reply("%s %s" % (nr, o.rss))
+            nr += 1
+        if not nr:
             event.reply("rss <url>")
         return
     url = event.args[0]
     if db.find("bl.rss.Rss", {"rss": url}):
-        event.reply("%s is already entered.")
+        event.reply("feed is already knows.")
         return
     o = Rss()
     o.rss = event.args[0]

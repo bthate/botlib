@@ -31,6 +31,7 @@ def main():
     cfg.prompting = False
     k = Kernel(cfg)
     k.init("cmd,shw,cfg,dbs")
+    k.init(k.cfg.modules)
     k.cmd(k.cfg.txt)
 
 execute(main)

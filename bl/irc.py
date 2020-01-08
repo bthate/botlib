@@ -379,7 +379,7 @@ class DCC(Bot):
         else:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((addr, port))
-        s.send(bytes('Welcome to BOTLIB %s !!\n' % event.nick, "utf-8"))
+        s.send(bytes('Welcome to %s %s !!\n' % (k.cfg.name, event.nick), "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s
@@ -393,6 +393,10 @@ class DCC(Bot):
         e = DEvent()
         e.txt = self._fsock.readline()
         e.txt = e.txt.rstrip()
+        try:
+            e.args = e.txt.split()[1:]
+        except ValueError:
+            e.args = []
         e._sock = self._sock
         e._fsock = self._fsock
         e.channel = self.origin
