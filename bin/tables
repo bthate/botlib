@@ -1,0 +1,37 @@
+#!/usr/bin/python3 
+
+__version__ = 1
+
+import os, sys ; sys.path.insert(0, os.getcwd())
+
+import lo.tbl
+import time
+
+from lo import Object, DoL
+from lo.hdl import Handler
+from lo.shl import level, parse_cli
+
+opts = [
+    ('-s', '--shell', 'store_true', False, 'start a shell', 'shell'),
+    ('-m', '--modules', 'store', str, "", 'modules to load.', 'modules'),
+    ('-w', '--workdir', 'store', str, os.path.join(os.path.expanduser("~/.bot")), 'set working directory.', 'workdir'),
+    ('-l', '--loglevel', 'store', str, "error", 'set loglevel.', 'level'),
+    ('-a', '--logfile', 'store', str, os.path.join(os.path.expanduser("~/.bot"), "logs", "bot.log"), 'file to log to.', 'logfile'),
+]
+
+txt = """# BOTLIB - Framework to program bots.
+#
+# lo/tbl.py
+"""
+
+lo.tbl.modules = Object()
+lo.tbl.names = DoL()
+
+parse_cli("tables", __version__, opts)
+level(lo.cfg.level, lo.cfg.logfile)
+b = Handler()
+b.walk("bot", True)
+print(txt)
+print("modules = %s" % lo.tbl.modules)
+print("names = %s" % lo.tbl.names)
+sys.exit(0)

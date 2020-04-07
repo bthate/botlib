@@ -1,0 +1,23 @@
+if [ "$(id -u)" -ne 0 ]; then
+    echo "you need root permissions" && exit 1
+fi
+[ ! -d "/var/log/botd" ] && mkdir /var/log/botd
+[ ! -d "/var/lib/botd" ] && mkdir /var/lib/botd
+touch /var/log/botd/botd.log
+cat > /etc/systemd/system/botd.service <<-EOM
+[Unit]
+Description=botd
+
+[Service]
+ExecStart=/usr/local/bin/botd
+After=network-online.target
+Wants=network-online.target
+
+[Install]
+WantedBy=multi-user.target
+EOM
+systemctl enable botd
+systemctl daemon-reload
+service botd stop
+service botd start
+systemctl status botd --no-pager
