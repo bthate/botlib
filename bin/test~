@@ -37,7 +37,6 @@ def main():
     parse_cli("test", __version__, opts)
     level(lo.cfg.level, lo.cfg.logfile)
     lo.cfg.debug = True
-    lo.cfg.bork = True
     k.walk("bot")
     k.start()
     lo.workdir = "testdata"

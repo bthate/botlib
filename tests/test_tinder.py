@@ -22,16 +22,13 @@ class Param(lo.Object):
 
 e = lo.hdl.Event()
 e.parse()
-print(e.index)
 param = Param()
 param.cfg = ["irc", "rss", "krn", "irc server localhost", "irc channel \#dunkbots", "krn modules bot.udp"]
 param.delete = ["reddit", ]
 param.display = ["reddit title,summary,link",]
-param.email = ["Koning From Subject"] 
 param.log = ["yo!", ""]
 param.fleet = ["0", "1", ""]
 param.find = ["log yo", "todo yo", "rss reddit"]
-#param.mbox = ["~/evidence/25-1-2013"]
 param.meet = ["test@shell", "bart"]
 param.rss = ["https://www.reddit.com/r/python/.rss", ""]
 param.todo = ["yo!", ""]

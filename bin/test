@@ -21,6 +21,7 @@ opts = [
     ('-b', '--bork', 'store_true', False, 'bork on exception.', 'bork'),
     ('-v', '--verbose', 'store_true', False, 'enable verbose mode.', 'verbose'),
     ('-m', '--modules', 'store', str, "", 'modules to load.', 'modules'),
+    ('-o', '--options', 'store', str, "", 'options to use.', 'options'),
     ('-w', '--workdir', 'store', str, "testdata", 'set working directory.', 'workdir'),
     ('-l', '--loglevel', 'store', str, "error", 'set loglevel.', 'level'),
     ('-a', '--logfile', 'store', str, "logs/bot.log", 'file to log to.', 'logfile'),

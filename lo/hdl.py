@@ -203,6 +203,7 @@ class Event(lo.Object):
         self.args = []
         self.channel = ""
         self.etype = "event"
+        self.index = None
         self.options = ""
         self.orig = ""
         self.origin = ""
@@ -247,6 +248,11 @@ class Event(lo.Object):
         self.ready()
 
     def parse(self, txt=""):
+        for arg in lo.cfg.options.split(","):
+            try:
+                self.index = int(arg)
+            except ValueError:
+                continue
         txt = txt or self.txt
         if not txt:
             return
@@ -256,7 +262,7 @@ class Event(lo.Object):
         self.cmd = spl[0].lower()
         self.args = spl[1:]
         self.rest = " ".join(self.args)
-
+                
     def ready(self):
         self._ready.set()
 
