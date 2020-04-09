@@ -296,7 +296,7 @@ class IRC(Handler):
             if not e or e._error:
                 break
             self.put(e)
-        logging.warn("stop input") 
+        logging.warning("stop input") 
         self._inclosed.set()
 
     def output(self):
