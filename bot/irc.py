@@ -85,6 +85,7 @@ class IRC(Handler):
         self.cfg = Cfg()
         self.channels = []
         self.state = Object()
+        self.state.needconnect = False
         self.state.error = ""
         self.state.last = 0
         self.state.lastline = ""
@@ -94,6 +95,7 @@ class IRC(Handler):
         self.threaded = False
         if self.cfg.channel and self.cfg.channel not in self.channels:
             self.channels.append(self.cfg.channel)
+        self.register("error", error)
         self.register("ERROR", ERROR)
         self.register("NOTICE", NOTICE)
         self.register("PRIVMSG", PRIVMSG)
@@ -105,7 +107,7 @@ class IRC(Handler):
             oldsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         oldsock.setblocking(1)
         oldsock.settimeout(5.0)
-        logging.warn("connect %s:%s" % (self.cfg.server, self.cfg.port or 6667))
+        logging.warn("connect %s %s:%s" % (self.state.nrconnect, self.cfg.server, self.cfg.port or 6667))
         try:
             oldsock.connect((self.cfg.server, int(self.cfg.port or 6667)))
         except (OSError, ConnectionAbortedError):
@@ -113,6 +115,7 @@ class IRC(Handler):
             try:
                 oldsock.connect((self.cfg.server, int(self.cfg.port or 6667)))
             except (OSError, ConnectionAbortedError):
+                self.state.needconnect = True
                 return False
         oldsock.setblocking(1)
         oldsock.settimeout(700.0)
@@ -230,10 +233,9 @@ class IRC(Handler):
         nr = 0
         while 1:
             self.state.nrconnect += 1
-            logging.warning("connect #%s" % self.state.nrconnect)
             if self._connect():
                 break
-            time.sleep(nr * 3.0)
+            time.sleep(10.0)
             nr += 1
         self.logon(self.cfg.server, self.cfg.nick)
 
@@ -249,13 +251,16 @@ class IRC(Handler):
             try:
                 self._some()
             except (ConnectionAbortedError, ConnectionResetError, socket.timeout) as ex:
+                self.state.needconnect = True
+                time.sleep(2.0)
                 e = Event()
-                e.etype = "ERROR"
+                e.etype = "error"
                 e._error = str(ex)
                 return e
         e = self._parsing(self._buffer.pop(0))
         cmd = e.command
         if cmd == "001":
+            self.state.needconnect = False
             if "servermodes" in dir(self.cfg):
                 self.raw("MODE %s %s" % (self.cfg.nick, self.cfg.servermodes))
             self.joinall()
@@ -395,11 +400,14 @@ class DCC(Handler):
     def say(self, channel, txt, type="chat"):
         self.raw(txt)
 
+def error(handler, event):
+    if handler.state.needconnect:
+        time.sleep(15.0)
+        handler.connect()
+
 def ERROR(handler, event):
     handler.state.error = event
     handler._connected.clear()
-    time.sleep(handler.state.nrconnect * 3.0)
-    handler.connect()
 
 def NOTICE(handler, event):
     if event.txt.startswith("VERSION"):
