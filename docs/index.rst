@@ -1,5 +1,5 @@
-R E A D M E
-###########
+README
+######
 
 
 BOTLIB is a library you can use to program bots. no copyright. no LICENSE.
@@ -44,7 +44,7 @@ if you want to develop on the library clone the source at bitbucket.org:
 
 if you want to add your own modules to the bot, you can put you .py files in a "mods" directory and use the -m option to point to that directory.
 
-BOTLIB contains the following modules:
+BOTLIB contains the following modules, see code :ref:`here <source>`:
 
 ::
 

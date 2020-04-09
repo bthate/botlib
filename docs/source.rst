@@ -1,9 +1,7 @@
 .. _source:
 
-S O U R C E
-###########
-
-BOTLIB contains the following modules:
+SOURCE
+######
 
 .. autosummary::
     :toctree:
