@@ -18,8 +18,8 @@ import threading
 import time
 import _thread
 
-from lo import DoL, locked
-from lo.thr import launch
+from lo import DoL, Object, locked
+from lo.thr import get_name, launch
 from lo.trc import get_exception
 
 def __dir__():
@@ -147,6 +147,7 @@ class Handler(Loader):
     def __init__(self):
         super().__init__()
         self._queue = queue.Queue()
+        self._closed = threading.Event()
         self._stopped = False
         self.cbs = lo.Object()
         self.outcache = DoL()
@@ -173,6 +174,8 @@ class Handler(Loader):
                 launch(self.handle_cb, e , name="%s %s" % (e.etype, e.txt))
             else:
                 self.handle_cb(e)
+        logging.warning("stop %s" % get_name(self))
+        self._closed.set()
 
     def poll(self):
         raise ENOTIMPLEMENTED
@@ -190,7 +193,7 @@ class Handler(Loader):
     def stop(self):
         self._stopped = True
         self._queue.put(None)
-
+        
     def wait(self):
         while not self._stopped:
             time.sleep(1.0)
@@ -199,6 +202,7 @@ class Event(lo.Object):
 
     def __init__(self):
         super().__init__()
+        self._error = ""
         self._ready = threading.Event()
         self.args = []
         self.channel = ""

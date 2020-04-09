@@ -77,6 +77,9 @@ class IRC(Handler):
         super().__init__()
         self._buffer = []
         self._connected = threading.Event()
+        self._inclosed = threading.Event()
+        self._inqueue = queue.Queue()
+        self._outclosed = threading.Event()
         self._outqueue = queue.Queue()
         self._sock = None
         self._fsock = None
@@ -115,6 +118,7 @@ class IRC(Handler):
             try:
                 oldsock.connect((self.cfg.server, int(self.cfg.port or 6667)))
             except (OSError, ConnectionAbortedError):
+                self._connected.set()
                 self.state.needconnect = True
                 return False
         oldsock.setblocking(1)
@@ -251,11 +255,11 @@ class IRC(Handler):
             try:
                 self._some()
             except (ConnectionAbortedError, ConnectionResetError, socket.timeout) as ex:
-                self.state.needconnect = True
                 time.sleep(2.0)
                 e = Event()
                 e.etype = "error"
                 e._error = str(ex)
+                logging.error(e._error)
                 return e
         e = self._parsing(self._buffer.pop(0))
         cmd = e.command
@@ -274,7 +278,7 @@ class IRC(Handler):
             self.cfg.nick = nick
             self.raw("NICK %s" % self.cfg.nick or "bot")
         elif cmd == "ERROR":
-            self.state.error = e
+            self._stopped = True
         return e
 
     def joinall(self):
@@ -288,19 +292,24 @@ class IRC(Handler):
 
     def input(self):
         while not self._stopped:
-            try:
-                e = self.poll()
-            except EOFError:
+            e = self.poll()
+            if not e or e._error:
                 break
             self.put(e)
+        logging.warn("stop input") 
+        self._inclosed.set()
 
     def output(self):
         self._outputed = True
         while not self._stopped:
             channel, txt, type = self._outqueue.get()
+            if channel == None:
+                break
             if txt:
                 time.sleep(0.001)
                 self._say(channel, txt, type)
+        logging.warn("stop output") 
+        self._outclosed.set()
 
     def raw(self, txt):
         txt = txt.rstrip()
@@ -327,6 +336,12 @@ class IRC(Handler):
         k.launch(self.input)
         k.launch(self.output)
 
+    def stop(self):
+        super().stop()
+        self._outqueue.put((None, None, None))
+        self._sock.shutdown(2)
+        #self._inclosed.wait()
+        
 class DCC(Handler):
 
     def __init__(self):
@@ -401,14 +416,15 @@ class DCC(Handler):
         self.raw(txt)
 
 def error(handler, event):
-    if handler.state.needconnect:
-        time.sleep(15.0)
-        handler.connect()
+    logging.error(event._error)
+    handler.state.error = event._error
+    handler._connected.clear()
+    handler.stop()
+    k.launch(init, k)
 
 def ERROR(handler, event):
-    handler.state.error = event
-    handler._connected.clear()
-
+    logging.error(event._error)
+    
 def NOTICE(handler, event):
     if event.txt.startswith("VERSION"):
         txt = "\001VERSION %s %s - %s\001" % ("BOT", "1", "BOTLIB is a library to program bots. no copyright. no LICENSE")
