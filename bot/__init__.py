@@ -2,7 +2,7 @@
 #
 #
 
-__version__ = 79
+__version__ = 80
 
 import bot.krn
 import time
