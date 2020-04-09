@@ -41,3 +41,16 @@ def todo(event):
     o.txt = event.rest
     o.save()
     event.reply("ok")
+
+def done(event):
+    if not event.args:
+        event.reply("done <match>")
+        return
+    selector = {"txt": event.args[0]}
+    got = []
+    db = lo.Db()
+    for todo in db.find("bot.ent.Todo", selector):
+        todo._deleted = True
+        todo.save()
+        event.reply("ok")
+        break
