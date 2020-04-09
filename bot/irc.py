@@ -108,9 +108,12 @@ class IRC(Handler):
         logging.warn("connect %s:%s" % (self.cfg.server, self.cfg.port or 6667))
         try:
             oldsock.connect((self.cfg.server, int(self.cfg.port or 6667)))
-        except OSError:
+        except (OSError, ConnectionAbortedError):
             time.sleep(2.0)
-            oldsock.connect((self.cfg.server, int(self.cfg.port or 6667)))
+            try:
+                oldsock.connect((self.cfg.server, int(self.cfg.port or 6667)))
+            except (OSError, ConnectionAbortedError):
+                return False
         oldsock.setblocking(1)
         oldsock.settimeout(700.0)
         if self.cfg.ssl:
@@ -245,8 +248,9 @@ class IRC(Handler):
         if not self._buffer:
             try:
                 self._some()
-            except (ConnectionResetError, socket.timeout) as ex:
+            except (ConnectionAbortedError, ConnectionResetError, socket.timeout) as ex:
                 e = Event()
+                e.etype = "ERROR"
                 e._error = str(ex)
                 return e
         e = self._parsing(self._buffer.pop(0))
@@ -395,7 +399,7 @@ def ERROR(handler, event):
     handler.state.error = event
     handler._connected.clear()
     time.sleep(handler.state.nrconnect * 3.0)
-    k.launch(handler.connect)
+    handler.connect()
 
 def NOTICE(handler, event):
     if event.txt.startswith("VERSION"):
