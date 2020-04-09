@@ -6,6 +6,7 @@ fi
 touch /var/log/botd/botd.log
 python3 setup.py install
 cp bin/botd /usr/local/bin/botd
+cp bin/botctl /usr/local/bin/botctl
 cat > /etc/systemd/system/botd.service <<-EOM
 [Unit]
 Description=botd
@@ -18,6 +19,8 @@ Wants=network-online.target
 [Install]
 WantedBy=multi-user.target
 EOM
+bin/botctl cfg irc server localhost
+bin/botctl cfg irc channel \#botlib
 systemctl enable botd
 systemctl daemon-reload
 service botd stop
