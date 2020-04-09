@@ -7,6 +7,7 @@ modules = {
     "cmds": "bot.shw",
     "delete": "bot.rss",
     "display": "bot.rss",
+    "done": "bot.ent",
     "feed": "bot.rss",
     "fetch": "bot.rss",
     "find": "bot.fnd",
