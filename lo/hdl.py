@@ -159,7 +159,7 @@ class Handler(Loader):
                 self.cbs[event.etype](self, event)
             except Exception as ex:
                 self.error = get_exception()
-                logging.debug(self.error)
+                logging.debug("error %s" % self.error)
                 if lo.cfg.bork:
                     logging.error("bork")
                     _thread.interrupt_main()

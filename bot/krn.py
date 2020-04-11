@@ -55,7 +55,7 @@ class Kernel(lo.hdl.Handler, lo.thr.Launcher):
         self.cfg.update(cfg)
         self.walk(lo.cfg.modules, True)
         if self.error:
-            print(self.error)
+            print("error %s" % self.error)
             return False
         lo.shl.set_completer(sorted(self.cmds))
         lo.shl.enable_history()

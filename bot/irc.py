@@ -18,6 +18,7 @@ import _thread
 from lo import Cfg, DoL, Object
 from lo.hdl import Event, Handler
 from lo.thr import launch
+from lo.trc import get_exception
 
 from bot import k
 
@@ -102,6 +103,7 @@ class IRC(Handler):
         self.register("ERROR", ERROR)
         self.register("NOTICE", NOTICE)
         self.register("PRIVMSG", PRIVMSG)
+        self.register("QUIT", QUIT)
 
     def _connect(self):
         if self.cfg.ipv6:
@@ -241,6 +243,7 @@ class IRC(Handler):
                 break
             time.sleep(10.0)
             nr += 1
+        self._connected.wait()
         self.logon(self.cfg.server, self.cfg.nick)
 
     def dispatch(self, event):
@@ -293,7 +296,7 @@ class IRC(Handler):
     def input(self):
         while not self._stopped:
             e = self.poll()
-            if not e or e._error:
+            if not e:
                 break
             self.put(e)
         logging.warning("stop input") 
@@ -308,19 +311,25 @@ class IRC(Handler):
             if txt:
                 time.sleep(0.001)
                 self._say(channel, txt, type)
-        logging.warn("stop output") 
+        logging.warning("stop output")
         self._outclosed.set()
 
     def raw(self, txt):
         txt = txt.rstrip()
-        logging.info(txt)
+        logging.info("> %s" % txt)
         if self._stopped:
             return
         if not txt.endswith("\r\n"):
             txt += "\r\n"
         txt = txt[:512]
         txt = bytes(txt, "utf-8")
-        self._sock.send(txt)
+        try:
+            self._sock.send(txt)
+        except (BrokenPipeError, ConnectionResetError) as ex:
+            e = lo.hdl.Event()
+            e._error = get_exception()
+            e.txt = str(ex)
+            self.put(e)
         self.state.last = time.time()
         self.state.nrsend += 1
 
@@ -339,7 +348,10 @@ class IRC(Handler):
     def stop(self):
         super().stop()
         self._outqueue.put((None, None, None))
-        self._sock.shutdown(2)
+        try:
+            self._sock.shutdown(2)
+        except OSError:
+            pass
         #self._inclosed.wait()
         
 class DCC(Handler):
@@ -448,3 +460,10 @@ def PRIVMSG(handler, event):
         e.origin = event.origin
         e.txt = event.txt.strip()[1:]
         handler.put(e)
+
+def QUIT(handler, event):
+    #if "Ping Timeout"  not in event.txt:
+    #    return
+    if handler.cfg.server in event.orig:
+        handler.stop()
+        k.launch(init, event)
