@@ -19,8 +19,8 @@ Wants=network-online.target
 [Install]
 WantedBy=multi-user.target
 EOM
-bin/botctl cfg irc server localhost
-bin/botctl cfg irc channel \#botlib
+#bin/botctl cfg irc server localhost
+#bin/botctl cfg irc channel \#botlib
 systemctl enable botd
 systemctl daemon-reload
 service botd stop

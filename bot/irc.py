@@ -316,7 +316,7 @@ class IRC(Handler):
 
     def raw(self, txt):
         txt = txt.rstrip()
-        logging.info("> %s" % txt)
+        logging.info(txt)
         if self._stopped:
             return
         if not txt.endswith("\r\n"):
