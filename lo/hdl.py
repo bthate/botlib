@@ -155,6 +155,7 @@ class Handler(Loader):
 
     def handle_cb(self, event):
         if event.etype in self.cbs:
+            logging.debug(event)
             try:
                 self.cbs[event.etype](self, event)
             except Exception as ex:
@@ -204,6 +205,7 @@ class Event(lo.Object):
         super().__init__()
         self._error = ""
         self._ready = threading.Event()
+        self._thrs = []
         self.args = []
         self.channel = ""
         self.etype = "event"
@@ -278,6 +280,8 @@ class Event(lo.Object):
             print(txt)
 
     def wait(self):
+        for thr in self._thrs:
+            thr.wait()
         self._ready.wait()
 
 class Command(Event):

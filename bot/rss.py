@@ -168,6 +168,7 @@ def get_url(url):
     req = urllib.request.Request(url)
     response = urllib.request.urlopen(req)
     response.data = response.read()
+    logging.debug("GET %s %s" % (response.getcode(), response.geturl()))
     return response
 
 def strip_html(text):
