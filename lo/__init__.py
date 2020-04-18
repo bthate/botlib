@@ -104,8 +104,6 @@ class ObjectDecoder(JSONDecoder):
 
 class O:
 
-    __slots__ = ("__dict__", "_path")
-
     def __init__(self, *args, **kwargs):
         super().__init__()
         stime = str(datetime.datetime.now()).replace(" ", os.sep)
@@ -129,8 +127,19 @@ class O:
     def __setitem__(self, k, v):
         self.__dict__[k] = v
 
+    def keys(self):
+        return self.__dict__.keys()
 
-class Object(O, collections.MutableMapping):
+    def update(self, d):
+        return self.__dict__.update(d)
+        
+    def values(self):
+        return self.__dict__.values()
+
+    def items(self):
+        return self.__dict__.items()
+
+class Object(O):
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -233,9 +242,9 @@ class Object(O, collections.MutableMapping):
             except KeyError:
                 pass
             self.update(val.__dict__)
-        self._path = path
-        cache[path] = self
-        return cache[path]
+        self._path = val._path
+        cache[self._path] = self
+        return cache[self._path]
 
     def merge(self, o, vals={}):
         return self.update(strip(self, vals))
@@ -248,12 +257,12 @@ class Object(O, collections.MutableMapping):
         opath = os.path.join(workdir, "store", self._path)
         lo.cdir(opath)
         logging.debug("save %s" % self._path)
-        if self._path in cache:
-            o = cache[self._path]
-        else:
-            o = self
+        #if self._path in cache:
+        #    o = cache[self._path]
+        #else:
+        #    o = self
         with open(opath, "w") as ofile:
-            json.dump(stamp(o), ofile, cls=ObjectEncoder, indent=4, sort_keys=True)
+            json.dump(stamp(self), ofile, cls=ObjectEncoder, indent=4, sort_keys=True)
         return self._path
 
     def search(self, match=None):

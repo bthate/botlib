@@ -265,6 +265,7 @@ class IRC(Handler):
                 logging.error(e._error)
                 return e
         e = self._parsing(self._buffer.pop(0))
+        e.parse()
         cmd = e.command
         if cmd == "001":
             self.state.needconnect = False
@@ -273,7 +274,7 @@ class IRC(Handler):
             self.joinall()
         elif cmd == "PING":
             self.state.pongcheck = True
-            self.command("PONG", e.txt or "")
+            self.command("PONG", e.rest or "")
         elif cmd == "PONG":
             self.state.pongcheck = False
         elif cmd == "433":
