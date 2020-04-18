@@ -104,19 +104,24 @@ class ObjectDecoder(JSONDecoder):
 
 class O:
 
+    __slots__ = ("__dict__", "_path")
+
     def __init__(self, *args, **kwargs):
         super().__init__()
         stime = str(datetime.datetime.now()).replace(" ", os.sep)
         self._path = os.path.join(lo.typ.get_type(self), stime)
+        return self
 
     def __delitem__(self, k):
         del self.__dict__[k]
-
+        return self.__dict__[k]
+        
     def __getitem__(self, k):
         return self.__dict__[k]
 
     def __iter__(self):
-        return iter(self.__dict__)
+        return iter(self.keys())
+        #return iter(self.__dict__)
 
     def __len__(self):
         return len(self.__dict__)
@@ -126,9 +131,16 @@ class O:
 
     def __setitem__(self, k, v):
         self.__dict__[k] = v
+        return self.__dict__[k]
+
+    def get(self, k, d={}):
+        return self.__dict__.get(k, d)
 
     def keys(self):
         return self.__dict__.keys()
+
+    def merge(self, o, vals={}):
+        return self.update(strip(self, vals))
 
     def update(self, d):
         return self.__dict__.update(d)
@@ -138,6 +150,12 @@ class O:
 
     def items(self):
         return self.__dict__.items()
+
+    def json(self):
+        return json.dumps(self, cls=ObjectEncoder, indent=4, sort_keys=True)
+
+    def set(self, k, v):
+        self.__dict__[k] = v
 
 class Object(O):
 
@@ -199,20 +217,15 @@ class Object(O):
             txt += "%s%s" % (val.strip(), " ")
         return txt.strip()
 
-    def get(self, k, d=None):
-        return self.__dict__.get(k, d)
-
-    def json(self):
-        return json.dumps(self, cls=ObjectEncoder, indent=4, sort_keys=True)
-
     def last(self, strip=False):
         db = lo.Db()
-        l = db.last(str(lo.typ.get_type(self)))
+        path, l = db.last_fn(str(lo.typ.get_type(self)))
         if l:
             if strip:
                 self.update(strip(l))
             else:
                 self.update(l)
+            self._path = path
 
     @locked(lock)
     def load(self, path, force=False):
@@ -221,10 +234,11 @@ class Object(O):
         lpath = os.path.join(workdir, "store", path)
         if not os.path.exists(lpath):
             cdir(lpath)
-        if not force and path in cache:
-            logging.debug("cache %s" % path)
-            return cache[path]
+        #if not force and path in cache:
+        #    logging.debug("cache %s" % path)
+        #    return cache[path]
         logging.debug("load %s" % path)
+        self._path = path
         with open(lpath, "r") as ofile:
             try:
                 val = json.load(ofile, cls=ObjectDecoder)
@@ -235,23 +249,16 @@ class Object(O):
                 t = lo.typ.get_cls(ot)
                 if type(self) != t:
                     raise ETYPE(type(self), t)
-            #else:
-            #    val.__dict__["stamp"] = path
-            try:
-                del val.__dict__["stamp"]
-            except KeyError:
-                pass
             self.update(val.__dict__)
-        self._path = val._path
-        cache[self._path] = self
-        return cache[self._path]
+        #cache[self._path] = self
+        #return cache[self._path]
+        return self
 
-    def merge(self, o, vals={}):
-        return self.update(strip(self, vals))
 
     @locked(lock)
     def save(self, stime=None):
         assert workdir
+        print(stime)
         if stime:
             self._path = os.path.join(lo.typ.get_type(self), stime) + "." + str(random.randint(1, 100000))
         opath = os.path.join(workdir, "store", self._path)
@@ -285,9 +292,6 @@ class Object(O):
                 res = False
                 break
         return res
-
-    def set(self, k, v):
-        self[k] = v
 
 class Db(Object):
 
@@ -345,6 +349,13 @@ class Db(Object):
         if fns:
             fn = fns[-1]
             return hook(fn)
+
+    def last_fn(self, otype, index=None, delta=0):
+        fns = names(otype, delta)
+        if fns:
+            fn = fns[-1]
+            return (fn, hook(fn))
+        return (None, None)
 
     def last_all(self, otype, selector={}, index=None, delta=0):
         nr = -1
@@ -426,8 +437,8 @@ def hd(*args):
 
 @locked(hooklock)
 def hook(fn):
-    if fn in cache:
-        return cache[fn]
+    #if fn in cache:
+    #    return cache[fn]
     t = fn.split(os.sep)[0]
     if not t:
         t = fn.split(os.sep)[0][1:]
