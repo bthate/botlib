@@ -249,6 +249,10 @@ class Object(O):
                 t = lo.typ.get_cls(ot)
                 if type(self) != t:
                     raise ETYPE(type(self), t)
+            try:
+                del val.__dict__["stamp"]
+            except KeyError:
+                pass
             self.update(val.__dict__)
         #cache[self._path] = self
         #return cache[self._path]

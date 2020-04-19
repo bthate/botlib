@@ -101,7 +101,10 @@ class Fetcher(lo.Object):
             feed.update(obj)
             feed.update(o)
             u = urllib.parse.urlparse(feed.link)
-            url = "%s://%s/%s" % (u.scheme, u.netloc, u.path)
+            if u.query:
+                url = "%s://%s/%s?%s" % (u.scheme, u.netloc, u.path, u.query)
+            else:
+                url = "%s://%s/%s" % (u.scheme, u.netloc, u.path)
             if url in Fetcher.seen.urls:
                 continue
             Fetcher.seen.urls.append(url)
