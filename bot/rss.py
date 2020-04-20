@@ -101,10 +101,10 @@ class Fetcher(lo.Object):
             feed.update(obj)
             feed.update(o)
             u = urllib.parse.urlparse(feed.link)
-            if u.query:
-                url = "%s://%s/%s?%s" % (u.scheme, u.netloc, u.path, u.query)
-            else:
+            if u.path:
                 url = "%s://%s/%s" % (u.scheme, u.netloc, u.path)
+            else:
+                url = feed.link
             if url in Fetcher.seen.urls:
                 continue
             Fetcher.seen.urls.append(url)
@@ -169,6 +169,7 @@ def get_tinyurl(url):
 def get_url(url):
     url = urllib.parse.urlunparse(urllib.parse.urlparse(url))
     req = urllib.request.Request(url)
+    req.add_header('User-agent', useragent())
     response = urllib.request.urlopen(req)
     response.data = response.read()
     logging.debug("GET %s %s" % (response.getcode(), response.geturl()))
