@@ -46,12 +46,12 @@ class Cfg(Cfg):
 
     def __init__(self):
         super().__init__()
-        self.channel = ""
+        self.channel = "#botlib"
         self.ipv6 = False
-        self.nick = ""
+        self.nick = "botlib"
         self.port = 6667
         self.realname = "botlib"
-        self.server = ""
+        self.server = "localhost"
         self.ssl = False
         self.username = "botlib"
                         

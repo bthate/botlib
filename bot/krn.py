@@ -53,7 +53,7 @@ class Kernel(lo.hdl.Handler, lo.thr.Launcher):
         self.cfg.last()
         cfg = lo.strip(lo.cfg)
         self.cfg.update(cfg)
-        self.walk(lo.cfg.modules, True)
+        self.walk(self.cfg.modules, True)
         if self.error:
             print("error %s" % self.error)
             return False
