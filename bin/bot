@@ -16,7 +16,7 @@ from bot import k, __version__
 
 opts = [
     ('-s', '--shell', 'store_true', False, 'start a shell', 'shell'),
-    ('-m', '--modules', 'store', str, "", 'modules to load.', 'modules'),
+    ('-m', '--modules', 'store', str, "bot.shw", 'modules to load.', 'modules'),
     ('-w', '--workdir', 'store', str, os.path.join(os.path.expanduser("~/.bot")), 'set working directory.', 'workdir'),
     ('-l', '--loglevel', 'store', str, "error", 'set loglevel.', 'level'),
     ('-a', '--logfile', 'store', str, os.path.join(os.path.expanduser("~/.bot"), "logs", "bot.log"), 'file to log to.', 'logfile'),

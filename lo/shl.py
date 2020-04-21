@@ -159,7 +159,7 @@ def make_opts(ns, options, usage="", **kwargs):
     parser.add_argument('args', nargs='*')
     parser.parse_known_args(namespace=ns)
 
-def parse_cli(name, version=lo.__version__, opts=[], usage="", lf=None, wd=""):
+def parse_cli(name, version=lo.__version__, opts=[], usage="", lf=None, loglevel="", wd=""):
     ns = lo.Object()
     make_opts(ns, opts, usage)
     cfg = lo.Default(ns)
@@ -173,6 +173,8 @@ def parse_cli(name, version=lo.__version__, opts=[], usage="", lf=None, wd=""):
     lo.cdir(os.path.join(lo.workdir, "store", ""))
     if lf or cfg.logfile:
         lo.cdir(lf or cfg.logfile)
+    if loglevel:
+        level(loglevel, lf or cfg.logile or "")
     lo.cfg.update(cfg)
     return cfg
 
