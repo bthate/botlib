@@ -54,7 +54,8 @@ def cfg(event):
 
 def cmds(event):
     bot = k.fleet.by_orig(event.orig)
-    event.reply("|".join(sorted(bot.cmds)))
+    if bot:
+        event.reply("|".join(sorted(bot.cmds)))
     
 def fleet(event):
     try:

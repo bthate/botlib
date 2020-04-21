@@ -9,7 +9,7 @@ import lo
 import os
 
 from lo.csl import Console
-from lo.shl import execute, level, parse_cli
+from lo.shl import daemon, execute, level, parse_cli
 from lo.hdl import Command
 
 from bot import k, __version__
@@ -24,15 +24,16 @@ opts = [
 
 def main():
     parse_cli("bot", __version__, opts, """\n\n1) bot <cmd>\n2) bot -s -m bot.irc,bot.udp""")
-    level(lo.cfg.level, lo.cfg.logfile)
     k.cfg.update(lo.cfg)
-    if lo.cfg.shell:
+    if k.cfg.shell:
+        if k.cfg.daemon:
+            daemon()
         if not k.start(True):
             return
         k.wait()
         return
     k.walk(k.cfg.modules)
-    k.cmd(lo.cfg.txt)
+    k.cmd(k.cfg.txt)
     
 execute(main)
 os._exit(0)

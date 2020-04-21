@@ -46,7 +46,6 @@ class Loader(lo.Object):
         self.error = ""
                 
     def direct(self, name):
-        logging.warn("direct %s" % name)
         return importlib.import_module(name)
 
     def find_callbacks(self, mod):
