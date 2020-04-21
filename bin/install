@@ -3,7 +3,6 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 [ ! -d "/var/log/botd" ] && mkdir /var/log/botd
 [ ! -d "/var/lib/botd" ] && mkdir /var/lib/botd
-[ ! -d "/var/lib/botd/mods" ] && mkdir /var/lib/botd/mods
 touch /var/log/botd/botd.log
 cp bin/botd /usr/local/bin/botd
 cp bin/botctl /usr/local/bin/botctl
@@ -19,10 +18,3 @@ Wants=network-online.target
 [Install]
 WantedBy=multi-user.target
 EOM
-#bin/botctl cfg irc server localhost
-#bin/botctl cfg irc channel \#botlib
-systemctl enable botd
-systemctl daemon-reload
-service botd stop
-service botd start
-systemctl status botd --no-pager
