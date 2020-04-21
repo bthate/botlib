@@ -48,7 +48,7 @@ class Console(Handler):
                 continue
             except EOFError:
                 break
-            lo.hdl.dispatch_autoload(self, e)
+            lo.hdl.dispatch(self, e)
             e.wait()
         self._ready.set()
 

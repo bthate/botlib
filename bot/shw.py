@@ -54,7 +54,7 @@ def cfg(event):
 
 def cmds(event):
     bot = k.fleet.by_orig(event.orig)
-    event.reply("|".join(sorted(lo.tbl.modules)))
+    event.reply("|".join(sorted(bot.cmds)))
     
 def fleet(event):
     try:
@@ -93,7 +93,3 @@ def v(event):
     n = lo.cfg.name
     v = lo.cfg.version
     event.reply("%s %s" % (n.upper(), v))
-
-def test1(event):
-    bot = k.fleet.by_orig(event.orig)
-    bot._sock.shutdown(2)

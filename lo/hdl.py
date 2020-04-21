@@ -5,7 +5,6 @@
 import importlib
 import inspect
 import lo
-import lo.tbl
 import lo.tms
 import lo.typ
 import lo.thr
@@ -43,6 +42,7 @@ class Loader(lo.Object):
     def __init__(self):
         super().__init__()
         self.cmds = lo.Object()
+        self.mods = lo.Object()
         self.error = ""
                 
     def direct(self, name):
@@ -134,10 +134,8 @@ class Loader(lo.Object):
         for mod in mods:
             cmds = self.find_cmds(mod)
             self.cmds.update(cmds)
-            modules = self.find_modules(mod)
-            lo.tbl.modules.update(modules)
-            names = self.find_names(mod)
-            lo.tbl.names.update(names)
+            mods = self.find_modules(mod)
+            self.mods.update(mods)
         if init:
             self.init(mods)
         return mods
@@ -151,7 +149,7 @@ class Handler(Loader):
         self._stopped = False
         self.cbs = lo.Object()
         self.outcache = DoL()
-        self.register("command", dispatch_autoload)
+        self.register("command", dispatch)
 
     def handle_cb(self, event):
         if event.etype in self.cbs:
@@ -295,31 +293,11 @@ def dispatch(handler, event):
         event.ready()
         return
     event.parse()
-    logging.debug("dispatch %s" % event.txt)
     if "_func" not in event:
         chk = event.txt.split()[0]
         event._func = handler.cmds.get(chk, None)
     if event._func:
-        event._func(event)
-        event.show()
-    event.ready()
-    del event
-
-def dispatch_autoload(handler, event):
-    if not event.txt:
-        event.ready()
-        return
-    event.parse()
-    logging.debug("dispatch_autoload %s" % event.txt)
-    if "_func" not in event or not event._func:
-        chk = event.txt.split()[0].lower()
-        event._func = handler.cmds.get(chk, None)
-        if not event._func:
-            modname = lo.tbl.modules.get(chk, None)
-            if modname:
-                 handler.walk(modname)
-            event._func = handler.cmds.get(chk, None)
-    if event._func:
+        logging.debug("dispatch %s" % event.txt)
         event._func(event)
         event.show()
     event.ready()

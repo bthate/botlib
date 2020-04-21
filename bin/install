@@ -3,10 +3,12 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 [ ! -d "/var/log/botd" ] && mkdir /var/log/botd
 [ ! -d "/var/lib/botd" ] && mkdir /var/lib/botd
+[ ! -d "/var/lib/botd/mods" ] && mkdir /var/lib/botd/mods
 touch /var/log/botd/botd.log
 #python3 setup.py install
 cp bin/botd /usr/local/bin/botd
 cp bin/botctl /usr/local/bin/botctl
+cp mods/*.py /var/lib/botd/mods
 cat > /etc/systemd/system/botd.service <<-EOM
 [Unit]
 Description=botd

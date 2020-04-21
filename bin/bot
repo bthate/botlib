@@ -23,14 +23,14 @@ opts = [
 ]
 
 def main():
-    parse_cli("bot", __version__, opts, """\n\n1) bot <cmd>\n2) bot -s bot.irc,bot.udp""")
+    parse_cli("bot", __version__, opts, """\n\n1) bot <cmd>\n2) bot -s -m bot.irc,bot.udp""")
     level(lo.cfg.level, lo.cfg.logfile)
     if lo.cfg.shell:
         if not k.start(True):
             return
         k.wait()
         return
-    k.walk(lo.cfg.modules)
+    k.walk(k.cfg.modules)
     k.cmd(lo.cfg.txt)
     
 execute(main)

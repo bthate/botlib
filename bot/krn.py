@@ -13,7 +13,7 @@ import _thread
 
 from lo import Db, Cfg
 from lo.csl import Console
-from lo.hdl import Handler, Event, dispatch_autoload
+from lo.hdl import Handler, Event, dispatch
 
 from bot.flt import Fleet
 from bot.usr import Users
@@ -46,13 +46,15 @@ class Kernel(lo.hdl.Handler, lo.thr.Launcher):
         e.txt = txt
         e.orig = repr(self)
         e.parse()
-        dispatch_autoload(self, e)
+        dispatch(self, e)
         e.wait()
 
     def start(self, shell=False):
         self.cfg.last()
         cfg = lo.strip(lo.cfg)
         self.cfg.update(cfg)
+        if "all" in self.cfg.modules:
+            self.cfg.modules = "bot,mods"
         self.walk(self.cfg.modules, True)
         if self.error:
             print("error %s" % self.error)
@@ -63,6 +65,7 @@ class Kernel(lo.hdl.Handler, lo.thr.Launcher):
         super().start()
         if shell:
             c = Console()
+            c.cmds.update(self.cmds)
             c.start()
             self.fleet.add(c)
         return True
