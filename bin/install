@@ -6,6 +6,7 @@ fi
 touch /var/log/botd/botd.log
 cp bin/botd /usr/local/bin/botd
 cp bin/botctl /usr/local/bin/botctl
+cp bin/bothup /usr/local/bin/bothup
 cat > /etc/systemd/system/botd.service <<-EOM
 [Unit]
 Description=botd

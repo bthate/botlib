@@ -21,9 +21,11 @@ from bot.usr import Users
 def __dir__():
     return ("Cfg", "Kernel")
 
-class Cfg(lo.Default):
+class Cfg(lo.Cfg):
 
-    pass
+    def __init__(self, cfg={}):
+        super().__init__(cfg)
+        self.daemon = False
 
 class Kernel(lo.hdl.Handler, lo.thr.Launcher):
 

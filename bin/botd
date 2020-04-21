@@ -3,32 +3,17 @@
 #
 # bin/botd (bot daemon)
 
-import os,sys ; sys.path.insert(0, os.getcwd())
-
 import lo
 import os
 import sys
 
-from lo.shl import daemon, execute, level, parse_cli, termreset
-from bot import k, __version__
-
-opts = [
-    ('-d', '--daemon', 'store_true', False, "enable daemon mode.", "daemon"),  
-    ('-m', '--modules', 'store', str, "", 'modules to load.', 'modules'),
-    ('-o', '--options', 'store', str, "", 'options to use.', 'options'),
-    ('-w', '--workdir', 'store', str, "/var/lib/botd", 'set working directory.', 'workdir'),
-    ('-l', '--loglevel', 'store', str, "debug", 'set loglevel.', 'level'),
-    ('-a', '--logfile', 'store', str, "/var/log/botd/botd.log", 'file to log to.', 'logfile'),
-]
+from bot import k
 
 def main():
-    parse_cli("botd", __version__, opts)
-    level(lo.cfg.level, lo.cfg.logfile)
-    k.cfg.update(lo.cfg)
-    if k.cfg.daemon:
-        daemon()
+    lo.workdir ="/var/lib/botd/"
+    lo.shl.level("debug", "/var/log/botd/botd.log")
     k.start()
     k.wait()
     
-execute(main)
+lo.shl.execute(main)
 os._exit(0)

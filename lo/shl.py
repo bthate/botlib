@@ -98,11 +98,9 @@ def execute(main):
 def get_completer():
     return readline.get_completer()
 
-def level(loglevel, logfile, nostream=False):
+def level(loglevel, logfile="", nostream=False):
     assert lo.workdir
-    assert logfile
-    global logfiled
-    if not os.path.exists(logfile):
+    if logfile and not os.path.exists(logfile):
         lo.cdir(logfile)
         lo.touch(logfile)
     datefmt = '%H:%M:%S'
@@ -136,15 +134,16 @@ def level(loglevel, logfile, nostream=False):
         except ValueError:
             logging.warning("wrong level %s" % loglevel)
             loglevel = "ERROR"
-    formatter2 = logging.Formatter(format_time, datefmt)
-    filehandler = logging.handlers.TimedRotatingFileHandler(logfile, 'midnight')
-    filehandler.propagate = False
-    filehandler.setFormatter(formatter2)
-    try:
-        filehandler.setLevel(loglevel)
-    except ValueError:
-        pass
-    logger.addHandler(filehandler)
+    if logfile:
+        formatter2 = logging.Formatter(format_time, datefmt)
+        filehandler = logging.handlers.TimedRotatingFileHandler(logfile, 'midnight')
+        filehandler.propagate = False
+        filehandler.setFormatter(formatter2)
+        try:
+            filehandler.setLevel(loglevel)
+        except ValueError:
+            pass
+        logger.addHandler(filehandler)
     return logger
 
 def make_opts(ns, options, usage="", **kwargs):
@@ -160,14 +159,14 @@ def make_opts(ns, options, usage="", **kwargs):
     parser.add_argument('args', nargs='*')
     parser.parse_known_args(namespace=ns)
 
-def parse_cli(name, version=lo.__version__, opts=None, usage="", lf=None):
+def parse_cli(name, version=lo.__version__, opts=[], usage="", lf=None, wd=""):
     ns = lo.Object()
-    if opts:
-        make_opts(ns, opts, usage)
+    make_opts(ns, opts, usage)
     cfg = lo.Default(ns)
     cfg.name = name
     cfg.version = version
     cfg.txt = " ".join(cfg.args)
+    cfg.workdir = wd
     if not cfg.workdir:
         cfg.workdir = lo.hd(".%s" % name)
     lo.workdir = cfg.workdir
