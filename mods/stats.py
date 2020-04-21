@@ -20,8 +20,6 @@ def init(kernel):
             e.txt = ""
             e.rest = name
             for key in obj.keys():
-                if lo.cfg.options and key not in lo.cfg.options:
-                    continue
                 val = obj.get(key, None)
                 if val:
                     sec = seconds(val)

@@ -134,8 +134,8 @@ class Loader(lo.Object):
         for mod in mods:
             cmds = self.find_cmds(mod)
             self.cmds.update(cmds)
-            mods = self.find_modules(mod)
-            self.mods.update(mods)
+            modules = self.find_modules(mod)
+            self.mods.update(modules)
         if init:
             self.init(mods)
         return mods

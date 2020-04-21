@@ -262,7 +262,6 @@ class Object(O):
     @locked(lock)
     def save(self, stime=None):
         assert workdir
-        print(stime)
         if stime:
             self._path = os.path.join(lo.typ.get_type(self), stime) + "." + str(random.randint(1, 100000))
         opath = os.path.join(workdir, "store", self._path)

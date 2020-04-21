@@ -25,6 +25,7 @@ opts = [
 def main():
     parse_cli("bot", __version__, opts, """\n\n1) bot <cmd>\n2) bot -s -m bot.irc,bot.udp""")
     level(lo.cfg.level, lo.cfg.logfile)
+    k.cfg.update(lo.cfg)
     if lo.cfg.shell:
         if not k.start(True):
             return
