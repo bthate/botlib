@@ -56,6 +56,13 @@ class Loader(lo.Object):
                 cbs[key] = o
         return cbs
 
+    def find_all(self):
+        modules = lo.Object()
+        logging.warning("using %s" % self.mods)
+        for mod in self.mods:
+            modules.update(self.find_modules(mod))
+        return modules
+
     def find_cmds(self, mod):
         cmds = {}
         for key, o in inspect.getmembers(mod, inspect.isfunction):

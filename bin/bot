@@ -23,7 +23,7 @@ opts = [
 ]
 
 def main():
-    cfg = parse_cli("bot", __version__, opts, """\n\n1) bot <cmd>\n2) bot -s -m bot.irc\n3) bot -s -m bot.irc,bot.udp -l debug""")
+    cfg = parse_cli("bot", __version__, opts, """\n\n1) bot <cmd>\n2) bot -s -m irc,shw,udp""")
     level(cfg.level)
     k.cfg.update(cfg)
     if cfg.shell:

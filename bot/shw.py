@@ -9,11 +9,11 @@ import os
 import threading
 import time
 
+def __dir__():
+    return ("cfg", "cmds", "fleet", "mods", "ps", "up", "v")
+
 from bot import k
 from bot.dft import defaults
-
-def __dir__():
-    return ("cfg", "cmds", "fleet", "ps", "up", "v")
 
 def cfg(event):
     assert(lo.workdir)
@@ -65,6 +65,9 @@ def fleet(event):
     except (TypeError, ValueError, IndexError):
         pass
     event.reply([lo.typ.get_type(x) for x in k.fleet])
+
+def mods(event):
+    event.reply("|".join(dir(bot)))
 
 def ps(event):
     psformat = "%-8s %-50s"
