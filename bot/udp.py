@@ -2,15 +2,16 @@
 #
 #
 
+import bot
 import lo
 import logging
 import socket
 import time
 
-from bot import k
-
 def __dir__():
     return ("UDP", "Cfg", "init", "toudp") 
+
+k = bot.get_kernel(0)
 
 def init(kernel):
     server = UDP()

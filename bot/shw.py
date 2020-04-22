@@ -12,7 +12,6 @@ import time
 def __dir__():
     return ("cfg", "cmds", "fleet", "mods", "ps", "up", "v")
 
-from bot import k
 from bot.dft import defaults
 
 def cfg(event):
@@ -53,11 +52,13 @@ def cfg(event):
     event.reply("ok %s" % p)
 
 def cmds(event):
+    k = bot.get_kernel(0)
     b = k.fleet.by_orig(event.orig)
-    if b:
+    if b.cmds:
         event.reply("|".join(sorted(b.cmds)))
     
 def fleet(event):
+    k = bot.get_kernel(0)
     try:
         index = int(event.args[0])
         event.reply(str(k.fleet.bots[index]))
@@ -94,6 +95,6 @@ def up(event):
     event.reply(lo.tms.elapsed(time.time() - bot.starttime))
 
 def v(event):
-    n = lo.cfg.name
-    v = lo.cfg.version
+    n = lo.cfg.name or "botlib"
+    v = lo.cfg.version or bot.__version__
     event.reply("%s %s" % (n.upper(), v))

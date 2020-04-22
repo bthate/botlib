@@ -15,7 +15,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode, urlunparse
 from urllib.request import Request, urlopen
 
-from bot import k
+k = bot.get_kernel(0)
 
 try:
     import feedparser

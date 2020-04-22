@@ -35,16 +35,17 @@ class Kernel(lo.hdl.Handler, lo.thr.Launcher):
         self._prompted = threading.Event()
         self._prompted.set()
         self._started = False
-        self.cfg = Cfg()
+        self.cfg = Cfg(cfg)
         self.db = Db()
         self.fleet = Fleet()
         self.users = Users()
+        bot.kernels.append(self)
 
     def add(self, cmd, func):
         self.cmds[cmd] = func
 
     def cmd(self, txt):
-        self.start()
+        self.walk(self.cfg.modules)
         self.fleet.add(self)
         e = Event()
         e.txt = txt
@@ -52,12 +53,9 @@ class Kernel(lo.hdl.Handler, lo.thr.Launcher):
         e.parse()
         dispatch(self, e)
         e.wait()
-
+        return e
+        
     def start(self, shell=False):
-        self.cfg.last()
-        cfg = lo.strip(lo.cfg)
-        self.cfg.update(cfg)
-        self.walk(self.cfg.modules, True)
         if self.error:
             print(self.error)
             return False

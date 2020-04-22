@@ -95,19 +95,10 @@ class Loader(lo.Object):
 
     @locked(load_lock)
     def load_mod(self, mn, force=False):
-        if not force and mn in Loader.table:
-            logging.debug("cache %s" % mn)
-            return Loader.table[mn]
-        mod = None
-        if not force and mn in sys.modules:
-            return sys.modules[mn]
-        else:
-            Loader.table[mn] = self.direct(mn)
+        Loader.table[mn] = self.direct(mn)
         return Loader.table[mn]
 
     def walk(self, mns, init=False, force=False):
-        if not mns:
-            return
         mods = []
         for mn in mns.split(","):
             if not mn:
@@ -115,6 +106,7 @@ class Loader(lo.Object):
             m = None
             try:
                 m = self.load_mod(mn, force)
+                logging.warning("found %s" % get_name(m))
             except ModuleNotFoundError:
                 for pn in self.packages:
                     mmn = "%s.%s" % (pn, mn)

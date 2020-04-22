@@ -20,10 +20,10 @@ from lo.hdl import Event, Handler
 from lo.thr import launch
 from lo.trc import get_exception
 
-from bot import k
-
 def __dir__():
     return ('Cfg', 'DCC', 'DEvent', 'Event', 'IRC', 'init', "more")
+
+k = bot.get_kernel(0)
 
 def init(kernel):
     i = IRC()

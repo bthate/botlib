@@ -8,12 +8,12 @@ import os
 import sys
 
 from bot import k
-from lo.shl import execute
+from lo inport execute
 
 def main():
     lo.workdir = "/var/lib/botd"
     k.walk("bot")
     k.cmd(" ".join(sys.argv[1:]))
-    
+
 execute(main)
 os._exit(0)

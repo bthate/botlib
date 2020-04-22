@@ -10,7 +10,7 @@ import lo.tms
 import random
 import time
 
-from bot import k
+k = bot.get_kernel(0)
 
 def init(kernel):
     for name in wanted.keys():

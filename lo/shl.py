@@ -159,7 +159,7 @@ def make_opts(ns, options, usage="", **kwargs):
     parser.add_argument('args', nargs='*')
     parser.parse_known_args(namespace=ns)
 
-def parse_cli(name, version=lo.__version__, opts=[], usage="", lf=None, loglevel="", wd=""):
+def parse_cli(name, opts=[], version=lo.__version__, usage="", lf=None, loglevel="", wd=""):
     ns = lo.Object()
     make_opts(ns, opts, usage)
     cfg = lo.Default(ns)

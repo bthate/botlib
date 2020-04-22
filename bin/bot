@@ -8,31 +8,26 @@ import os,sys ; sys.path.insert(0, os.getcwd())
 import lo
 import os
 
+from bot.krn import Kernel
 from lo.csl import Console
-from lo.shl import daemon, execute, level, parse_cli
-
-from bot import k, __version__
+from lo.shl import daemon, execute, parse_cli
 
 opts = [
     ('-x', '--exec', 'store_true', False, 'execute a command', 'exec'),
-    ('-m', '--modules', 'store', str, "bot.shw", 'modules to load.', 'modules'),
+    ('-m', '--modules', 'store', str, "shw", 'modules to load.', 'modules'),
     ('-w', '--workdir', 'store', str, os.path.join(os.path.expanduser("~/.bot")), 'set working directory.', 'workdir'),
     ('-l', '--loglevel', 'store', str, "error", 'set loglevel.', 'level'),
     ('-a', '--logfile', 'store', str, os.path.join(os.path.expanduser("~/.bot"), "logs", "bot.log"), 'file to log to.', 'logfile'),
 ]
 
 def main():
-    cfg = parse_cli("bot", __version__, opts, """\n\n\n2) bot -x <cmd>\n2) bot -x mods\n3) bot -d\n4) bot -m irc,shw,udp""")
-    level(cfg.level)
-    k.cfg.update(cfg)
+    cfg = parse_cli("bot", opts)
+    k = Kernel(cfg)
     if cfg.exec:
-        k.walk(cfg.modules)
         k.cmd(cfg.txt)
         return
-    if cfg.daemon:
-        daemon()
-    if not k.start(True):
-        return
+    k.walk(cfg.modules)
+    k.start(True)
     k.wait()
     
 execute(main)

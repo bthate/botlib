@@ -18,8 +18,6 @@ def get_exception(txt="", sep=""):
         mod = []
         for element in plugfile[::-1]:
             mod.append(element)
-            if element == "lo" or element == "bot":
-                break
         ownname = '.'.join(mod[::-1])
         result += "%s:%s %s %s " % (ownname, linenr, func, sep)
     res = "%s%s: %s %s" % (result, exctype, excvalue, str(txt))
