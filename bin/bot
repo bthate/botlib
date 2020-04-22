@@ -5,6 +5,7 @@
 
 import os,sys ; sys.path.insert(0, os.getcwd())
 
+import bot
 import lo
 import os
 
@@ -21,7 +22,7 @@ opts = [
 ]
 
 def main():
-    cfg = parse_cli("bot", opts)
+    cfg = parse_cli("bot", opts, bot.__version__, """\n\n1) bot -x <cmds>\n2) bot -m <mods> -l <level> -w <dir> -a <file>\n3) e.g. bot -m shw,rss,irc -l debug -w data -a bot.log\n\ndefault directory is ~/.bot""")
     k = Kernel(cfg)
     if cfg.exec:
         k.cmd(cfg.txt)
