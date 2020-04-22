@@ -43,6 +43,7 @@ class Loader(lo.Object):
         super().__init__()
         self.cmds = lo.Object()
         self.mods = lo.Object()
+        self.packages = ["bot"]
         self.error = ""
                 
     def direct(self, name):
@@ -104,11 +105,17 @@ class Loader(lo.Object):
         for mn in mns.split(","):
             if not mn:
                 continue
+            m = None
             try:
                 m = self.load_mod(mn, force)
             except ModuleNotFoundError:
-                logging.warning("%s not found" % mn)
-                continue
+                for pn in self.packages:
+                    mmn = "%s.%s" % (pn, mn)
+                    try:
+                        m = self.load_mod(mmn, force)
+                    except ModuleNotFoundError:
+                        logging.warning("%s not found" % mmn)
+                        continue
             loc = None
             if "__spec__" in dir(m):
                 loc = m.__spec__.submodule_search_locations
@@ -152,7 +159,7 @@ class Handler(Loader):
 
     def handle_cb(self, event):
         if event.etype in self.cbs:
-            logging.debug(event)
+            logging.debug("handle %s" % event)
             try:
                 self.cbs[event.etype](self, event)
             except Exception as ex:

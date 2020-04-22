@@ -23,17 +23,18 @@ opts = [
 ]
 
 def main():
-    parse_cli("bot", __version__, opts, """\n\n1) bot <cmd>\n2) bot -s -m bot.irc,bot.udp""")
-    k.cfg.update(lo.cfg)
-    if k.cfg.shell:
-        if k.cfg.daemon:
+    cfg = parse_cli("bot", __version__, opts, """\n\n1) bot <cmd>\n2) bot -s -m bot.irc\n3) bot -s -m bot.irc,bot.udp -l debug""")
+    level(cfg.level)
+    k.cfg.update(cfg)
+    if cfg.shell:
+        if cfg.daemon:
             daemon()
         if not k.start(True):
             return
         k.wait()
         return
-    k.walk(k.cfg.modules)
-    k.cmd(k.cfg.txt)
+    k.walk(cfg.modules)
+    k.cmd(cfg.txt)
     
 execute(main)
 os._exit(0)

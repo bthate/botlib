@@ -59,7 +59,7 @@ class Kernel(lo.hdl.Handler, lo.thr.Launcher):
             self.cfg.modules = "bot,mods"
         self.walk(self.cfg.modules, True)
         if self.error:
-            print("error %s" % self.error)
+            print(self.error)
             return False
         lo.shl.set_completer(sorted(self.cmds))
         lo.shl.enable_history()
