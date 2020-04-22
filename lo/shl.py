@@ -173,9 +173,8 @@ def parse_cli(name, version=lo.__version__, opts=[], usage="", lf=None, loglevel
     lo.cdir(os.path.join(lo.workdir, "store", ""))
     if lf or cfg.logfile:
         lo.cdir(lf or cfg.logfile)
-    if loglevel:
-        level(loglevel, lf or cfg.logile or "")
     lo.cfg.update(cfg)
+    level(lf or cfg.level or "error", lf or cfg.logfile or "")
     return cfg
 
 def rlog(level, txt, extra):

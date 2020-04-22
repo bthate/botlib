@@ -11,8 +11,8 @@ from bot import k
 
 def main():
     lo.workdir = "/var/lib/botd"
-    lo.shl.level("error")
     k.walk("bot")
+    print(k)
     k.cmd(" ".join(sys.argv[1:]))
     
 lo.shl.execute(main)

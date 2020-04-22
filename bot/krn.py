@@ -44,6 +44,7 @@ class Kernel(lo.hdl.Handler, lo.thr.Launcher):
         self.cmds[cmd] = func
 
     def cmd(self, txt):
+        self.start()
         e = Event()
         e.txt = txt
         e.orig = repr(self)
