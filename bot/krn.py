@@ -45,6 +45,7 @@ class Kernel(lo.hdl.Handler, lo.thr.Launcher):
 
     def cmd(self, txt):
         self.start()
+        self.fleet.add(self)
         e = Event()
         e.txt = txt
         e.orig = repr(self)
@@ -56,8 +57,6 @@ class Kernel(lo.hdl.Handler, lo.thr.Launcher):
         self.cfg.last()
         cfg = lo.strip(lo.cfg)
         self.cfg.update(cfg)
-        if "all" in self.cfg.modules:
-            self.cfg.modules = "bot,mods"
         self.walk(self.cfg.modules, True)
         if self.error:
             print(self.error)

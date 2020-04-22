@@ -10,12 +10,11 @@ import os
 
 from lo.csl import Console
 from lo.shl import daemon, execute, level, parse_cli
-from lo.hdl import Command
 
 from bot import k, __version__
 
 opts = [
-    ('-s', '--shell', 'store_true', False, 'start a shell', 'shell'),
+    ('-x', '--exec', 'store_true', False, 'execute a command', 'exec'),
     ('-m', '--modules', 'store', str, "bot.shw", 'modules to load.', 'modules'),
     ('-w', '--workdir', 'store', str, os.path.join(os.path.expanduser("~/.bot")), 'set working directory.', 'workdir'),
     ('-l', '--loglevel', 'store', str, "error", 'set loglevel.', 'level'),
@@ -23,18 +22,18 @@ opts = [
 ]
 
 def main():
-    cfg = parse_cli("bot", __version__, opts, """\n\n1) bot <cmd>\n2) bot -s -m irc,shw,udp""")
+    cfg = parse_cli("bot", __version__, opts, """\n\n\n2) bot -x <cmd>\n2) bot -x mods\n3) bot -d\n4) bot -m irc,shw,udp""")
     level(cfg.level)
     k.cfg.update(cfg)
-    if cfg.shell:
-        if cfg.daemon:
-            daemon()
-        if not k.start(True):
-            return
-        k.wait()
+    if cfg.exec:
+        k.walk(cfg.modules)
+        k.cmd(cfg.txt)
         return
-    k.walk(cfg.modules)
-    k.cmd(cfg.txt)
+    if cfg.daemon:
+        daemon()
+    if not k.start(True):
+        return
+    k.wait()
     
 execute(main)
 os._exit(0)
