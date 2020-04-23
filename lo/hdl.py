@@ -107,7 +107,7 @@ class Loader(lo.Object):
             mdn = ""
             try:
                 m = self.load_mod(mn)
-                mmn = mn
+                mdn = mn
             except ModuleNotFoundError:
                 for pn in self.packages:
                     mdn = "%s.%s" % (pn, mn)
