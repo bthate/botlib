@@ -2,10 +2,12 @@
 #
 #
 
+import bot
 import sys
 
-from bot import k
 from lo.thr import get_name
+
+k = bot.get_kernel()
 
 def test1(event):
     bot = k.fleet.by_orig(event.orig)
