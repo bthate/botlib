@@ -101,25 +101,29 @@ class Loader(lo.Object):
         Loader.table[mn] = self.direct(mn)
         return Loader.table[mn]
 
-    def walk(self, mns, init=False, packages="bot"):
+    def walk(self, mns, init=False):
         mods = []
-        logging.debug("using %s" % mns)
         for mn in mns.split(","):
             if not mn:
                 continue
-            m = self.load_mod(mn)
-            if not m:
-                logging.error("can't find %s" %  mn)
+            try:
+                m = self.load_mod(mn)
+            except Exception as ex:
+                if mn not in str(ex):
+                    raise
+                logging.warning(str(ex).lower())
                 continue
             mods.append(m)
             loc = None
-            if "__spec__" in dir(m):
+            try:
                 loc = m.__spec__.submodule_search_locations
-            elif "__file__" in dir(m):
-                loc = [m.__file__,]
+            except AttributeError:
+                try:
+                    loc = [m.__file__,]
+                except AttributeError:
+                    continue
             if not loc:
                 continue
-            logging.debug("found %s" % loc)
             for md in loc:
                 module = None
                 if not os.path.isdir(md):
@@ -132,7 +136,7 @@ class Loader(lo.Object):
                         module = self.load_mod(mmn)
                         if not module:
                             continue
-                    mods.append(module)
+                        mods.append(module)
         return mods
 
     def scan(self, mods):
