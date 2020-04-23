@@ -25,7 +25,7 @@ class Cfg(lo.Cfg):
 
     pass
 
-class Kernel(lo.hdl.Handler):
+class Kernel(lo.hdl.Handler, lo.thr.Launcher):
 
     def __init__(self):
         super().__init__()

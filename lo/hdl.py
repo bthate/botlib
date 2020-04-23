@@ -45,7 +45,6 @@ class Loader(lo.Object):
 
     def __init__(self):
         super().__init__()
-        self.cfg = Cfg()
         self.cmds = lo.Object()
         self.mods = lo.Object()
         self.error = ""
@@ -102,19 +101,16 @@ class Loader(lo.Object):
         Loader.table[mn] = self.direct(mn)
         return Loader.table[mn]
 
-    def walk(self, mns, init=False):
+    def walk(self, mns, init=False, packages="bot"):
         mods = []
         for mn in mns.split(","):
             if not mn:
                 continue
             m = None
-            for pn in self.cfg.packages.split(","):
-                mdn = "%s.%s" % (pn, mn)
-                logging.debug("trying %s" % mdn)
-                m = self.load_mod(mdn)
-                if not m:
-                    logging.error("can't find %s" %  mdn)
+            logging.debug("trying %s" % mn)
+            m = self.load_mod(mn)
             if not m:
+                logging.error("can't find %s" %  mn)
                 continue
             mods.append(m)
             loc = None
@@ -128,7 +124,7 @@ class Loader(lo.Object):
             for md in loc:
                 module = None
                 if not os.path.isdir(md):
-                    fns = pkg_resources.resource_listdir(mdn, "")
+                    fns = pkg_resources.resource_listdir(md, "")
                 else:
                     fns = os.listdir(md)
                 for x in fns:

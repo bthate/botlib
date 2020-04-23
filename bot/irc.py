@@ -343,8 +343,8 @@ class IRC(Handler):
             self.channels.append(self.cfg.channel)
         self.connect()
         super().start()
-        k.launch(self.input)
-        k.launch(self.output)
+        launch(self.input)
+        aunch(self.output)
 
     def stop(self):
         super().stop()
@@ -395,7 +395,7 @@ class DCC(Handler):
         self.origin = event.origin
         self.cmds.update(k.cmds)
         k.fleet.add(self)
-        k.launch(self.input)
+        launch(self.input)
         self._connected.set()
         super().start()
         logging.warning("%s connected to DCC" % event.origin)
@@ -433,7 +433,7 @@ def error(handler, event):
     handler.state.error = event._error
     handler._connected.clear()
     handler.stop()
-    k.launch(init, k)
+    launch(init, k)
 
 def ERROR(handler, event):
     logging.error(event._error)
@@ -449,7 +449,7 @@ def PRIVMSG(handler, event):
             dcc = DCC()
             dcc.cmds.update(k.cmds)
             dcc.encoding = "utf-8"
-            k.launch(dcc.connect, event)
+            launch(dcc.connect, event)
             return
         except ConnectionRefusedError:
             return
@@ -467,4 +467,4 @@ def QUIT(handler, event):
     #    return
     if handler.cfg.server in event.orig:
         handler.stop()
-        k.launch(init, event)
+        launch(init, event)
