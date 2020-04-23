@@ -1,14 +1,15 @@
+#!/bin/sh
 if [ "$(id -u)" -ne 0 ]; then
     echo "you need root permissions" && exit 1
 fi
 
-MODULES="bot"
-SERVER="localhost"
-CHANNEL="#botlib"
-NICK="botd"
+MODULES=$1
+SERVER=$2
+CHANNEL=$3
+NICK=$4
 
-bin/botctl cfg krn modules $1 or $MODULES
-bin/botctl cfg irc server $2 or $SERVER
-bin/botctl cfg irc channel $3 or $CHANNEL
-bin/botctl cfg irc nick $4 or $NICK
+botctl cfg krn modules $MODULES
+botctl cfg irc server $SERVER
+botctl cfg irc channel $CHANNEL
+botctl cfg irc nick $NICK
 echo "done"

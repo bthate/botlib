@@ -23,19 +23,18 @@ def __dir__():
 
 class Cfg(lo.Cfg):
 
-    def __init__(self, cfg={}):
-        super().__init__(cfg)
-        self.daemon = False
+    pass
 
 class Kernel(lo.hdl.Handler):
 
-    def __init__(self, cfg={}):
+    def __init__(self):
         super().__init__()
         self._outputed = False
         self._prompted = threading.Event()
         self._prompted.set()
         self._started = False
-        self.cfg = Cfg(cfg)
+        self.cfg = Cfg()
+        self.cfg.packages = "bot"
         self.db = Db()
         self.fleet = Fleet()
         self.users = Users()
@@ -58,8 +57,6 @@ class Kernel(lo.hdl.Handler):
         if self.error:
             print(self.error)
             return False
-        lo.shl.set_completer(sorted(self.cmds))
-        lo.shl.enable_history()
         lo.shl.writepid()
         super().start()
         if shell:
@@ -68,9 +65,6 @@ class Kernel(lo.hdl.Handler):
             c.start()
             self.fleet.add(c)
         return True
-
-    def walk(self, mns):
-        return super().walk(mns)
 
     def wait(self):
         logging.warning("waiting on %s" % lo.typ.get_name(self))

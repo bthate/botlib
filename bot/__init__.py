@@ -17,7 +17,5 @@ starttime = time.time()
 kernels = []
 
 def get_kernel(nr=0):
-    if not kernels:
-        boot()
     return kernels[nr]
    

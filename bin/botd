@@ -3,17 +3,23 @@
 #
 # bin/botd (bot daemon)
 
+import bot
 import lo
 import os
 import sys
 
-from bot import k
+from bot.krn import Kernel
+from lo.shl import daemon, execute, level
 
 def main():
     lo.workdir ="/var/lib/botd/"
-    lo.shl.level("debug", "/var/log/botd/botd.log")
+    level("debug", "/var/log/botd/botd.log")
+    daemon()
+    k = Kernel()
+    k.cfg.last()
+    k.walk(k.cfg.modules)
     k.start()
     k.wait()
     
-lo.shl.execute(main)
+execute(main)
 os._exit(0)

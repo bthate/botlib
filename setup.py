@@ -8,7 +8,7 @@ def read():
 setup(
     name='botlib',
     version='80',
-    url='https://bitbucket.org/botd/botlib',
+    url='https://bitbucket.org/botlib/botlib',
     author='Bart Thate',
     author_email='bthate@dds.nl',
     description=""" BOTLIB is a library you can use to program bots. no copyright. no LICENSE. """,
@@ -17,6 +17,7 @@ setup(
     license='Public Domain',
     zip_safe=True,
     packages=["bot", "lo"],
+    scripts=["bin/bot", "bin/botctl", "bin/botd", "bin/botsrv", "bin/bothup"],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: Public Domain',
                  'Operating System :: Unix',

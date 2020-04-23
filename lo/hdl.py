@@ -35,15 +35,20 @@ class ENOMODULE(Exception):
 
     pass
 
+class Cfg(lo.Cfg):
+
+    pass
+
 class Loader(lo.Object):
 
     table = lo.Object()
 
     def __init__(self):
         super().__init__()
+        self.cfg = Cfg({"packages": "bot"})
+        self.cfg.packages = "bot"
         self.cmds = lo.Object()
         self.mods = lo.Object()
-        self.packages = ["bot"]
         self.error = ""
                 
     def direct(self, name):
@@ -98,32 +103,32 @@ class Loader(lo.Object):
         Loader.table[mn] = self.direct(mn)
         return Loader.table[mn]
 
-    def walk(self, mns, init=False, force=False):
+    def walk(self, mns, init=False):
         mods = []
         for mn in mns.split(","):
             if not mn:
                 continue
             m = None
-            mdn = ""
-            try:
-                m = self.load_mod(mn)
-                mdn = mn
-            except ModuleNotFoundError:
-                for pn in self.packages:
-                    mdn = "%s.%s" % (pn, mn)
-                    try:
-                        m = self.load_mod(mdn)
-                    except ModuleNotFoundError:
-                        logging.warning("%s not found" % mdn)
-                        continue
+            for pn in self.cfg.packages.split(","):
+                mdn = "%s.%s" % (pn, mn)
+                logging.debug("trying %s" % mdn)
+                m = self.load_mod(mdn)
+                if not m:
+                    logging.error("can't find %s" %  mdn)
+            if not m:
+                continue
+            mods.append(m)
             loc = None
             if "__spec__" in dir(m):
                 loc = m.__spec__.submodule_search_locations
-            if not loc:
-                mods.append(m)
+            elif "__file__" in dir(m):
                 loc = [m.__file__,]
+            if not loc:
+                logging.error("failed %s" % loc)
+                continue
+            logging.debug("found %s" % loc)
             for md in loc:
-                m = None
+                module = None
                 if not os.path.isdir(md):
                     fns = pkg_resources.resource_listdir(mdn, "")
                 else:
@@ -131,20 +136,18 @@ class Loader(lo.Object):
                 for x in fns:
                     if x.endswith(".py"):
                         mmn = "%s.%s" % (mn, x[:-3])
-                        try:
-                            m = self.load_mod(mmn)
-                        except ModuleNotFoundError:
+                        module = self.load_mod(mmn)
+                        if not module:
                             continue
-                    if m and m not in mods:
-                        mods.append(m)
+                    mods.append(module)
+        return mods
+
+    def scan(self, mods):
         for mod in mods:
             cmds = self.find_cmds(mod)
             self.cmds.update(cmds)
             modules = self.find_modules(mod)
             self.mods.update(modules)
-        if init:
-            self.init(mods)
-        return mods
 
 class Handler(Loader):
  
