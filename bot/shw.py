@@ -6,6 +6,7 @@ import bot
 import lo
 import lo.tms
 import os
+import pkg_resources
 import threading
 import time
 
@@ -52,7 +53,7 @@ def cfg(event):
     event.reply("ok %s" % p)
 
 def cmds(event):
-    k = bot.get_kernel(0)
+    k = bot.get_kernel()
     b = k.fleet.by_orig(event.orig)
     if b.cmds:
         event.reply("|".join(sorted(b.cmds)))
@@ -68,7 +69,8 @@ def fleet(event):
     event.reply([lo.typ.get_type(x) for x in k.fleet])
 
 def mods(event):
-    event.reply("|".join(dir(bot)))
+    fns = pkg_resources.resource_listdir("bot", "")
+    event.reply("|".join([".".join(fn.split(".")[:-1]) for fn in fns if not fn.startswith("_")]))
 
 def ps(event):
     psformat = "%-8s %-50s"

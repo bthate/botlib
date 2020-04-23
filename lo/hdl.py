@@ -94,7 +94,7 @@ class Loader(lo.Object):
                 launch(mod.init, self, name=mod.__name__)
 
     @locked(load_lock)
-    def load_mod(self, mn, force=False):
+    def load_mod(self, mn):
         Loader.table[mn] = self.direct(mn)
         return Loader.table[mn]
 
@@ -104,34 +104,35 @@ class Loader(lo.Object):
             if not mn:
                 continue
             m = None
+            mdn = ""
             try:
-                m = self.load_mod(mn, force)
-                logging.warning("found %s" % get_name(m))
+                m = self.load_mod(mn)
+                mmn = mn
             except ModuleNotFoundError:
                 for pn in self.packages:
-                    mmn = "%s.%s" % (pn, mn)
+                    mdn = "%s.%s" % (pn, mn)
                     try:
-                        m = self.load_mod(mmn, force)
+                        m = self.load_mod(mdn)
                     except ModuleNotFoundError:
-                        logging.warning("%s not found" % mmn)
+                        logging.warning("%s not found" % mdn)
                         continue
             loc = None
             if "__spec__" in dir(m):
                 loc = m.__spec__.submodule_search_locations
             if not loc:
                 mods.append(m)
-                continue
+                loc = [m.__file__,]
             for md in loc:
                 m = None
                 if not os.path.isdir(md):
-                    fns = pkg_resources.resource_listdir(mn, "")
+                    fns = pkg_resources.resource_listdir(mdn, "")
                 else:
                     fns = os.listdir(md)
                 for x in fns:
                     if x.endswith(".py"):
                         mmn = "%s.%s" % (mn, x[:-3])
                         try:
-                            m = self.load_mod(mmn, force)
+                            m = self.load_mod(mmn)
                         except ModuleNotFoundError:
                             continue
                     if m and m not in mods:

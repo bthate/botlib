@@ -7,11 +7,14 @@ import lo
 import os
 import sys
 
-from bot import k
-from lo inport execute
+#sys.path.insert(0, os.getcwd())
+
+from bot.krn import Kernel
+from lo.shl import execute, level
 
 def main():
     lo.workdir = "/var/lib/botd"
+    k = Kernel()
     k.walk("bot")
     k.cmd(" ".join(sys.argv[1:]))
 

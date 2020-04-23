@@ -27,7 +27,7 @@ class Cfg(lo.Cfg):
         super().__init__(cfg)
         self.daemon = False
 
-class Kernel(lo.hdl.Handler, lo.thr.Launcher):
+class Kernel(lo.hdl.Handler):
 
     def __init__(self, cfg={}):
         super().__init__()
@@ -45,7 +45,6 @@ class Kernel(lo.hdl.Handler, lo.thr.Launcher):
         self.cmds[cmd] = func
 
     def cmd(self, txt):
-        self.walk(self.cfg.modules)
         self.fleet.add(self)
         e = Event()
         e.txt = txt
@@ -70,9 +69,11 @@ class Kernel(lo.hdl.Handler, lo.thr.Launcher):
             self.fleet.add(c)
         return True
 
+    def walk(self, mns):
+        return super().walk(mns)
+
     def wait(self):
         logging.warning("waiting on %s" % lo.typ.get_name(self))
         while not self._stopped:
             time.sleep(1.0)
         logging.warning("shutdown")
-
