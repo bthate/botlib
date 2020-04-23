@@ -45,8 +45,7 @@ class Loader(lo.Object):
 
     def __init__(self):
         super().__init__()
-        self.cfg = Cfg({"packages": "bot"})
-        self.cfg.packages = "bot"
+        self.cfg = Cfg()
         self.cmds = lo.Object()
         self.mods = lo.Object()
         self.error = ""
@@ -124,7 +123,6 @@ class Loader(lo.Object):
             elif "__file__" in dir(m):
                 loc = [m.__file__,]
             if not loc:
-                logging.error("failed %s" % loc)
                 continue
             logging.debug("found %s" % loc)
             for md in loc:

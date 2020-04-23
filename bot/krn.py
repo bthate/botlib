@@ -34,7 +34,6 @@ class Kernel(lo.hdl.Handler):
         self._prompted.set()
         self._started = False
         self.cfg = Cfg()
-        self.cfg.packages = "bot"
         self.db = Db()
         self.fleet = Fleet()
         self.users = Users()
