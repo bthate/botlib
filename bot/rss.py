@@ -101,7 +101,7 @@ class Fetcher(lo.Object):
             feed.update(obj)
             feed.update(o)
             u = urllib.parse.urlparse(feed.link)
-            if u.path:
+            if u.path and not u.path == "/":
                 url = "%s://%s/%s" % (u.scheme, u.netloc, u.path)
             else:
                 url = feed.link

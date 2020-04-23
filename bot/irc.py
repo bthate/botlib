@@ -344,7 +344,7 @@ class IRC(Handler):
         self.connect()
         super().start()
         launch(self.input)
-        aunch(self.output)
+        launch(self.output)
 
     def stop(self):
         super().stop()

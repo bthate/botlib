@@ -103,11 +103,10 @@ class Loader(lo.Object):
 
     def walk(self, mns, init=False, packages="bot"):
         mods = []
+        logging.debug("using %s" % mns)
         for mn in mns.split(","):
             if not mn:
                 continue
-            m = None
-            logging.debug("trying %s" % mn)
             m = self.load_mod(mn)
             if not m:
                 logging.error("can't find %s" %  mn)
