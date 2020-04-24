@@ -28,15 +28,7 @@ k = bot.get_kernel(0)
 def init(kernel):
     i = IRC()
     i.cfg.last()
-    try:
-        i.cfg.server, i.cfg.channel, i.cfg.nick = lo.cfg.args
-        i.cfg.save()
-    except ValueError:
-        pass
-    if not i.cfg.server or not i.cfg.channel or not i.cfg.nick:
-        k.error = "%s <server> <channel> <nick>" % lo.cfg.name
-        return
-    i.cmds.update(k.cmds)
+    i.cmds.update(kernel.cmds)
     i.start()
     return i
 
@@ -49,6 +41,7 @@ class Cfg(Cfg):
         self.channel = "#botlib"
         self.ipv6 = False
         self.nick = "botlib"
+        self.owner = "~botlib@127.0.0.1"
         self.port = 6667
         self.realname = "botlib"
         self.server = "localhost"
@@ -292,7 +285,7 @@ class IRC(Handler):
     def logon(self, server, nick):
         self._connected.wait()
         self.raw("NICK %s" % nick)
-        self.raw("USER %s %s %s :%s" % (self.cfg.username or "bot", server, server, self.cfg.realname or "bot"))
+        self.raw("USER %s %s %s :%s" % (self.cfg.username or "botlib", server, server, self.cfg.realname or "botlib"))
 
     def input(self):
         while not self._stopped:
@@ -444,6 +437,9 @@ def NOTICE(handler, event):
         handler.command("NOTICE", event.channel, txt)
 
 def PRIVMSG(handler, event):
+    if k.cfg.users:
+        if not k.users.allowed(event.origin, "USER"):
+            return
     if event.txt.startswith("DCC CHAT"):
         try:
             dcc = DCC()

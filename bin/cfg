@@ -7,9 +7,10 @@ MODULES=$1
 SERVER=$2
 CHANNEL=$3
 NICK=$4
+OWNER=$5
 
 if [ -z `$1`]; then
-   MODULES="bot.rss,bot.shw,bot.irc"
+   MODULES="bot"
 fi
 if [ -z "$2"]; then
    SERVER="localhost"
@@ -20,11 +21,16 @@ fi
 if [ -z "$4"]; then
     NICK="botlib"
 fi
+if [ -z `$1`]; then
+   OWNER="~botlib@127.0.0.1"
+fi
 
+echo "owner: $OWNER"
 echo "modules: $MODULES"
 echo "server: $SERVER"
 echo "channel: $CHANNEL"
 echo "nick: $NICK"
+botctl meet $OWNER
 botctl cfg krn modules "$MODULES"
 botctl cfg irc server "$SERVER"
 botctl cfg irc channel "$CHANNEL"
