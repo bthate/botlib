@@ -97,6 +97,6 @@ def up(event):
     event.reply(lo.tms.elapsed(time.time() - bot.starttime))
 
 def v(event):
-    n = lo.cfg.name or "botlib"
+    n = "botlib"
     v = lo.cfg.version or bot.__version__
     event.reply("%s %s" % (n.upper(), v))
