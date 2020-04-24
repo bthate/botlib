@@ -18,6 +18,7 @@ from lo.shl import daemon, execute, parse_cli
 def main():
     lo.workdir ="/var/lib/botd/"
     level("debug", "/var/log/botd/botd.log")
+    logging.warning("BOTLIB %s started at %s" % (bot.__version__, time.ctime(time.time())))
     daemon()
     k = Kernel()
     k.cfg.last()

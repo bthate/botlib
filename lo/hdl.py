@@ -127,15 +127,24 @@ class Loader(lo.Object):
             if not loc:
                 continue
             for md in loc:
-                module = None
                 if not os.path.isdir(md):
-                    fns = pkg_resources.resource_listdir(md, "")
+                    try:
+                        fns = pkg_resources.resource_listdir(md, "")
+                    except ModuleNotFoundError:
+                        continue
                 else:
                     fns = os.listdir(md)
                 for x in fns:
                     if x.endswith(".py"):
+                        module = None
                         mmn = "%s.%s" % (mn, x[:-3])
-                        module = self.load_mod(mmn)
+                        try:
+                            module = self.load_mod(mmn)
+                        except Exception as ex:
+                            if mn not in str(ex):
+                                raise
+                            logging.warning(str(ex).lower())
+                            continue
                         if not module:
                             continue
                         mods.append(module)

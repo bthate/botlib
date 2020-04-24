@@ -5,6 +5,7 @@
 
 import os,sys ; sys.path.insert(0, os.getcwd())
 
+import bot
 import lo
 import logging
 import os
@@ -17,6 +18,7 @@ from lo.shl import execute, level, parse_cli
 def main():
     lo.workdir = "/var/lib/botd/"
     level("debug", "/var/log/botd/botd.log")
+    logging.warning("BOTLIB %s started at %s" % (bot.__version__, time.ctime(time.time())))
     k = Kernel()
     k.cfg.last()
     mods = k.walk("bot")
