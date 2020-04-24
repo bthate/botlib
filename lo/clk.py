@@ -2,6 +2,8 @@
 #
 #
 
+"""timers/repeaters."""
+
 import lo
 import threading
 import time

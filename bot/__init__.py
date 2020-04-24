@@ -2,8 +2,11 @@
 #
 #
 
+""" framework to program bots. """
+
 __version__ = 80
 
+import bot.krn
 import lo
 import time
 
@@ -17,5 +20,17 @@ starttime = time.time()
 kernels = []
 
 def get_kernel(nr=0):
+    if not kernels:
+        kernels.append(bot.krn.Kernel())
     return kernels[nr]
+
+import bot.dft
+import bot.ent
+import bot.flt
+import bot.fnd
+import bot.rss
+import bot.shw
+import bot.udp
+import bot.usr
+import bot.irc
    

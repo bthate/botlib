@@ -1,6 +1,10 @@
-# big O Object.
+# LIBOBJ - library to manipulate objects.
+#
+#
 
-__version__ = 8
+"""object."""
+
+__version__ = 9
 
 import collections
 import datetime
@@ -18,7 +22,7 @@ import _thread
 from json import JSONEncoder, JSONDecoder
 
 def __dir__():
-    return ("Cfg", "Command", "Db", "Default", "Object", "cdir", "dispatch", "execute", "locked", "parse_cli", "stamp", "strip", "workdir")
+    return ("Cfg", "Command", "Db", "Default", "Object", "cdir", "hook", "locked", "stamp", "strip", "workdir")
 
 cache = {}
 lock = _thread.allocate_lock()
@@ -46,6 +50,7 @@ timestrings = [
 ]
 
 def hooked(d):
+    """convert dict with stamp to it's object."""
     if "stamp" in d:
         t = d["stamp"].split(os.sep)[0]
         o = lo.typ.get_cls(t)()
@@ -55,6 +60,7 @@ def hooked(d):
     return o
 
 def locked(lock):
+    """lock function on provided lock."""
     def lockeddec(func, *args, **kwargs):
         def lockedfunc(*args, **kwargs):
             lock.acquire()
@@ -68,21 +74,28 @@ def locked(lock):
     return lockeddec
 
 class EJSON(Exception):
+    """wrong json."""
     pass
 
 class ENOCLASS(Exception):
+    """no such class."""
     pass
 
 class ENOFILE(Exception):
+    """no such file."""
     pass
     
 class EOVERLOAD(Exception):
+    """overloading is not permitted."""
     pass
     
 class ETYPE(Exception):
+    """wrong type."""
     pass
 
 class ObjectEncoder(JSONEncoder):
+
+    """ encode an object to string."""
 
     def default(self, o):
         if isinstance(o, Object):
@@ -97,12 +110,16 @@ class ObjectEncoder(JSONEncoder):
 
 class ObjectDecoder(JSONDecoder):
 
+    """decode a string to an object."""
+
     def decode(self, s):
         if s == "":
             return Object()
         return json.loads(s, object_hook=hooked)
 
 class O:
+
+    """basic object."""
 
     __slots__ = ("__dict__", "_path")
 
@@ -121,7 +138,6 @@ class O:
 
     def __iter__(self):
         return iter(self.keys())
-        #return iter(self.__dict__)
 
     def __len__(self):
         return len(self.__dict__)
@@ -159,6 +175,8 @@ class O:
 
 class Object(O):
 
+    """big O object."""
+
     def __init__(self, *args, **kwargs):
         super().__init__()
         if args:
@@ -173,6 +191,7 @@ class Object(O):
         return self.json()
 
     def edit(self, setter, skip=False):
+        """edit with setter dict."""
         try:
             setter = vars(setter)
         except:
@@ -193,12 +212,14 @@ class Object(O):
         return count
 
     def find(self, val):
+        """see if val is in one of the object's items."""
         for item in self.values():
             if val in item:
                 return True
         return False
 
     def format(self, keys=None):
+        """format tis object into a displayable string."""
         if keys is None:
             keys = vars(self).keys()
         res = []
@@ -218,6 +239,7 @@ class Object(O):
         return txt.strip()
 
     def last(self, strip=False):
+        """update this object to the lastest of it's types on disk."""
         db = lo.Db()
         path, l = db.last_fn(str(lo.typ.get_type(self)))
         if l:
@@ -229,6 +251,7 @@ class Object(O):
 
     @locked(lock)
     def load(self, path, force=False):
+        """load from file."""
         assert path
         assert workdir
         lpath = os.path.join(workdir, "store", path)
@@ -261,6 +284,7 @@ class Object(O):
 
     @locked(lock)
     def save(self, stime=None):
+        """save to file."""
         assert workdir
         if stime:
             self._path = os.path.join(lo.typ.get_type(self), stime) + "." + str(random.randint(1, 100000))
@@ -276,6 +300,7 @@ class Object(O):
         return self._path
 
     def search(self, match=None):
+        """search stringified values for a match."""
         res = False
         if match == None:
             return res
@@ -298,7 +323,10 @@ class Object(O):
 
 class Db(Object):
 
+    """ interface to objects stored on disk."""
+
     def all(self, otype, selector={}, index=None, delta=0):
+        """all objects of a certain type."""
         nr = -1
         for fn in names(otype, delta):
             o = hook(fn)
@@ -312,6 +340,7 @@ class Db(Object):
             yield o
 
     def deleted(self, otype, selector={}):
+        """deleted records of a type."""
         nr = -1
         for fn in names(otype):
             o = hook(fn)
@@ -323,6 +352,7 @@ class Db(Object):
             yield o
         
     def find(self, otype, selector={}, index=None, delta=0):
+        """match object based on a selector dict."""
         nr = -1
         for fn in names(otype, delta):
             o = hook(fn)
@@ -335,6 +365,7 @@ class Db(Object):
                 yield o
 
     def find_value(self, otype, value, index=None, delta=0):
+        """match objects based on stringified values.""" 
         nr = -1
         res = []
         for fn in names(otype, delta):
@@ -348,12 +379,14 @@ class Db(Object):
                 yield o
 
     def last(self, otype, index=None, delta=0):
+        """last saved object of a type."""
         fns = names(otype, delta)
         if fns:
             fn = fns[-1]
             return hook(fn)
 
     def last_fn(self, otype, index=None, delta=0):
+        """filename of the last object of a type."""
         fns = names(otype, delta)
         if fns:
             fn = fns[-1]
@@ -361,6 +394,7 @@ class Db(Object):
         return (None, None)
 
     def last_all(self, otype, selector={}, index=None, delta=0):
+        """reverser search."""
         nr = -1
         res = []
         for fn in names(otype, delta):
@@ -380,6 +414,8 @@ class Db(Object):
 
 class Default(Object):
 
+    """provides the object with a default empty string value."""
+
     def __getattr__(self, k):
         if k not in self:
             self.__dict__.__setitem__(k, "")
@@ -387,13 +423,18 @@ class Default(Object):
 
 class Cfg(Default):
 
+    """configuration."""
+
     pass
 
 cfg = Cfg()
 
 class DoL(Object):
 
+    """dict of lists."""
+
     def append(self, key, value):
+        """add a value to the self[key] list."""
         if key not in dir(self):
             self[key] = []
         if type(value) == list:
@@ -402,10 +443,12 @@ class DoL(Object):
             self[key].append(value)
 
     def update(self, d):
+        """custom update."""
         for k, v in d.items():
             self.append(k, v)
 
 def cdir(path):
+    """create a directory."""
     if os.path.exists(path):
         return
     res = ""
@@ -420,6 +463,7 @@ def cdir(path):
     return True
 
 def fntime(daystr):
+    """time in filename."""
     daystr = daystr.replace("_", ":")
     datestr = " ".join(daystr.split(os.sep)[-2:])
     try:
@@ -435,11 +479,13 @@ def fntime(daystr):
     return t
 
 def hd(*args):
+    """homedir."""
     homedir = os.path.expanduser("~")
     return os.path.abspath(os.path.join(homedir, *args))
 
 @locked(hooklock)
 def hook(fn):
+    """read file and convert it to an object."""
     #if fn in cache:
     #    return cache[fn]
     t = fn.split(os.sep)[0]
@@ -452,6 +498,7 @@ def hook(fn):
     return o
 
 def names(name, delta=None):
+    """show all names in a directory."""
     assert workdir
     if not name:
         return []
@@ -471,11 +518,13 @@ def names(name, delta=None):
     #return list(reversed(sorted(res, key=fntime)))
 
 def resulted(seq):
+    """parse a result."""
     if seq == None:
         return []
     return list(reversed(sorted(seq, key=fntime)))
     
 def stamp(o):
+    """generate a path stamp in the object."""
     for k in dir(o):
         oo = getattr(o, k, None)
         if isinstance(oo, Object):
@@ -488,6 +537,7 @@ def stamp(o):
     return o
 
 def strip(o, vals=["",]):
+    """strip valued keys from an object."""
     rip = []
     for k in o:
         for v in vals:
@@ -498,10 +548,21 @@ def strip(o, vals=["",]):
     return o
 
 def touch(fname):
+    """touch a file."""
     try:
         fd = os.open(fname, os.O_RDWR | os.O_CREAT)
         os.close(fd)
     except (IsADirectoryError, TypeError):
         pass
 
+# import all modules
+
+import lo.clk
+import lo.csl
+import lo.gnr
+import lo.hdl
 import lo.shl
+import lo.thr
+import lo.tms
+import lo.trc
+import lo.typ

@@ -1,6 +1,8 @@
 # BOTLIB - Framework to program bots.
 #
-# default values.
+#
+
+""" default values. """
 
 import lo
 

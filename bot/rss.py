@@ -2,6 +2,8 @@
 #
 #
 
+""" display rss feeds into irc channel. """
+
 import bot
 import lo
 import lo.clk

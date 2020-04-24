@@ -1,6 +1,8 @@
-# LIBOBJ - object library.
+# LIBOBJ - library to manipulate objects.
 #
-# generic functios.
+# 
+
+"""generics."""
 
 import json
 import lo

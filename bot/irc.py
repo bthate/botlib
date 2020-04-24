@@ -2,6 +2,8 @@
 #
 #
 
+""" internet relay chat bot. """
+
 import bot
 import lo
 import logging

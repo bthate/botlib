@@ -1,6 +1,8 @@
-# LIBOBJ - object library.
+# LIBOBJ - library to manipulate objects.
 #
-# trace
+#
+
+"""trace."""
 
 import os
 import sys

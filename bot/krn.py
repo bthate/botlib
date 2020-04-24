@@ -2,6 +2,8 @@
 #
 #
 
+""" kernel code. """
+
 import bot
 import inspect
 import lo

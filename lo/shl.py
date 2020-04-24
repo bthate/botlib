@@ -2,6 +2,8 @@
 #
 #
 
+"""shell."""
+
 import argparse
 import atexit
 import lo

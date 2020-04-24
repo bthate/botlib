@@ -2,6 +2,8 @@
 #
 #
 
+""" user management. """
+
 import bot
 import lo
 import logging

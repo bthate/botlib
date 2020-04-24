@@ -1,6 +1,8 @@
-# BOTLIB - Framework to program bots.
+# LIBOBJ - library to manipulate objects.
 #
 #
+
+"""console."""
 
 import lo
 import sys

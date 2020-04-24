@@ -2,6 +2,8 @@
 #
 #
 
+""" user entry commands (log/todo). """
+
 import lo
 
 class Log(lo.Object):

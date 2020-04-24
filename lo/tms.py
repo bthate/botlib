@@ -2,6 +2,8 @@
 #
 #
 
+"""time."""
+
 import datetime
 import os
 import string

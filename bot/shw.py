@@ -2,6 +2,8 @@
 #
 #
 
+""" show runtime stats. """
+
 import bot
 import lo
 import lo.tms

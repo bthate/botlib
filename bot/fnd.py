@@ -2,6 +2,8 @@
 #
 #
 
+""" find - search for objects on disk. """
+
 import lo
 import os
 import time

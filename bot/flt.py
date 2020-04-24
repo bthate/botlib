@@ -2,6 +2,8 @@
 #
 #
 
+""" fleet (list of bots). """
+
 import bot
 import lo
 

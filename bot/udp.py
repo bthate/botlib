@@ -2,6 +2,8 @@
 #
 #
 
+""" udp to irc channel relay. """
+
 import bot
 import lo
 import logging
