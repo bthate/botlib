@@ -25,8 +25,6 @@ from lo.trc import get_exception
 def __dir__():
     return ('Cfg', 'DCC', 'DEvent', 'Event', 'IRC', 'init', "more")
 
-k = bot.get_kernel(0)
-
 def init(kernel):
     i = IRC()
     i.cfg.last()
@@ -53,6 +51,7 @@ class Cfg(Cfg):
 class Event(Event):
 
     def reply(self, txt):
+        k = bot.get_kernel()
         b = k.fleet.by_orig(self.orig)
         b.say(self.channel, txt)
 
@@ -333,6 +332,7 @@ class IRC(Handler):
         self._outqueue.put_nowait((channel, txt, mtype))
 
     def start(self):
+        k = bot.get_kernel()
         k.fleet.add(self)
         if self.cfg.channel:
             self.channels.append(self.cfg.channel)
@@ -389,6 +389,7 @@ class DCC(Handler):
         self._fsock = self._sock.makefile("rw")
         self.origin = event.origin
         self.cmds.update(k.cmds)
+        k = bot.get_kernel()
         k.fleet.add(self)
         launch(self.input)
         self._connected.set()
@@ -439,6 +440,7 @@ def NOTICE(handler, event):
         handler.command("NOTICE", event.channel, txt)
 
 def PRIVMSG(handler, event):
+    k = bot.get_kernel()
     if k.cfg.users:
         if not k.users.allowed(event.origin, "USER"):
             return

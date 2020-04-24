@@ -9,7 +9,7 @@ import sys
 import time
 import unittest
 
-from bot import k
+k = bot.get_kernel()
 k.walk("mods")
 
 c = lo.csl.Console()

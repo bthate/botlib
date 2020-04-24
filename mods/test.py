@@ -7,9 +7,8 @@ import sys
 
 from lo.thr import get_name
 
-k = bot.get_kernel()
-
 def test1(event):
+    k = bot.get_kernel()
     bot = k.fleet.by_orig(event.orig)
     try:
         bot._sock.shutdown(2)

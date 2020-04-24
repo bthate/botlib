@@ -10,7 +10,6 @@ import lo.tms
 import random
 import time
 
-k = bot.get_kernel(0)
 
 def init(kernel):
     for name in wanted.keys():
@@ -104,6 +103,7 @@ def stats(event, **kwargs):
     args = event.args
     txt = "Sinds %s\n" % time.ctime(starttime)
     delta = time.time() - starttime
+    k = bot.get_kernel()
     for name, obj in wanted.items():
         for key, val in obj.items():
             try:
@@ -135,6 +135,7 @@ def stat(event, **kwargs):
         needed = seconds(nr(name))
     except ENOSTATS:
         return
+    k = bot.get_kernel()
     if needed:
         nrtimes = int(delta/needed)
         txt = "%s #%s" % (name.upper(), nrtimes)

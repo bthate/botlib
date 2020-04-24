@@ -20,8 +20,6 @@ starttime = time.time()
 kernels = []
 
 def get_kernel(nr=0):
-    if not kernels:
-        kernels.append(bot.krn.Kernel())
     return kernels[nr]
 
 import bot.dft

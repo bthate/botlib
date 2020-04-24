@@ -17,8 +17,6 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode, urlunparse
 from urllib.request import Request, urlopen
 
-k = bot.get_kernel(0)
-
 try:
     import feedparser
     gotparser = True
@@ -116,6 +114,7 @@ class Fetcher(lo.Object):
                 feed.save()
         if objs:
             Fetcher.seen.save()
+        k = bot.get_kernel(0)
         for o in objs:
             k.fleet.announce(self.display(o))
         return counter
@@ -123,6 +122,7 @@ class Fetcher(lo.Object):
     def run(self):
         thrs = []
         db = lo.Db()
+        k = bot.get_kernel(0)
         for o in db.all("bot.rss.Rss"):
             thrs.append(k.launch(self.fetch, o))
         return thrs
