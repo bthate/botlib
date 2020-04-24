@@ -15,7 +15,7 @@ from lo.shl import execute, level
 def main():
     lo.workdir = "/var/lib/botd"
     k = Kernel()
-    mods = k.walk("bot.shw")
+    mods = k.walk("bot")
     k.scan(mods)
     k.init(mods)
     k.cmd(" ".join(sys.argv[1:]))

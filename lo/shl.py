@@ -152,14 +152,19 @@ def make_opts(ns, options, usage="", **kwargs):
     for opt in options:
         if not opt:
             continue
-        if opt[2] == "store":
+        #if opt[1] == "":
+        #    parser.add_argument(opt[0], "", action=opt[2], default=opt[3], help=opt[4], dest=opt[5])
+        try:
             parser.add_argument(opt[0], opt[1], action=opt[2], type=opt[3], default=opt[4], help=opt[5], dest=opt[6], const=opt[4], nargs="?")
-        else:
-            parser.add_argument(opt[0], opt[1], action=opt[2], default=opt[3], help=opt[4], dest=opt[5])
+        except Exception as ex:
+            try:
+                parser.add_argument(opt[0], opt[1], action=opt[2], default=opt[3], help=opt[4], dest=opt[5], nargs="?")
+            except Exception as ex:
+                pass
     parser.add_argument('args', nargs='*')
     parser.parse_known_args(namespace=ns)
 
-def parse_cli(name, opts=[], version=lo.__version__, usage="", lf=None, loglevel="", wd=""):
+def parse_cli(name, opts=[], version=lo.__version__, usage=None, lf=None, loglevel="", wd=""):
     ns = lo.Object()
     make_opts(ns, opts, usage)
     cfg = lo.Default(ns)
