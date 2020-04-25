@@ -39,7 +39,7 @@ def main():
         pass
     lo.cdir("testdata")
     parse_cli("test", opts)
-    logging.error(lo.cfg)
+    lo.cfg.debug = True
     k = Kernel()
     k.fleet.add(k)
     mods = k.walk(lo.cfg.modules)

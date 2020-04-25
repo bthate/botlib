@@ -182,7 +182,6 @@ def parse_cli(name, opts=[], version=lo.__version__, usage=None, lf=None, loglev
         lo.cdir(lf or cfg.logfile)
     lo.cfg.update(cfg)
     level(lf or cfg.level or "error", lf or cfg.logfile or "")
-    logging.error(ns)
     return cfg
 
 def rlog(level, txt, extra):

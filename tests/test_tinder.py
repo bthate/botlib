@@ -87,7 +87,6 @@ def do_cmd(b, cmd):
         e.txt = cmd + " " + ex
         e.options = lo.cfg.options
         e.verbose = lo.cfg.verbose
-        print(e)
         k.put(e)
         events.append(e)
     return events
