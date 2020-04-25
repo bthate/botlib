@@ -100,6 +100,7 @@ class Loader(lo.Object):
 
     @locked(load_lock)
     def load_mod(self, mn):
+        logging.debug("load %s" % mn)
         Loader.table[mn] = self.direct(mn)
         return Loader.table[mn]
 
@@ -129,10 +130,7 @@ class Loader(lo.Object):
             for md in loc:
                 logging.debug("location %s" % md)
                 if not os.path.isdir(md):
-                    try:
-                        fns = pkg_resources.resource_listdir(md, "")
-                    except ModuleNotFoundError:
-                        continue
+                    fns = pkg_resources.files(md, "")
                 else:
                     fns = os.listdir(md)
                 for x in fns:
