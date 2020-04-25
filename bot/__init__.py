@@ -21,14 +21,3 @@ kernels = []
 
 def get_kernel(nr=0):
     return kernels[nr]
-
-import bot.dft
-import bot.ent
-import bot.flt
-import bot.fnd
-import bot.rss
-import bot.shw
-import bot.udp
-import bot.usr
-import bot.irc
-   

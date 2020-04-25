@@ -555,14 +555,3 @@ def touch(fname):
     except (IsADirectoryError, TypeError):
         pass
 
-# import all modules
-
-import lo.clk
-import lo.csl
-import lo.gnr
-import lo.hdl
-import lo.shl
-import lo.thr
-import lo.tms
-import lo.trc
-import lo.typ

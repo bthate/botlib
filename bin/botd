@@ -13,7 +13,7 @@ import time
 
 from bot.krn import Kernel
 from lo.csl import Console
-from lo.shl import daemon, execute, parse_cli
+from lo.shl import daemon, execute, level, parse_cli
 
 def main():
     lo.workdir ="/var/lib/botd/"

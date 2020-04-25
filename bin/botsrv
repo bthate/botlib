@@ -1,7 +1,7 @@
 #!/usr/bin/python3 -u
 # BOTLIB - Framework to program bots.
 #
-# bin/botd (bot channel daemon)
+# bin/botsrv (bot service)
 
 import os,sys ; sys.path.insert(0, os.getcwd())
 
