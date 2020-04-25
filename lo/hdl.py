@@ -130,23 +130,28 @@ class Loader(lo.Object):
             for md in loc:
                 logging.debug("location %s" % md)
                 if not os.path.isdir(md):
-                    fns = pkg_resources.files(md, "")
+                    try:
+                        fns = pkg_resources.resource_listdir(md, "")
+                    except ModuleNotFoundError:
+                        fns = dir(m)
                 else:
                     fns = os.listdir(md)
                 for x in fns:
                     if x.endswith(".py"):
-                        module = None
                         mmn = "%s.%s" % (mn, x[:-3])
-                        try:
-                            module = self.load_mod(mmn)
-                        except Exception as ex:
-                            if mn not in str(ex):
-                                raise
-                            logging.warning(str(ex).lower())
-                            continue
-                        if not module:
-                            continue
-                        mods.append(module)
+                    else:
+                        mmn = "%s.%s" % (mn, x)
+                    module = None
+                    try:
+                        module = self.load_mod(mmn)
+                    except Exception as ex:
+                        if mn not in str(ex):
+                            raise
+                        logging.warning(str(ex).lower())
+                        continue
+                    if not module:
+                        continue
+                    mods.append(module)
         return mods
 
     def scan(self, mods):
