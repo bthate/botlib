@@ -380,6 +380,7 @@ class DCC(Handler):
         except ConnectionRefusedError:
             logging.error("connection to %s:%s refused" % (addr, port))
             return
+        k = bot.get_kernel()
         s.send(bytes('Welcome to BOTLIB %s !!\n' % event.nick, "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
@@ -387,7 +388,6 @@ class DCC(Handler):
         self._fsock = self._sock.makefile("rw")
         self.origin = event.origin
         self.cmds.update(k.cmds)
-        k = bot.get_kernel()
         k.fleet.add(self)
         launch(self.input)
         self._connected.set()
