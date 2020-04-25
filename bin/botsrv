@@ -3,7 +3,7 @@
 #
 # bin/botsrv (bot service)
 
-import os,sys ; sys.path.insert(0, os.getcwd())
+#import os,sys ; sys.path.insert(0, os.getcwd())
 
 import bot
 import lo
@@ -21,7 +21,7 @@ def main():
     logging.warning("BOTLIB %s started at %s" % (bot.__version__, time.ctime(time.time())))
     k = Kernel()
     k.cfg.last()
-    mods = k.walk(k.cfg.modules)
+    mods = k.walk("bot")
     k.scan(mods)
     k.init(mods)
     k.start()
