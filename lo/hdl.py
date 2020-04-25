@@ -127,6 +127,7 @@ class Loader(lo.Object):
             if not loc:
                 continue
             for md in loc:
+                logging.debug("location %s" % md)
                 if not os.path.isdir(md):
                     try:
                         fns = pkg_resources.resource_listdir(md, "")
