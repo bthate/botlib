@@ -8,6 +8,7 @@ import os,sys ; sys.path.insert(0, os.getcwd())
 
 import bot
 import lo
+import logging
 import os
 import shutil
 import time
@@ -22,7 +23,7 @@ from bot import starttime
 opts = [
     ('-b', '--bork', 'store_true', False, 'bork on exception.', 'bork'),
     ('-v', '--verbose', 'store_true', False, 'enable verbose mode.', 'verbose'),
-    ('-m', '--modules', 'store', str, "", 'modules to load.', 'modules'),
+    ('-m', '--modules', 'store', str, "bot", 'modules to load.', 'modules'),
     ('-o', '--options', 'store', str, "", 'options to use.', 'options'),
     ('-w', '--workdir', 'store', str, "testdata", 'set working directory.', 'workdir'),
     ('-l', '--loglevel', 'store', str, "error", 'set loglevel.', 'level'),
@@ -36,14 +37,14 @@ def main():
         shutil.rmtree("testdata")
     except FileNotFoundError:
         pass
-    parse_cli("test", opts)
-    level(lo.cfg.level, lo.cfg.logfile)
-    lo.cfg.debug = True
-    k = Kernel()
-    k.walk("bot")
-    k.start()
-    lo.workdir = "testdata"
     lo.cdir("testdata")
+    parse_cli("test", opts)
+    logging.error(lo.cfg)
+    k = Kernel()
+    k.fleet.add(k)
+    mods = k.walk(lo.cfg.modules)
+    k.scan(mods)
+    k.start()
     test_path = os.getcwd() + os.sep + "tests"
     p = "test_*"
     suite = unittest.loader.TestLoader().discover(test_path, pattern=p)

@@ -10,18 +10,14 @@ import time
 import unittest
 
 k = bot.get_kernel()
-k.walk("mods")
-
-c = lo.csl.Console()
-#c.start()
-#k.fleet.bots.append(c)
+e = lo.hdl.Event()
+e.parse()
 
 class Param(lo.Object):
 
     pass
 
-e = lo.hdl.Event()
-e.parse()
+
 param = Param()
 param.cfg = ["irc", "rss", "krn", "irc server localhost", "irc channel \#dunkbots", "krn modules bot.udp"]
 param.delete = ["reddit", ]
@@ -35,8 +31,10 @@ param.todo = ["yo!", ""]
 
 class Event(lo.hdl.Event):
 
+    verbose = lo.cfg.verbose
+
     def show(self):
-        if lo.cfg.verbose:
+        if self.verbose:
             for txt in self.result:
                 print(txt)
 
@@ -89,6 +87,7 @@ def do_cmd(b, cmd):
         e.txt = cmd + " " + ex
         e.options = lo.cfg.options
         e.verbose = lo.cfg.verbose
+        print(e)
         k.put(e)
         events.append(e)
     return events

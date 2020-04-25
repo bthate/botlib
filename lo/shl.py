@@ -160,7 +160,7 @@ def make_opts(ns, options, usage="", **kwargs):
             parser.add_argument(opt[0], opt[1], action=opt[2], type=opt[3], default=opt[4], help=opt[5], dest=opt[6], const=opt[4], nargs="?")
         except Exception as ex:
             try:
-                parser.add_argument(opt[0], opt[1], action=opt[2], default=opt[3], help=opt[4], dest=opt[5], nargs="?")
+                parser.add_argument(opt[0], opt[1], action=opt[2], default=opt[3], help=opt[4], dest=opt[5])
             except Exception as ex:
                 pass
     parser.add_argument('args', nargs='*')
@@ -173,7 +173,7 @@ def parse_cli(name, opts=[], version=lo.__version__, usage=None, lf=None, loglev
     cfg.name = name
     cfg.version = version
     cfg.txt = " ".join(cfg.args)
-    cfg.workdir = wd
+    cfg.workdir = wd or cfg.workdir
     if not cfg.workdir:
         cfg.workdir = lo.hd(".%s" % name)
     lo.workdir = cfg.workdir
@@ -182,6 +182,7 @@ def parse_cli(name, opts=[], version=lo.__version__, usage=None, lf=None, loglev
         lo.cdir(lf or cfg.logfile)
     lo.cfg.update(cfg)
     level(lf or cfg.level or "error", lf or cfg.logfile or "")
+    logging.error(ns)
     return cfg
 
 def rlog(level, txt, extra):

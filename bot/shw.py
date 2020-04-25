@@ -61,7 +61,7 @@ def cmds(event):
         event.reply("|".join(sorted(b.cmds)))
     
 def fleet(event):
-    k = bot.get_kernel(0)
+    k = bot.get_kernel()
     try:
         index = int(event.args[0])
         event.reply(str(k.fleet.bots[index]))
