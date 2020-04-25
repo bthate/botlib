@@ -2,7 +2,7 @@
 #
 #
 
-""" display rss feeds into irc channel. """
+"""display rss feeds into irc channel."""
 
 import bot
 import lo

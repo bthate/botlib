@@ -23,7 +23,7 @@ from lo.thr import launch
 from lo.trc import get_exception
 
 def __dir__():
-    return ('Cfg', 'DCC', 'DEvent', 'Event', 'IRC', 'init', "more")
+    return ('Cfg', 'DCC', 'DEvent', 'Event', 'IRC', 'init')
 
 def init(kernel):
     i = IRC()
@@ -91,8 +91,6 @@ class IRC(Handler):
         self.state.nrsend = 0
         self.state.pongcheck = False
         self.threaded = False
-        if self.cfg.channel and self.cfg.channel not in self.channels:
-            self.channels.append(self.cfg.channel)
         self.register("error", error)
         self.register("ERROR", ERROR)
         self.register("NOTICE", NOTICE)
