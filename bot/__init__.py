@@ -4,7 +4,7 @@
 
 """ framework to program bots. """
 
-__version__ = 80
+__version__ = 81
 
 import bot.krn
 import lo

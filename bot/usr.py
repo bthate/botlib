@@ -20,7 +20,6 @@ class User(lo.Object):
 
 class Users(lo.Db):
 
-    cache = lo.Object()
     userhosts = lo.Object()
 
     def allowed(self, origin, perm):
@@ -47,11 +46,8 @@ class Users(lo.Db):
         return self.all("bot.usr.User", s)
 
     def get_user(self, origin):
-        if origin in Users.cache:
-            return Users.cache[origin]
         u =  list(self.get_users(origin))
         if u:
-            Users.cache[origin] = u[-1]
             return u[-1]
  
     def meet(self, origin, perms=None):
@@ -71,7 +67,6 @@ class Users(lo.Db):
         user = User()
         user.user = origin
         user.perms = ["OPER", "USER"]
-        Users.cache[origin] = user
         return user
 
     def perm(self, origin, permission):
