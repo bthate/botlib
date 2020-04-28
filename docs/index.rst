@@ -26,8 +26,6 @@ you can also download with pip3 and install globally.
 
  > sudo pip3 install botlib --upgrade --force-reinstall
 
-run the bin/install script, this will install binaries in /usr/local/bin/
-and installs a botd.service file in /etc/systemd/system.
 
 ::
 
