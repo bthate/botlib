@@ -23,7 +23,7 @@ from lo.thr import launch
 from lo.trc import get_exception
 
 def __dir__():
-    return ('Cfg', 'DCC', 'DEvent', 'Event', 'IRC', 'init')
+    return ('Cfg', 'DCC', 'DEvent', 'Event', 'IRC', 'cfgi', 'init')
 
 def init(kernel):
     i = IRC()
@@ -41,7 +41,6 @@ class Cfg(Cfg):
         self.channel = "#botlib"
         self.ipv6 = False
         self.nick = "botlib"
-        self.owner = "~botlib@127.0.0.1"
         self.port = 6667
         self.realname = "botlib"
         self.server = "localhost"
@@ -375,13 +374,14 @@ class DCC(Handler):
             s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
         else:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        ip = socket.inet_ntoa(addr)
         try:
             s.connect((addr, port))
         except ConnectionRefusedError:
-            logging.error("connection to %s:%s refused" % (addr, port))
+            logging.error("connection to %s:%s refused" % (ip, port))
             return
         k = bot.get_kernel()
-        s.send(bytes('Welcome to BOTLIB %s !!\n' % event.nick, "utf-8"))
+        s.send(bytes('Welcome to %s %s !!\n' % event.nick, k.cfg.name.upper() or "BOTLIB" "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s
@@ -392,7 +392,7 @@ class DCC(Handler):
         launch(self.input)
         self._connected.set()
         super().start()
-        logging.warning("%s connected to DCC" % event.origin)
+        logging.warning("%s connected to %s" % (event.origin, ip))
 
     def input(self):
         while not self._stopped:
@@ -434,15 +434,14 @@ def ERROR(handler, event):
     
 def NOTICE(handler, event):
     if event.txt.startswith("VERSION"):
-        txt = "\001VERSION %s %s - %s\001" % ("BOT", "1", "BOTLIB is a library to program bots. no copyright. no LICENSE")
+        txt = "\001VERSION %s %s - %s\001" % ("BOTD", "1", "BOTLIB is a library to program bots. no copyright. no LICENSE")
         handler.command("NOTICE", event.channel, txt)
 
 def PRIVMSG(handler, event):
     k = bot.get_kernel()
-    if k.cfg.users:
+    if event.txt.startswith("DCC CHAT"):
         if not k.users.allowed(event.origin, "USER"):
             return
-    if event.txt.startswith("DCC CHAT"):
         try:
             dcc = DCC()
             dcc.cmds.update(k.cmds)
@@ -452,6 +451,8 @@ def PRIVMSG(handler, event):
         except ConnectionRefusedError:
             return
     if event.txt and event.txt[0] == handler.cc:
+        if not k.users.allowed(event.origin, "USER"):
+            return
         e = Event()
         e.etype = "command"
         e.channel = event.channel

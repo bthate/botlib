@@ -79,6 +79,10 @@ class Users(lo.Db):
         return user
 
 def meet(event):
+    k = bot.get_kernel()
+    if event.origin != k.cfg.owner:
+        event.reply("only owner can meet")
+        return
     if not event.args:
         event.reply("meet origin [permissions]")
         return
@@ -88,10 +92,14 @@ def meet(event):
         event.reply("meet origin [permissions]")
         return
     origin = bot.usr.Users.userhosts.get(origin, origin)
-    bot.usr.Users().meet(origin, perms)
+    k.users.meet(origin, perms)
     event.reply("added %s" % origin)
 
 def users(event):
+    k = bot.get_kernel()
+    if event.origin != k.cfg.owner:
+        event.reply("only owner can list users")
+        return
     res = ""
     db = lo.Db()
     for o in db.all("bot.usr.User"):
