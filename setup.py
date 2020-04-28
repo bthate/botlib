@@ -16,7 +16,7 @@ setup(
     long_description_content_type="text/x-rst",
     license='Public Domain',
     zip_safe=True,
-    install_depends=["libobj"],
+    install_requires=["libobj"],
     packages=["bot"],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: Public Domain',
