@@ -1,9 +1,0 @@
-#!/bin/bash
-bin/clean
-#python3 -mvirtualenv -p python3 --no-site-packages envs/latest
-python3 -mvirtualenv -p python3 --extra-search-dir dist --download env
-python3 -mvirtualenv -p python3 env
-source env/bin/activate
-env/bin/python3 env/bin/pip3 install -U -r requirements.txt
-env/bin/python3 env/bin/sphinx-build -a -E docs _build/html
-env/bin/python3 env/bin/sphinx-build -a -E docs _build/localmedia
