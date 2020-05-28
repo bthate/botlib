@@ -16,7 +16,7 @@ setup(
     long_description_content_type="text/x-rst",
     license='Public Domain',
     zip_safe=True,
-    packages=["bot", "lo"],
+    packages=["bot", "bot", "lo"],
     scripts=["bin/bot"],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: Public Domain',
