@@ -17,6 +17,7 @@ setup(
     license='Public Domain',
     zip_safe=True,
     packages=["bot", "lo"],
+    scripts=["bin/bot"],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: Public Domain',
                  'Operating System :: Unix',
