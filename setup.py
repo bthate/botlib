@@ -7,7 +7,7 @@ def read():
 
 setup(
     name='botlib',
-    version='82',
+    version='83',
     url='https://bitbucket.org/botlib/botlib',
     author='Bart Thate',
     author_email='bthate@dds.nl',
@@ -16,8 +16,7 @@ setup(
     long_description_content_type="text/x-rst",
     license='Public Domain',
     zip_safe=True,
-    install_requires=["libobj"],
-    packages=["bot"],
+    packages=["bot", "lo"],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: Public Domain',
                  'Operating System :: Unix',

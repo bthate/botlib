@@ -4,7 +4,6 @@
 
 """ kernel code. """
 
-import bot
 import inspect
 import lo
 import logging
@@ -15,10 +14,12 @@ import _thread
 
 from lo import Db, Cfg
 from lo.csl import Console
+from lo.flt import Fleet
 from lo.hdl import Handler, Event, dispatch
-
-from bot.flt import Fleet
-from bot.usr import Users
+from lo.shl import writepid
+from lo.thr import launch
+from lo.typ import get_name
+from lo.usr import Users
 
 def __dir__():
     return ("Cfg", "Kernel")
@@ -27,19 +28,21 @@ class Cfg(lo.Cfg):
 
     pass
 
-class Kernel(lo.hdl.Handler, lo.thr.Launcher):
+class Kernel(lo.hdl.Handler):
 
     def __init__(self):
         super().__init__()
         self._outputed = False
         self._prompted = threading.Event()
         self._prompted.set()
+        self._ready = threading.Event()
         self._started = False
-        self.cfg = Cfg()
+        self.cfg = Cfg(lo.cfg)
         self.db = Db()
         self.fleet = Fleet()
+        self.force = False
         self.users = Users()
-        bot.kernels.append(self)
+        lo.kernels.append(self)
 
     def add(self, cmd, func):
         self.cmds[cmd] = func
@@ -49,26 +52,46 @@ class Kernel(lo.hdl.Handler, lo.thr.Launcher):
         e = Event()
         e.txt = txt
         e.orig = repr(self)
+        e.origin = "root@shell"
         e.parse()
-        dispatch(self, e)
+        launch(dispatch, self, e)
         e.wait()
         return e
         
-    def start(self, shell=False):
+    def start(self, shell=False, init=True):
         if self.error:
             print(self.error)
             return False
-        lo.shl.writepid()
-        super().start()
+        writepid()
+        if lo.cfg.root:
+            self.cfg.last()
+            self.cfg.txt = ""
+            self.cfg.merge(lo.cfg)
+            self.cfg.save()
+        else:
+            self.cfg.merge(lo.cfg)
+        if self.cfg.owner:
+            if not self.users.allowed(self.cfg.owner, "USER", log=False):
+                self.users.meet(self.cfg.owner)
+        if not self.cfg.modules:
+            self.cfg.modules = "lo.shw"
+        self.walk(self.cfg.modules, init)
         if shell:
             c = Console()
             c.cmds.update(self.cmds)
             c.start()
             self.fleet.add(c)
+        super().start()
         return True
 
+    def ready(self):
+        self._ready.set()
+
+    def stop(self):
+        self._stopped = True
+        self._queue.put(None)
+
     def wait(self):
-        logging.warning("waiting on %s" % lo.typ.get_name(self))
-        while not self._stopped:
-            time.sleep(1.0)
+        logging.warning("waiting on %s" % get_name(self))
+        self._ready.wait()
         logging.warning("shutdown")

@@ -4,7 +4,6 @@
 
 """ user management. """
 
-import bot
 import lo
 import logging
 
@@ -22,14 +21,18 @@ class Users(lo.Db):
 
     userhosts = lo.Object()
 
-    def allowed(self, origin, perm):
+    def allowed(self, origin, perm, log=True):
+        k = lo.get_kernel()
+        if k.cfg.owner and origin != k.cfg.owner:
+             return True
         perm = perm.upper()
         origin = self.userhosts.get(origin, origin)
         user = self.get_user(origin)
         if user:
             if perm in user.perms:
                 return True
-        logging.error("denied %s" % origin)
+        if log:
+            logging.error("denied %s" % origin)
         return False
 
     def delete(self, origin, perm):
@@ -43,7 +46,7 @@ class Users(lo.Db):
 
     def get_users(self, origin=""):
         s = {"user": origin}
-        return self.all("bot.usr.User", s)
+        return self.all("lo.usr.User", s)
 
     def get_user(self, origin):
         u =  list(self.get_users(origin))
@@ -79,9 +82,9 @@ class Users(lo.Db):
         return user
 
 def meet(event):
-    k = bot.get_kernel()
-    if event.origin != k.cfg.owner:
-        event.reply("only owner can meet")
+    k = lo.get_kernel()
+    if not event.origin == k.cfg.owner:
+        event.reply("only owner can add users")
         return
     if not event.args:
         event.reply("meet origin [permissions]")
@@ -91,17 +94,15 @@ def meet(event):
     except ValueError:
         event.reply("meet origin [permissions]")
         return
-    origin = bot.usr.Users.userhosts.get(origin, origin)
+    k = lo.get_kernel()
+    origin = lo.usr.Users.userhosts.get(origin, origin)
     k.users.meet(origin, perms)
-    event.reply("added %s" % origin)
+    event.reply("ok")
 
 def users(event):
-    k = bot.get_kernel()
-    if event.origin != k.cfg.owner:
-        event.reply("only owner can list users")
-        return
+    k = lo.get_kernel()
     res = ""
     db = lo.Db()
-    for o in db.all("bot.usr.User"):
+    for o in db.all("lo.usr.User"):
         res += "%s," % o.user
     event.reply(res)
