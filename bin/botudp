@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# MYBOT - IRC bot you can program your own commands for.
+# BOTLIB - Framework to program bots.
 # -*- coding: utf-8 -*-
-# bin/myudp (udp to bot relay)
+# bin/botudp (udp to bot relay)
 
 import logging
 import os
