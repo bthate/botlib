@@ -68,7 +68,7 @@ class Loader(lo.Object):
         for key, o in inspect.getmembers(mod, inspect.ismodule):
              if o not in mods:
                  mods.append(o)
-        mod = self.direct("mybot")
+        mod = self.direct("lo")
         for key, o in inspect.getmembers(mod, inspect.ismodule):
              if o not in mods:
                  mods.append(o)

@@ -27,21 +27,21 @@ U S A G E
 
  usage: .
 
-  > bot                - starts a shell
-  > bot <cmd>          - executes a command
-  > bot cmds		 - shows list of commands
-  > bot -m <mod1,mod2> - load modules
-  > bot mods		 - shows loadable modules
-  > bot -w <dir>       - use directory as workdir, default is ~/.mybot
-  > bot cfg		 - show configuration
-  > bot -d             - run as daemon
-  > bot -r		 - root mode, use /var/lib/mybot
-  > bot -o <op1,op2>   - set options
-  > bot -l <level>     - set loglevel
+  > bot				- starts a shell
+  > bot <cmd>          		- executes a command
+  > bot cmds			- shows list of commands
+  > bot -m <mod1,mod2>		- load modules
+  > bot mods			- shows loadable modules
+  > bot -w <dir>		- use directory as workdir, default is ~/.bot
+  > bot cfg			- show configuration
+  > bot -d			- run as daemon
+  > bot -r			- root mode, use /var/lib/botd
+  > bot -o <op1,op2>		- set options
+  > bot -l <level>		- set loglevel
 
  example:
 
-  > bot -m bot.irc -s localhost -c \#dunkbots -n mybot --owner root@shell
+  > bot -m bot.irc -s localhost -c \#dunkbots -n botlib --owner root@shell
 
 
 I N S T A L L
@@ -51,9 +51,9 @@ you can download with pip3 and install globally:
 
 ::
 
- > sudo pip3 install mybot 
+ > sudo pip3 install botlib 
 
-You can also download the tarball and install from that, see https://pypi.org/project/mybot/#files
+You can also download the tarball and install from that, see https://pypi.org/project/botlib/#files
 
 ::
 

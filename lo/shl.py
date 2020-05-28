@@ -220,6 +220,7 @@ def touch(fname):
 def writepid():
     assert lo.workdir
     path = os.path.join(lo.workdir, "pid")
+    lo.cdir(path)
     f = open(path, 'w')
     f.write(str(os.getpid()))
     f.flush()
