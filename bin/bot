@@ -6,15 +6,15 @@
 __version__ = 83
 __txt__ = """.
 
- > bot                - starts a shell
- > bot <args>         - executes a command
+ > bot                	- starts a shell
+ > bot <args>         	- executes a command
  > bot cmds		- shows list of commands
- > bot -m <mod1,mod2> - load modules
+ > bot -m <mod1,mod2> 	- load modules
  > bot mods		- shows loadable modules
- > bot -w <dir>       - use directory as workdir, default is ~/.mybot
+ > bot -w <dir>       	- use directory as workdir, default is ~/.mybot
  > bot cfg		- show configuration
- > bot -o <op1,op2>   - set options
- > bot -l <level>     - set loglevel
+ > bot -o <op1,op2>   	- set options
+ > bot -l <level>     	- set loglevel
 
 example:
 

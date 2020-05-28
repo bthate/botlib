@@ -28,7 +28,7 @@ param.meet = ["test@shell", "bart"]
 param.rss = ["https://www.reddit.com/r/python/.rss", ""]
 param.todo = ["yo!", ""]
 
-k = bot.get_kernel()
+k = lo.get_kernel()
 events = []
 ignore = ["tinder",]
 lo.cfg.debug = True
@@ -38,7 +38,7 @@ def tinder(event):
     lo.workdir = "testdata"
     global events
     events = []
-    k = bot.get_kernel()
+    k = lo.get_kernel()
     if lo.cfg.txt:
         k.start()
     for x in range(event.index):
@@ -47,7 +47,7 @@ def tinder(event):
     lo.workdir = oldwd
 
 def tests(b):
-    k = bot.get_kernel()
+    k = lo.get_kernel()
     keys = list(k.cmds)
     random.shuffle(keys)
     for cmd in keys:
@@ -56,7 +56,7 @@ def tests(b):
 def do_cmd(b, cmd):
     if cmd in ignore:
         return []
-    k = bot.get_kernel()
+    k = lo.get_kernel()
     exs = param.get(cmd, [])
     if not exs:
         exs = ["bla",]

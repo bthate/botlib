@@ -25,6 +25,8 @@ from lo.trc import get_exception
 def __dir__():
     return ('Cfg', 'DCC', 'DEvent', 'Event', 'IRC', 'cfgi', 'init')
 
+k = lo.get_kernel()
+
 def init(kernel):
     i = IRC()
     i.cfg.last()
@@ -50,7 +52,6 @@ class Cfg(Cfg):
 class Event(Event):
 
     def reply(self, txt):
-        k = bot.get_kernel()
         b = k.fleet.by_orig(self.orig)
         b.say(self.channel, txt)
 
@@ -329,7 +330,6 @@ class IRC(Handler):
         self._outqueue.put_nowait((channel, txt, mtype))
 
     def start(self):
-        k = bot.get_kernel()
         k.fleet.add(self)
         if self.cfg.channel:
             self.channels.append(self.cfg.channel)
@@ -380,7 +380,6 @@ class DCC(Handler):
         except ConnectionRefusedError:
             logging.error("connection to %s:%s refused" % (ip, port))
             return
-        k = bot.get_kernel()
         s.send(bytes('Welcome to %s %s !!\n' % event.nick, k.cfg.name.upper() or "BOTLIB" "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
@@ -438,7 +437,6 @@ def NOTICE(handler, event):
         handler.command("NOTICE", event.channel, txt)
 
 def PRIVMSG(handler, event):
-    k = bot.get_kernel()
     if event.txt.startswith("DCC CHAT"):
         if not k.users.allowed(event.origin, "USER"):
             return

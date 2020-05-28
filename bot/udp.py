@@ -40,7 +40,7 @@ class UDP(lo.Object):
         self.cfg = Cfg()
         
     def output(self, txt, addr):
-        k = bot.get_kernel(0)
+        k = lo.get_kernel()
         for bot in k.fleet.bots:
             bot.announce(txt.replace("\00", ""))
 
@@ -69,7 +69,7 @@ class UDP(lo.Object):
         self._sock.sendto(bytes("exit", "utf-8"), (self.cfg.host, self.cfg.port))
 
     def start(self):
-        k = bot.get_kernel(0)
+        k = lo.get_kernel()
         self.cfg.last()
         k.launch(self.server)
 

@@ -23,7 +23,7 @@ def cfg(event):
         except ValueError:
             event.reply("cfg <server> <channel> <nick> [<owner>]")
             return
-    k = bot.get_kernel()
+    k = lo.get_kernel()
     c = bot.irc.Cfg()
     c.last()
     c.server = server
