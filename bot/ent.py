@@ -4,6 +4,9 @@
 
 """ user entry commands (log/todo). """
 
+def __dir__():
+    return ("log", "todo", "done")
+
 import lo
 
 class Log(lo.Object):
@@ -19,6 +22,7 @@ class Todo(lo.Object):
         self.txt = ""
 
 def log(event):
+    """ log some text. """
     if not event.rest:
        db = lo.Db()
        nr = 0
@@ -32,6 +36,7 @@ def log(event):
     event.reply("ok")
 
 def todo(event):
+    """ add a todo item. """
     if not event.rest:
        db = lo.Db()
        nr = 0
@@ -45,6 +50,7 @@ def todo(event):
     event.reply("ok")
 
 def done(event):
+    """ remove a todo item. """
     if not event.args:
         event.reply("done <match>")
         return

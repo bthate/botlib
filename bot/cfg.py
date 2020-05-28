@@ -6,7 +6,6 @@
 
 import bot
 import bot.irc
-import bot.krn
 
 def __dir__():
     return ("cfg", )

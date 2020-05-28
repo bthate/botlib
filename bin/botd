@@ -16,11 +16,12 @@ from lo.shl import execute, level
 def main():
     lo.cfg.workdir = lo.workdir = "/var/lib/botd"
     lo.cfg.root = True
+    lo.cfg.name = "botd"
     level("debug", "/var/log/botd/bot.log")
     logging.warning("%s %s started on %s" % ("BOTD", __version__, time.ctime(time.time())))
     k = Kernel()
-    logging.debug(k.cfg)
     k.start()
+    logging.debug(k.cfg)
     k.wait()
     
 execute(main)

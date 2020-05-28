@@ -4,7 +4,6 @@
 
 """ internet relay chat bot. """
 
-import bot
 import lo
 import logging
 import os
@@ -17,37 +16,31 @@ import time
 import threading
 import _thread
 
-from lo import Cfg, DoL, Object
 from lo.hdl import Event, Handler
 from lo.thr import launch
 from lo.trc import get_exception
 
 def __dir__():
-    return ('Cfg', 'DCC', 'DEvent', 'Event', 'IRC', 'cfgi', 'init')
+    return ('Cfg', 'DCC', 'DEvent', 'Event', 'IRC', 'init')
 
 k = lo.get_kernel()
 
 def init(kernel):
     i = IRC()
     i.cfg.last()
+    i.cfg.server = lo.cfg.server or i.cfg.server or "localhost"
+    i.cfg.channel = lo.cfg.channel or i.cfg.channel or "\#dunkbots"
+    i.cfg.nick = lo.cfg.nick or i.cfg.nick or "mybot"
+    i.cfg.save()
     i.cmds.update(kernel.cmds)
     i.start()
     return i
 
 saylock = _thread.allocate_lock()
 
-class Cfg(Cfg):
+class Cfg(lo.Cfg):
 
-    def __init__(self):
-        super().__init__()
-        self.channel = "#botlib"
-        self.ipv6 = False
-        self.nick = "botlib"
-        self.port = 6667
-        self.realname = "botlib"
-        self.server = "localhost"
-        self.ssl = False
-        self.username = "botlib"
+    pass
                         
 class Event(Event):
 
@@ -82,7 +75,7 @@ class IRC(Handler):
         self.cc = "!"
         self.cfg = Cfg()
         self.channels = []
-        self.state = Object()
+        self.state = lo.Object()
         self.state.needconnect = False
         self.state.error = ""
         self.state.last = 0
@@ -330,6 +323,7 @@ class IRC(Handler):
         self._outqueue.put_nowait((channel, txt, mtype))
 
     def start(self):
+        k = lo.get_kernel()
         k.fleet.add(self)
         if self.cfg.channel:
             self.channels.append(self.cfg.channel)
@@ -374,13 +368,13 @@ class DCC(Handler):
             s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
         else:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        ip = socket.inet_ntoa(addr)
         try:
             s.connect((addr, port))
         except ConnectionRefusedError:
-            logging.error("connection to %s:%s refused" % (ip, port))
+            logging.error("connection to %s:%s refused" % (addr, port))
             return
-        s.send(bytes('Welcome to %s %s !!\n' % event.nick, k.cfg.name.upper() or "BOTLIB" "utf-8"))
+        k = lo.get_kernel()
+        s.send(bytes('Welcome to %s %s !!\n' % (k.cfg.name.upper() or "BOTLIB", event.nick), "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s
@@ -391,7 +385,6 @@ class DCC(Handler):
         launch(self.input)
         self._connected.set()
         super().start()
-        logging.warning("%s connected to %s" % (event.origin, ip))
 
     def input(self):
         while not self._stopped:
@@ -422,6 +415,7 @@ class DCC(Handler):
         self.raw(txt)
 
 def error(handler, event):
+    k = lo.get_kernel()
     logging.error(event._error)
     handler.state.error = event._error
     handler._connected.clear()
@@ -433,10 +427,11 @@ def ERROR(handler, event):
     
 def NOTICE(handler, event):
     if event.txt.startswith("VERSION"):
-        txt = "\001VERSION %s %s - %s\001" % ("BOTD", "1", "BOTLIB is a library to program bots. no copyright. no LICENSE")
+        txt = "\001VERSION %s %s - %s\001" % (lo.cfg.name or "BOTLIB", "1", lo.cfg.descr or "BOTLIB is a library to program bots. no copyright. no LICENSE")
         handler.command("NOTICE", event.channel, txt)
 
 def PRIVMSG(handler, event):
+    k = lo.get_kernel()
     if event.txt.startswith("DCC CHAT"):
         if not k.users.allowed(event.origin, "USER"):
             return

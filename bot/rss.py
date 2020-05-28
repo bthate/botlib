@@ -27,6 +27,8 @@ except ModuleNotFoundError:
 def __dir__():
     return ("Cfg,", "Feed", "Rss", "Seen", "Fetcher", "delete", "display", "feed", "fetch", "init", "rss")
 
+k = lo.get_kernel()
+
 def init(kernel):
     fetcher = Fetcher()
     fetcher.start()
@@ -114,7 +116,7 @@ class Fetcher(lo.Object):
                 feed.save()
         if objs:
             Fetcher.seen.save()
-        k = lo.get_kernel(0)
+        k = bot.get_kernel(0)
         for o in objs:
             k.fleet.announce(self.display(o))
         return counter
@@ -122,9 +124,9 @@ class Fetcher(lo.Object):
     def run(self):
         thrs = []
         db = lo.Db()
-        k = lo.get_kernel(0)
+        k = bot.get_kernel(0)
         for o in db.all("bot.rss.Rss"):
-            thrs.append(k.launch(self.fetch, o))
+            thrs.append(lo.thr.launch(self.fetch, o))
         return thrs
 
     def start(self, repeat=True):

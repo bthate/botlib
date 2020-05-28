@@ -13,6 +13,7 @@ import time
 def __dir__():
     return ("UDP", "Cfg", "init", "toudp") 
 
+k = lo.get_kernel()
 
 def init(kernel):
     server = UDP()
@@ -71,7 +72,7 @@ class UDP(lo.Object):
     def start(self):
         k = lo.get_kernel()
         self.cfg.last()
-        k.launch(self.server)
+        lo.thr.launch(self.server)
 
 def toudp(host, port, txt):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
