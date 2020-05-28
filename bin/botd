@@ -18,6 +18,7 @@ def main():
     level("debug", "/var/log/botd/bot.log")
     logging.warning("%s %s started on %s" % ("BOTD", __version__, time.ctime(time.time())))
     k = Kernel()
+    logging.debug(k.cfg)
     k.start()
     k.wait()
     
