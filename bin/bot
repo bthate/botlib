@@ -1,0 +1,76 @@
+#!/usr/bin/python3 -u
+# MYBOT - a IRC bot that you can write your own commands for.
+#
+# bin/mybot (irc bot)
+
+__version__ = 6
+__txt__ = """.
+
+ > mybot                - starts a shell
+ > mybot <args>         - executes a command
+ > mybot cmds		- shows list of commands
+ > mybot -m <mod1,mod2> - load modules
+ > mybot mods		- shows loadable modules
+ > mybot -w <dir>       - use directory as workdir, default is ~/.mybot
+ > mybot cfg		- show configuration
+ > mybot -d             - run as daemon
+ > mybot -r		- root mode, use /var/lib/mybot
+ > mybot -o <op1,op2>   - set options
+ > mybot -l <level>     - set loglevel
+
+example:
+
+ > mybot -m bot.irc -s localhost -c \#dunkbots -n mybot --owner root@shell
+
+"""
+
+import os, sys ; sys.path.insert(0, os.getcwd())
+
+import bot
+import lo
+import logging
+import os
+import sys
+import time
+
+from lo.krn import Kernel
+from lo.csl import Console
+from lo.shl import daemon, enable_history, execute, level, parse_cli, set_completer
+
+opts = [
+    ('-c', '--channel', 'store', str, "", "channel to join", 'channel'),
+    ("-d", "--daemon", "store_true", False, "run in background mode", "daemon"),
+    ('-f', '--file', 'store', str, "", "file to log to", 'logfile'),
+    ('-l', '--loglevel', 'store', str, "error", 'set loglevel.', 'level'),
+    ('-m', '--modules', 'store', str, "", 'modules to load.', 'modules'),
+    ('-n', '--nick', 'store', str, "", 'nickname to use.', 'nick'),
+    ('-o', '--options', 'store', str, "", "options to use", 'options'),
+    ('-r', '--root', 'store_true', False, 'use root', 'root'),
+    ('-s', '--server', 'store', str, "", "server to connect to", 'server'),
+    ('-w', '--workdir', 'store', str, "", "directory to work on", 'workdir'),
+    ('-x', '--owner', 'store', str, "", "owner's userhost", 'owner')
+]
+
+def main():
+    parse_cli("bot", opts, __version__, __txt__)
+    if lo.cfg.root:
+        lo.cfg.workdir = lo.workdir = "/var/lib/mybot"
+        lo.cfg.logfile = "/var/log/mybot/mybot.log"
+    level(lo.cfg.level, lo.cfg.logfile)
+    k = Kernel()
+    if lo.cfg.daemon:
+        daemon()
+    if lo.cfg.txt:
+        k.walk(lo.cfg.modules or "bot")
+        k.cmd(lo.cfg.txt)
+        return
+    if not lo.cfg.root:
+        k.start(True)
+        set_completer(k.cmds)
+        enable_history()
+    else:
+        k.start()
+    k.wait()
+    
+execute(main)
+os._exit(0)
