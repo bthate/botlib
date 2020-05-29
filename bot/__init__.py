@@ -12,7 +12,7 @@ import time
 from lo import get_kernel
 
 def __dir__():
-    return ("dft", "ent", "flt", "irc", "rss", "udp",  "usr", "starttime", "kernels")
+    return ("cfg", "ent", "irc", "rss", "udp",  "starttime")
 
 #:
 starttime = time.time()

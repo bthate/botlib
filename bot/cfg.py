@@ -10,8 +10,6 @@ import bot.irc
 def __dir__():
     return ("cfg", )
 
-from bot.dft import defaults
-
 def cfg(event):
     owner = None
     try:

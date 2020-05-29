@@ -19,7 +19,7 @@ setup(
     license='Public Domain',
     zip_safe=True,
     install_requires=["libobj"],
-    packages=["bot", "bot.mods"],
+    packages=["bot"],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: Public Domain',
                  'Operating System :: Unix',
