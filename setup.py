@@ -1,4 +1,6 @@
 # setup.py
+#
+#
 
 from setuptools import setup
 
@@ -16,8 +18,8 @@ setup(
     long_description_content_type="text/x-rst",
     license='Public Domain',
     zip_safe=True,
-    packages=["lo", "bot", "bot.mods"],
-    scripts=["bin/bot", "bin/botcfg", "bin/botd", "bin/bothup", "bin/botudp"],
+    install_requires=["libobj"],
+    packages=["bot", "bot.mods"],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: Public Domain',
                  'Operating System :: Unix',
