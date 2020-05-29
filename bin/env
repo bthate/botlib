@@ -7,4 +7,4 @@ python3 -mvirtualenv -p python3 --extra-search-dir dist --copies env
 cp bin/bot env/bin/bot
 source env/bin/activate
 env/bin/python3 env/bin/pip3 install -U -f dist -r requirements.txt
-tar zcvf env.tar.gz env 2>1 1>0
+tar zcvf env.tar.gz env > /dev/null
