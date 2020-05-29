@@ -1,0 +1,2 @@
+libobj>=10
+botlib>=83
