@@ -53,7 +53,7 @@ def main():
     level(cfg.level, cfg.logfile)
     k = Kernel()
     if cfg.txt:
-        k.walk(cfg.modules or "bot")
+        k.walk(cfg.modules or "bot.mods")
         k.cmd(cfg.txt)
         return
     if not cfg.modules:
