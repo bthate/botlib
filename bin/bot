@@ -27,6 +27,8 @@ import sys, os
 sys.path.insert(0, os.getcwd())
 
 def scan_dir(dname):
+    if not os.path.isdir(dname):
+        return
     for ename in os.listdir(dname):
         if ename.endswith(".egg"):
            sys.path.insert(0, os.path.join(dname, ename))
