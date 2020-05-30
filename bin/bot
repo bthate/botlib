@@ -22,14 +22,20 @@ example:
 
 """
 
+def scan_dir(dname):
+    for ename in os.listdir(dname):
+        if ename.endswith(".egg"):
+           sys.path.insert(0, ename)
+
 import logging
 import os
 import sys
 import time
 
-sys.path.insert(0, os.getcwd())
+scan_dir(os.getcwd())
 
-from lo import cfg
+import lo
+
 from lo.shl import enable_history, execute, level, parse_cli, set_completer
 from lo.krn import Kernel
 
@@ -47,17 +53,17 @@ opts = [
 
 def main():
     parse_cli("bot", opts, __version__, __txt__)
-    if cfg.root:
+    if lo.cfg.root:
         lo.cfg.workdir = lo.workdir = "/var/lib/botd"
         lo.cfg.logfile = "/var/log/botd/bot.log"
-    level(cfg.level, cfg.logfile)
+    level(lo.cfg.level, lo.cfg.logfile)
     k = Kernel()
-    if cfg.txt:
-        k.walk(cfg.modules or "bot.mods")
-        k.cmd(cfg.txt)
+    if lo.cfg.txt:
+        k.walk(lo.cfg.modules or "bot.mods")
+        k.cmd(lo.cfg.txt)
         return
-    if not cfg.modules:
-       cfg.modules = "bot.mods.shw"
+    if not lo.cfg.modules:
+       lo.cfg.modules = "bot.mods.shw"
     k.start(True)
     set_completer(k.cmds)
     enable_history()

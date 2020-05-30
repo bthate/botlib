@@ -1,2 +1,2 @@
 include bin/bot
-#recursive-include lo *
+recursive-include lo *
