@@ -22,17 +22,21 @@ example:
 
 """
 
+import sys, os
+
+sys.path.insert(0, os.getcwd())
+
 def scan_dir(dname):
     for ename in os.listdir(dname):
         if ename.endswith(".egg"):
-           sys.path.insert(0, ename)
+           sys.path.insert(0, os.path.join(dname, ename))
 
 import logging
 import os
 import sys
 import time
 
-scan_dir(os.getcwd())
+scan_dir("eggs")
 
 import lo
 
