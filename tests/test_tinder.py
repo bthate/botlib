@@ -7,14 +7,12 @@ import sys
 import time
 import unittest
 
-from bot.lib import Object, cfg, get_kernel
-from bot.lib.csl import Console
-from bot.lib.hdl import Event
-from bot.lib.thr import launch
+from lo import Object, cfg, get_kernel
+from lo.csl import Console
+from lo.hdl import Event
+from lo.thr import launch
 
 k = get_kernel()
-k.walk("bot")
-k.walk("bot.lib")
 k.walk("bot.mods")
 c = Console()
 k.fleet.bots.append(c)
@@ -23,7 +21,7 @@ event = Event()
 event.parse()
 
 param = Object()
-param.ed = ["bot.irc.Cfg", "bot.rss.Cfg", "bot.lib.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel \#dunkbots", "bot.lib.krn.Cfg modules bot.udp"]
+param.ed = ["bot.irc.Cfg", "bot.rss.Cfg", "lo.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel \#dunkbots", "lo.krn.Cfg modules bot.udp"]
 param.delete = ["reddit", ]
 param.display = ["reddit title,summary,link",]
 param.log = ["yo!", ""]

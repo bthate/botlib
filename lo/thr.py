@@ -9,7 +9,7 @@ import queue
 import threading
 import types
 
-from bot.lib.trc import get_exception
+from lo.trc import get_exception
 
 def __dir__():
     return ("Launcher", "Thr", "get_name", "launch")

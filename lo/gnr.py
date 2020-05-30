@@ -5,11 +5,10 @@
 """generics."""
 
 import json
+import lo
 import _thread
 
 lock = _thread.allocate_lock()
-
-from . import locked
 
 def edit(o, setter):
     try:
@@ -63,10 +62,10 @@ def keys(o):
     return o.__dict__.keys()
 
 def last(o):
-    db = lib.dbs.Db()
+    db = lo.dbs.Db()
     return db.last(str(get_type(o)))
 
-@locked(lock)
+@lo.locked(lock)
 def load(o, path):
     assert path
     assert workdir
@@ -85,7 +84,7 @@ def load(o, path):
 def merge(o1, o2):
     return update(o1, strip(o2))
 
-@locked(lock)
+@lo.locked(lock)
 def save(o):
     assert workdir
     opath = os.path.join(workdir, "store", o._path)

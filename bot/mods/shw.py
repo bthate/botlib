@@ -4,43 +4,50 @@
 
 """ show runtime stats. """
 
+import lo
+import lo.tms
 import os
 import pkg_resources
 import threading
 import time
-import bot.lib
 
-from . import Object, cfg, get_kernel, starttime
-from .typ import get_type, get_cls
-from .tms import elapsed
+from lo.typ import get_cls
 
 def __dir__():
     return ("cfg", "cmds", "fleet", "mods", "ps", "types", "up", "v")
 
-k = get_kernel()
-
 def cfg(event):
-    event.reply(bot.lib.cfg)
+    assert(lo.workdir)
+    l = lo.cfg
+    if not event.args:
+        event.reply(l)
+        return
+    if len(event.args) == 1:
+        event.reply(l.get(event.args[0]))
+        return
+    setter = {event.args[0]: event.args[1]}
+    l.edit(setter)
+    event.reply(l)
 
 def cmds(event):
-    k = get_kernel()
+    k = lo.get_kernel()
     b = k.fleet.by_orig(event.orig)
     if b and b.cmds:
         event.reply("|".join(sorted(b.cmds)))
 
 def fleet(event):
-    k = get_kernel()
+    k = lo.get_kernel()
     try:
         index = int(event.args[0])
         event.reply(str(k.fleet.bots[index]))
         return
     except (TypeError, ValueError, IndexError):
         pass
-    event.reply([get_type(x) for x in k.fleet])
+    event.reply([lo.typ.get_type(x) for x in k.fleet])
 
 def mods(event):
     fns = []
-    k = get_kernel()
+    k = lo.get_kernel()
     modnames = k.cfg.modules.split(",")
     if not modnames:
         modsnames = ["bot"]
@@ -58,22 +65,22 @@ def ps(event):
         if str(thr).startswith("<_"):
             continue
         d = vars(thr)
-        o = Object()
+        o = lo.Object()
         o.update(d)
         if o.get("sleep", None):
             up = o.sleep - int(time.time() - o.state.latest)
         else:
-            up = int(time.time() - starttime)
+            up = int(time.time() - lo.starttime)
         result.append((up, thr.getName(), o))
     nr = -1
     for up, thrname, o in sorted(result, key=lambda x: x[0]):
         nr += 1
-        res = "%s %s" % (nr, psformat % (elapsed(up), thrname[:60]))
+        res = "%s %s" % (nr, psformat % (lo.tms.elapsed(up), thrname[:60]))
         if res.strip():
             event.reply(res)
 
 def types(event):
-    k = lib.get_kernel()
+    k = lo.get_kernel()
     res = []
     for mod in k.find_modules():
         for t in k.find_types(mod):
@@ -83,9 +90,9 @@ def types(event):
         event.reply("|".join(sorted(res, key=lambda x: x not in res)))
 
 def up(event):
-    event.reply(lib.tms.elapsed(time.time() - starttime))
+    event.reply(lo.tms.elapsed(time.time() - lo.starttime))
 
 def v(event):
-    n = k.cfg.name or "botlib"
-    v = k.cfg.version or __version__
+    n = lo.cfg.name or "botlib"
+    v = lo.cfg.version or lo.__version__
     event.reply("%s %s" % (n.upper(), v))

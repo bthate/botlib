@@ -4,6 +4,7 @@
 
 """ internet relay chat bot. """
 
+import lo
 import logging
 import os
 import queue
@@ -15,10 +16,10 @@ import time
 import threading
 import _thread
 
-from bot.lib import Cfg, get_kernel, locked
-from bot.lib.hdl import Event, Handler
-from bot.lib.thr import launch
-from bot.lib.trc import get_exception
+from lo import Cfg, Object, get_kernel, locked
+from lo.hdl import Event, Handler
+from lo.thr import launch
+from lo.trc import get_exception
 
 def __dir__():
     return ('Cfg', 'DCC', 'DEvent', 'Event', 'IRC', 'init')
@@ -28,9 +29,9 @@ k = get_kernel()
 def init(kernel):
     i = IRC()
     i.cfg.last()
-    i.cfg.server = lib.cfg.server or i.cfg.server or "localhost"
-    i.cfg.channel = lib.cfg.channel or i.cfg.channel or "\#dunkbots"
-    i.cfg.nick = lib.cfg.nick or i.cfg.nick or "mybot"
+    i.cfg.server = lo.cfg.server or i.cfg.server or "localhost"
+    i.cfg.channel = lo.cfg.channel or i.cfg.channel or "\#dunkbots"
+    i.cfg.nick = lo.cfg.nick or i.cfg.nick or "mybot"
     i.cfg.save()
     i.cmds.update(kernel.cmds)
     i.start()
@@ -75,7 +76,7 @@ class IRC(Handler):
         self.cc = "!"
         self.cfg = Cfg()
         self.channels = []
-        self.state = lib.Object()
+        self.state = Object()
         self.state.needconnect = False
         self.state.error = ""
         self.state.last = 0
@@ -312,7 +313,7 @@ class IRC(Handler):
         try:
             self._sock.send(txt)
         except (BrokenPipeError, ConnectionResetError) as ex:
-            e = lib.hdl.Event()
+            e = Event()
             e._error = get_exception()
             e.txt = str(ex)
             self.put(e)
@@ -323,7 +324,7 @@ class IRC(Handler):
         self._outqueue.put_nowait((channel, txt, mtype))
 
     def start(self):
-        k = lib.get_kernel()
+        k = get_kernel()
         k.fleet.add(self)
         if self.cfg.channel:
             self.channels.append(self.cfg.channel)
@@ -373,7 +374,7 @@ class DCC(Handler):
         except ConnectionRefusedError:
             logging.error("connection to %s:%s refused" % (addr, port))
             return
-        k = lib.get_kernel()
+        k = get_kernel()
         s.send(bytes('Welcome to %s %s !!\n' % (k.cfg.name.upper() or "BOTLIB", event.nick), "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
@@ -415,7 +416,7 @@ class DCC(Handler):
         self.raw(txt)
 
 def error(handler, event):
-    k = lib.get_kernel()
+    k = get_kernel()
     logging.error(event._error)
     handler.state.error = event._error
     handler._connected.clear()
@@ -427,11 +428,11 @@ def ERROR(handler, event):
     
 def NOTICE(handler, event):
     if event.txt.startswith("VERSION"):
-        txt = "\001VERSION %s %s - %s\001" % (lib.cfg.name or "BOTLIB", "1", lib.cfg.descr or "BOTLIB is a library to program bots. no copyright. no LICENSE")
+        txt = "\001VERSION %s %s - %s\001" % (lo.cfg.name or "BOTLIB", "1", lo.cfg.descr or "BOTLIB is a library to program bots. no copyright. no LICENSE")
         handler.command("NOTICE", event.channel, txt)
 
 def PRIVMSG(handler, event):
-    k = lib.get_kernel()
+    k = get_kernel()
     if event.txt.startswith("DCC CHAT"):
         if not k.users.allowed(event.origin, "USER"):
             return

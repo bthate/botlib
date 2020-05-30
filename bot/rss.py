@@ -9,11 +9,12 @@ import re
 import time
 import urllib
 
-from .lib.krn import get_kernel
-
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode, urlunparse
 from urllib.request import Request, urlopen
+
+from lo import Db, Object, get_kernel
+from lo.thr import launch
 
 try:
     import feedparser
@@ -32,7 +33,7 @@ def init(kernel):
     fetcher.start()
     return fetcher
 
-class Cfg(lib.Object):
+class Cfg(Object):
 
     def __init__(self):
         super().__init__()
@@ -40,23 +41,23 @@ class Cfg(lib.Object):
         self.dosave = True
         self.tinyurl = False
 
-class Feed(lib.Object):
+class Feed(Object):
 
     pass
 
-class Rss(lib.Object):
+class Rss(Object):
 
     def __init__(self):
         super().__init__()
         self.rss = ""
 
-class Seen(lib.Object):
+class Seen(Object):
 
     def __init__(self):
         super().__init__()
         self.urls = []
 
-class Fetcher(lib.Object):
+class Fetcher(Object):
 
     cfg = Cfg()
     seen = Seen()
@@ -121,10 +122,10 @@ class Fetcher(lib.Object):
 
     def run(self):
         thrs = []
-        db = lib.Db()
+        db = Db()
         k = bot.get_kernel(0)
         for o in db.all("bot.rss.Rss"):
-            thrs.append(lib.thr.launch(self.fetch, o))
+            thrs.append(launch(self.fetch, o))
         return thrs
 
     def start(self, repeat=True):

@@ -4,9 +4,9 @@
 
 """ fleet (list of bots). """
 
-from . import Object
+import lo
 
-class Fleet(Object):
+class Fleet(lo.Object):
 
     """ A Fleet contains a list of bots. """
 
@@ -22,7 +22,7 @@ class Fleet(Object):
 
     def announce(self, txt, skip=[]):
         """ loop over all registered bots and call announce. """
-        for h in self.by_type(lib.hdl.Handler):
+        for h in self.by_type(lo.hdl.Handler):
             if skip and type(h) in skip:
                 continue
             if "announce" in dir(h):

@@ -4,13 +4,12 @@
 
 """ udp to irc channel relay. """
 
-import bot
 import logging
 import socket
 import time
 
-from .lib import Object, cfg, get_kernel
-from .lib.thr import launch
+from lo import Object, cfg, get_kernel
+from lo.thr import launch
 
 def __dir__():
     return ("UDP", "Cfg", "init", "toudp") 

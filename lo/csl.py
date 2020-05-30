@@ -4,13 +4,12 @@
 
 """console."""
 
-import bot.lib as lib
-import bot.lib.exp as exp
-import bot.lib.hdl as hdl
-import bot.lib.thr as thr
-
+import lo
+import lo.exp
 import sys
 import threading
+
+from lo.hdl import Event, Handler
 
 def init(kernel):
     c = Console()
@@ -18,7 +17,7 @@ def init(kernel):
     c.wait()
     return c
 
-class Console(hdl.Handler):
+class Console(Handler):
 
     def __init__(self):
         super().__init__()
@@ -31,24 +30,24 @@ class Console(hdl.Handler):
 
     def poll(self):
         self._connected.wait()
-        e = hdl.Event()
+        e = Event()
         e.etype = "command"
         e.origin = "root@shell"
         e.orig = repr(self)
         e.txt = input("> ")
         if not e.txt:
-            raise lib.exp.ENOTXT 
+            raise lo.exp.ENOTXT 
         return e
 
     def input(self):
         while not self._stopped:
             try:
                 e = self.poll()
-            except lib.exp.ENOTXT:
+            except lo.exp.ENOTXT:
                 continue
             except EOFError:
                 break
-            lib.hdl.dispatch(self, e)
+            lo.hdl.dispatch(self, e)
             e.wait()
         self._ready.set()
 
@@ -64,7 +63,7 @@ class Console(hdl.Handler):
             return
         super().start(handler)
         if input:
-            thr.launch(self.input)
+            lo.thr.launch(self.input)
         self._connected.set()
 
     def wait(self):

@@ -27,8 +27,11 @@ import os
 import sys
 import time
 
-from bot.lib.shl import enable_history, execute, level, parse_cli, set_completer
-from bot.lib.krn import Kernel
+sys.path.insert(0, os.getcwd())
+
+from lo import cfg
+from lo.shl import enable_history, execute, level, parse_cli, set_completer
+from lo.krn import Kernel
 
 opts = [
     ('-c', '--channel', 'store', str, "", "channel to join", 'channel'),
@@ -43,16 +46,18 @@ opts = [
 ]
 
 def main():
-    cfg = parse_cli("bot", opts, __version__, __txt__)
+    parse_cli("bot", opts, __version__, __txt__)
     if cfg.root:
-        cfg.workdir = bot.lib.workdir = "/var/lib/botd"
-        cfg.logfile = "/var/log/botd/bot.log"
+        lo.cfg.workdir = lo.workdir = "/var/lib/botd"
+        lo.cfg.logfile = "/var/log/botd/bot.log"
     level(cfg.level, cfg.logfile)
     k = Kernel()
     if cfg.txt:
-        k.walk(cfg.modules or "bot.mods")
+        k.walk(cfg.modules or "bot")
         k.cmd(cfg.txt)
         return
+    if not cfg.modules:
+       cfg.modules = "bot.mods"
     k.start(True)
     set_completer(k.cmds)
     enable_history()

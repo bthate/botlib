@@ -6,18 +6,17 @@ __version__ = 1
 
 import os,sys ; sys.path.insert(0, os.getcwd())
 
-import bot
-import bot.lib
+import lo
 import logging
 import os
 import shutil
 import time
 import unittest
 
-from bot.lib import cdir, cfg, starttime
-from bot.lib.krn import Kernel
-from bot.lib.shl import execute, level, parse_cli 
-from bot.lib.tms import elapsed
+from lo import cdir, cfg, starttime
+from lo.krn import Kernel
+from lo.shl import execute, level, parse_cli 
+from lo.tms import elapsed
 
 opts = [
     ('-b', '--bork', 'store_true', False, 'bork on exception.', 'bork'),
@@ -37,7 +36,7 @@ def main():
         pass
     cdir(".data")
     parse_cli("test", opts)
-    bot.lib.cfg.debug = True
+    lo.cfg.debug = True
     k = Kernel()
     k.fleet.add(k)
     mods = k.walk(cfg.modules)

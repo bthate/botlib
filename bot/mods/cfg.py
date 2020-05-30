@@ -5,8 +5,7 @@
 """ configure the bot. """
 
 import bot
-import bot.lib
-import bot.irc
+import lo
 
 def __dir__():
     return ("cfg", )
@@ -21,7 +20,7 @@ def cfg(event):
         except ValueError:
             event.reply("cfg <server> <channel> <nick> [<owner>]")
             return
-    k = bot.lib.get_kernel()
+    k = lo.get_kernel()
     c = bot.irc.Cfg()
     c.last()
     c.server = server
@@ -29,7 +28,7 @@ def cfg(event):
     c.nick = nick
     c.save()
     if owner:
-        cc = bot.lib.krn.Cfg()
+        cc = lo.krn.Cfg()
         cc.last()
         cc.owner = owner
         cc.save()

@@ -4,7 +4,7 @@
 
 """timers/repeaters."""
 
-import bot.lib as lib
+import lo
 import threading
 import time
 import typing
@@ -12,7 +12,7 @@ import typing
 def __dir__():
     return ("Repeater", "Timer", "Timers")
 
-class Timer(lib.Object):
+class Timer(lo.Object):
 
     def __init__(self, sleep, func, *args, **kwargs):
         super().__init__()
@@ -21,16 +21,16 @@ class Timer(lib.Object):
         self.args = args
         self.name = kwargs.get("name", "")
         self.kwargs = kwargs
-        self.state = lib.Object()
+        self.state = lo.Object()
         self.timer = None
 
     def run(self, *args, **kwargs):
         self.state.latest = time.time()
-        lib.thr.launch(self.func, *self.args, **self.kwargs)
+        lo.thr.launch(self.func, *self.args, **self.kwargs)
 
     def start(self):
         if not self.name:
-            self.name = lib.typ.get_name(self.func)
+            self.name = lo.typ.get_name(self.func)
         timer = threading.Timer(self.sleep, self.run, self.args, self.kwargs)
         timer.setName(self.name)
         timer.sleep = self.sleep
@@ -49,6 +49,6 @@ class Timer(lib.Object):
 class Repeater(Timer):
 
     def run(self, *args, **kwargs):
-        thr = lib.thr.launch(self.start)
+        thr = lo.thr.launch(self.start)
         self.func(*args, **kwargs)
         return thr

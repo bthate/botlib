@@ -5,29 +5,30 @@
 """ kernel code. """
 
 import inspect
+import lo
 import logging
 import sys
 import threading
 import time
 import _thread
 
-from . import Cfg, Db, cfg
-from .csl import Console
-from .flt import Fleet
-from .hdl import Handler
-from .shl import writepid
-from .typ import get_name
-
-import bot.lib
+from lo import Db, Cfg
+from lo.csl import Console
+from lo.flt import Fleet
+from lo.hdl import Handler, Event, dispatch
+from lo.shl import writepid
+from lo.thr import launch
+from lo.typ import get_name
+from lo.usr import Users
 
 def __dir__():
     return ("Cfg", "Kernel")
 
-class Cfg(Cfg):
+class Cfg(lo.Cfg):
 
     pass
 
-class Kernel(Handler):
+class Kernel(lo.hdl.Handler):
 
     def __init__(self):
         super().__init__()
@@ -36,11 +37,12 @@ class Kernel(Handler):
         self._prompted.set()
         self._ready = threading.Event()
         self._started = False
-        self.cfg = Cfg(cfg)
+        self.cfg = Cfg(lo.cfg)
         self.db = Db()
         self.fleet = Fleet()
         self.force = False
-        bot.lib.kernels.append(self)
+        self.users = Users()
+        lo.kernels.append(self)
 
     def add(self, cmd, func):
         self.cmds[cmd] = func
@@ -61,18 +63,16 @@ class Kernel(Handler):
             print(self.error)
             return False
         writepid()
-        if cfg.root:
+        if lo.cfg.root:
             self.cfg.last()
             self.cfg.txt = ""
-            self.cfg.merge(cfg)
+            self.cfg.merge(lo.cfg)
             self.cfg.save()
         else:
-            self.cfg.merge(cfg)
+            self.cfg.merge(lo.cfg)
         if self.cfg.owner:
             if not self.users.allowed(self.cfg.owner, "USER", log=False):
                 self.users.meet(self.cfg.owner)
-        if not self.cfg.modules:
-            self.cfg.modules = "bot.mods"
         self.walk(self.cfg.modules, init)
         if shell:
             c = Console()

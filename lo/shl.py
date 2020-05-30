@@ -6,6 +6,7 @@
 
 import argparse
 import atexit
+import lo
 import logging
 import logging.handlers
 import os
@@ -16,10 +17,7 @@ import termios
 import threading
 import traceback
 
-import bot.lib
-
-from . import Default, Object, cdir, hd, __version__
-from .trc import get_exception
+from lo.trc import get_exception
 
 cmds = []
 logfiled = ""
@@ -35,12 +33,12 @@ class DumpHandler(logging.StreamHandler):
 
 def close_history():
     global HISTFILE
-    if bot.lib.workdir:
+    if lo.workdir:
         if not HISTFILE:
-            HISTFILE = os.path.join(bot.lib.workdir, "history")
+            HISTFILE = os.path.join(lo.workdir, "history")
         if not os.path.isfile(HISTFILE):
-            lib.cdir(HISTFILE)
-            lib.touch(HISTFILE)
+            lo.cdir(HISTFILE)
+            lo.touch(HISTFILE)
         readline.write_history_file(HISTFILE)
 
 def complete(text, state):
@@ -74,11 +72,11 @@ def daemon():
 
 def enable_history():
     global HISTFILE
-    if bot.lib.workdir:
-        HISTFILE = os.path.abspath(os.path.join(bot.lib.workdir, "history"))
+    if lo.workdir:
+        HISTFILE = os.path.abspath(os.path.join(lo.workdir, "history"))
         if not os.path.exists(HISTFILE):
-            lib.cdir(HISTFILE)
-            lib.touch(HISTFILE)
+            lo.cdir(HISTFILE)
+            lo.touch(HISTFILE)
         else:
             readline.read_history_file(HISTFILE)
     atexit.register(close_history)
@@ -100,10 +98,10 @@ def get_completer():
     return readline.get_completer()
 
 def level(loglevel, logfile="", nostream=False):
-    assert bot.lib.workdir
+    assert lo.workdir
     if logfile and not os.path.exists(logfile):
-        lib.cdir(logfile)
-        lib.touch(logfile)
+        lo.cdir(logfile)
+        lo.touch(logfile)
     datefmt = '%H:%M:%S'
     format_time = "%(asctime)-8s %(message)-70s"
     format_plain = "%(message)-0s"
@@ -166,21 +164,21 @@ def make_opts(ns, options, usage="", **kwargs):
     parser.add_argument('args', nargs='*')
     parser.parse_known_args(namespace=ns)
 
-def parse_cli(name, opts=[], version=__version__, usage=None):
-    ns = Object()
+def parse_cli(name, opts=[], version=lo.__version__, usage=None):
+    ns = lo.Object()
     make_opts(ns, opts, usage)
-    cfg = Default(ns)
+    cfg = lo.Default(ns)
     cfg.name = name
     cfg.version = version
     cfg.txt = " ".join(cfg.args)
     if not cfg.workdir:
-        cfg.workdir = hd(".%s" % name)
-    bot.lib.workdir = cfg.workdir
-    cdir(os.path.join(bot.lib.workdir, "store", ""))
-    bot.lib.cfg.update(cfg)
+        cfg.workdir = lo.hd(".%s" % name)
+    lo.workdir = cfg.workdir
+    lo.cdir(os.path.join(lo.workdir, "store", ""))
+    lo.cfg.update(cfg)
     if cfg.logfile:
-        cdir(cfg.logfile)
-        touch(cfg.logfile)
+        lo.cdir(cfg.logfile)
+        lo.touch(cfg.logfile)
     level(cfg.level, cfg.logfile)
     logging.warning("%s %s started on %s" % (cfg.name.upper(), cfg.version, time.ctime(time.time())))
     if cfg.logfile:
@@ -220,8 +218,8 @@ def touch(fname):
         pass
 
 def writepid():
-    assert bot.lib.workdir
-    path = os.path.join(bot.lib.workdir, "pid")
+    assert lo.workdir
+    path = os.path.join(lo.workdir, "pid")
     f = open(path, 'w')
     f.write(str(os.getpid()))
     f.flush()

@@ -5,17 +5,16 @@
 """types."""
 
 import importlib
+import lo.exp
 import os
 import sys
 import types
-
-from .exp import ENOCLASS
 
 def get_cls(name):
     try:
         modname, clsname = name.rsplit(".", 1)
     except:
-        raise ENOCLASS(name)
+        raise lo.exp.ENOCLASS(name)
     if modname in sys.modules:
         mod = sys.modules[modname]
     else:

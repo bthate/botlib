@@ -6,6 +6,11 @@
 
 import importlib
 import inspect
+import lo
+import lo.exp
+import lo.tms
+import lo.typ
+import lo.thr
 import logging
 import os
 import pkg_resources
@@ -15,9 +20,9 @@ import threading
 import time
 import _thread
 
-from . import Cfg, DoL, Object, cfg, locked
-from .thr import launch
-from .trc import get_exception
+from lo import DoL, Object, locked
+from lo.thr import get_name, launch
+from lo.trc import get_exception
 
 def __dir__():
     return ("Event", "Handler", "Loader")
@@ -25,18 +30,18 @@ def __dir__():
 dispatch_lock = _thread.allocate_lock()
 load_lock = _thread.allocate_lock()
 
-class Cfg(Cfg):
+class Cfg(lo.Cfg):
 
     pass
 
-class Loader(Object):
+class Loader(lo.Object):
 
-    table = Object()
+    table = lo.Object()
 
     def __init__(self):
         super().__init__()
-        self.cmds = Object()
-        self.mods = Object()
+        self.cmds = lo.Object()
+        self.mods = lo.Object()
         self.error = ""
                 
     def direct(self, name):
@@ -57,12 +62,16 @@ class Loader(Object):
                     cmds[key] = o
         return cmds
 
-    def find_modules(self, mn):
-        mod = self.direct(mn)
+    def find_modules(self):
+        mod = self.direct("bot")
         mods = []
         for key, o in inspect.getmembers(mod, inspect.ismodule):
-            if o not in mods:
-                mods.append(o)
+             if o not in mods:
+                 mods.append(o)
+        mod = self.direct("mybot")
+        for key, o in inspect.getmembers(mod, inspect.ismodule):
+             if o not in mods:
+                 mods.append(o)
         return mods
 
     def find_names(self, mod):
@@ -73,27 +82,27 @@ class Loader(Object):
                     names[key] = o.__module__
         return names
 
-    def find_shorts(self, mn):
+    def find_shorts(self):
         shorts = DoL()
-        for mod in self.find_modules(mn):
+        for mod in self.find_modules():
             for key, o in inspect.getmembers(mod, inspect.isclass):
-                if issubclass(o, Object):
+                if issubclass(o, lo.Object):
                     t = "%s.%s" % (o.__module__, o.__name__)
                     shorts.append(o.__name__.lower(), str(t))
         return shorts
 
-    def find_types(self, mn):
+    def find_types(self, mod):
         res = []
-        for mod in self.find_modules(mn):
+        for mod in self.find_modules():
             for key, o in inspect.getmembers(mod, inspect.isclass):
-                if issubclass(o, Object):
+                if issubclass(o, lo.Object):
                     t = "%s.%s" % (o.__module__, o.__name__)
                     res.append(t)
         return res
 
     def init(self, mod):
         if "init" in dir(mod):
-            n = thr.get_name(mod)
+            n = lo.thr.get_name(mod)
             launch(mod.init, self, name=mod.__name__)
 
     @locked(load_lock)
@@ -177,7 +186,7 @@ class Handler(Loader):
         self._queue = queue.Queue()
         self._closed = threading.Event()
         self._stopped = False
-        self.cbs = Object()
+        self.cbs = lo.Object()
         self.outcache = DoL()
         self.register("command", dispatch)
 
@@ -188,7 +197,7 @@ class Handler(Loader):
             except Exception as ex:
                 self.error = get_exception()
                 logging.debug("error %s" % self.error)
-                if cfg.bork:
+                if lo.cfg.bork:
                     logging.error("bork")
                     _thread.interrupt_main()
         event.ready()
@@ -226,7 +235,7 @@ class Handler(Loader):
         while not self._stopped:
             time.sleep(nrsec)
 
-class Event(Object):
+class Event(lo.Object):
 
     def __init__(self):
         super().__init__()
@@ -237,7 +246,7 @@ class Event(Object):
         self.channel = ""
         self.etype = "event"
         self.index = None
-        self.options = cfg.options
+        self.options = lo.cfg.options
         self.orig = ""
         self.origin = ""
         self.result = []
@@ -250,7 +259,7 @@ class Event(Object):
         txt = txt[:]
         txt += " %s" % self.format(o, keys, strict=strict) 
         if "t" in options:
-           txt += " %s" % tms.elapsed(time.time() - tms.fntime(o._path))
+           txt += " %s" % lo.tms.elapsed(time.time() - lo.fntime(o._path))
         if post:
            txt += " " + post
         txt = txt.strip()
@@ -338,7 +347,7 @@ class Command(Event):
         self.orig = orig
         self.txt = txt
         self.parse()
-        self.verbose = cfg.verbose
+        self.verbose = lo.cfg.verbose
         
 def dispatch(handler, event):
     if not event.txt:

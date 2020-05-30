@@ -4,26 +4,25 @@
 
 """ user management. """
 
+import lo
 import logging
-
-from .lib import Db, Object, get_kernel
 
 def __dir__():
     return ("User", "Users", "meet", "users")
 
-class User(Object):
+class User(lo.Object):
 
     def __init__(self):
         super().__init__()
         self.user = ""
         self.perms = []
 
-class Users(Db):
+class Users(lo.Db):
 
-    userhosts = Object()
+    userhosts = lo.Object()
 
     def allowed(self, origin, perm, log=True):
-        k = get_kernel()
+        k = lo.get_kernel()
         if k.cfg.owner and origin != k.cfg.owner:
              return True
         perm = perm.upper()
@@ -47,7 +46,7 @@ class Users(Db):
 
     def get_users(self, origin=""):
         s = {"user": origin}
-        return self.all("bot.usr.User", s)
+        return self.all("lo.usr.User", s)
 
     def get_user(self, origin):
         u =  list(self.get_users(origin))
@@ -81,29 +80,3 @@ class Users(Db):
             user.perms.append(permission.upper())
             user.save()
         return user
-
-def meet(event):
-    k = lib.get_kernel()
-    if not event.origin == k.cfg.owner:
-        event.reply("only owner can add users")
-        return
-    if not event.args:
-        event.reply("meet origin [permissions]")
-        return
-    try:
-        origin, *perms = event.args[:]
-    except ValueError:
-        event.reply("meet origin [permissions]")
-        return
-    k = lib.get_kernel()
-    origin = lib.usr.Users.userhosts.get(origin, origin)
-    k.users.meet(origin, perms)
-    event.reply("ok")
-
-def users(event):
-    k = lib.get_kernel()
-    res = ""
-    db = lib.Db()
-    for o in db.all("bot.usr.User"):
-        res += "%s," % o.user
-    event.reply(res)

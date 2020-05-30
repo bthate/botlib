@@ -9,6 +9,9 @@ __version__ = 10
 import collections
 import datetime
 import json
+import lo
+import lo.exp
+import lo.typ
 import logging
 import os
 import random
@@ -17,7 +20,6 @@ import time
 import types
 import _thread
 
-from .typ import get_type
 from json import JSONEncoder, JSONDecoder
 
 def __dir__():
@@ -52,7 +54,7 @@ def hooked(d):
     """convert dict with stamp to it's object."""
     if "stamp" in d:
         t = d["stamp"].split(os.sep)[0]
-        o = typ.get_cls(t)()
+        o = lo.typ.get_cls(t)()
     else:
         o = Object()
     o.update(d)
@@ -122,7 +124,7 @@ class O:
     def __init__(self, *args, **kwargs):
         super().__init__()
         stime = str(datetime.datetime.now()).replace(" ", os.sep)
-        self._path = os.path.join(get_type(self), stime)
+        self._path = os.path.join(lo.typ.get_type(self), stime)
         return self
 
     def __delitem__(self, k):
@@ -235,8 +237,8 @@ class Object(O):
 
     def last(self, strip=False):
         """update this object to the lastest of it's types on disk."""
-        db = Db()
-        path, l = db.last_fn(str(typ.get_type(self)))
+        db = lo.Db()
+        path, l = db.last_fn(str(lo.typ.get_type(self)))
         if l:
             if strip:
                 self.update(strip(l))
@@ -261,12 +263,12 @@ class Object(O):
             try:
                 val = json.load(ofile, cls=ObjectDecoder)
             except json.decoder.JSONDecodeError as ex:
-                raise exp.EJSON(str(ex) + " " + lpath)
+                raise lo.exp.EJSON(str(ex) + " " + lpath)
             if typecheck:
                 ot = val.__dict__["stamp"].split(os.sep)[0]
-                t = typ.get_cls(ot)
+                t = lo.typ.get_cls(ot)
                 if type(self) != t:
-                    raise exp.ETYPE(type(self), t)
+                    raise lo.exp.ETYPE(type(self), t)
             try:
                 del val.__dict__["stamp"]
             except KeyError:
@@ -282,9 +284,9 @@ class Object(O):
         """save to file."""
         assert workdir
         if stime:
-            self._path = os.path.join(typ.get_type(self), stime) + "." + str(random.randint(1, 100000))
+            self._path = os.path.join(lo.typ.get_type(self), stime) + "." + str(random.randint(1, 100000))
         opath = os.path.join(workdir, "store", self._path)
-        lib.cdir(opath)
+        lo.cdir(opath)
         logging.debug("save %s" % self._path)
         #if self._path in cache:
         #    o = cache[self._path]
@@ -487,8 +489,8 @@ def hook(fn):
     if not t:
         t = fn.split(os.sep)[0][1:]
     if not t:
-        raise exp.ENOFILE(fn)
-    o = typ.get_cls(t)()
+        raise lo.exp.ENOFILE(fn)
+    o = lo.typ.get_cls(t)()
     o.load(fn)
     return o
 
@@ -533,6 +535,11 @@ def touch(fname):
     except (IsADirectoryError, TypeError):
         pass
 
+import lo.shl
+import lo.csl
+import lo.krn
+import lo.thr
+
 #:
 kernels = []
 
@@ -540,4 +547,4 @@ def get_kernel(nr=0):
     try:
         return kernels[nr]
     except IndexError:
-        return bot.lib.krn.Kernel()
+        return lo.krn.Kernel()
