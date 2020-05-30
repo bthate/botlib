@@ -22,8 +22,6 @@ example:
 
 """
 
-import os, sys ; sys.path.insert(0, os.getcwd())
-
 import logging
 import os
 import sys
@@ -52,7 +50,7 @@ def main():
     level(cfg.level, cfg.logfile)
     k = Kernel()
     if cfg.txt:
-        k.walk(cfg.modules or "lo,bot")
+        k.walk(cfg.modules or "bot.mods")
         k.cmd(cfg.txt)
         return
     k.start(True)

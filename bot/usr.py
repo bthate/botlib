@@ -6,7 +6,7 @@
 
 import logging
 
-from . import Db, Object, get_kernel
+from .lib import Db, Object, get_kernel
 
 def __dir__():
     return ("User", "Users", "meet", "users")
@@ -47,7 +47,7 @@ class Users(Db):
 
     def get_users(self, origin=""):
         s = {"user": origin}
-        return self.all("bot.lib.usr.User", s)
+        return self.all("bot.usr.User", s)
 
     def get_user(self, origin):
         u =  list(self.get_users(origin))
@@ -104,6 +104,6 @@ def users(event):
     k = lib.get_kernel()
     res = ""
     db = lib.Db()
-    for o in db.all("bot.lib.usr.User"):
+    for o in db.all("bot.usr.User"):
         res += "%s," % o.user
     event.reply(res)

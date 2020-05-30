@@ -17,7 +17,6 @@ from .flt import Fleet
 from .hdl import Handler
 from .shl import writepid
 from .typ import get_name
-from .usr import Users
 
 import bot.lib
 
@@ -41,7 +40,6 @@ class Kernel(Handler):
         self.db = Db()
         self.fleet = Fleet()
         self.force = False
-        self.users = Users()
         bot.lib.kernels.append(self)
 
     def add(self, cmd, func):
@@ -74,7 +72,7 @@ class Kernel(Handler):
             if not self.users.allowed(self.cfg.owner, "USER", log=False):
                 self.users.meet(self.cfg.owner)
         if not self.cfg.modules:
-            self.cfg.modules = "bot.lib.shw"
+            self.cfg.modules = "bot.mods"
         self.walk(self.cfg.modules, init)
         if shell:
             c = Console()

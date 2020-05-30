@@ -8,8 +8,9 @@ import os
 import pkg_resources
 import threading
 import time
+import bot.lib
 
-from . import Object, get_kernel, starttime
+from . import Object, cfg, get_kernel, starttime
 from .typ import get_type, get_cls
 from .tms import elapsed
 
@@ -19,17 +20,7 @@ def __dir__():
 k = get_kernel()
 
 def cfg(event):
-    assert(lib.workdir)
-    l = lib.cfg
-    if not event.args:
-        event.reply(l)
-        return
-    if len(event.args) == 1:
-        event.reply(l.get(event.args[0]))
-        return
-    setter = {event.args[0]: event.args[1]}
-    l.edit(setter)
-    event.reply(l)
+    event.reply(bot.lib.cfg)
 
 def cmds(event):
     k = get_kernel()

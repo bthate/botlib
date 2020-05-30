@@ -7,21 +7,22 @@ __version__ = 1
 import os,sys ; sys.path.insert(0, os.getcwd())
 
 import bot
-import lo
+import bot.lib
 import logging
 import os
 import shutil
 import time
 import unittest
 
-from lo.krn import Kernel
-from lo.shl import execute, level, parse_cli 
-from lo.tms import elapsed
+from bot.lib import cdir, cfg, starttime
+from bot.lib.krn import Kernel
+from bot.lib.shl import execute, level, parse_cli 
+from bot.lib.tms import elapsed
 
 opts = [
     ('-b', '--bork', 'store_true', False, 'bork on exception.', 'bork'),
     ('-v', '--verbose', 'store_true', False, 'enable verbose mode.', 'verbose'),
-    ('-m', '--modules', 'store', str, "bot", 'modules to load.', 'modules'),
+    ('-m', '--modules', 'store', str, "bot.mods", 'modules to load.', 'modules'),
     ('-o', '--options', 'store', str, "", 'options to use.', 'options'),
     ('-w', '--workdir', 'store', str, ".data", 'set working directory.', 'workdir'),
     ('-l', '--loglevel', 'store', str, "error", 'set loglevel.', 'level'),
@@ -34,12 +35,12 @@ def main():
         shutil.rmtree(".data")
     except FileNotFoundError:
         pass
-    lo.cdir(".data")
+    cdir(".data")
     parse_cli("test", opts)
-    lo.cfg.debug = True
+    bot.lib.cfg.debug = True
     k = Kernel()
     k.fleet.add(k)
-    mods = k.walk(lo.cfg.modules)
+    mods = k.walk(cfg.modules)
     k.scan(mods)
     k.start(False,False)
     test_path = os.getcwd() + os.sep + "tests"
@@ -48,5 +49,5 @@ def main():
     k.wait()
    
 execute(main)
-print(elapsed(time.time() - lo.starttime))
+print(elapsed(time.time() - starttime))
 os._exit(0)

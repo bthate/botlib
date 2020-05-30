@@ -1,7 +1,5 @@
 # tinder tests.
 
-import bot
-import lo
 import logging
 import os
 import random
@@ -9,16 +7,23 @@ import sys
 import time
 import unittest
 
-k = lo.get_kernel()
+from bot.lib import Object, cfg, get_kernel
+from bot.lib.csl import Console
+from bot.lib.hdl import Event
+from bot.lib.thr import launch
+
+k = get_kernel()
 k.walk("bot")
-k.walk("lo")
-c = lo.csl.Console()
+k.walk("bot.lib")
+k.walk("bot.mods")
+c = Console()
 k.fleet.bots.append(c)
-event = lo.hdl.Event()
+
+event = Event()
 event.parse()
 
-param = lo.Object()
-param.ed = ["bot.irc.Cfg", "bot.rss.Cfg", "bot.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel \#dunkbots", "bot.krn.Cfg modules bot.udp"]
+param = Object()
+param.ed = ["bot.irc.Cfg", "bot.rss.Cfg", "bot.lib.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel \#dunkbots", "bot.lib.krn.Cfg modules bot.udp"]
 param.delete = ["reddit", ]
 param.display = ["reddit title,summary,link",]
 param.log = ["yo!", ""]
@@ -28,10 +33,10 @@ param.meet = ["test@shell", "bart"]
 param.rss = ["https://www.reddit.com/r/python/.rss", ""]
 param.todo = ["yo!", ""]
 
-class Event(lo.hdl.Event):
+class Event(Event):
 
     def show(self):
-        if lo.cfg.verbose:
+        if cfg.verbose:
             for txt in self.result:
                 print(txt)
 
@@ -40,7 +45,7 @@ class Test_Tinder(unittest.TestCase):
     def test_thrs(self):
         thrs = []
         for x in range(event.index or 1):
-            thrs.append(lo.thr.launch(tests, k))
+            thrs.append(launch(tests, k))
         for t in thrs:
             t.join()
 
@@ -81,7 +86,7 @@ def do_cmd(b, cmd):
         e.orig = repr(k)
         e.origin = "test@shell"
         e.txt = cmd + " " + ex
-        if lo.cfg.verbose:
+        if cfg.verbose:
             print(e.txt)
         k.put(e)
         events.append(e)

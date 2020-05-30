@@ -17,6 +17,7 @@ import _thread
 
 from . import Cfg, DoL, Object, cfg, locked
 from .thr import launch
+from .trc import get_exception
 
 def __dir__():
     return ("Event", "Handler", "Loader")
@@ -56,16 +57,12 @@ class Loader(Object):
                     cmds[key] = o
         return cmds
 
-    def find_modules(self):
-        mod = self.direct("bot")
+    def find_modules(self, mn):
+        mod = self.direct(mn)
         mods = []
         for key, o in inspect.getmembers(mod, inspect.ismodule):
-             if o not in mods:
-                 mods.append(o)
-        mod = self.direct("mybot")
-        for key, o in inspect.getmembers(mod, inspect.ismodule):
-             if o not in mods:
-                 mods.append(o)
+            if o not in mods:
+                mods.append(o)
         return mods
 
     def find_names(self, mod):
@@ -76,18 +73,18 @@ class Loader(Object):
                     names[key] = o.__module__
         return names
 
-    def find_shorts(self):
+    def find_shorts(self, mn):
         shorts = DoL()
-        for mod in self.find_modules():
+        for mod in self.find_modules(mn):
             for key, o in inspect.getmembers(mod, inspect.isclass):
                 if issubclass(o, Object):
                     t = "%s.%s" % (o.__module__, o.__name__)
                     shorts.append(o.__name__.lower(), str(t))
         return shorts
 
-    def find_types(self, mod):
+    def find_types(self, mn):
         res = []
-        for mod in self.find_modules():
+        for mod in self.find_modules(mn):
             for key, o in inspect.getmembers(mod, inspect.isclass):
                 if issubclass(o, Object):
                     t = "%s.%s" % (o.__module__, o.__name__)

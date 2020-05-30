@@ -4,17 +4,18 @@
 
 """ object editor. """
 
-import bot.lib as lib
 import os
+
+from bot.lib import Db, cdir, get_kernel, workdir
 
 def __dir__():
     return ("ed", "find")
 
 def ed(event):
     """ edit the last saved object of a type. """
-    assert(lib.workdir)
+    assert(workdir)
     if not event.args:
-        files = [x for x in os.listdir(os.path.join(lib.workdir, "store"))]
+        files = [x for x in os.listdir(os.path.join(workdir, "store"))]
         if files:
             event.reply("|".join(list(files)))
         return
@@ -39,16 +40,16 @@ def ed(event):
 def find(event):
     """ locate objects on disk. """
     if not event.args:
-        wd = os.path.join(lib.workdir, "store", "")
-        lib.cdir(wd)
+        wd = os.path.join(workdir, "store", "")
+        cdir(wd)
         fns = os.listdir(wd)
         fns = sorted({x.split(os.sep)[0].split(".")[-1].lower() for x in fns})
         if fns:
             event.reply("|".join(fns))
         return
-    k = lib.get_kernel()
+    k = get_kernel()
     shorts = k.find_shorts()
-    db = lib.Db()
+    db = Db()
     otypes = []
     target = db.all
     otype = event.args[0]

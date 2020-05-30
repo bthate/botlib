@@ -4,14 +4,12 @@
 
 """display rss feeds into irc channel."""
 
-import bot
-import lib
-import lib.clk
-import lib.tms
 import logging
 import re
 import time
 import urllib
+
+from .lib.krn import get_kernel
 
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode, urlunparse
@@ -27,7 +25,7 @@ except ModuleNotFoundError:
 def __dir__():
     return ("Cfg,", "Feed", "Rss", "Seen", "Fetcher", "delete", "display", "feed", "fetch", "init", "rss")
 
-k = lib.get_kernel()
+k = get_kernel()
 
 def init(kernel):
     fetcher = Fetcher()

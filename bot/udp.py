@@ -9,27 +9,28 @@ import logging
 import socket
 import time
 
-import bot.lib as lib
+from .lib import Object, cfg, get_kernel
+from .lib.thr import launch
 
 def __dir__():
     return ("UDP", "Cfg", "init", "toudp") 
 
-k = lib.get_kernel()
+k = get_kernel()
 
 def init(kernel):
     server = UDP()
     server.start()
     return server
 
-class Cfg(lo.Object):
+class Cfg(Object):
 
     def __init__(self):
         super().__init__()
         self.host = "localhost"
         self.port = 5500
-        self.verbose = lo.cfg.verbose
+        self.verbose = cfg.verbose
 
-class UDP(lo.Object):
+class UDP(Object):
 
     def __init__(self):
         super().__init__()
