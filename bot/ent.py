@@ -7,15 +7,15 @@
 def __dir__():
     return ("log", "todo", "done")
 
-import lo
+import lib
 
-class Log(lo.Object):
+class Log(lib.Object):
 
     def __init__(self):
         super().__init__()
         self.txt = ""
 
-class Todo(lo.Object):
+class Todo(lib.Object):
 
     def __init__(self):
         super().__init__()
@@ -24,7 +24,7 @@ class Todo(lo.Object):
 def log(event):
     """ log some text. """
     if not event.rest:
-       db = lo.Db()
+       db = lib.Db()
        nr = 0
        for o in db.find("bot.ent.Log", {"txt": ""}):
             event.display(o, str(nr), strict=True)
@@ -38,7 +38,7 @@ def log(event):
 def todo(event):
     """ add a todo item. """
     if not event.rest:
-       db = lo.Db()
+       db = lib.Db()
        nr = 0
        for o in db.find("bot.ent.Todo", {"txt": ""}):
             event.display(o, str(nr), strict=True)
@@ -56,7 +56,7 @@ def done(event):
         return
     selector = {"txt": event.args[0]}
     got = []
-    db = lo.Db()
+    db = lib.Db()
     for todo in db.find("bot.ent.Todo", selector):
         todo._deleted = True
         todo.save()

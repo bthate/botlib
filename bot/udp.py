@@ -5,15 +5,16 @@
 """ udp to irc channel relay. """
 
 import bot
-import lo
 import logging
 import socket
 import time
 
+import bot.lib as lib
+
 def __dir__():
     return ("UDP", "Cfg", "init", "toudp") 
 
-k = lo.get_kernel()
+k = lib.get_kernel()
 
 def init(kernel):
     server = UDP()

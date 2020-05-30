@@ -5,9 +5,9 @@
 """display rss feeds into irc channel."""
 
 import bot
-import lo
-import lo.clk
-import lo.tms
+import lib
+import lib.clk
+import lib.tms
 import logging
 import re
 import time
@@ -27,14 +27,14 @@ except ModuleNotFoundError:
 def __dir__():
     return ("Cfg,", "Feed", "Rss", "Seen", "Fetcher", "delete", "display", "feed", "fetch", "init", "rss")
 
-k = lo.get_kernel()
+k = lib.get_kernel()
 
 def init(kernel):
     fetcher = Fetcher()
     fetcher.start()
     return fetcher
 
-class Cfg(lo.Object):
+class Cfg(lib.Object):
 
     def __init__(self):
         super().__init__()
@@ -42,23 +42,23 @@ class Cfg(lo.Object):
         self.dosave = True
         self.tinyurl = False
 
-class Feed(lo.Object):
+class Feed(lib.Object):
 
     pass
 
-class Rss(lo.Object):
+class Rss(lib.Object):
 
     def __init__(self):
         super().__init__()
         self.rss = ""
 
-class Seen(lo.Object):
+class Seen(lib.Object):
 
     def __init__(self):
         super().__init__()
         self.urls = []
 
-class Fetcher(lo.Object):
+class Fetcher(lib.Object):
 
     cfg = Cfg()
     seen = Seen()
@@ -123,17 +123,17 @@ class Fetcher(lo.Object):
 
     def run(self):
         thrs = []
-        db = lo.Db()
+        db = lib.Db()
         k = bot.get_kernel(0)
         for o in db.all("bot.rss.Rss"):
-            thrs.append(lo.thr.launch(self.fetch, o))
+            thrs.append(lib.thr.launch(self.fetch, o))
         return thrs
 
     def start(self, repeat=True):
         Fetcher.cfg.last()
         Fetcher.seen.last()
         if repeat:
-            repeater = lo.clk.Repeater(300.0, self.run)
+            repeater = lib.clk.Repeater(300.0, self.run)
             repeater.start()
             return repeater
 
@@ -144,8 +144,8 @@ def file_time(timestamp):
     return str(datetime.datetime.fromtimestamp(timestamp)).replace(" ", os.sep) + "." + str(random.randint(111111, 999999))
 
 def get_feed(url):
-    if lo.cfg.debug:
-        return [lo.Object(), lo.Object()]
+    if lib.cfg.debug:
+        return [lib.Object(), lib.Object()]
     result = get_url(url)
     if gotparser:
         res = feedparser.parse(result.data)
@@ -154,7 +154,7 @@ def get_feed(url):
                 yield entry
     else:
         logging.debug("feedparser is missing")
-        return [lo.Object(), lo.Object()]
+        return [lib.Object(), lib.Object()]
 
 def get_tinyurl(url):
     postarray = [
@@ -199,7 +199,7 @@ def delete(event):
     selector = {"rss": event.args[0]}
     nr = 0
     got = []
-    db = lo.Db()
+    db = lib.Db()
     for rss in db.find("bot.rss.Rss", selector):
         nr += 1
         rss._deleted = True
@@ -214,7 +214,7 @@ def display(event):
         return
     nr = 0
     setter = {"display_list": event.args[1]}
-    db = lo.Db()
+    db = lib.Db()
     for o in db.find("bot.rss.Rss", {"rss": event.args[0]}):
         nr += 1
         o.edit(setter)
@@ -227,8 +227,8 @@ def feed(event):
         return
     match = event.args[0]
     nr = 0
-    diff = time.time() - lo.tms.to_time(lo.tms.day())
-    db = lo.Db()
+    diff = time.time() - lib.tms.to_time(lib.tms.day())
+    db = lib.Db()
     res = list(db.find("bot.rss.Feed", {"link": match}, delta=-diff))
     for o in res:
         if match:
@@ -260,7 +260,7 @@ def fetch(event):
     event.reply("fetched %s" % ",".join([str(x) for x in res]))
 
 def rss(event):
-    db = lo.Db()
+    db = lib.Db()
     if not event.args or "http" not in event.args[0]:
         nr = 0
         for o in db.find("bot.rss.Rss", {"rss": ""}):

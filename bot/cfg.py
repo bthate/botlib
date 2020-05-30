@@ -6,6 +6,7 @@
 
 import bot
 import bot.irc
+import lib
 
 def __dir__():
     return ("cfg", )
@@ -20,7 +21,7 @@ def cfg(event):
         except ValueError:
             event.reply("cfg <server> <channel> <nick> [<owner>]")
             return
-    k = lo.get_kernel()
+    k = lib.get_kernel()
     c = bot.irc.Cfg()
     c.last()
     c.server = server
