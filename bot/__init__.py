@@ -4,7 +4,7 @@
 
 """ framework to program bots. """
 
-__version__ = 82
+__version__ = 84
 
 import time
 
