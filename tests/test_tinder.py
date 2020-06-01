@@ -35,7 +35,7 @@ class Event(Event):
 
     def show(self):
         if cfg.verbose:
-            for txt in self.result:
+            for txt in self._result:
                 print(txt)
 
 class Test_Tinder(unittest.TestCase):

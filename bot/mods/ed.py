@@ -10,21 +10,32 @@ import os
 def __dir__():
     return ("ed", "find")
 
+k = lo.get_kernel()
+
+def list_files(wd):
+    return "|".join([x for x in os.listdir(os.path.join(wd, "store"))])
+
+
 def ed(event):
     """ edit the last saved object of a type. """
-    assert(lo.workdir)
     if not event.args:
-        files = [x for x in os.listdir(os.path.join(lo.workdir, "store"))]
-        if files:
-            event.reply("|".join(list(files)))
+        event.reply(list_files(lo.workdir) or "no files yet")
         return
     cn = event.args[0]
+    shorts = k.find_shorts("bot,lo")
+    cn = shorts.get(cn, cn)    
     db = lo.Db()
     l = db.last(cn)
     if not l:     
-        c = lo.typ.get_cls(cn)
-        l = c()
-        event.reply("created %s" % cn)
+        try:
+            c = lo.typ.get_cls(cn)
+            l = c()
+            dft = bot.dft.defaults.get(cn)
+            l.update(dft)
+            event.reply("created %s" % cn)
+        except lo.exp.ENOCLASS:
+            event.reply(list_files(lo.workdir) or "no files yet")
+            return
     if len(event.args) == 1:
         event.reply(l)
         return
@@ -46,7 +57,6 @@ def find(event):
         if fns:
             event.reply("|".join(fns))
         return
-    k = lo.get_kernel()
     shorts = k.find_shorts()
     db = lo.Db()
     otypes = []
