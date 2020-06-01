@@ -21,13 +21,13 @@ def meet(event):
     except ValueError:
         event.reply("meet origin [permissions]")
         return
-    origin = bot.usr.Users.userhosts.get(origin, origin)
+    origin = lo.usr.Users.userhosts.get(origin, origin)
     k.users.meet(origin, perms)
     event.reply("ok")
 
 def users(event):
     res = ""
     db = Db()
-    for o in db.all("bot.usr.User"):
+    for o in db.all("lo.usr.User"):
         res += "%s," % o.user
     event.reply(res)
