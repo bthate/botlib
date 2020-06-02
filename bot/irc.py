@@ -324,7 +324,6 @@ class IRC(Handler):
         self._outqueue.put_nowait((channel, txt, mtype))
 
     def start(self):
-        k = get_kernel()
         k.fleet.add(self)
         if self.cfg.channel:
             self.channels.append(self.cfg.channel)
@@ -374,7 +373,6 @@ class DCC(Handler):
         except ConnectionRefusedError:
             logging.error("connection to %s:%s refused" % (addr, port))
             return
-        k = get_kernel()
         s.send(bytes('Welcome to %s %s !!\n' % (k.cfg.name.upper() or "BOTLIB", event.nick), "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
@@ -416,7 +414,6 @@ class DCC(Handler):
         self.raw(txt)
 
 def error(handler, event):
-    k = get_kernel()
     logging.error(event._error)
     handler.state.error = event._error
     handler._connected.clear()
@@ -432,7 +429,6 @@ def NOTICE(handler, event):
         handler.command("NOTICE", event.channel, txt)
 
 def PRIVMSG(handler, event):
-    k = get_kernel()
     if event.txt.startswith("DCC CHAT"):
         if not k.users.allowed(event.origin, "USER"):
             return
@@ -453,7 +449,7 @@ def PRIVMSG(handler, event):
         e.orig = repr(handler)
         e.origin = event.origin
         e.txt = event.txt.strip()[1:]
-        handler.put(e)
+        k.put(e)
 
 def QUIT(handler, event):
     #if "Ping Timeout"  not in event.txt:
