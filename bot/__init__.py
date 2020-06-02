@@ -14,3 +14,4 @@ def __dir__():
 #:
 starttime = time.time()
 
+import bot.mods

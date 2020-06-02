@@ -10,6 +10,7 @@ import time
 
 from lo import Object, cfg, get_kernel
 from lo.thr import launch
+from lo.trc import get_exception
 
 def __dir__():
     return ("UDP", "Cfg", "init", "toudp") 
@@ -42,7 +43,6 @@ class UDP(Object):
         self.cfg = Cfg()
         
     def output(self, txt, addr):
-        k = lo.get_kernel()
         for bot in k.fleet.bots:
             bot.announce(txt.replace("\00", ""))
 
@@ -63,7 +63,7 @@ class UDP(Object):
             try:
                 self.output(data, addr)
             except Exception as ex:
-                logging.error(lo.trc.get_exception())
+                logging.error(get_exception())
 
     def exit(self):
         self._stopped = True
@@ -71,9 +71,8 @@ class UDP(Object):
         self._sock.sendto(bytes("exit", "utf-8"), (self.cfg.host, self.cfg.port))
 
     def start(self):
-        k = lo.get_kernel()
         self.cfg.last()
-        lo.thr.launch(self.server)
+        launch(self.server)
 
 def toudp(host, port, txt):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

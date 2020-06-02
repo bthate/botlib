@@ -14,7 +14,9 @@ from urllib.parse import quote_plus, urlencode, urlunparse
 from urllib.request import Request, urlopen
 
 from lo import Db, Object, get_kernel
+from lo.clk import Repeater
 from lo.thr import launch
+from lo.tms import day, to_time
 
 try:
     import feedparser
@@ -132,7 +134,7 @@ class Fetcher(Object):
         Fetcher.cfg.last()
         Fetcher.seen.last()
         if repeat:
-            repeater = lib.clk.Repeater(300.0, self.run)
+            repeater = Repeater(300.0, self.run)
             repeater.start()
             return repeater
 
@@ -143,8 +145,8 @@ def file_time(timestamp):
     return str(datetime.datetime.fromtimestamp(timestamp)).replace(" ", os.sep) + "." + str(random.randint(111111, 999999))
 
 def get_feed(url):
-    if lib.cfg.debug:
-        return [lib.Object(), lib.Object()]
+    if cfg.debug:
+        return [Object(), Object()]
     result = get_url(url)
     if gotparser:
         res = feedparser.parse(result.data)
@@ -153,7 +155,7 @@ def get_feed(url):
                 yield entry
     else:
         logging.debug("feedparser is missing")
-        return [lib.Object(), lib.Object()]
+        return [Object(), Object()]
 
 def get_tinyurl(url):
     postarray = [
@@ -198,7 +200,7 @@ def delete(event):
     selector = {"rss": event.args[0]}
     nr = 0
     got = []
-    db = lib.Db()
+    db = Db()
     for rss in db.find("bot.rss.Rss", selector):
         nr += 1
         rss._deleted = True
@@ -213,7 +215,7 @@ def display(event):
         return
     nr = 0
     setter = {"display_list": event.args[1]}
-    db = lib.Db()
+    db = Db()
     for o in db.find("bot.rss.Rss", {"rss": event.args[0]}):
         nr += 1
         o.edit(setter)
@@ -226,8 +228,8 @@ def feed(event):
         return
     match = event.args[0]
     nr = 0
-    diff = time.time() - lib.tms.to_time(lib.tms.day())
-    db = lib.Db()
+    diff = time.time() - to_time(day())
+    db = Db()
     res = list(db.find("bot.rss.Feed", {"link": match}, delta=-diff))
     for o in res:
         if match:
@@ -259,7 +261,7 @@ def fetch(event):
     event.reply("fetched %s" % ",".join([str(x) for x in res]))
 
 def rss(event):
-    db = lib.Db()
+    db = Db()
     if not event.args or "http" not in event.args[0]:
         nr = 0
         for o in db.find("bot.rss.Rss", {"rss": ""}):
