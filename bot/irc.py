@@ -4,7 +4,7 @@
 
 import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 
-from ok import Cfg, Object, locked
+from ok.obj import Cfg, Object, locked
 from ok.krn import get_kernel
 from ok.hdl import Command, Event, Handler
 from ok.thr import launch

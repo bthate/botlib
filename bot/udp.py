@@ -4,9 +4,9 @@
 
 import socket, time
 
-from .obj import Cfg, Object
-from .krn import get_kernel
-from .thr import launch
+from ok.obj import Cfg, Object
+from ok.krn import get_kernel
+from ok.thr import launch
 
 def __dir__():
     return ("UDP", "Cfg", "init", "toudp") 

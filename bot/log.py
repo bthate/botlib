@@ -2,8 +2,8 @@
 #
 # log text.
 
-from .obj import Object
-from .dbs import Db
+from ok.obj import Object
+from ok.dbs import Db
 
 def __dir__():
     return ("Log", 'log')
@@ -18,7 +18,7 @@ def log(event):
     if not event.rest:
        db = Db()
        nr = 0
-       for o in db.find("ok.log.Log", {"txt": ""}):
+       for o in db.find("bot.log.Log", {"txt": ""}):
             event.display(o, str(nr), strict=True)
             nr += 1
        return

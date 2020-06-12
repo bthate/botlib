@@ -4,7 +4,7 @@
 
 import ok, os, select, socket, threading, time
 
-from ok import Object, cdir, starttime
+from ok.obj import Object, cdir, starttime
 from ok.krn import get_kernel
 from ok.shl import root
 from ok.tms import elapsed
@@ -12,12 +12,12 @@ from ok.tms import elapsed
 k = get_kernel()
 
 txt="""[Unit]
-Description=OKBOT - the 24/7 IRC channel daemon
+Description=BOTD - the 24/7 IRC channel daemon
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/okbotd
+ExecStart=/usr/local/bin/botd
 
 [Install]
 WantedBy=multi-user.target

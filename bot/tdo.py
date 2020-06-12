@@ -2,8 +2,8 @@
 #
 # todo list.
 
-from .obj import Object
-from .dbs import Db
+from ok.obj import Object
+from ok.dbs import Db
 
 def __dir__():
     return ("Todo", 'done', 'todo')

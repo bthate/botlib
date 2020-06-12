@@ -4,7 +4,7 @@
 
 import ok, os, select, socket, threading, time
 
-from ok import Object, cdir, starttime
+from ok.obj import Object, cdir, starttime
 from ok.krn import get_kernel
 from ok.shl import root
 from ok.tms import elapsed
