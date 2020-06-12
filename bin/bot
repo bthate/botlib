@@ -5,9 +5,12 @@
 
 from ok.csl import Console
 from ok.shl import execute, checkroot
+from bot.irc import IRC
 
 def main():
     checkroot()
+    i = IRC()
+    i.start()
     c = Console()
     c.load_mod("ok.shw")
     c.walk("bot")

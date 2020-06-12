@@ -1,4 +1,4 @@
-# OKE - the ok bot !
+# OKBOT - the ok bot !
 #
 # IRC bot.
 
