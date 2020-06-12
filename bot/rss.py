@@ -1,32 +1,30 @@
-# BOTLIB - Framework to program bots.
+# OKBOT - the ok bot !
 #
 #
 
-"""display rss feeds into irc channel."""
-
-import logging
-import re
-import time
-import urllib
+import re, time, urllib
 
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode, urlunparse
 from urllib.request import Request, urlopen
 
-from lo import Db, Object, get_kernel
-from lo.clk import Repeater
-from lo.thr import launch
-from lo.tms import day, to_time
+from .obj import Cfg, Default, Object
+from .clk import Repeater
+from .dbs import Db
+from .krn import get_kernel
+from .thr import launch
+from .tms import to_time, day
 
 try:
     import feedparser
     gotparser = True
 except ModuleNotFoundError:
-    logging.debug("feedparser is not found")
     gotparser = False
 
 def __dir__():
     return ("Cfg,", "Feed", "Rss", "Seen", "Fetcher", "delete", "display", "feed", "fetch", "init", "rss")
+
+debug = False
 
 k = get_kernel()
 
@@ -35,7 +33,7 @@ def init(kernel):
     fetcher.start()
     return fetcher
 
-class Cfg(Object):
+class Cfg(Cfg):
 
     def __init__(self):
         super().__init__()
@@ -43,7 +41,7 @@ class Cfg(Object):
         self.dosave = True
         self.tinyurl = False
 
-class Feed(Object):
+class Feed(Default):
 
     pass
 
@@ -70,12 +68,15 @@ class Fetcher(Object):
 
     def display(self, o):
         result = ""
+        dl = []
         try:
             dl = o.display_list.split(",")
         except AttributeError:
-            dl = []
+            pass
         if not dl:
             dl = self.cfg.display_list.split(",")
+        if not dl or not dl[0]:
+            dl = ["title", "link"]
         for key in dl:
             if not key:
                 continue
@@ -117,7 +118,6 @@ class Fetcher(Object):
                 feed.save()
         if objs:
             Fetcher.seen.save()
-        k = bot.get_kernel(0)
         for o in objs:
             k.fleet.announce(self.display(o))
         return counter
@@ -125,8 +125,7 @@ class Fetcher(Object):
     def run(self):
         thrs = []
         db = Db()
-        k = bot.get_kernel(0)
-        for o in db.all("bot.rss.Rss"):
+        for o in db.all("ok.rss.Rss"):
             thrs.append(launch(self.fetch, o))
         return thrs
 
@@ -145,16 +144,19 @@ def file_time(timestamp):
     return str(datetime.datetime.fromtimestamp(timestamp)).replace(" ", os.sep) + "." + str(random.randint(111111, 999999))
 
 def get_feed(url):
-    if cfg.debug:
+    if debug:
         return [Object(), Object()]
-    result = get_url(url)
+    try:
+        result = get_url(url)
+    except Exception as ex:
+        return [Object(), Object()]
     if gotparser:
         res = feedparser.parse(result.data)
         if "entries" in res:
             for entry in res["entries"]:
                 yield entry
     else:
-        logging.debug("feedparser is missing")
+        print("feedparser is missing")
         return [Object(), Object()]
 
 def get_tinyurl(url):
@@ -177,7 +179,6 @@ def get_url(url):
     req.add_header('User-agent', useragent())
     response = urllib.request.urlopen(req)
     response.data = response.read()
-    logging.debug("GET %s %s" % (response.getcode(), response.geturl()))
     return response
 
 def strip_html(text):
@@ -191,7 +192,7 @@ def unescape(text):
     return html.parser.HTMLParser().unescape(txt)
 
 def useragent():
-    return 'Mozilla/5.0 (X11; Linux x86_64) BOTLIB +http://git@bitbucket.org/botd/botlib)'
+    return 'Mozilla/5.0 (X11; Linux x86_64) OKBOT +http://git@bitbucket.org/bthate/ok)'
 
 def delete(event):
     if not event.args:
@@ -201,13 +202,13 @@ def delete(event):
     nr = 0
     got = []
     db = Db()
-    for rss in db.find("bot.rss.Rss", selector):
+    for rss in db.find("ok.rss.Rss", selector):
         nr += 1
         rss._deleted = True
         got.append(rss)
     for rss in got:
         rss.save()
-    event.reply("ok %s" % nr)
+    event.reply("ok")
 
 def display(event):
     if len(event.args) < 2:
@@ -216,11 +217,11 @@ def display(event):
     nr = 0
     setter = {"display_list": event.args[1]}
     db = Db()
-    for o in db.find("bot.rss.Rss", {"rss": event.args[0]}):
+    for o in db.find("ok.rss.Rss", {"rss": event.args[0]}):
         nr += 1
         o.edit(setter)
         o.save()
-    event.reply("ok %s" % nr)
+    event.reply("ok")
 
 def feed(event):
     if not event.args:
@@ -230,19 +231,19 @@ def feed(event):
     nr = 0
     diff = time.time() - to_time(day())
     db = Db()
-    res = list(db.find("bot.rss.Feed", {"link": match}, delta=-diff))
+    res = list(db.find("ok.rss.Feed", {"link": match}, delta=-diff))
     for o in res:
         if match:
             event.reply("%s %s - %s - %s - %s" % (nr, o.title, o.summary, o.updated or o.published or "nodate", o.link))
         nr += 1
     if nr:
         return
-    res = list(db.find("srv.rss.Feed", {"title": match}, delta=-diff))
+    res = list(db.find("ok.rss.Feed", {"title": match}, delta=-diff))
     for o in res:
         if match:
             event.reply("%s %s - %s - %s" % (nr, o.title, o.summary, o.link))
         nr += 1
-    res = list(db.find("bot.rss.Feed", {"summary": match}, delta=-diff))
+    res = list(db.find("ok.rss.Feed", {"summary": match}, delta=-diff))
     for o in res:
         if match:
             event.reply("%s %s - %s - %s" % (nr, o.title, o.summary, o.link))
@@ -257,25 +258,25 @@ def fetch(event):
     fetcher.start(False)
     thrs = fetcher.run()
     for thr in thrs:
-        res.append(thr.join())
+        res.append(thr.join() or 0)
     event.reply("fetched %s" % ",".join([str(x) for x in res]))
 
 def rss(event):
     db = Db()
     if not event.args or "http" not in event.args[0]:
         nr = 0
-        for o in db.find("bot.rss.Rss", {"rss": ""}):
+        for o in db.find("ok.rss.Rss", {"rss": ""}):
             event.reply("%s %s" % (nr, o.rss))
             nr += 1
         if not nr:
             event.reply("rss <url>")
         return
     url = event.args[0]
-    res = list(db.find("bot.rss.Rss", {"rss": url}))
+    res = list(db.find("ok.rss.Rss", {"rss": url}))
     if res:
         event.reply("feed is already known.")
         return
     o = Rss()
     o.rss = event.args[0]
     o.save()
-    event.reply("ok 1")
+    event.reply("ok")

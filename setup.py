@@ -18,7 +18,7 @@ setup(
     long_description_content_type="text/x-rst",
     license='Public Domain',
     zip_safe=True,
-    install_requires=["libobj"],
+    install_requires=["oklib"],
     packages=["bot", "bot.mods"],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: Public Domain',

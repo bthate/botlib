@@ -1,34 +1,29 @@
-# BOTLIB - Framework to program bots.
+# OKBOT - the ok bot !
 #
-#
+# UDP to IRc relay.
 
-""" udp to irc channel relay. """
+import socket, time
 
-import logging
-import socket
-import time
-
-from lo import Object, cfg, get_kernel
-from lo.thr import launch
-from lo.trc import get_exception
+from .obj import Cfg, Object
+from .krn import get_kernel
+from .thr import launch
 
 def __dir__():
     return ("UDP", "Cfg", "init", "toudp") 
 
 k = get_kernel()
 
-def init(kernel):
-    server = UDP()
-    server.start()
-    return server
+def init(k):
+    u = UDP()
+    u.start()
+    return u
 
-class Cfg(Object):
+class Cfg(Cfg):
 
     def __init__(self):
         super().__init__()
         self.host = "localhost"
         self.port = 5500
-        self.verbose = cfg.verbose
 
 class UDP(Object):
 
@@ -51,7 +46,6 @@ class UDP(Object):
         try:
             self._sock.bind((host or c.host, port or c.port))
         except socket.gaierror as ex:
-            logging.error("EBIND %s" % ex)
             return
         while not self._stopped:
             (txt, addr) = self._sock.recvfrom(64000)
@@ -60,10 +54,7 @@ class UDP(Object):
             data = str(txt.rstrip(), "utf-8")
             if not data:
                 break
-            try:
-                self.output(data, addr)
-            except Exception as ex:
-                logging.error(get_exception())
+            self.output(data, addr)
 
     def exit(self):
         self._stopped = True
