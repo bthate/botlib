@@ -4,16 +4,23 @@
 # main program.
 
 from ok.csl import Console
+from ok.krn import cmd
 from ok.shl import execute, checkroot
 from bot.irc import IRC
 
+import sys
+
 def main():
     checkroot()
-    i = IRC()
-    i.start()
+    if len(sys.argv) > 1:
+        return cmd(" ".join(sys.argv[1:]), "ok,bot")
     c = Console()
     c.load_mod("ok.shw")
     c.walk("bot")
+    i = IRC()
+    i.cmds.update(c.cmds)
+    i.cfg.last()
+    i.start()
     c.start()
     c.wait()
     

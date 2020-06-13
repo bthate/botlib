@@ -5,7 +5,7 @@
 import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 
 from ok.obj import Cfg, Object, locked
-from ok.krn import get_kernel
+from ok.krn import get_kernel, dispatch
 from ok.hdl import Command, Event, Handler
 from ok.thr import launch
 from ok.trc import get_exception
@@ -331,7 +331,8 @@ class DCC(Handler):
         self.encoding = "utf-8"
         self.origin = ""
         k.fleet.add(self)
-
+        self.register("command", dispatch)
+        
     def raw(self, txt):
         self._fsock.write(str(txt).rstrip())
         self._fsock.write("\n")
@@ -353,13 +354,14 @@ class DCC(Handler):
             s.connect((addr, port))
         except ConnectionError:
             return
-        s.send(bytes('Welcome to %s %s !!\n' % ("OKBOT", event.nick), "utf-8"))
+        s.send(bytes('Welcome to %s %s !!\n' % ("BOTLIB", event.nick), "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s
         self._fsock = self._sock.makefile("rw")
         self.origin = event.origin
         launch(self.input)
+        super().start()
         self._connected.set()
 
     def input(self):
@@ -368,7 +370,7 @@ class DCC(Handler):
                 e = self.poll()
             except EOFError:
                 break
-            k.put(e)
+            self.put(e)
 
     def poll(self):
         self._connected.wait()
@@ -413,7 +415,9 @@ def PRIVMSG(handler, event):
             return
         try:
             dcc = DCC()
+            dcc.cmds.update(handler.cmds)
             dcc.encoding = "utf-8"
+            print(dcc)
             launch(dcc.connect, event)
             return
         except ConnectionError:
@@ -422,7 +426,7 @@ def PRIVMSG(handler, event):
         if k.cfg.owner and not k.users.allowed(event.origin, "USER"):
             return
         e = Command(event.txt[1:], event.orig, event.origin, event.channel)
-        k.put(e)
+        dispatch(handler, e)
         
 def QUIT(handler, event):
     if handler.cfg.server in event.orig:
