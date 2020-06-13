@@ -17,9 +17,10 @@ setup(
     long_description=read(),
     long_description_content_type="text/x-rst",
     license='Public Domain',
+    zip_safe=False,
     install_requires=["oklib"],
     packages=["bot"],
-    namespace_packages=["bot"]
+    namespace_packages=["bot"],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: Public Domain',
                  'Operating System :: Unix',

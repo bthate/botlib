@@ -35,41 +35,6 @@ def meet(event):
     k.users.meet(origin, perms)
     event.reply("ok")
 
-def find(event):
-    if not event.args:
-        wd = os.path.join(ok.workdir, "store", "")
-        cdir(wd)
-        fns = os.listdir(wd)
-        fns = sorted({x.split(os.sep)[0].split(".")[-1].lower() for x in fns})
-    if not root():
-        event.reply("you need root permission.")
-        return
-        if fns:
-            event.reply("|".join(fns))
-        return
-    shorts = k.find_shorts("ok")
-    db = Db()
-    otypes = []
-    target = db.all
-    otype = event.args[0]
-    otypes = shorts.get(otype, [otype,])
-    try:
-       match = event.args[1]
-       target = db.find_value
-    except:
-       match = None
-    try:
-        args = event.args[2:]
-    except ValueError:
-        args = None
-    nr = -1
-    for ot in otypes:
-        for o in target(ot, match):
-            nr += 1
-            event.display(o, str(nr), args or o.keys())
-    if nr == -1:
-        event.reply("no %s objects." % "|".join(otypes))
-
 def ps(event):
     psformat = "%-8s %-50s"
     result = []
