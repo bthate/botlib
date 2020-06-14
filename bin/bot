@@ -3,10 +3,7 @@
 #
 # main program.
 
-from ok.krn import get_kernel
-from ok.shl import execute
-
-import sys
+from bot.spc import execute, get_kernel
 
 def main():
     k = get_kernel()
