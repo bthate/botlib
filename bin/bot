@@ -4,16 +4,13 @@
 # main program.
 
 import os, sys ; sys.path.insert(0, os.getcwd())
-import ok.obj
 
-from bot.spc import args, cmd, execute, get_kernel
+from bot.spc import execute, get_kernel, root
 
 def main():
-    ok.obj.workdir = os.path.expanduser("~/.bot")
+    root("bot")
     k = get_kernel()
     k.scan("bot")
-    if args():
-        return
     k.init("ok.csl")
     k.wait()
     
