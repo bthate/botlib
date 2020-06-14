@@ -5,10 +5,10 @@
 
 import os, sys ; sys.path.insert(0, os.getcwd())
 
-from bot.spc import execute, get_kernel, root
+from bot.spc import check, execute, get_kernel
 
 def main():
-    root("bot")
+    check("bot")
     k = get_kernel()
     k.scan("bot")
     k.init("ok.csl")
