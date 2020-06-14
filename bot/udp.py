@@ -2,14 +2,14 @@
 #
 # UDP to IRc relay.
 
-import socket, time
+import select, socket, sys, time
 
 from ok.obj import Cfg, Object
 from ok.krn import get_kernel
 from ok.thr import launch
 
 def __dir__():
-    return ("UDP", "Cfg", "init", "toudp") 
+    return ("UDP", "Cfg", "init", "toudp", "udp") 
 
 k = get_kernel()
 
@@ -41,10 +41,9 @@ class UDP(Object):
         for bot in k.fleet.bots:
             bot.announce(txt.replace("\00", ""))
 
-    def server(self, host="", port=""):
-        c = self.cfg
+    def server(self):
         try:
-            self._sock.bind((host or c.host, port or c.port))
+            self._sock.bind((self.cfg.host, self.cfg.port))
         except socket.gaierror as ex:
             return
         while not self._stopped:
@@ -68,3 +67,29 @@ class UDP(Object):
 def toudp(host, port, txt):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(bytes(txt.strip(), "utf-8"), (host, port))
+
+def udp(event):
+    cfg = Cfg()
+    cfg.last()
+    if len(sys.argv) > 2:
+        txt = " ".join(sys.argv[2:])
+        toudp(cfg.host, cfg.port, txt)
+        return
+    if not select.select([sys.stdin,],[],[],0.0)[0]:
+        return
+    while 1:
+        try:
+            (i, o, e) = select.select([sys.stdin,], [], [sys.stderr,])
+        except KeyboardInterrupt:
+            return
+        if e:
+            break
+        stop = False
+        for sock in i:
+            txt = sock.readline()
+            if not txt:
+                stop = True
+                break
+            toudp(cfg.host, cfg.port, txt)
+        if stop:
+            break
