@@ -4,17 +4,13 @@
 # main program.
 
 from ok.krn import get_kernel
-from ok.shl import checkargs, checkroot, execute
+from ok.shl import execute
 
 import sys
 
-k = get_kernel()
-
 def main():
-    checkroot("bot")
-    k.walk("ok,bot")
-    if checkargs():
-        return
+    k = get_kernel()
+    k.scan("bot")
     k.init("ok.csl,bot.irc")
     k.wait()
     
