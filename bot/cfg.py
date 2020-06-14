@@ -2,15 +2,15 @@
 #
 #
 
-from .irc import IRC
+from .irc import Cfg
 
 def cfg(event):
-    i = IRC()
-    i.cfg.last()
+    c = Cfg()
+    c.last()
     try:
-        i.server, i.channel, i.nick = event.args
-        i.save()
+        c.server, c.channel, c.nick = event.args
+        c.save()
     except:
-        event.reply(i.cfg)
+        event.reply(c)
         return
     event.reply("ok")
