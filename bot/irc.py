@@ -307,8 +307,11 @@ class IRC(Handler):
             self.cfg.update(cfg)
         else:
             self.cfg.last()
-        self.channels.append(self.cfg.channel)
-        self.connect(self.cfg.server, self.cfg.nick)
+        self.channels.append(self.cfg.channel or "#okbot")
+        launch(self.doconnect)
+        
+    def doconnect(self):
+        self.connect(self.cfg.server or "localhost", self.cfg.nick or "okbot")
         super().start()
         launch(self.input)
         launch(self.output)
