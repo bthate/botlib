@@ -3,25 +3,18 @@
 #
 # main program.
 
-from ok.csl import Console
-from ok.krn import cmd
+from ok.krn import cmd, get_kernel
 from ok.shl import execute, checkroot
-from bot.irc import IRC
 
 import sys
 
 def main():
-    checkroot()
+    checkroot("bot")
     if len(sys.argv) > 1:
         return cmd(" ".join(sys.argv[1:]), "ok,bot")
-    c = Console()
-    c.load_mod("ok.shw")
-    c.walk("bot")
-    i = IRC()
-    i.cmds.update(c.cmds)
-    i.cfg.last()
-    i.start()
-    c.start()
-    c.wait()
+    k = get_kernel()
+    k.walk("ok,bot")
+    k.init("ok.csl,bot.irc")
+    k.wait()
     
 execute(main)

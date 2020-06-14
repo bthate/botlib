@@ -1,6 +1,6 @@
-# OKBOT - the ok bot !
+# BOTLIB - the bot library !
 #
-# IRC bot.
+# 
 
 import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 
@@ -24,7 +24,11 @@ def init(k):
 
 class Cfg(Cfg):
 
-    pass
+    def __init__(self):
+        super().__init__()
+        self.server = "localhost"
+        self.channel = "#okbot"
+        self.nick = "okbot"
 
 class Event(Event):
 

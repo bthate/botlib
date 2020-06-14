@@ -1,30 +1,14 @@
-# OKBOT - the ok bot !
+# BOTLIB - the bot library !
 #
 #
 
 import ok, os, select, socket, threading, time
 
-from ok.obj import Object, cdir, starttime
+from ok.obj import Object, starttime
 from ok.krn import get_kernel
-from ok.shl import root
 from ok.tms import elapsed
 
 k = get_kernel()
-
-txt="""[Unit]
-Description=BOTD - the 24/7 IRC channel daemon
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-ExecStart=/usr/local/bin/botd
-
-[Install]
-WantedBy=multi-user.target
-"""
-
-def list_files(wd):
-    return "|".join([x for x in os.listdir(os.path.join(wd, "store"))])
 
 def meet(event):
     if not event.args:

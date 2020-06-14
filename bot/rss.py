@@ -1,4 +1,4 @@
-# OKBOT - the ok bot !
+# BOTLIB - the bot library!
 #
 #
 
