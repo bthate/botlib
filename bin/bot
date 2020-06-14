@@ -3,12 +3,14 @@
 #
 # main program.
 
+import os, sys ; sys.path.insert(0, os.getcwd())
+
 from bot.spc import execute, get_kernel
 
 def main():
     k = get_kernel()
     k.scan("bot")
-    k.init("ok.csl,bot.irc")
+    k.init("ok.csl")
     k.wait()
     
 execute(main)
