@@ -8,12 +8,13 @@ from ok.shl import checkargs, checkroot, execute
 
 import sys
 
+k = get_kernel()
+
 def main():
     checkroot("bot")
+    k.walk("ok,bot")
     if checkargs():
         return
-    k = get_kernel()
-    k.walk("ok,bot")
     k.init("ok.csl,bot.irc")
     k.wait()
     

@@ -10,6 +10,7 @@ def cfg(event):
     try:
         i.server, i.channel, i.nick = event.args
         i.save()
-        event.reply("ok")
     except:
         event.reply(i.cfg)
+        return
+    event.reply("ok")
