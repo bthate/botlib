@@ -3,15 +3,15 @@
 #
 # main program.
 
-from ok.krn import cmd, get_kernel
-from ok.shl import execute, checkroot
+from ok.krn import get_kernel
+from ok.shl import checkargs, checkroot, execute
 
 import sys
 
 def main():
     checkroot("bot")
-    if len(sys.argv) > 1:
-        return cmd(" ".join(sys.argv[1:]), "ok,bot")
+    if checkargs():
+        return
     k = get_kernel()
     k.walk("ok,bot")
     k.init("ok.csl,bot.irc")
