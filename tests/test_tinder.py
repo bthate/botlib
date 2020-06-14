@@ -1,27 +1,19 @@
 # tinder tests.
 
-import logging
-import os
-import random
-import sys
-import time
-import unittest
+import logging, os, random, sys, time, unittest
 
-from lo import Object, cfg, get_kernel
-from lo.csl import Console
-from lo.hdl import Event
-from lo.thr import launch
+from ok.krn import get_kernel
+from ok.obj import Object
+from ok.hdl import Command, Event
+from ok.thr import launch
 
 k = get_kernel()
-k.walk("bot.mods")
-c = Console()
-k.fleet.bots.append(c)
 
 event = Event()
 event.parse()
 
 param = Object()
-param.ed = ["bot.irc.Cfg", "bot.rss.Cfg", "lo.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel \#dunkbots", "lo.krn.Cfg modules bot.udp"]
+param.ed = ["bot.irc.Cfg", "bot.rss.Cfg", "ok.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel \#dunkbots", "ok.krn.Cfg modules bot.udp"]
 param.delete = ["reddit", ]
 param.display = ["reddit title,summary,link",]
 param.log = ["yo!", ""]
@@ -34,9 +26,8 @@ param.todo = ["yo!", ""]
 class Event(Event):
 
     def show(self):
-        if cfg.verbose:
-            for txt in self._result:
-                print(txt)
+        for txt in self._result:
+            print(txt)
 
 class Test_Tinder(unittest.TestCase):
 
@@ -79,13 +70,9 @@ def do_cmd(b, cmd):
     random.shuffle(e)
     events = []
     for ex in e:
-        e = Event()
-        e.etype = "command"
-        e.orig = repr(k)
-        e.origin = "test@shell"
-        e.txt = cmd + " " + ex
-        if cfg.verbose:
-            print(e.txt)
+        txt = cmd + " " + ex
+        e = Command(txt, repr(k), "test@shell")
+        print(txt)
         k.put(e)
         events.append(e)
     return events

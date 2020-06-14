@@ -192,7 +192,7 @@ def unescape(text):
     return html.parser.HTMLParser().unescape(txt)
 
 def useragent():
-    return 'Mozilla/5.0 (X11; Linux x86_64) OKBOT +http://git@bitbucket.org/bthate/ok)'
+    return 'Mozilla/5.0 (X11; Linux x86_64) BOTLIB +http://git@bitbucket.org/bthate/botlib)'
 
 def delete(event):
     if not event.args:

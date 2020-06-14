@@ -16,7 +16,7 @@ def meet(event):
         return
     origin = event.args[0]
     origin = k.users.userhosts.get(origin, origin)
-    k.users.meet(origin, perms)
+    k.users.meet(origin)
     event.reply("ok")
 
 def ps(event):
