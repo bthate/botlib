@@ -19,6 +19,7 @@ k = get_kernel()
 
 def init(k):
     i = IRC()
+    i.cmds.update(k.cmds)
     i.start()
     return i
 
