@@ -70,9 +70,11 @@ class Kernel(Handler):
 
 kernels = []
 
-def get_kernel(nr=0):
+def get_kernel(nr=0, exception=False):
     try:
         k = kernels[nr]
     except IndexError:
-        raise ENOKERNEL
+        if exception:
+            raise ENOKERNEL
+        k = Kernel()
     return k
