@@ -2,10 +2,10 @@
 
 import logging, os, random, sys, time, unittest
 
-from ok.krn import get_kernel
-from ok.obj import Object
-from ok.hdl import Command, Event
-from ok.thr import launch
+from bot.krn import get_kernel
+from bot.obj import Object
+from bot.hdl import Command, Event
+from bot.thr import launch
 
 k = get_kernel()
 
@@ -13,7 +13,7 @@ event = Event()
 event.parse()
 
 param = Object()
-param.ed = ["bot.irc.Cfg", "bot.rss.Cfg", "ok.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel \#dunkbots", "ok.krn.Cfg modules bot.udp"]
+param.ed = ["bot.irc.Cfg", "bot.rss.Cfg", "bot.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel \#dunkbots", "bot.krn.Cfg modules bot.udp"]
 param.delete = ["reddit", ]
 param.display = ["reddit title,summary,link",]
 param.log = ["yo!", ""]

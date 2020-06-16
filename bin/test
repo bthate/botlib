@@ -6,12 +6,12 @@ __version__ = 1
 
 import os,sys ; sys.path.insert(0, os.getcwd())
 
-import logging, os, shutil, time, unittest, ok.obj, bot.rss
+import logging, os, shutil, time, unittest, bot.obj, bot.rss
 
-from ok.obj import cdir, starttime
-from ok.krn import get_kernel
-from ok.shl import execute
-from ok.tms import elapsed
+from bot.obj import cdir, starttime
+from bot.krn import get_kernel
+from bot.shl import execute
+from bot.tms import elapsed
 
 opts = [
     ('-b', '--bork', 'store_true', False, 'bork on exception.', 'bork'),
@@ -30,11 +30,11 @@ def main():
     except FileNotFoundError:
         pass
     cdir(".data")
-    ok.obj.workdir = ".data"
+    bot.obj.workdir = ".data"
     bot.rss.debug = True
     k = get_kernel()
     k.start()
-    k.walk("ok,bot")
+    k.walk("bot")
     test_path = os.getcwd() + os.sep + "tests"
     suite = unittest.loader.TestLoader().discover(test_path, pattern="test*")
     unittest.TextTestRunner(verbosity=3).run(suite)

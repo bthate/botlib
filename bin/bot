@@ -3,16 +3,22 @@
 #
 # main program.
 
-import ok.obj, os
+from bot.spc import check, execute, get_kernel, os, parse_cli
 
-from bot.spc import check, execute, get_kernel
+opts = [
+    ('-l', '--loglevel', 'store', str, "error", 'set loglevel.', 'level'),
+    ('-m', '--modules', 'store', str, "", 'modules to load.', 'modules'),
+    ('-o', '--options', 'store', str, "", "options to use", 'options'),
+    ('-w', '--workdir', 'store', str, os.path.expanduser("~/.bot"), "directory to work on", 'workdir'),
+]
+
 
 def main():
-    check("bot")
+    parse_cli("bot", opts)
     k = get_kernel()
     k.scan("bot")
     k.start()
-    k.init("bot.irc,ok.csl")
+    k.init("irc,csl")
     k.wait()
        
 execute(main)

@@ -2,7 +2,7 @@
 #
 #
 
-import atexit, ok.obj, os, readline, sys, termios, time, _thread
+import atexit, bot.obj, os, readline, sys, termios, time, _thread
 
 from .obj import Default, Object, cdir
 
@@ -14,9 +14,9 @@ HISTFILE = ""
 
 def close_history():
     global HISTFILE
-    if ok.obj.workdir:
+    if bot.obj.workdir:
         if not HISTFILE:
-            HISTFILE = os.path.join(ok.obj.workdir, "history")
+            HISTFILE = os.path.join(bot.obj.workdir, "history")
         if not os.path.isfile(HISTFILE):
             cdir(HISTFILE)
             touch(HISTFILE)
@@ -52,8 +52,8 @@ def daemon():
     os.dup2(se.fileno(), sys.stderr.fileno())
 
 def enable_history():
-    assert ok.obj.workdir
-    HISTFILE = os.path.abspath(os.path.join(ok.obj.workdir, "history"))
+    assert bot.obj.workdir
+    HISTFILE = os.path.abspath(os.path.join(bot.obj.workdir, "history"))
     if not os.path.exists(HISTFILE):
         cdir(HISTFILE)
         touch(HISTFILE)
@@ -82,9 +82,9 @@ def bexec(f, *args, **kwargs):
 
 def check(name):
     if root():
-        ok.obj.workdir = "/var/lib/%s" % name
+        bot.obj.workdir = "/var/lib/%s" % name
     else:
-        ok.obj.workdir = os.path.expanduser("~/.%s" % name)
+        bot.obj.workdir = os.path.expanduser("~/.%s" % name)
     cfg.txt = ""
     if len(sys.argv) > 1:
         cfg.txt = " ".join(sys.argv[1:])
@@ -127,8 +127,8 @@ def touch(fname):
         pass
 
 def writepid():
-    assert ok.obj.workdir
-    path = os.path.join(ok.obj.workdir, "pid")
+    assert bot.obj.workdir
+    path = os.path.join(bot.obj.workdir, "pid")
     if not os.path.exists(path):
         cdir(path)
     f = open(path, 'w')

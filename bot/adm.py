@@ -2,6 +2,8 @@
 #
 #
 
+import os
+
 from .krn import get_kernel
 from .spc import cfg, check, cmd, execute, get_kernel, root
 
@@ -13,7 +15,8 @@ def daemon(event):
     k.start()
     k.init("bot.irc,bot.rss")
     k.wait()
-
+    os._exit(0)
+    
 def hup(event):
     if not root():
         event.reply("you need root permission.")
@@ -25,7 +28,8 @@ def hup(event):
     for x in os.popen("systemctl status botd --no-pager").readlines():
         print(x.rstrip())
     event.reply("ok")
-
+    os._exit(0)
+    
 def install(event):
     if not root():
         event.reply("you need root permission.")
@@ -36,6 +40,7 @@ def install(event):
     os.popen("systemctl enable botd")
     os.popen("systemctl daemon-reload")
     event.reply("ok")
+    os._exit(0)
 
 def remove(event):
     if not root():
@@ -46,6 +51,7 @@ def remove(event):
         for l in os.popen("rm %s" % p).readlines():
             print(l) 
     event.reply("ok")
+    os._exit(0)
 
 txt="""[Unit]
 Description=BOTD - the 24/7 IRC channel daemon
@@ -53,7 +59,7 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/botd
+ExecStart=/usr/local/bin/bot daemon
 
 [Install]
 WantedBy=multi-user.target

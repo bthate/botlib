@@ -2,7 +2,7 @@
 #
 # core data.
 
-import inspect, ok.obj, os, sys, threading, time, _thread
+import inspect, bot.obj, os, sys, threading, time, _thread
 
 from .obj import Cfg, Object
 from .dbs import Db
@@ -34,7 +34,7 @@ class Kernel(Handler):
         self.db = Db()
         self.fleet = Fleet()
         self.users = Users()
-        self.workdir = ok.obj.workdir
+        self.workdir = bot.obj.workdir
         self.fleet.add(self)
         kernels.append(self)
         self.register("command", dispatch)
@@ -53,9 +53,9 @@ class Kernel(Handler):
             if not mn:
                 continue
             try:
-                mod = self.load_mod(mn)
+                mod = self.load_mod("bot.%s" % mn)
             except ModuleNotFoundError:
-                continue
+                mod = self.load_mod(mn)
             if mod and "init" in dir(mod):
                 mods.append(mod.init(self))
         return mods

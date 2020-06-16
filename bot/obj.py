@@ -9,7 +9,7 @@ def __dir__():
 
 lock = _thread.allocate_lock()
 starttime = time.time()
-workdir = ""
+workdir = os.path.expanduser("~/.bot")
 
 class ENOCLASS(Exception): pass
 

@@ -2,7 +2,7 @@
 #
 #
 
-import ok.obj, os, time
+import bot.obj, os, time
 
 from .krn import get_kernel
 from .obj import cdir
@@ -15,7 +15,7 @@ k = get_kernel()
 
 def find(event):
     if not event.args:
-        wd = os.path.join(ok.obj.workdir, "store", "")
+        wd = os.path.join(bot.obj.workdir, "store", "")
         cdir(wd)
         fns = os.listdir(wd)
         fns = sorted({x.split(os.sep)[0] for x in fns})

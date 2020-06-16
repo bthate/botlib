@@ -2,8 +2,8 @@
 #
 #
 
-from obj import get_type
-from krn import get_kernel
+from .obj import get_type
+from .krn import get_kernel
 
 k = get_kernel()
 

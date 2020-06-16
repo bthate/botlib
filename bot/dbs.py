@@ -2,7 +2,7 @@
 #
 #
 
-import importlib, ok, os, sys, time
+import bot.obj, importlib, os, sys, time
 
 from .obj import Object, get_cls, hook
 
@@ -104,17 +104,17 @@ def fntime(daystr):
     return t
 
 def names(name, delta=None):
-    assert ok.obj.workdir
+    assert bot.obj.workdir
     if not name:
         return []
-    p = os.path.join(ok.obj.workdir, "store", name) + os.sep
+    p = os.path.join(bot.obj.workdir, "store", name) + os.sep
     res = []
     now = time.time()
     if delta:
         past = now + delta
     for rootdir, dirs, files in os.walk(p, topdown=False):
         for fn in files:
-            fnn = os.path.join(rootdir, fn).split(os.path.join(ok.obj.workdir, "store"))[-1]
+            fnn = os.path.join(rootdir, fn).split(os.path.join(bot.obj.workdir, "store"))[-1]
             if delta:
                 if fntime(fnn) < past:
                     continue

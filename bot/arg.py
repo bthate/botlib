@@ -2,10 +2,11 @@
 #
 #
 
-import argparse, logging
+import argparse, bot.obj, logging, os, time
 
 from .log import level
-from .obj import Default, Object
+from .obj import Default, Object, cdir
+from .shl import check
 
 def make_opts(ns, options, usage="", **kwargs):
     kwargs["usage"] = usage
@@ -32,21 +33,11 @@ def parse_cli(name, opts=[], usage=None):
     cfg = Default(ns)
     cfg.name = name
     cfg.txt = " ".join(cfg.args)
-    if not cfg.workdir:
-        cfg.workdir = lo.hd(".%s" % name)
-    ok.obj.workdir = cfg.workdir
+    bot.obj.workdir = cfg.workdir
     cdir(os.path.join(cfg.workdir, "store", ""))
-    if cfg.logfile:
-        cdir(cfg.logfile)
-        touch(cfg.logfile)
-    level(cfg.level, cfg.logfile)
+    level(cfg.level)
     logging.warning("%s %s started on %s" % (cfg.name.upper(), cfg.version, time.ctime(time.time())))
-    if cfg.logfile:
-        logging.warning("logging.is in %s" % cfg.logfile)
     return cfg
 
 def rlog(level, txt, extra):
     logging.log(level, "%s %s" % (txt, extra))
-
-
-

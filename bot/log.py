@@ -2,13 +2,12 @@
 #
 #
 
-import logging, bot.obj
+import logging
 
 from .obj import cdir
-from .shl import  touch
+from .shl import touch
 
 def level(loglevel, logfile="", nostream=False):
-    assert bot.obj.workdir
     if logfile and not os.path.exists(logfile):
         cdir(logfile)
         touch(logfile)
