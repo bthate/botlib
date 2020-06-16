@@ -1,3 +1,0 @@
-setuptools
-testresources
-botlib>=86
