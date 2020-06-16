@@ -1,6 +1,6 @@
-# OKLIB - the ok library !
+# BOTLIB - the bot library !
 #
-# base classes.
+#
 
 import datetime, importlib, json, os, random, sys, time, _thread
 

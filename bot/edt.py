@@ -1,12 +1,12 @@
-# OKLIB - the ok library !
+# BOTLIB - the bot library !
 #
 #
 
-import ok.obj, os
+import bot.obj, os
 
-from ok.dbs import Db
-from ok.obj import ENOCLASS, get_cls
-from ok.krn import get_kernel
+from .dbs import Db
+from .obj import ENOCLASS, get_cls
+from .krn import get_kernel
 
 k = get_kernel()
 
@@ -15,7 +15,7 @@ def list_files(wd):
 
 def ed(event):
     if not event.args:
-        event.reply(list_files(ok.obj.workdir) or "no files yet")
+        event.reply(list_files(bot.obj.workdir) or "no files yet")
         return
     cn = event.args[0]
     shorts = k.find_shorts("ok")
@@ -29,7 +29,7 @@ def ed(event):
             l = c()
             event.reply("created %s" % cn)
         except ENOCLASS:
-            event.reply(list_files(ok.workdir) or "no files yet")
+            event.reply(list_files(bot.obj.workdir) or "no files yet")
             return
     if len(event.args) == 1:
         event.reply(l)

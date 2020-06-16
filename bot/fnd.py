@@ -1,12 +1,12 @@
-# OKLIB - the ok library !.
+# BOTLIB - the bot library !.
 #
 #
 
 import ok.obj, os, time
 
-from ok.krn import get_kernel
-from ok.obj import cdir
-from ok.dbs import Db
+from .krn import get_kernel
+from .obj import cdir
+from .dbs import Db
 
 def __dir__():
     return ("find",)

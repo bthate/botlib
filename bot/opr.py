@@ -2,11 +2,11 @@
 #
 #
 
-import ok, os, select, socket, threading, time
+import os, select, socket, threading, time
 
-from ok.obj import Object, starttime
-from ok.krn import get_kernel
-from ok.tms import elapsed
+from .obj import Object, starttime
+from .krn import get_kernel
+from .tms import elapsed
 
 k = get_kernel()
 

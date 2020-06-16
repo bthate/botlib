@@ -1,12 +1,12 @@
-# OKBOT - the ok bot !
+# BOTLIB - the bot linrary !
 #
-# UDP to IRc relay.
+#
 
 import select, socket, sys, time
 
-from ok.obj import Cfg, Object
-from ok.krn import get_kernel
-from ok.thr import launch
+from .obj import Cfg, Object
+from .krn import get_kernel
+from .thr import launch
 
 def __dir__():
     return ("UDP", "Cfg", "init", "toudp", "udp") 

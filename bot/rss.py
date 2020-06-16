@@ -1,4 +1,4 @@
-# BOTLIB - the bot library!
+# BOTLIB - the bot library !
 #
 #
 
@@ -8,12 +8,12 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode, urlunparse
 from urllib.request import Request, urlopen
 
-from ok.obj import Cfg, Default, Object
-from ok.clk import Repeater
-from ok.dbs import Db
-from ok.krn import get_kernel
-from ok.thr import launch
-from ok.tms import to_time, day
+from .obj import Cfg, Default, Object
+from .clk import Repeater
+from .dbs import Db
+from .krn import get_kernel
+from .thr import launch
+from .tms import to_time, day
 
 try:
     import feedparser

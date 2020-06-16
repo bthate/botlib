@@ -1,6 +1,6 @@
-# OKLIB - the ok library !
+# BOTLIB - the bot library !
 #
-# list of bots.
+#
 
 from .obj import Object, get_type
 from .hdl import Loader

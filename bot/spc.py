@@ -1,4 +1,4 @@
-from ok.obj import Cfg, Default, Object
-from ok.krn import cmd, get_kernel
-from ok.shl import cfg, check, execute, root
-from ok.thr import launch
+from .obj import Cfg, Default, Object
+from .krn import cmd, get_kernel
+from .shl import cfg, check, execute, root
+from .thr import launch

@@ -1,6 +1,6 @@
-# OKLIB - the ok library !
+# BOTLIB - the bot library !
 #
-# event handler.
+#
 
 import importlib, inspect, os, pkg_resources, queue
 import sys, threading, time, types, _thread

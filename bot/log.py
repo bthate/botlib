@@ -1,14 +1,14 @@
-# OKLIB - the ok library !
+# BOTLIB - the bot library !
 #
 #
 
-import logging, ok.obj
+import logging, bot.obj
 
 from .obj import cdir
 from .shl import  touch
 
 def level(loglevel, logfile="", nostream=False):
-    assert ok.obj.workdir
+    assert bot.obj.workdir
     if logfile and not os.path.exists(logfile):
         cdir(logfile)
         touch(logfile)

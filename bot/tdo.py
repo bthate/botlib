@@ -1,9 +1,9 @@
-# OKBOT - the ok bot !
+# BOTLIB - the bot library !
 #
 #
 
-from ok.obj import Object
-from ok.dbs import Db
+from .obj import Object
+from .dbs import Db
 
 def __dir__():
     return ("Todo", 'done', 'todo')

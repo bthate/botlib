@@ -4,11 +4,11 @@
 
 import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 
-from ok.obj import Cfg, Object, locked
-from ok.krn import get_kernel, dispatch
-from ok.hdl import Command, Event, Handler
-from ok.thr import launch
-from ok.trc import get_exception
+from .obj import Cfg, Object, locked
+from .krn import get_kernel, dispatch
+from .hdl import Command, Event, Handler
+from .thr import launch
+from .trc import get_exception
 
 def __dir__():
     return ('Cfg', 'DCC', 'DEvent', 'Event', 'IRC', "init")

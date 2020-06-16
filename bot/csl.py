@@ -1,6 +1,6 @@
-# OKLIB - the ok library !
+# BOTLIB - the bot library !
 #
-# console.
+#
 
 import sys, threading
 

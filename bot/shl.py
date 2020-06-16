@@ -1,6 +1,6 @@
-# OKLIB - the ok library !
+# BOTLIB - the bot library !
 #
-# shell.
+#
 
 import atexit, ok.obj, os, readline, sys, termios, time, _thread
 
