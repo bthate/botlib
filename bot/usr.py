@@ -5,10 +5,9 @@
 from .obj import Object
 from .dbs import Db
 
-def __dir__():
-    return ("User", "Users", "meet", "users")
+class ENOUSER(Exception):
 
-class ENOUSER(Exception): pass
+    pass
 
 class User(Object):
 

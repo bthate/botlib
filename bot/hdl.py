@@ -5,17 +5,11 @@
 import importlib, inspect, os, pkg_resources, queue
 import sys, threading, time, types, _thread
 
-from .log import rlog
 from .obj import Cfg, Default, DoL, Object, get_type
-from .tms import elapsed
-from .thr import launch
-from .trc import get_exception
-from .tms import fntime
+from .thr import Launcher
+from .utl import elapsed, fntime, get_exceptino
 
-def __dir__():
-    return ("Cfg", "Event", "Handler", "Loader")
-
-class Loader(Object):
+class Loader(Launcher):
 
     def __init__(self):
         super().__init__()
@@ -97,7 +91,6 @@ class Loader(Object):
     def load_mod(self, mn):
         if mn in self.table:
             return self.table[mn]
-        rlog("debug", "load %s" % mn)
         self.table[mn] = self.direct(mn)
         return self.table[mn]
 
@@ -180,7 +173,7 @@ class Handler(Loader):
 
     def start(self, handler=True):
         if handler:
-            launch(self.handler)
+            self.launch(self.handler)
 
     def stop(self):
         self._stopped = True

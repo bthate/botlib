@@ -6,17 +6,8 @@ import select, socket, sys, time
 
 from .obj import Cfg, Object
 from .krn import get_kernel
-from .thr import launch
-
-def __dir__():
-    return ("UDP", "Cfg", "init", "toudp", "udp") 
 
 k = get_kernel()
-
-def init(k):
-    u = UDP()
-    u.start()
-    return u
 
 class Cfg(Cfg):
 
@@ -62,7 +53,7 @@ class UDP(Object):
 
     def start(self):
         self.cfg.last()
-        launch(self.server)
+        k.launch(self.server)
 
 def toudp(host, port, txt):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

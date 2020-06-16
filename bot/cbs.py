@@ -2,17 +2,28 @@
 #
 #
 
-def error(handler, event):
+from .krn import get_kernel
+
+k = get_kernel()
+
+def dispatch(handler, event):
+    func = k.cmds.get(event.cmd, None)
+    if func:
+        try:
+            func(event)
+        except Exception as ex:
+            print(get_exception())
+            return
+    event.show()
+    event.ready()
+
+def ERROR(handler, event):
     handler.state.nrerror += 1
-    print(event._error)
     handler.state.error = event._error
     handler._connected.clear()
     handler.stop()
     if handler.state.nrerror < 3:
-        launch(init, k)
-
-def ERROR(handler, event):
-    handler.error = event.error
+        handler.start()
 
 def NOTICE(handler, event):
     if event.txt.startswith("VERSION"):
@@ -24,11 +35,11 @@ def PRIVMSG(handler, event):
         if k.cfg.owner and not k.users.allowed(event.origin, "USER"):
             return
         try:
+            from .irc import DCC
             dcc = DCC()
             dcc.cmds.update(handler.cmds)
             dcc.encoding = "utf-8"
-            print(dcc)
-            launch(dcc.connect, event)
+            k.launch(dcc.connect, event)
             return
         except ConnectionError:
             return
@@ -36,9 +47,8 @@ def PRIVMSG(handler, event):
         if k.cfg.owner and not k.users.allowed(event.origin, "USER"):
             return
         e = Command(event.txt[1:], event.orig, event.origin, event.channel)
-        dispatch(handler, e)
+        k.dispatch(handler, e)
 
 def QUIT(handler, event):
     if handler.cfg.server in event.orig:
         handler.stop()
-        launch(init, event)

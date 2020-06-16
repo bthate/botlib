@@ -65,7 +65,3 @@ def get_name(o):
                 n = o.__name__
     return n
 
-l = Launcher()
-
-def launch(func, *args, **kwargs):
-    return l.launch(func, *args, **kwargs)

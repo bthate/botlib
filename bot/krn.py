@@ -2,18 +2,13 @@
 #
 # core data.
 
-import inspect, bot.obj, os, sys, threading, time, _thread
+import inspect, os, sys, threading, time, _thread
 
-from .obj import Cfg, Object
-from .dbs import Db
+from .obj import Cfg, Db, Object
 from .flt import Fleet
 from .hdl import Command, Handler
-from .tms import elapsed
-from .trc import get_exception
+from .utl import elapsed, get_exception
 from .usr import Users
-
-def __dir__():
-    return ("Cfg", "Kernel")
 
 starttime = time.time()
 
@@ -34,7 +29,6 @@ class Kernel(Handler):
         self.db = Db()
         self.fleet = Fleet()
         self.users = Users()
-        self.workdir = bot.obj.workdir
         self.fleet.add(self)
         kernels.append(self)
         self.register("command", dispatch)
@@ -44,6 +38,17 @@ class Kernel(Handler):
         
     def add(self, cmd, func):
         self.cmds[cmd] = func
+
+    def dispatch(handler, event):
+        func = self.cmds.get(event.cmd, None)
+        if func:
+            try:
+                func(event)
+            except Exception as ex:
+                print(get_exception())
+                return
+        event.show()
+        event.ready()
 
     def init(self, mns):
         if not mns:
@@ -77,4 +82,3 @@ class Kernel(Handler):
 
     def wait(self):
         self._ready.wait()
-

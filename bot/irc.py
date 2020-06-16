@@ -7,15 +7,10 @@ import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 from .obj import Cfg, Object, locked
 from .krn import get_kernel, dispatch
 from .hdl import Command, Event, Handler
-from .thr import launch
-from .trc import get_exception
-
-def __dir__():
-    return ('Cfg', 'DCC', 'DEvent', 'Event', 'IRC', "init")
-
-saylock = _thread.allocate_lock()
+from .utl import get_exception
 
 k = get_kernel()
+saylock = _thread.allocate_lock()
 
 def init(k):
     i = IRC()
@@ -314,13 +309,13 @@ class IRC(Handler):
         else:
             self.cfg.last()
         self.channels.append(self.cfg.channel or "#okbot")
-        launch(self.doconnect)
+        self.launch(self.doconnect)
         
     def doconnect(self):
         self.connect(self.cfg.server or "localhost", self.cfg.nick or "okbot")
         super().start()
-        launch(self.input)
-        launch(self.output)
+        self.launch(self.input)
+        self.launch(self.output)
 
     def stop(self):
         super().stop()
@@ -340,7 +335,6 @@ class DCC(Handler):
         self.encoding = "utf-8"
         self.origin = ""
         k.fleet.add(self)
-        self.register("command", dispatch)
         
     def raw(self, txt):
         self._fsock.write(str(txt).rstrip())
@@ -369,7 +363,7 @@ class DCC(Handler):
         self._sock = s
         self._fsock = self._sock.makefile("rw")
         self.origin = event.origin
-        launch(self.input)
+        self.launch(self.input)
         super().start()
         self._connected.set()
 
@@ -379,7 +373,7 @@ class DCC(Handler):
                 e = self.poll()
             except EOFError:
                 break
-            self.put(e)
+            k.put(e)
 
     def poll(self):
         self._connected.wait()

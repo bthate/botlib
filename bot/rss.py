@@ -21,9 +21,6 @@ try:
 except ModuleNotFoundError:
     gotparser = False
 
-def __dir__():
-    return ("Cfg,", "Feed", "Rss", "Seen", "Fetcher", "delete", "display", "feed", "fetch", "init", "rss")
-
 debug = False
 
 k = get_kernel()
@@ -35,11 +32,7 @@ def init(kernel):
 
 class Cfg(Cfg):
 
-    def __init__(self):
-        super().__init__()
-        self.display_list = "title,link"
-        self.dosave = True
-        self.tinyurl = False
+    pass
 
 class Feed(Default):
 
