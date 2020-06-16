@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -u
-# OKBOT - the ok bot !
+# BOTLIB - the bot library !
 #
 # main program.
 
@@ -7,7 +7,7 @@ from ok.krn import get_kernel
 from ok.shl import execute, check
 
 def main():
-    check("okbot")
+    check("bot")
     k = get_kernel()
     k.scan("bot")
     k.start()

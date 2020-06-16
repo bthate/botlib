@@ -1,9 +1,9 @@
 #!/usr/bin/python3 -u
-# OKBOT - the ok bot !
+# BOTLIB - the bot library !
 #
 # main program.
 
-import os, sys ; sys.path.insert(0, os.getcwd())
+import ok.obj, os
 
 from bot.spc import check, execute, get_kernel
 
@@ -11,7 +11,8 @@ def main():
     check("bot")
     k = get_kernel()
     k.scan("bot")
-    k.init("ok.csl")
+    k.start()
+    k.init("bot.irc,ok.csl")
     k.wait()
-    
+       
 execute(main)
