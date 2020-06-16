@@ -2,9 +2,12 @@
 #
 #
 
-import atexit, bot.obj, os, readline, sys, termios, time, _thread
+import atexit, argparse, os, readline, sys, termios, time, _thread
 
+from .krn import get_kernel
+from .log import level
 from .obj import Default, Object, cdir
+from .shl import check
 
 cmds = []
 cfg = Object()
@@ -91,6 +94,46 @@ def check(name):
       
 def get_completer():
     return readline.get_completer()
+
+def make_opts(ns, options, usage="", **kwargs):
+    kwargs["usage"] = usage
+    kwargs["allow_abbrev"] = False
+    kwargs["argument_default"] = argparse.SUPPRESS
+    kwargs["formatter_class"] = argparse.HelpFormatter
+    parser = argparse.ArgumentParser(**kwargs)
+    for opt in options:
+        if not opt:
+            continue
+        try:
+            parser.add_argument(opt[0], opt[1], action=opt[2], type=opt[3], default=opt[4], help=opt[5], dest=opt[6], const=opt[4], nargs="?")
+        except Exception as ex:
+            try:
+                parser.add_argument(opt[0], opt[1], action=opt[2], default=opt[3], help=opt[4], dest=opt[5])
+            except Exception as ex:
+                pass
+    parser.add_argument('args', nargs='*')
+    parser.parse_known_args(namespace=ns)
+
+def parse_cli(name, opts=[], wd="", debug=""):
+    import bot.obj
+    k = get_kernel()
+    ns = Object()
+    make_opts(ns, opts)
+    k.cfg = Default(ns)
+    k.cfg.debug = debug
+    k.cfg.name = name
+    k.cfg.txt = " ".join(k.cfg.args)
+    bot.obj.workdir = k.cfg.workdir = wd or k.cfg.workdir
+    cdir(os.path.join(k.cfg.workdir, "store", ""))
+    if k.cfg.debug:
+        import bot.rss
+        bot.rss.debug = True
+    level(k.cfg.level)
+    logging.warning("%s %s started on %s" % (k.cfg.name.upper(), k.cfg.version, time.ctime(time.time())))
+    return k.cfg
+
+def rlog(level, txt, extra):
+    logging.log(level, "%s %s" % (txt, extra))
 
 def root():
     if os.geteuid() != 0:

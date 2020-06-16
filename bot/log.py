@@ -4,8 +4,25 @@
 
 import logging
 
-from .obj import cdir
+from .obj import Object, cdir
 from .shl import touch
+
+format = Object()
+format.large = "%(asctime)-8s %(module)10s.%(lineno)-4s %(message)-50s (%(threadName)s)"
+format.source = "%(asctime)-8s %(message)-50s (%(module)s.%(lineno)s)"
+format.time = "%(asctime)-8s %(message)-72s"
+format.log = "%(message)s"
+format.super = "%(asctime)-8s -=- %(message)-50s -=- (%(module)s.%(lineno)s)" 
+format.normal = "%(asctime)-8s -=- %(message)-60s"
+format.plain = "%(message)-0s"
+
+LEVELS = {'debug': logging.DEBUG,
+          'info': logging.INFO,
+          'warning': logging.WARNING,
+          'warn': logging.WARNING,
+          'error': logging.ERROR,
+          'critical': logging.CRITICAL
+         }
 
 def level(loglevel, logfile="", nostream=False):
     if logfile and not os.path.exists(logfile):
@@ -54,5 +71,5 @@ def level(loglevel, logfile="", nostream=False):
         logger.addHandler(filehandler)
     return logger
 
-def rlog(level, txt, extra):
-    logging.log(level, "%s %s" % (txt, extra))
+def rlog(level, txt):
+    logging.log(LEVELS.get(level, "error"), txt)

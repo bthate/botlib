@@ -41,7 +41,7 @@ class Users(Db):
 
     def get_users(self, origin=""):
         s = {"user": origin}
-        return self.all("ok.usr.User", s)
+        return self.all("bot.usr.User", s)
 
     def get_user(self, origin):
         u =  list(self.get_users(origin))

@@ -78,35 +78,3 @@ class Kernel(Handler):
     def wait(self):
         self._ready.wait()
 
-kernels = []
-
-def dispatch(handler, event):
-    func = handler.cmds.get(event.cmd, None)
-    if func:
-        try:
-            func(event)
-        except Exception as ex:
-            print(get_exception())
-            return
-    event.show()
-    event.ready()
-
-def get_kernel(nr=0):
-    try:
-        k = kernels[nr]
-    except IndexError:
-        k = Kernel()
-    return k
-
-def parse_args():
-    if len(sys.argv) <= 1:
-        return ""
-    return " ".join(sys.argv[1:])
-
-def cmd(txt, mods="ok"):
-    k = get_kernel()
-    k.scan(mods)
-    e = Command(txt)
-    dispatch(k, e)
-    e.wait()
-    return e

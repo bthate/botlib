@@ -5,6 +5,7 @@
 import importlib, inspect, os, pkg_resources, queue
 import sys, threading, time, types, _thread
 
+from .log import rlog
 from .obj import Cfg, Default, DoL, Object, get_type
 from .tms import elapsed
 from .thr import launch
@@ -96,6 +97,7 @@ class Loader(Object):
     def load_mod(self, mn):
         if mn in self.table:
             return self.table[mn]
+        rlog("debug", "load %s" % mn)
         self.table[mn] = self.direct(mn)
         return self.table[mn]
 
