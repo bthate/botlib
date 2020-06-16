@@ -2,8 +2,9 @@
 #
 #
 
-from .obj import Object, get_type
+from .obj import Object
 from .hdl import Loader
+from .utl import get_type
 
 class Fleet(Object):
 

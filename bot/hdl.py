@@ -5,9 +5,9 @@
 import importlib, inspect, os, pkg_resources, queue
 import sys, threading, time, types, _thread
 
-from .obj import Cfg, Default, DoL, Object, get_type
+from .obj import Cfg, Default, DoL, Object
 from .thr import Launcher
-from .utl import elapsed, fntime, get_exceptino
+from .utl import elapsed, fntime, get_exception, get_type
 
 class Loader(Launcher):
 

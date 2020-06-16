@@ -5,26 +5,16 @@
 import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 
 from .obj import Cfg, Object, locked
-from .krn import get_kernel, dispatch
+from .krn import get_kernel
 from .hdl import Command, Event, Handler
 from .utl import get_exception
 
 k = get_kernel()
 saylock = _thread.allocate_lock()
 
-def init(k):
-    i = IRC()
-    i.cmds.update(k.cmds)
-    i.start()
-    return i
-
 class Cfg(Cfg):
 
-    def __init__(self):
-        super().__init__()
-        self.server = "localhost"
-        self.channel = "#okbot"
-        self.nick = "okbot"
+    pass
 
 class Event(Event):
 

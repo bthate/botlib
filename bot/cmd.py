@@ -2,8 +2,11 @@
 #
 #
 
+import bot.obj, os
+
 from .krn import get_kernel
 from .obj import Db, Object
+from .utl import cdir, list_files, get_type
 
 class Log(Object):
 
@@ -131,3 +134,7 @@ def todo(event):
     o.txt = event.rest
     o.save()
     event.reply("ok")
+
+def v(event):
+    from .krn import __version__
+    event.reply("BOTLIB %s" % __version__)

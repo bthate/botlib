@@ -6,7 +6,7 @@ import os, select, socket, threading, time
 
 from .obj import Object, starttime
 from .krn import get_kernel
-from .tms import elapsed
+from .utl import elapsed
 
 k = get_kernel()
 

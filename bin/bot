@@ -5,7 +5,10 @@
 
 import os, sys ; sys.path.insert(0, os.getcwd())
 
-from bot.spc import check, execute, get_kernel, os, parse_cli, rlog
+from bot.spc import Console, Kernel
+from bot.spc import check, execute, get_kernel, os, parse_cli
+
+k = Kernel()
 
 opts = [
     ('-l', '--loglevel', 'store', str, "debug", 'set loglevel.', 'level'),
@@ -74,10 +77,10 @@ def remove(event):
 def main():
     parse_cli("bot", opts)
     check("bot")
-    k = get_kernel()
     k.scan("bot")
     k.start()
-    k.init("irc,csl")
+    c = Console()
+    c.start()
     k.wait()
        
 execute(main)

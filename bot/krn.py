@@ -2,6 +2,8 @@
 #
 # core data.
 
+__version__ = 87
+
 import inspect, os, sys, threading, time, _thread
 
 from .obj import Cfg, Db, Object
@@ -11,6 +13,10 @@ from .utl import elapsed, get_exception
 from .usr import Users
 
 starttime = time.time()
+
+class ENOKERNEL(Exception):
+
+    pass
 
 class Cfg(Cfg):
 
@@ -31,7 +37,6 @@ class Kernel(Handler):
         self.users = Users()
         self.fleet.add(self)
         kernels.append(self)
-        self.register("command", dispatch)
 
     def announce(self, txt):
         pass
@@ -39,7 +44,7 @@ class Kernel(Handler):
     def add(self, cmd, func):
         self.cmds[cmd] = func
 
-    def dispatch(handler, event):
+    def dispatch(self, event):
         func = self.cmds.get(event.cmd, None)
         if func:
             try:
@@ -82,3 +87,12 @@ class Kernel(Handler):
 
     def wait(self):
         self._ready.wait()
+
+kernels = []
+
+def get_kernel(nr=0):
+    try:
+        k = kernels[nr]
+    except IndexError:
+        raise ENOKERNEL
+    return k

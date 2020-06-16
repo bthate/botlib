@@ -2,14 +2,16 @@
 #
 #
 
-format = Object()
-format.large = "%(asctime)-8s %(module)10s.%(lineno)-4s %(message)-50s (%(threadName)s)"
-format.source = "%(asctime)-8s %(message)-50s (%(module)s.%(lineno)s)"
-format.time = "%(asctime)-8s %(message)-72s"
-format.log = "%(message)s"
-format.super = "%(asctime)-8s -=- %(message)-50s -=- (%(module)s.%(lineno)s)" 
-format.normal = "%(asctime)-8s -=- %(message)-60s"
-format.plain = "%(message)-0s"
+import logging, string, traceback
+
+format = {}
+format["large"] = "%(asctime)-8s %(module)10s.%(lineno)-4s %(message)-50s (%(threadName)s)"
+format["source"] = "%(asctime)-8s %(message)-50s (%(module)s.%(lineno)s)"
+format["time"] = "%(asctime)-8s %(message)-72s"
+format["log"] = "%(message)s"
+format["super"] = "%(asctime)-8s -=- %(message)-50s -=- (%(module)s.%(lineno)s)" 
+format["normal"] = "%(asctime)-8s -=- %(message)-60s"
+format["plain"] = "%(message)-0s"
 
 LEVELS = {'debug': logging.DEBUG,
           'info': logging.INFO,
@@ -61,6 +63,35 @@ year_formats = [
 
 allowedchars = string.ascii_letters + string.digits + '_+/$.-'
 
+def bexec(f, *args, **kwargs):
+    try:
+        return f(*args, **kwargs)
+    except KeyboardInterrupt:
+        print("")
+    except PermissionError:
+        print("you need root permissions.")
+
+def touch(fname):
+    try:
+        fd = os.open(fname, os.O_RDWR | os.O_CREAT)
+        os.close(fd)
+    except (IsADirectoryError, TypeError):
+        pass
+
+def root():
+    if os.geteuid() != 0:
+        return False
+    return True
+
+def check(name):
+    import bot.obj
+    if root():
+        bot.obj.workdir = "/var/lib/%s" % name
+    else:
+        bot.obj.workdir = os.path.expanduser("~/.%s" % name)
+    if len(sys.argv) > 1:
+        return " ".join(sys.argv[1:])
+
 def fntime(daystr):
     daystr = daystr.replace("_", ":")
     datestr = " ".join(daystr.split(os.sep)[-2:])
@@ -77,6 +108,7 @@ def fntime(daystr):
     return t
 
 def names(name, delta=None):
+    import bot.obj
     assert bot.obj.workdir
     if not name:
         return []
@@ -115,9 +147,6 @@ def get_exception(txt="", sep=" "):
         result.append("%s:%s" % (ownname, linenr))
     res = "%s %s: %s %s" % (sep.join(result), exctype, excvalue, str(txt))
     del trace
-    if bork:
-        print(res)
-        os._exit(0)
     return res
 
 def day():
@@ -329,11 +358,6 @@ def get_name(o):
             except AttributeError:
                 n = o.__name__
     return n
-
-l = Launcher()
-
-def launch(func, *args, **kwargs):
-    return l.launch(func, *args, **kwargs)
 
 def toudp(host, port, txt):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

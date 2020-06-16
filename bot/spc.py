@@ -1,10 +1,9 @@
 import logging
 import os
 
-from .obj import Cfg, Default, Object, cdir
-from .krn import cmd, get_kernel, starttime
+from .csl import Console
+from .obj import Cfg, Default, Object
+from .krn import Kernel, get_kernel, kernels, starttime
 from .hdl import Command, Event
-from .log import rlog
-from .shl import cfg, check, execute, parse_cli, root
-from .thr import launch
-from .tms import elapsed
+from .shl import cfg, execute, parse_cli
+from .utl import cdir, cmd, check, elapsed, root

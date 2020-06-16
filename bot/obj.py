@@ -4,8 +4,7 @@
 
 import datetime, importlib, json, os, random, sys, time, _thread
 
-def __dir__():
-    return ("Cfg", "Default", "O", "Object", "ObjectEncoder", "ObjectDecoder")
+from .utl import cdir, get_type, names, hook, hooked, stamp
 
 lock = _thread.allocate_lock()
 starttime = time.time()
@@ -162,7 +161,6 @@ class Object(O):
         return txt.strip()
 
     def last(self, strip=False):
-        from .dbs import Db
         db = Db()
         path, l = db.last_fn(str(get_type(self)))
         if l:

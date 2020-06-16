@@ -8,8 +8,6 @@ from .krn import get_kernel
 from .hdl import Command, Loader
 from .shl import setcompleter
 
-k = get_kernel()
-
 class Command(Command):
 
     def show(self):
@@ -21,7 +19,6 @@ class Console(Loader):
     def __init__(self):
         super().__init__()
         self._stopped = False
-        k.fleet.add(self)
         
     def announce(self, txt):
         self.raw(txt)
@@ -30,6 +27,7 @@ class Console(Loader):
         return Command(input("> "), repr(self), "root@shell")
 
     def input(self):
+        k = get_kernel()
         while not self._stopped:
             e = self.poll()
             if not e.txt:
@@ -44,5 +42,6 @@ class Console(Loader):
         self.raw(txt)
 
     def start(self):
+        k = get_kernel()
         setcompleter(self.cmds)
         k.launch(self.input)

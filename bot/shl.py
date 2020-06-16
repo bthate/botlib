@@ -2,12 +2,11 @@
 #
 #
 
-import atexit, argparse, os, readline, sys, termios, time, _thread
+import atexit, argparse, logging, os, readline, sys, termios, time, _thread
 
+from .obj import Default, Object
 from .krn import get_kernel
-from .log import level
-from .obj import Default, Object, cdir
-from .shl import check
+from .utl import check, cdir, level
 
 cmds = []
 cfg = Object()
@@ -75,23 +74,6 @@ def execute(main):
     finally:
         termreset()
 
-def bexec(f, *args, **kwargs):
-    try:
-        return f(*args, **kwargs)
-    except KeyboardInterrupt:
-        print("")
-    except PermissionError:
-        print("you need root permissions.")
-
-def check(name):
-    if root():
-        bot.obj.workdir = "/var/lib/%s" % name
-    else:
-        bot.obj.workdir = os.path.expanduser("~/.%s" % name)
-    cfg.txt = ""
-    if len(sys.argv) > 1:
-        cfg.txt = " ".join(sys.argv[1:])
-      
 def get_completer():
     return readline.get_completer()
 
@@ -132,14 +114,6 @@ def parse_cli(name, opts=[], wd="", debug=""):
     logging.warning("%s %s started on %s" % (k.cfg.name.upper(), k.cfg.version, time.ctime(time.time())))
     return k.cfg
 
-def rlog(level, txt, extra):
-    logging.log(level, "%s %s" % (txt, extra))
-
-def root():
-    if os.geteuid() != 0:
-        return False
-    return True
-
 def setcompleter(commands):
     global cmds
     cmds = commands
@@ -161,13 +135,6 @@ def termsave():
         atexit.register(termreset)
     except termios.error:
         pass    
-
-def touch(fname):
-    try:
-        fd = os.open(fname, os.O_RDWR | os.O_CREAT)
-        os.close(fd)
-    except (IsADirectoryError, TypeError):
-        pass
 
 def writepid():
     assert bot.obj.workdir

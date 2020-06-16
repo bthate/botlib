@@ -8,12 +8,10 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode, urlunparse
 from urllib.request import Request, urlopen
 
-from .obj import Cfg, Default, Object
+from .obj import Cfg, Db, Default, Object
 from .clk import Repeater
-from .dbs import Db
 from .krn import get_kernel
-from .thr import launch
-from .tms import to_time, day
+from .utl import to_time, day
 
 try:
     import feedparser
@@ -119,7 +117,7 @@ class Fetcher(Object):
         thrs = []
         db = Db()
         for o in db.all("bot.rss.Rss"):
-            thrs.append(launch(self.fetch, o))
+            thrs.append(k.launch(self.fetch, o))
         return thrs
 
     def start(self, repeat=True):
