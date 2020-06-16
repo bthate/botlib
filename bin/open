@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+# OKBOT - the ok bot !
+#
+# bin/open (shell command wrapper)
+
+import os, sys
+
+from ok.shl import execute
+
+def main():
+    for l in os.popen(" ".join(sys.argv[1:])).readlines():
+        print(l.rstrip())
+    
+execute(main)

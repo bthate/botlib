@@ -1,0 +1,17 @@
+#!/usr/bin/python3 -u
+# OKBOT - the ok bot !
+#
+# main program.
+
+from ok.krn import get_kernel
+from ok.shl import execute, check
+
+def main():
+    check("okbot")
+    k = get_kernel()
+    k.scan("bot")
+    k.start()
+    k.init("bot.irc,bot.rss")
+    k.wait()
+    
+execute(main)
