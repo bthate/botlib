@@ -5,6 +5,7 @@
 import importlib, inspect, os, pkg_resources, queue
 import sys, threading, time, types, _thread
 
+from .cbs import dispatch
 from .obj import Cfg, Default, DoL, Object
 from .thr import Launcher
 from .utl import elapsed, fntime, get_exception, get_type
@@ -129,7 +130,7 @@ class Loader(Launcher):
         while not self._stopped:
             time.sleep(0.1)
 
-    def scan(self, pkgs="ok"):
+    def scan(self, pkgs="bot"):
         res = []
         for mod in self.walk(pkgs):
             cmds = self.find_cmds(mod)
@@ -147,6 +148,7 @@ class Handler(Loader):
         self._ready = threading.Event()
         self._stopped = False
         self.cbs = Object()
+        self.register("command", dispatch)
 
     def handle_cb(self, event):
         if event.etype in self.cbs:

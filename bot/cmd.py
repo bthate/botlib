@@ -5,8 +5,8 @@
 import bot.obj, os
 
 from .krn import get_kernel
-from .obj import Db, Object
-from .utl import cdir, list_files, get_type
+from .obj import ENOCLASS, Db, Object
+from .utl import cdir, list_files, get_cls, get_type
 
 class Log(Object):
 

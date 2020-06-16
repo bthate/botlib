@@ -8,24 +8,34 @@ import os,sys ; sys.path.insert(0, os.getcwd())
 
 import logging, os, shutil, time, unittest
 
-from bot.spc import cdir, get_kernel, execute, elapsed, parse_cli, starttime
+from bot.spc import Kernel
+from bot.spc import cdir, execute, elapsed, parse_cli, starttime
 
-resume = {}
+k = Kernel()
+
+import bot.rss
+
+opts = [
+    ('-l', '--loglevel', 'store', str, "debug", 'set loglevel.', 'level'),
+    ('-m', '--modules', 'store', str, "", 'modules to load.', 'modules'),
+    ('-o', '--options', 'store', str, "", "options to use", 'options'),
+    ('-w', '--workdir', 'store', str, os.path.expanduser("~/.bot"), "directory to work on", 'workdir'),
+]
 
 def main():
-    parse_cli("test", wd=".data", debug=True)
-    try:
+    if os.path.exists(".data"):
         shutil.rmtree(".data")
-    except FileNotFoundError:
-        pass
-    k = get_kernel()
+    cfg = parse_cli("test", opts, ".data", True)
+    bot.rss.debug = True
+    k.cfg.update(cfg)
     k.start()
-    k.walk("bot")
+    k.scan()
     test_path = os.getcwd() + os.sep + "tests"
     suite = unittest.loader.TestLoader().discover(test_path, pattern="test*")
     unittest.TextTestRunner(verbosity=3).run(suite)
     k.wait()
    
 execute(main)
+print(k.cfg)
 print(elapsed(time.time() - starttime))
 os._exit(0)

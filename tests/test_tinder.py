@@ -2,7 +2,7 @@
 
 import logging, os, random, sys, time, unittest
 
-from bot.spc import Object, Event, Command, get_kernel, launch
+from bot.spc import Object, Event, Command, get_kernel
 
 k = get_kernel()
 
@@ -30,13 +30,13 @@ class Test_Tinder(unittest.TestCase):
 
     def test_thrs(self):
         thrs = []
-        for x in range(event.index or 1):
-            thrs.append(launch(tests, k))
+        for x in range(k.cfg.index or 1):
+            thrs.append(k.launch(tests, k))
         for t in thrs:
             t.join()
 
     def test_all(self):
-        for x in range(event.index or 1):
+        for x in range(k.cfg.index or 1):
             tests(k)
 
 def consume(elems):

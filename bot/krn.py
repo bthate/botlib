@@ -55,26 +55,6 @@ class Kernel(Handler):
         event.show()
         event.ready()
 
-    def init(self, mns):
-        if not mns:
-            return []
-        mods = []
-        for mn in mns.split(","):
-            if not mn:
-                continue
-            try:
-                mod = self.load_mod("bot.%s" % mn)
-            except ModuleNotFoundError:
-                mod = self.load_mod(mn)
-            if mod and "init" in dir(mod):
-                mods.append(mod.init(self))
-        return mods
-
-    def start(self):
-        self.users.oper(self.cfg.owner)
-        super().start()
-        self.init(self.cfg.modules)
-            
     def ready(self):
         self._ready.set()
 

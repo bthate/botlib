@@ -5,7 +5,7 @@
 import atexit, argparse, logging, os, readline, sys, termios, time, _thread
 
 from .obj import Default, Object
-from .krn import get_kernel
+from .krn import get_kernel, __version__
 from .utl import check, cdir, level
 
 cmds = []
@@ -96,23 +96,26 @@ def make_opts(ns, options, usage="", **kwargs):
     parser.add_argument('args', nargs='*')
     parser.parse_known_args(namespace=ns)
 
-def parse_cli(name, opts=[], wd="", debug=""):
-    import bot.obj
-    k = get_kernel()
+def parse_cli(name, opts=[], wd="", debug="", version=__version__):
     ns = Object()
     make_opts(ns, opts)
-    k.cfg = Default(ns)
-    k.cfg.debug = debug
-    k.cfg.name = name
-    k.cfg.txt = " ".join(k.cfg.args)
-    bot.obj.workdir = k.cfg.workdir = wd or k.cfg.workdir
-    cdir(os.path.join(k.cfg.workdir, "store", ""))
-    if k.cfg.debug:
-        import bot.rss
-        bot.rss.debug = True
-    level(k.cfg.level)
-    logging.warning("%s %s started on %s" % (k.cfg.name.upper(), k.cfg.version, time.ctime(time.time())))
-    return k.cfg
+    cfg = Default(ns)
+    cfg.debug = debug
+    cfg.name = name
+    cfg.txt = " ".join(cfg.args)
+    cfg.version = version
+    cfg.workdir = wd or cfg.workdir
+    if cfg.options:
+        for opt in cfg.options.split(","):
+            print(opt)
+            try:
+                cfg.index = int(opt)
+            except ValueError:
+                continue
+    level(cfg.level)
+    logging.warning("%s %s started on %s" % (cfg.name.upper(), cfg.version, time.ctime(time.time())))
+    cdir(os.path.join(cfg.workdir, "store", ""))
+    return cfg
 
 def setcompleter(commands):
     global cmds

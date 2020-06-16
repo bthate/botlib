@@ -2,11 +2,11 @@
 #
 #
 
-from .krn import get_kernel
-
-k = get_kernel()
+from .utl import get_exception
 
 def dispatch(handler, event):
+    from .krn import get_kernel
+    k = get_kernel()
     func = k.cmds.get(event.cmd, None)
     if func:
         try:
