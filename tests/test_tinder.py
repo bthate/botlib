@@ -2,10 +2,7 @@
 
 import logging, os, random, sys, time, unittest
 
-from bot.krn import get_kernel
-from bot.obj import Object
-from bot.hdl import Command, Event
-from bot.thr import launch
+from bot.spc import Object, Event, Command, get_kernel, launch
 
 k = get_kernel()
 

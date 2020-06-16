@@ -6,32 +6,18 @@ __version__ = 1
 
 import os,sys ; sys.path.insert(0, os.getcwd())
 
-import logging, os, shutil, time, unittest, bot.obj, bot.rss
+import logging, os, shutil, time, unittest
 
-from bot.obj import cdir, starttime
-from bot.krn import get_kernel
-from bot.shl import execute
-from bot.tms import elapsed
-
-opts = [
-    ('-b', '--bork', 'store_true', False, 'bork on exception.', 'bork'),
-    ('-v', '--verbose', 'store_true', False, 'enable verbose mode.', 'verbose'),
-    ('-m', '--modules', 'store', str, "bot.mods", 'modules to load.', 'modules'),
-    ('-o', '--options', 'store', str, "", 'options to use.', 'options'),
-    ('-w', '--workdir', 'store', str, ".data", 'set working directory.', 'workdir'),
-    ('-l', '--loglevel', 'store', str, "error", 'set loglevel.', 'level'),
-]
+from bot.spc import cdir, get_kernel, execute, elapsed, parse_cli, starttime
 
 resume = {}
 
 def main():
+    parse_cli("test", wd=".data", debug=True)
     try:
         shutil.rmtree(".data")
     except FileNotFoundError:
         pass
-    cdir(".data")
-    bot.obj.workdir = ".data"
-    bot.rss.debug = True
     k = get_kernel()
     k.start()
     k.walk("bot")
