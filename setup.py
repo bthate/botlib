@@ -20,7 +20,6 @@ setup(
     zip_safe=False,
     packages=["bot"],
     namespace_packages=["bot"],
-    scripts=["bin/bot"],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: Public Domain',
                  'Operating System :: Unix',
