@@ -71,11 +71,6 @@ class Kernel(Handler, Launcher):
     def say(self, channel, txt):
         print(txt)
 
-    def start(self, cfg={}):
-        self.cfg.update(cfg)
-        print(self.cfg)
-        super().start()
-        
     def stop(self):
         self._stopped = True
         self._queue.put(None)

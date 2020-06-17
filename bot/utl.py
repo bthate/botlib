@@ -21,7 +21,7 @@ LEVELS = {'debug': logging.DEBUG,
           'critical': logging.CRITICAL
          }
 
-logfile = os.path.expanduser("~/.bot/logs/bot.log")
+logfile = ""
 
 timestrings = [
     "%a, %d %b %Y %H:%M:%S %z",

@@ -96,7 +96,7 @@ def make_opts(ns, options, usage="", **kwargs):
     parser.add_argument('args', nargs='*')
     parser.parse_known_args(namespace=ns)
 
-def parse_cli(name, opts=[], wd="", debug="", version=""):
+def parse_cli(name, opts=[], version="", wd=""):
     import bot.obj
     ns = Object()
     make_opts(ns, opts)
