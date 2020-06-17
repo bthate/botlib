@@ -27,6 +27,8 @@ class Loader(Object):
         self.table = Object()
 
     def load_mod(self, name):
+        if not name:
+            return
         self.table[name] = direct(name)
         return self.table[name]
 
@@ -48,6 +50,7 @@ class Handler(Loader):
                 func(event)
             except Exception as ex:
                 print(get_exception())
+            print(event)
             event.show(self)
 
     def callback(self, event):
@@ -55,8 +58,8 @@ class Handler(Loader):
         if t in self.cbs:
             self.cbs[t](self, event)
 
-    def get_cmd(self, cmd):
-        name = bot.tbl.names.get(cmd, None)
+    def get_cmd(self, cmd, dft=None):
+        name = bot.tbl.names.get(cmd, dft)
         mod = None
         if name:
             mod = self.table.get(name)

@@ -2,7 +2,7 @@
 #
 #
 
-import datetime, logging, logging.handlers, importlib, os, string, sys, time, traceback
+import datetime, logging, logging.handlers, importlib, os, string, sys, time, types, traceback
 
 format = {}
 format["large"] = "%(asctime)-8s %(module)10s.%(lineno)-4s %(message)-50s (%(threadName)s)"

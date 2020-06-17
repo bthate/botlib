@@ -2,28 +2,20 @@
 #
 # 
 
-## imports
-
 import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 
 from .obj import Cfg, Object, locked
-from .krn import get_kernel
-from .thr import Launcher
+from .krn import k
+from .thr import launch
 from .hdl import Event, Handler
 from .utl import get_exception
 
-## defines
-
-k = get_kernel()
 saylock = _thread.allocate_lock()
 
-def dispatch(handler, event):
-    event._func = handler.get_cmd(event.command, None)
-    if event._func:
-        event._func(event)
-    event.ready()
-
-## classes
+def init(k):
+    i = IRC()
+    i.start()
+    return i
 
 class Cfg(Cfg):
 
@@ -31,12 +23,8 @@ class Cfg(Cfg):
 
 class Event(Event):
 
-    pass
-
-class Event(Event):
-
-    def show(self):
-        for txt in self._result:
+    def show(self, bot=None):
+        for txt in self.result:
             k.fleet.say(self.orig, self.channel, txt)
 
 class TextWrap(textwrap.TextWrapper):
@@ -56,13 +44,9 @@ class IRC(Handler):
         super().__init__()
         self._buffer = []
         self._connected = threading.Event()
-        self._inclosed = threading.Event()
-        self._inqueue = queue.Queue()
-        self._outclosed = threading.Event()
         self._outqueue = queue.Queue()
         self._sock = None
         self._fsock = None
-        self._threaded = False
         self._trc = ""
         self.cc = "!"
         self.cfg = Cfg()
@@ -78,11 +62,6 @@ class IRC(Handler):
         self.state.nrsend = 0
         self.state.pongcheck = False
         self.threaded = False
-        self.register("command", dispatch)
-        self.register("ERROR", ERROR)
-        self.register("NOTICE", NOTICE)
-        self.register("PRIVMSG", PRIVMSG)
-        self.register("QUIT", QUIT)
         k.fleet.add(self)
 
     def _connect(self, server):
@@ -219,6 +198,11 @@ class IRC(Handler):
         self._connected.wait()
         self.logon(server, nick)
 
+    def dispatch(self, event):
+        func = self.get_cmd(event.command)
+        if func:
+            func(event)
+
     def poll(self):
         self._connected.wait()
         if not self._buffer:
@@ -226,9 +210,9 @@ class IRC(Handler):
                 self._some()
             except (OSError, ConnectionError) as ex:
                 e = Event()
-                e.etype = "error"
-                e._error = str(ex)
-                e._trc = get_exception()
+                e.type = "error"
+                e.error = str(ex)
+                e.trc = get_exception()
                 return e
         e = self._parsing(self._buffer.pop(0))
         cmd = e.command
@@ -263,7 +247,6 @@ class IRC(Handler):
             if not e:
                 break
             self.put(e)
-        self._inclosed.set()
 
     def output(self):
         self._outputed = True
@@ -274,7 +257,6 @@ class IRC(Handler):
             if txt:
                 time.sleep(0.001)
                 self._say(channel, txt, type)
-        self._outclosed.set()
 
     def raw(self, txt):
         txt = txt.rstrip()
@@ -286,8 +268,8 @@ class IRC(Handler):
             self._sock.send(txt)
         except (OSError, ConnectionError) as ex:
             e = Event()
-            e._error = str(ex) 
-            e._trc = get_exception()
+            e.error = str(ex) 
+            e.trc = get_exception()
             self.put(e)
         self.state.last = time.time()
         self.state.nrsend += 1
@@ -301,15 +283,13 @@ class IRC(Handler):
         else:
             self.cfg.last()
         self.channels.append(self.cfg.channel or "#okbot")
-        l = Launcher()
-        l.launch(self.doconnect)
+        launch(self.doconnect)
         
     def doconnect(self):
         self.connect(self.cfg.server or "localhost", self.cfg.nick or "okbot")
         super().start()
-        l = Launcher()
-        l.launch(self.input)
-        l.launch(self.output)
+        launch(self.input)
+        launch(self.output)
 
     def stop(self):
         super().stop()
@@ -318,6 +298,42 @@ class IRC(Handler):
             self._sock.shutdown(2)
         except OSError:
             pass
+
+    def ERROR(self, event):
+        self.state.nrerror += 1
+        self.state.error = event.error
+        self._connected.clear()
+        self.stop()
+        if self.state.nrerror < 3:
+            init(k)
+
+    def NOTICE(self, event):
+        if event.txt.startswith("VERSION"):
+            txt = "\001VERSION %s %s - %s\001" % (cfg.name or "OKBOT", "1", "the ok bot !")
+            self.command("NOTICE", event.channel, txt)
+
+    def PRIVMSG(self, event):
+        if event.txt.startswith("DCC CHAT"):
+            if k.cfg.users and not k.users.allowed(event.origin, "USER"):
+                return
+            try:
+                dcc = DCC()
+                dcc.encoding = "utf-8"
+                launch(dcc.connect, event)
+                return
+            except ConnectionError:
+                return
+        if event.txt and event.txt[0] == handler.cc:
+            if k.cfg.users and not k.users.allowed(event.origin, "USER"):
+               return
+            e = Event(event.txt[1:])
+            e.orig = event.orig
+            e.origin = event.origin
+            k.put(e)
+
+    def QUIT(self, event):
+        if self.cfg.server in event.orig:
+            self.stop()
         
 class DCC(Handler):
 
@@ -388,41 +404,3 @@ class DCC(Handler):
 
     def say(self, channel, txt, type="chat"):
         self.raw(txt)
-
-def ERROR(handler, event):
-    handler.state.nrerror += 1
-    handler.state.error = event._error
-    handler._connected.clear()
-    handler.stop()
-    if handler.state.nrerror < 3:
-        handler.start()
-
-def NOTICE(handler, event):
-    if event.txt.startswith("VERSION"):
-        txt = "\001VERSION %s %s - %s\001" % (cfg.name or "OKBOT", "1", "the ok bot !")
-        handler.command("NOTICE", event.channel, txt)
-
-def PRIVMSG(handler, event):
-    if event.txt.startswith("DCC CHAT"):
-        if k.cfg.owner and not k.users.allowed(event.origin, "USER"):
-            return
-        try:
-            from .irc import DCC
-            dcc = DCC()
-            dcc.cmds.update(handler.cmds)
-            dcc.encoding = "utf-8"
-            k.launch(dcc.connect, event)
-            return
-        except ConnectionError:
-            return
-    if event.txt and event.txt[0] == handler.cc:
-        if k.cfg.owner and not k.users.allowed(event.origin, "USER"):
-            return
-        e = Event(event.txt[1:])
-        e.orig = event.orig
-        e.origin = event.origin
-        k.put(e)
-
-def QUIT(handler, event):
-    if handler.cfg.server in event.orig:
-        handler.stop()
