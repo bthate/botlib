@@ -23,15 +23,15 @@ you can download with pip3 and install globally:
 
 ::
 
- > sudo pip3 install okbot
+ > sudo pip3 install botlib
 
-You can also download the tarball and install from that, see https://pypi.org/project/okbot/#files
+You can also download the tarball and install from that, see https://pypi.org/project/botlib/#files
 
 if you want to develop on the bot clone the source at bitbucket.org:
 
 ::
 
- > git clone https://bitbucket.org/bthate/okbot
+ > git clone https://bitbucket.org/bthate/botlib
 
 if you want to run the bot 24/7 you can install BOTLIB as a service for
 the systemd daemon. You can do this by running the following:
@@ -57,8 +57,8 @@ to configure the bot use the ed (edit) command, with sudo:
 
 ::
 
- > okcmd cfg irc.freenode.net \#dunkbots okbot
- > okcmd hup
+ > bot cmd cfg <server> <channel> <nick>
+ > bot cmd hup
 
 U S A G E
 =========
@@ -66,30 +66,30 @@ U S A G E
 |
 
 BOTLIB detects whether it is run as root or as a user. if it's root it
-will use the /var/lib/okbot directory and it it's user it will use ~/.okbot
+will use the /var/lib/botd directory and it it's user it will use ~/.bot
 
-BOTLIB has it's own CLI, you can run it by giving the okbot command on the
+BOTLIB has it's own CLI, you can run it by giving the bot command on the
 prompt, it will return with its own prompt:
 
 ::
 
- > okbot
+ > bot
  > cmds
  cfg|cmds|ed|find|fleet|meet|ps|udp
  >
 
-you can use okcmd with arguments to run a command directly:
+you can use bot cmd with arguments to run a command directly:
 
 ::
 
- > okcmd cmds
+ > bot cmd cmds
  cfg|cmds|ed|find|fleet|meet|ps|udp
 
 if you run with sudo, you will get additional command like install,cfg and hup:
 
 ::
 
- > sudo okcmd cmds
+ > sudo bot cmd cmds
  cfg|cmds|ed|find|fleet|hup|install|meet|ps|remove|udp
 
 
@@ -102,21 +102,21 @@ to add an url use the rss command with an url:
 
 ::
 
- > okcmd rss https://news.ycombinator.com/rss
+ > bot cmd rss https://news.ycombinator.com/rss
  ok 1
 
 run the rss command to see what urls are registered:
 
 ::
 
- > okcmd rss
+ > bot cmd rss
  0 https://news.ycombinator.com/rss
 
 the fetch command can be used to poll the added feeds:
 
 ::
 
- > okcmd fetch
+ > bot cmd fetch
  fetched 0
 
 U D P
@@ -131,7 +131,7 @@ to the channel on the irc server:
 
  > tail -f /var/log/syslog | okcmd udp
 
-to send the tail output to the IRC channel, send a udp packet to okbot:
+to send the tail output to the IRC channel, send a udp packet to the bot:
 
 ::
 
@@ -141,24 +141,10 @@ to send the tail output to the IRC channel, send a udp packet to okbot:
      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
      sock.sendto(bytes(txt.strip(), "utf-8"), host, port)
 
-C O D E
-=======
+S O U R C E
+===========
 
 |
-
-basic code is a function that gets an event as a argument:
-
-::
-
- def command(event):
-     << your code here >>
-
-to give feedback to the user use the event.reply(txt) method:
-
-::
-
- def command(event):
-     event.reply("yooo %s" % event.origin)
 
 BOTLIB used the oklib package that has the following modules.
 
@@ -195,4 +181,3 @@ you can contact me on IRC/freenode/#dunkbots or email me at bthate@dds.nl
 
 | Bart Thate (bthate@dds.nl, thatebart@gmail.com)
 | botfather on #dunkbots irc.freenode.net
-
