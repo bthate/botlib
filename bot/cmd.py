@@ -7,10 +7,13 @@ __version__ = 1
 ## imports
 
 from .spc import Cfg, Db, Object
-from .spc import get_kernel, os
+from .spc import get_kernel, k, os
 
+from .krn import __version__
 from .obj import ENOCLASS
 from .utl import cdir, list_files, get_cls, get_type
+
+import bot.tbl
 
 ## classes
 
@@ -25,7 +28,6 @@ class Todo(Object):
 ## commands
 
 def cfg(event):
-    k = get_kernel()
     event.reply(k.cfg)
 
 def icfg(event):
@@ -44,8 +46,7 @@ def icfg(event):
     event.reply(cfg)
 
 def cmds(event):
-    k = get_kernel()
-    event.reply("|".join(sorted(k.cmds)))
+    event.reply("|".join(sorted(bot.tbl.names)))
 
 def done(event):
     if not event.args:
@@ -61,11 +62,9 @@ def done(event):
         break
 
 def ed(event):
-    k = get_kernel()
     if not event.args:
         event.reply(list_files(k.cfg.workdir) or "no files yet")
         return
-    k = get_kernel()
     cn = event.args[0]
     shorts = k.find_shorts("bot")
     if shorts:
@@ -93,7 +92,6 @@ def ed(event):
 
 def find(event):
     import bot.obj
-    k = get_kernel()
     if not event.args:
         wd = os.path.join(bot.obj.workdir, "store", "")
         cdir(wd)
@@ -122,7 +120,6 @@ def find(event):
         event.reply("no %s found." % otype)
 
 def fleet(event):
-    k = get_kernel()
     try:
         index = int(event.args[0])
         event.reply(str(k.fleet.bots[index]))
@@ -132,7 +129,6 @@ def fleet(event):
     event.reply([get_type(x) for x in k.fleet])
 
 def log(event):
-    k = get_kernel()
     if not event.rest:
        db = Db()
        nr = 0
@@ -146,7 +142,6 @@ def log(event):
     event.reply("ok")
 
 def todo(event):
-    k = get_kernel()
     if not event.rest:
        db = Db()
        nr = 0
@@ -160,5 +155,4 @@ def todo(event):
     event.reply("ok %s" % p)
 
 def v(event):
-    k = get_kernel()
-    event.reply("%s %s" % (k.cfg.name.upper(), k.cfg.version))
+    event.reply("%s %s" % (k.cfg.name.upper() or "BOTLIB", k.cfg.version or __version__))

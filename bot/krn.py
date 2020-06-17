@@ -4,16 +4,23 @@
 
 __version__ = 87
 
+## imports
+
 import inspect, os, sys, threading, time, _thread
 
 from .obj import Cfg, Db, Object
 from .flt import Fleet
-from .hdl import Command, Handler
+from .hdl import Event, Handler
 from .thr import Launcher
 from .utl import elapsed, get_exception
 from .usr import Users
 
+## defines
+
+
 starttime = time.time()
+
+## classes
 
 class ENOKERNEL(Exception):
 
@@ -23,68 +30,46 @@ class Cfg(Cfg):
 
     pass
 
-class Kernel(Handler, Launcher):
+class Kernel(Handler):
 
     def __init__(self, cfg={}):
         super().__init__()
-        self._outputed = False
-        self._prompted = threading.Event()
-        self._prompted.set()
-        self._ready = threading.Event()
-        self._started = False
         self.cfg = Cfg(cfg)
         self.db = Db()
         self.fleet = Fleet()
         self.users = Users()
         self.fleet.add(self)
-        kernels.append(self)
-
-    def announce(self, txt):
-        pass
-        
-    def register(self, cmd, func):
-        self.cmds[cmd] = func
 
     def cmd(self, txt):
-        c = Command(txt)
-        self.dispatch(c)
-        c.wait()
-        return c
-        
+        e = Event(txt)
+        self.dispatch(e)
+        return e
+
     def dispatch(self, event):
         if not event.txt:
             return
         cmd = event.txt.split()[0]
-        func = self.cmds.get(cmd, None)
+        func = self.get_cmd(cmd)
         if func:
             try:
                 func(event)
             except Exception as ex:
                 print(get_exception())
-                return
-        event.show()
-        event.ready()
-
-    def ready(self):
-        self._ready.set()
+        event.show(self)
 
     def say(self, channel, txt):
         print(txt)
 
     def stop(self):
-        self._stopped = True
         self._queue.put(None)
 
     def wait(self):
-        self._ready.wait()
+        while 1:
+            time.sleep(1.0)
 
-kernels = []
+## runtime
 
-def get_kernel(nr=0, exception=False):
-    try:
-        k = kernels[nr]
-    except IndexError:
-        if exception:
-            raise ENOKERNEL
-        k = Kernel()
+k = Kernel()
+
+def get_kernel():
     return k

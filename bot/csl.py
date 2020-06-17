@@ -2,46 +2,40 @@
 #
 #
 
+__version__ = 1
+
+## imports
+
 import sys, threading
 
-from .krn import get_kernel
-from .hdl import Command, Loader
+from .krn import k
+from .hdl import Event, Handler
 from .shl import setcompleter
+from .thr import launch
 
-class Command(Command):
+## classes
 
-    def show(self):
-        for txt in self._result:
-            print(txt)
+class Console(Handler):
 
-class Console(Loader):
-
-    def __init__(self):
-        super().__init__()
-        self._stopped = False
-        
     def announce(self, txt):
         self.raw(txt)
 
-    def poll(self):
-        return Command(input("> "))
-
     def input(self):
-        k = get_kernel()
-        while not self._stopped:
+        while 1:
             e = self.poll()
-            if not e.txt:
-                continue
+            if not e:
+                break
             k.dispatch(e)
-            e.wait()
+
+    def poll(self):
+        return Event(input("> "))
 
     def raw(self, txt):
-        print(txt)
+        print(txt.rstrip())
 
     def say(self, channel, txt, type="chat"):
         self.raw(txt)
 
     def start(self):
-        k = get_kernel()
-        setcompleter(self.cmds)
-        k.launch(self.input)
+        super().start()
+        launch(self.input)

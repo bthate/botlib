@@ -2,7 +2,7 @@
 #
 #
 
-import datetime, logging, logging.handlers, os, string, sys, time, traceback
+import datetime, logging, logging.handlers, importlib, os, string, sys, time, traceback
 
 format = {}
 format["large"] = "%(asctime)-8s %(module)10s.%(lineno)-4s %(message)-50s (%(threadName)s)"
@@ -74,6 +74,9 @@ def bexec(f, *args, **kwargs):
         print("")
     except PermissionError:
         print("you need root permissions.")
+
+def direct(name):
+    return importlib.import_module(name)
 
 ## filesystem
 

@@ -5,10 +5,10 @@
 import threading, time
 
 from .obj import Object
-from .thr import Launcher
+from .thr import launch
 from .utl import get_name
 
-class Timer(Launcher):
+class Timer(Object):
 
     def __init__(self, sleep, func, *args, **kwargs):
         super().__init__()

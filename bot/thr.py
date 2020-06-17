@@ -37,7 +37,6 @@ class Launcher:
     def __init__(self):
         super().__init__()
         self._queue = queue.Queue()
-        self._stopped = False
 
     def launch(self, func, *args, **kwargs):
         name = kwargs.get("name", get_name(func))
@@ -65,3 +64,7 @@ def get_name(o):
                 n = o.__name__
     return n
 
+l = Launcher()
+
+def launch(func, *args, **kwargs):
+    l.launch(func, *args, **kwargs)
