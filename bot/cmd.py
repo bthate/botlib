@@ -137,4 +137,4 @@ def todo(event):
 
 def v(event):
     from .krn import __version__
-    event.reply("BOTLIB %s" % __version__)
+    event.reply("%s %s" % (k.cfg.name, k.cfg.version))
