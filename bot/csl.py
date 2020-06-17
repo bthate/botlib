@@ -24,7 +24,7 @@ class Console(Loader):
         self.raw(txt)
 
     def poll(self):
-        return Command(input("> "), repr(self), "root@shell")
+        return Command(input("> "))
 
     def input(self):
         k = get_kernel()

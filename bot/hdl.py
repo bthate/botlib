@@ -10,7 +10,7 @@ from .obj import Cfg, Default, DoL, Object
 from .thr import Launcher
 from .utl import elapsed, fntime, get_exception, get_type
 
-class Loader(Launcher):
+class Loader(Object):
 
     def __init__(self):
         super().__init__()
@@ -20,7 +20,7 @@ class Loader(Launcher):
     def direct(self, name):
         return importlib.import_module(name)
 
-    def find_all(self, pkgs="ok"):
+    def find_all(self, pkgs="bot"):
         mns = Object()
         for p in pkgs.split(","):
             for mod in self.find_modules(p):
@@ -115,7 +115,7 @@ class Loader(Launcher):
                         for x in os.listdir(pkg):
                             if x.startswith("_") or not x.endswith(".py"):
                                 continue
-                            mmn = "%s.%s" % (mn, x[:-3])
+                            mmn = "%s.%s" % (mod.__name__, x[:-3])
                             module = self.direct(mmn)
                             mods.append(module)
                 except AttributeError:
@@ -140,7 +140,7 @@ class Loader(Launcher):
                 self.cmds.update(cmds)
         return res
 
-class Handler(Loader):
+class Handler(Loader, Launcher):
  
     def __init__(self):
         super().__init__()
@@ -148,7 +148,6 @@ class Handler(Loader):
         self._ready = threading.Event()
         self._stopped = False
         self.cbs = Object()
-        self.register("command", dispatch)
 
     def handle_cb(self, event):
         if event.etype in self.cbs:
@@ -183,18 +182,14 @@ class Handler(Loader):
 
 class Event(Default):
 
-    def __init__(self, txt="", orig=None, origin="", channel=""):
+    def __init__(self, txt=""):
         super().__init__()
         self._ready = threading.Event()
         self._result = []
         self._thrs = []
-        self.channel = channel
         self.etype = "event"
         self.txt = txt
-        self.orig = orig
-        self.origin = origin
-        self.parse()
-        
+                
     def display(self, o, txt="", keys=None, options="t", post="", strict=False):
         if not keys:
             keys = list(o.keys())
@@ -249,6 +244,6 @@ class Event(Default):
 
 class Command(Event):
 
-    def __init__(self, txt="", orig="", origin="", channel=""):
-        super().__init__(txt, orig, origin, channel)
+    def __init__(self, txt=""):
+        super().__init__(txt)
         self.etype = "command"

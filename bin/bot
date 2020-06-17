@@ -1,18 +1,21 @@
 #!/usr/bin/python3 -u
 # BOTLIB - the bot library !
 #
-# main program.
+#
 
-import os, sys ; sys.path.insert(0, os.getcwd())
+## imports
+
+#import os, sys ; sys.path.insert(0, os.getcwd())
 
 from bot.spc import Console, Kernel
-from bot.spc import check, execute, get_kernel, os, parse_cli
+from bot.spc import execute, os, parse_cli
 
-k = Kernel()
+from bot.krn import __version__
+
+## defines
 
 opts = [
     ('-l', '--loglevel', 'store', str, "debug", 'set loglevel.', 'level'),
-    ('-m', '--modules', 'store', str, "", 'modules to load.', 'modules'),
     ('-o', '--options', 'store', str, "", "options to use", 'options'),
     ('-w', '--workdir', 'store', str, os.path.expanduser("~/.bot"), "directory to work on", 'workdir'),
 ]
@@ -30,8 +33,11 @@ ExecStart=/usr/local/bin/bot daemon
 WantedBy=multi-user.target
 """
 
+
+## functions
+
 def daemon(event):
-    check("bot")
+    k = Kernel()
     k.scan("bot")
     k.start()
     k.init("bot.irc,bot.rss")
@@ -74,11 +80,15 @@ def remove(event):
     event.reply("ok")
     os._exit(0)
 
+## main
+
 def main():
-    parse_cli("bot", opts)
-    check("bot")
-    k.scan("bot")
-    k.start()
+    cfg = parse_cli("bot", opts, version=__version__)
+    k = Kernel(cfg)
+    k.scan(cfg.name)
+    if cfg.txt:
+        return k.cmd(cfg.txt)
+    k.start(cfg)
     c = Console()
     c.start()
     k.wait()

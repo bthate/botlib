@@ -1,6 +1,6 @@
 # BOTLIB - the bot library !
 #
-# core data.
+#
 
 __version__ = 87
 
@@ -9,6 +9,7 @@ import inspect, os, sys, threading, time, _thread
 from .obj import Cfg, Db, Object
 from .flt import Fleet
 from .hdl import Command, Handler
+from .thr import Launcher
 from .utl import elapsed, get_exception
 from .usr import Users
 
@@ -22,16 +23,16 @@ class Cfg(Cfg):
 
     pass
 
-class Kernel(Handler):
+class Kernel(Handler, Launcher):
 
-    def __init__(self):
+    def __init__(self, cfg={}):
         super().__init__()
         self._outputed = False
         self._prompted = threading.Event()
         self._prompted.set()
         self._ready = threading.Event()
         self._started = False
-        self.cfg = Cfg()
+        self.cfg = Cfg(cfg)
         self.db = Db()
         self.fleet = Fleet()
         self.users = Users()
@@ -41,11 +42,20 @@ class Kernel(Handler):
     def announce(self, txt):
         pass
         
-    def add(self, cmd, func):
+    def register(self, cmd, func):
         self.cmds[cmd] = func
 
+    def cmd(self, txt):
+        c = Command(txt)
+        self.dispatch(c)
+        c.wait()
+        return c
+        
     def dispatch(self, event):
-        func = self.cmds.get(event.cmd, None)
+        if not event.txt:
+            return
+        cmd = event.txt.split()[0]
+        func = self.cmds.get(cmd, None)
         if func:
             try:
                 func(event)
@@ -61,6 +71,11 @@ class Kernel(Handler):
     def say(self, channel, txt):
         print(txt)
 
+    def start(self, cfg={}):
+        self.cfg.update(cfg)
+        print(self.cfg)
+        super().start()
+        
     def stop(self):
         self._stopped = True
         self._queue.put(None)

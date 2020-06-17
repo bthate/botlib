@@ -2,6 +2,8 @@
 #
 # 
 
+## imports
+
 import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 
 from .obj import Cfg, Object, locked
@@ -9,8 +11,23 @@ from .krn import get_kernel
 from .hdl import Command, Event, Handler
 from .utl import get_exception
 
+## defines
+
 k = get_kernel()
 saylock = _thread.allocate_lock()
+
+def dispatch(handler, event):
+    func = handler.cmds.get(event.cmd, None)
+    if func:
+        try:
+            func(event)
+        except Exception as ex:
+            print(get_exception())
+            return
+    event.show()
+    event.ready()
+
+## classes
 
 class Cfg(Cfg):
 
@@ -347,7 +364,7 @@ class DCC(Handler):
             s.connect((addr, port))
         except ConnectionError:
             return
-        s.send(bytes('Welcome to %s %s !!\n' % ("BOTLIB", event.nick), "utf-8"))
+        s.send(bytes('Welcome to %s %s !!\n' % (k.cfg.name, event.nick), "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s

@@ -6,7 +6,7 @@ import atexit, argparse, logging, os, readline, sys, termios, time, _thread
 
 from .obj import Default, Object
 from .krn import get_kernel, __version__
-from .utl import check, cdir, level
+from .utl import cdir, level
 
 cmds = []
 cfg = Object()
@@ -96,25 +96,25 @@ def make_opts(ns, options, usage="", **kwargs):
     parser.add_argument('args', nargs='*')
     parser.parse_known_args(namespace=ns)
 
-def parse_cli(name, opts=[], wd="", debug="", version=__version__):
+def parse_cli(name, opts=[], wd="", debug="", version=""):
+    import bot.obj
     ns = Object()
     make_opts(ns, opts)
     cfg = Default(ns)
-    cfg.debug = debug
     cfg.name = name
-    cfg.txt = " ".join(cfg.args)
-    cfg.version = version
-    cfg.workdir = wd or cfg.workdir
+    if cfg.args:
+        cfg.txt = " ".join(cfg.args)
+    if version:
+        cfg.version = version
+    bot.obj.workdir = cfg.workdir = cfg.workdir or wd
     if cfg.options:
         for opt in cfg.options.split(","):
-            print(opt)
             try:
                 cfg.index = int(opt)
             except ValueError:
                 continue
     level(cfg.level)
-    logging.warning("%s %s started on %s" % (cfg.name.upper(), cfg.version, time.ctime(time.time())))
-    cdir(os.path.join(cfg.workdir, "store", ""))
+    cdir(os.path.join(bot.obj.workdir, "store", ""))
     return cfg
 
 def setcompleter(commands):

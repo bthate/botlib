@@ -250,8 +250,11 @@ def fetch(event):
     thrs = fetcher.run()
     for thr in thrs:
         res.append(thr.join() or 0)
-    event.reply("fetched %s" % ",".join([str(x) for x in res]))
-
+    if res:
+        event.reply("fetched %s" % ",".join([str(x) for x in res]))
+        return
+    event.reply("no feeds registered.")
+    
 def rss(event):
     db = Db()
     if not event.args or "http" not in event.args[0]:

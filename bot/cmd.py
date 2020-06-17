@@ -2,11 +2,17 @@
 #
 #
 
-import bot.obj, os
+__version__ = 1
 
-from .krn import get_kernel
-from .obj import ENOCLASS, Db, Object
+## imports
+
+from .spc import Cfg, Db, Object
+from .spc import get_kernel, os
+
+from .obj import ENOCLASS
 from .utl import cdir, list_files, get_cls, get_type
+
+## classes
 
 class Log(Object):
 
@@ -16,19 +22,29 @@ class Todo(Object):
 
     pass
 
-k = get_kernel()
+## commands
 
 def cfg(event):
-    k.cfg.last()
-    try:
-        k.cfg.server, k.cfg.channel, k.cfg.nick = event.args
-        k.save()
-    except:
-        event.reply(k.cfg)
-        return
-    event.reply("ok")
+    k = get_kernel()
+    event.reply(k.cfg)
+
+def icfg(event):
+    from .irc import Cfg
+    cfg = Cfg()
+    cfg.last()
+    if len(event.args) == 3:
+        cfg.server, cfg.channel, cfg.nick = event.args
+    elif len(event.args) == 2:
+        cfg.server, cfg.channel = event.args
+        cfg.nick = k.cfg.name
+    elif len(event.args) == 1:
+        cfg.server = event.args[0]
+        cfg.channel = "#%s" % k.cfg.name
+        cfg.nick = k.cfg.name
+    event.reply(cfg)
 
 def cmds(event):
+    k = get_kernel()
     event.reply("|".join(sorted(k.cmds)))
 
 def done(event):
@@ -38,18 +54,20 @@ def done(event):
     selector = {"txt": event.args[0]}
     got = []
     db = Db()
-    for todo in db.find("bot.tdo.Todo", selector):
+    for todo in db.find("bot.cmd.Todo", selector):
         todo._deleted = True
         todo.save()
         event.reply("ok")
         break
 
 def ed(event):
+    k = get_kernel()
     if not event.args:
-        event.reply(list_files(bot.obj.workdir) or "no files yet")
+        event.reply(list_files(k.cfg.workdir) or "no files yet")
         return
+    k = get_kernel()
     cn = event.args[0]
-    shorts = k.find_shorts("ok")
+    shorts = k.find_shorts("bot")
     if shorts:
         cn = shorts[0]
     db = Db()
@@ -71,8 +89,11 @@ def ed(event):
         setter = {event.args[1]: event.args[2]}
     l.edit(setter)
     l.save()
+    event.reply("ok")
 
 def find(event):
+    import bot.obj
+    k = get_kernel()
     if not event.args:
         wd = os.path.join(bot.obj.workdir, "store", "")
         cdir(wd)
@@ -101,6 +122,7 @@ def find(event):
         event.reply("no %s found." % otype)
 
 def fleet(event):
+    k = get_kernel()
     try:
         index = int(event.args[0])
         event.reply(str(k.fleet.bots[index]))
@@ -110,6 +132,7 @@ def fleet(event):
     event.reply([get_type(x) for x in k.fleet])
 
 def log(event):
+    k = get_kernel()
     if not event.rest:
        db = Db()
        nr = 0
@@ -123,6 +146,7 @@ def log(event):
     event.reply("ok")
 
 def todo(event):
+    k = get_kernel()
     if not event.rest:
        db = Db()
        nr = 0
@@ -132,9 +156,9 @@ def todo(event):
        return
     o = Todo()
     o.txt = event.rest
-    o.save()
-    event.reply("ok")
+    p = o.save()
+    event.reply("ok %s" % p)
 
 def v(event):
-    from .krn import __version__
-    event.reply("%s %s" % (k.cfg.name, k.cfg.version))
+    k = get_kernel()
+    event.reply("%s %s" % (k.cfg.name.upper(), k.cfg.version))

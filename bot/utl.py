@@ -65,6 +65,8 @@ year_formats = [
 
 allowedchars = string.ascii_letters + string.digits + '_+/$.-'
 
+## execute
+
 def bexec(f, *args, **kwargs):
     try:
         return f(*args, **kwargs)
@@ -73,26 +75,21 @@ def bexec(f, *args, **kwargs):
     except PermissionError:
         print("you need root permissions.")
 
-def touch(fname):
-    try:
-        fd = os.open(fname, os.O_RDWR | os.O_CREAT)
-        os.close(fd)
-    except (IsADirectoryError, TypeError):
-        pass
+## filesystem
 
-def root():
-    if os.geteuid() != 0:
-        return False
+def cdir(path):
+    if os.path.exists(path):
+        return
+    res = ""
+    path2, fn = os.path.split(path)
+    for p in path2.split(os.sep):
+        res += "%s%s" % (p, os.sep)
+        padje = os.path.abspath(os.path.normpath(res))
+        try:
+            os.mkdir(padje)
+        except (IsADirectoryError, NotADirectoryError, FileExistsError):
+            pass
     return True
-
-def check(name):
-    import bot.obj
-    if root():
-        bot.obj.workdir = "/var/lib/%s" % name
-    else:
-        bot.obj.workdir = os.path.expanduser("~/.%s" % name)
-    if len(sys.argv) > 1:
-        return " ".join(sys.argv[1:])
 
 def fntime(daystr):
     daystr = daystr.replace("_", ":")
@@ -109,24 +106,19 @@ def fntime(daystr):
         t = 0
     return t
 
-def names(name, delta=None):
-    import bot.obj
-    assert bot.obj.workdir
-    if not name:
-        return []
-    p = os.path.join(bot.obj.workdir, "store", name) + os.sep
-    res = []
-    now = time.time()
-    if delta:
-        past = now + delta
-    for rootdir, dirs, files in os.walk(p, topdown=False):
-        for fn in files:
-            fnn = os.path.join(rootdir, fn).split(os.path.join(bot.obj.workdir, "store"))[-1]
-            if delta:
-                if fntime(fnn) < past:
-                    continue
-            res.append(os.sep.join(fnn.split(os.sep)[1:]))
-    return sorted(res, key=fntime)
+def touch(fname):
+    try:
+        fd = os.open(fname, os.O_RDWR | os.O_CREAT)
+        os.close(fd)
+    except (IsADirectoryError, TypeError):
+        pass
+
+def root():
+    if os.geteuid() != 0:
+        return False
+    return True
+
+## exceptions
 
 def get_exception(txt="", sep=" "):
     exctype, excvalue, tb = sys.exc_info()
@@ -150,6 +142,8 @@ def get_exception(txt="", sep=" "):
     res = "%s %s: %s %s" % (sep.join(result), exctype, excvalue, str(txt))
     del trace
     return res
+
+## time related
 
 def day():
     return str(datetime.datetime.today()).split()[0]
@@ -200,20 +194,6 @@ def elapsed(seconds, short=True):
     txt = txt.strip()
     return txt
 
-def fntime(daystr):
-    daystr = daystr.replace("_", ":")
-    datestr = " ".join(daystr.split(os.sep)[-2:])
-    try:
-        datestr, rest = datestr.rsplit(".", 1)
-    except ValueError:
-        rest = ""
-    try:
-        t = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
-        if rest:
-            t += float("." + rest)
-    except ValueError:
-        t = 0
-    return t
 
 def get_time(daystr):
     for f in year_formats:
@@ -308,12 +288,7 @@ def to_time(daystr):
             break
     return res
 
-def get_kernel(nr=0):
-    try:
-        k = kernels[nr]
-    except IndexError:
-        k = Kernel()
-    return k
+## names
 
 def get_name(o):
     t = type(o)
@@ -331,35 +306,7 @@ def get_name(o):
                 n = o.__name__
     return n
 
-
-def parse_args():
-    if len(sys.argv) <= 1:
-        return ""
-    return " ".join(sys.argv[1:])
-
-def cmd(txt, mods="ok"):
-    k = get_kernel()
-    k.scan(mods)
-    e = Command(txt)
-    dispatch(k, e)
-    e.wait()
-    return e
-
-def get_name(o):
-    t = type(o)
-    if t == types.ModuleType:
-        return o.__name__
-    try:
-        n = "%s.%s" % (o.__self__.__class__.__name__, o.__name__)
-    except AttributeError:
-        try:
-            n = "%s.%s" % (o.__class__.__name__, o.__name__)
-        except AttributeError:
-            try:
-                n = o.__class__.__name__
-            except AttributeError:
-                n = o.__name__
-    return n
+## udp
 
 def toudp(host, port, txt):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -368,6 +315,7 @@ def toudp(host, port, txt):
 def list_files(wd):
     return "|".join([x for x in os.listdir(os.path.join(wd, "store"))])
 
+## logging
 
 def level(loglevel, nostream=False):
     if not loglevel:
@@ -420,19 +368,7 @@ def level(loglevel, nostream=False):
 def rlog(level, txt):
     logging.log(LEVELS.get(level, "error"), txt)
 
-def cdir(path):
-    if os.path.exists(path):
-        return
-    res = ""
-    path2, fn = os.path.split(path)
-    for p in path2.split(os.sep):
-        res += "%s%s" % (p, os.sep)
-        padje = os.path.abspath(os.path.normpath(res))
-        try:
-            os.mkdir(padje)
-        except (IsADirectoryError, NotADirectoryError, FileExistsError):
-            pass
-    return True
+## types
 
 def get_cls(name):
     try:
@@ -483,6 +419,8 @@ def stamp(o):
             continue
     o.__dict__["stamp"] = o._path
     return o
+
+## string
 
 def strip(o, vals=["",]):
     rip = []
