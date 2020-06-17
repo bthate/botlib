@@ -38,13 +38,13 @@ the systemd daemon. You can do this by running the following:
 
 ::
 
- > sudo okcmd install
+ > sudo bot cmd install
 
 if you don't want the bot to startup at boot, remove the service file:
 
 ::
 
- > sudo okcmd remove
+ > sudo bot cmd remove
 
 |
 
@@ -129,7 +129,7 @@ to the channel on the irc server:
 
 ::
 
- > tail -f /var/log/syslog | okcmd udp
+ > tail -f /var/log/syslog | bot cmd udp
 
 to send the tail output to the IRC channel, send a udp packet to the bot:
 
