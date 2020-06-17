@@ -82,17 +82,16 @@ def remove(event):
 
 def main():
     cfg = parse_cli("botd", opts, wd="/var/lib/botd", version=__version__)
-    k = Kernel(cfg)
     if root():
         k.cmds.register("hup", hup)
         k.cmds.register("install", install)
         k.cmds.register("remove", remove)
-    k.scan("bot")
     k.cmds.register("cfg", cfg)
+    k.start(cfg)
     i = IRC()
     i.start()
     f = Fetcher()
     f.start()
-    k.start()
+    k.wait()
        
 execute(main)

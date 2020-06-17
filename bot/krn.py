@@ -12,7 +12,7 @@ from .obj import Cfg, Db, Object
 from .flt import Fleet
 from .hdl import Event, Handler
 from .thr import Launcher
-from .utl import elapsed, get_exception
+from .utl import elapsed
 from .usr import Users
 
 ## defines
@@ -32,9 +32,9 @@ class Cfg(Cfg):
 
 class Kernel(Handler):
 
-    def __init__(self, cfg={}):
+    def __init__(self):
         super().__init__()
-        self.cfg = Cfg(cfg)
+        self.cfg = Cfg()
         self.db = Db()
         self.fleet = Fleet()
         self.users = Users()
@@ -45,20 +45,11 @@ class Kernel(Handler):
         self.dispatch(e)
         return e
 
-    def dispatch(self, event):
-        if not event.txt:
-            return
-        cmd = event.txt.split()[0]
-        func = self.get_cmd(cmd)
-        if func:
-            try:
-                func(event)
-            except Exception as ex:
-                print(get_exception())
-        event.show(self)
-
     def say(self, channel, txt):
         print(txt)
+
+    def start(self, cfg={}):
+        self.cfg.update(cfg)
 
     def stop(self):
         self._queue.put(None)

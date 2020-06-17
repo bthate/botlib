@@ -10,5 +10,5 @@ from .its import find_names, walk
 from .krn import get_kernel, k, starttime
 from .shl import cfg, daemon, execute, parse_cli
 from .thr import launch
-from .utl import cdir, direct, elapsed, root
+from .utl import cdir, direct, elapsed, get_cls, get_type, list_files, root
 

@@ -106,7 +106,7 @@ def parse_cli(name, opts=[], version="", wd=""):
         cfg.txt = " ".join(cfg.args)
     if version:
         cfg.version = version
-    bot.obj.workdir = cfg.workdir = cfg.workdir or wd
+    bot.obj.workdir = cfg.workdir = cfg.workdir or wd or os.path.expanduser("~/.bot")
     if cfg.options:
         for opt in cfg.options.split(","):
             try:

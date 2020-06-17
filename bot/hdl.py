@@ -61,7 +61,6 @@ class Handler(Loader):
         if name:
             mod = self.table.get(name)
         if not mod:
-            print("autoload %s" % name)
             mod = self.load_mod(name)
         if mod:
             return getattr(mod, cmd, None)

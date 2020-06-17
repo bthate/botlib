@@ -4,18 +4,12 @@
 
 __version__ = 1
 
-## imports
-
-from .spc import Cfg, Db, Object
-from .spc import get_kernel, k, os
-
-from .krn import __version__
+from .spc import Cfg, Db, Object, __version__
+from .spc import cdir, get_kernel, k, os
+from .spc import list_files, get_cls, get_type
 from .obj import ENOCLASS
-from .utl import cdir, list_files, get_cls, get_type
 
 import bot.tbl
-
-## classes
 
 class Log(Object):
 
@@ -25,12 +19,7 @@ class Todo(Object):
 
     pass
 
-## commands
-
 def cfg(event):
-    event.reply(k.cfg)
-
-def icfg(event):
     from .irc import Cfg
     cfg = Cfg()
     cfg.last()
@@ -43,6 +32,7 @@ def icfg(event):
         cfg.server = event.args[0]
         cfg.channel = "#%s" % k.cfg.name
         cfg.nick = k.cfg.name
+    cfg.save()
     event.reply(cfg)
 
 def cmds(event):

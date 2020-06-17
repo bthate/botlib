@@ -3,14 +3,9 @@
 #
 #
 
-## imports
+import os, sys ; sys.path.insert(0, os.getcwd())
 
-#import os, sys ; sys.path.insert(0, os.getcwd())
-
-from bot.spc import Console, Kernel, __version__
-from bot.spc import daemon, execute, os, parse_cli, root
-
-## defines
+from bot.spc import execute, k, os, parse_cli
 
 opts = [
     ('-l', '--loglevel', 'store', str, "debug", 'set loglevel.', 'level'),
@@ -18,12 +13,8 @@ opts = [
     ('-w', '--workdir', 'store', str, "", "directory to work on", 'workdir'),
 ]
 
-## main
-
 def main():
-    cfg = parse_cli("bcmd", opts, str(__version__))
-    k = Kernel(cfg)
-    k.scan("bot")
-    return k.cmd(cfg.txt)
+    cfg = parse_cli("bcmd", opts)
+    k.cmd(cfg.txt)
 
 execute(main)

@@ -9,13 +9,15 @@ __version__ = 1
 import sys, threading
 
 from .krn import k
+from .obj import Object
 from .hdl import Event, Handler
 from .shl import setcompleter
+from .tbl import names
 from .thr import launch
 
 ## classes
 
-class Console(Handler):
+class Console(Object):
 
     def announce(self, txt):
         self.raw(txt)
@@ -37,5 +39,5 @@ class Console(Handler):
         self.raw(txt)
 
     def start(self):
-        super().start()
+        setcompleter(names)
         launch(self.input)
