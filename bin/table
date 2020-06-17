@@ -1,0 +1,25 @@
+#!/usr/bin/python3 -u
+# BOTLIB - the bot library !
+#
+#
+
+__version__ = 1
+
+## imports
+
+import os, sys ; sys.path.insert(0, os.getcwd())
+
+from bot.spc import Object, direct, execute, k, find_names, walk
+
+## main
+
+def main():
+    mods = walk("bot")
+    names = Object()
+    for mod in mods.values():
+        nms = find_names(mod)
+        if nms:
+            names.update(nms)
+    print("names = %s" % names.json())
+        
+execute(main)
