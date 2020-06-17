@@ -1,7 +1,0 @@
-#!/bin/bash
-rm -fR build env botlib.egg-info tests/*~ tests/__pycache__  bot/__pycache__ bot/*~ bin/*~
-python3 setup.py sdist
-python3 -mvirtualenv -p python3 --extra-search-dir dist --system-site-packages env
-source env/bin/activate
-env/bin/python3 env/bin/pip3 install -U botlib>=86
-
