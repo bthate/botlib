@@ -6,6 +6,7 @@ __version__ = 1
 
 import bot.tbl, os, time
 
+from .arg import Options
 from .obj import ENOCLASS, Cfg, Db, Object
 from .krn import k
 from .utl import cdir, elapsed, fntime, get_cls, get_type, list_files
@@ -22,20 +23,11 @@ def cfg(event):
     from .irc import Cfg
     cfg = Cfg()
     cfg.last()
-    if len(event.args) == 3:
-        cfg.server, cfg.channel, cfg.nick = event.args
-    elif len(event.args) == 2:
-        cfg.server, cfg.channel = event.args
-        cfg.nick = k.cfg.name
-    elif len(event.args) == 1:
-        cfg.server = event.args[0]
-        cfg.channel = "#%s" % k.cfg.name
-        cfg.nick = k.cfg.name
-    if cfg:
-        cfg.save()
-        event.reply(cfg.format())
-        return
-    event.reply("config is empty.")
+    o = Options(event.rest)
+    print(o)
+    cfg.update(o)
+    cfg.save()
+    event.reply(cfg.format())
         
 def cmds(event):
     event.reply("|".join(sorted(bot.tbl.names)))
@@ -143,8 +135,8 @@ def todo(event):
        return
     o = Todo()
     o.txt = event.rest
-    p = o.save()
-    event.reply("ok %s" % p)
+    o.save()
+    event.reply("ok")
 
 def v(event):
     from bot.krn import __version__
