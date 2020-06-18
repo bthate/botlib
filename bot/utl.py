@@ -2,7 +2,7 @@
 #
 #
 
-import datetime, logging, logging.handlers, importlib, os, string, sys, time, types, traceback
+import logging, os, string, sys, traceback, time
 
 format = {}
 format["large"] = "%(asctime)-8s %(module)10s.%(lineno)-4s %(message)-50s (%(threadName)s)"
@@ -20,8 +20,6 @@ LEVELS = {'debug': logging.DEBUG,
           'error': logging.ERROR,
           'critical': logging.CRITICAL
          }
-
-logfile = ""
 
 timestrings = [
     "%a, %d %b %Y %H:%M:%S %z",
@@ -65,21 +63,6 @@ year_formats = [
 
 allowedchars = string.ascii_letters + string.digits + '_+/$.-'
 
-## execute
-
-def bexec(f, *args, **kwargs):
-    try:
-        return f(*args, **kwargs)
-    except KeyboardInterrupt:
-        print("")
-    except PermissionError:
-        print("you need root permissions.")
-
-def direct(name):
-    return importlib.import_module(name)
-
-## filesystem
-
 def cdir(path):
     if os.path.exists(path):
         return
@@ -93,6 +76,98 @@ def cdir(path):
         except (IsADirectoryError, NotADirectoryError, FileExistsError):
             pass
     return True
+
+def get_cls(name):
+    try:
+        modname, clsname = name.rsplit(".", 1)
+    except:
+        raise ENOCLASS(name)
+    if modname in sys.modules:
+        mod = sys.modules[modname]
+    else:
+        mod = importlib.import_module(modname)
+    return getattr(mod, clsname)
+
+def get_type(o):
+    t = type(o)
+    if t == type:
+        try:
+            return "%s.%s" % (o.__module__, o.__name__)
+        except AttributeError:
+            pass
+    return str(type(o)).split()[-1][1:-2]
+
+def hook(fn):
+    t = fn.split(os.sep)[0]
+    if not t:
+        t = fn.split(os.sep)[0][1:]
+    if not t:
+        raise ENOFILE(fn)
+    o = get_cls(t)()
+    o.load(fn)
+    return o
+
+def hooked(d):
+    if "stamp" in d:
+        t = d["stamp"].split(os.sep)[0]
+        o = get_cls(t)()
+        o.update(d)
+        return o
+
+def stamp(o):
+    for k in dir(o):
+        oo = getattr(o, k, None)
+        if isinstance(oo, Object):
+            stamp(oo)
+            oo.__dict__["stamp"] = oo._path
+            o[k] = oo
+        else:
+            continue
+    o.__dict__["stamp"] = o._path
+    return o
+
+def strip(o, vals=["",]):
+    rip = []
+    for k in o:
+        value = o.get(k, None)
+        for v in vals:
+            if value == v:
+                rip.append(k)
+    for k in rip:
+        del o[k]
+    return o
+
+def bexec(f, *args, **kwargs):
+    try:
+        return f(*args, **kwargs)
+    except KeyboardInterrupt:
+        print("")
+    except PermissionError:
+        print("you need root permissions.")
+
+def direct(name):
+    return importlib.import_module(name)
+
+def touch(fname):
+    try:
+        fd = os.open(fname, os.O_RDWR | os.O_CREAT)
+        os.close(fd)
+    except (IsADirectoryError, TypeError):
+        pass
+
+def root():
+    if os.geteuid() != 0:
+        return False
+    return True
+
+def check(name):
+    import bot.obj
+    if root():
+        bot.obj.workdir = "/var/lib/%s" % name
+    else:
+        bot.obj.workdir = os.path.expanduser("~/.%s" % name)
+    if len(sys.argv) > 1:
+        return " ".join(sys.argv[1:])
 
 def fntime(daystr):
     daystr = daystr.replace("_", ":")
@@ -109,19 +184,24 @@ def fntime(daystr):
         t = 0
     return t
 
-def touch(fname):
-    try:
-        fd = os.open(fname, os.O_RDWR | os.O_CREAT)
-        os.close(fd)
-    except (IsADirectoryError, TypeError):
-        pass
-
-def root():
-    if os.geteuid() != 0:
-        return False
-    return True
-
-## exceptions
+def names(name, delta=None):
+    import bot.obj
+    assert bot.obj.workdir
+    if not name:
+        return []
+    p = os.path.join(bot.obj.workdir, "store", name) + os.sep
+    res = []
+    now = time.time()
+    if delta:
+        past = now + delta
+    for rootdir, dirs, files in os.walk(p, topdown=False):
+        for fn in files:
+            fnn = os.path.join(rootdir, fn).split(os.path.join(bot.obj.workdir, "store"))[-1]
+            if delta:
+                if fntime(fnn) < past:
+                    continue
+            res.append(os.sep.join(fnn.split(os.sep)[1:]))
+    return sorted(res, key=fntime)
 
 def get_exception(txt="", sep=" "):
     exctype, excvalue, tb = sys.exc_info()
@@ -145,8 +225,6 @@ def get_exception(txt="", sep=" "):
     res = "%s %s: %s %s" % (sep.join(result), exctype, excvalue, str(txt))
     del trace
     return res
-
-## time related
 
 def day():
     return str(datetime.datetime.today()).split()[0]
@@ -197,6 +275,20 @@ def elapsed(seconds, short=True):
     txt = txt.strip()
     return txt
 
+def fntime(daystr):
+    daystr = daystr.replace("_", ":")
+    datestr = " ".join(daystr.split(os.sep)[-2:])
+    try:
+        datestr, rest = datestr.rsplit(".", 1)
+    except ValueError:
+        rest = ""
+    try:
+        t = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
+        if rest:
+            t += float("." + rest)
+    except ValueError:
+        t = 0
+    return t
 
 def get_time(daystr):
     for f in year_formats:
@@ -291,7 +383,12 @@ def to_time(daystr):
             break
     return res
 
-## names
+def get_kernel(nr=0):
+    try:
+        k = kernels[nr]
+    except IndexError:
+        k = Kernel()
+    return k
 
 def get_name(o):
     t = type(o)
@@ -309,7 +406,35 @@ def get_name(o):
                 n = o.__name__
     return n
 
-## udp
+
+def parse_args():
+    if len(sys.argv) <= 1:
+        return ""
+    return " ".join(sys.argv[1:])
+
+def cmd(txt, mods="ok"):
+    k = get_kernel()
+    k.scan(mods)
+    e = Command(txt)
+    dispatch(k, e)
+    e.wait()
+    return e
+
+def get_name(o):
+    t = type(o)
+    if t == types.ModuleType:
+        return o.__name__
+    try:
+        n = "%s.%s" % (o.__self__.__class__.__name__, o.__name__)
+    except AttributeError:
+        try:
+            n = "%s.%s" % (o.__class__.__name__, o.__name__)
+        except AttributeError:
+            try:
+                n = o.__class__.__name__
+            except AttributeError:
+                n = o.__name__
+    return n
 
 def toudp(host, port, txt):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -318,11 +443,8 @@ def toudp(host, port, txt):
 def list_files(wd):
     return "|".join([x for x in os.listdir(os.path.join(wd, "store"))])
 
-## logging
 
-def level(loglevel, nostream=False):
-    if not loglevel:
-        loglevel = "error"
+def level(loglevel, logfile="", nostream=False):
     if logfile and not os.path.exists(logfile):
         cdir(logfile)
         touch(logfile)
@@ -355,6 +477,7 @@ def level(loglevel, nostream=False):
             handler.setLevel(loglevel)
             logger.addHandler(handler)
         except ValueError:
+            logging.warning("wrong level %s" % loglevel)
             loglevel = "ERROR"
     if logfile:
         formatter2 = logging.Formatter(format_time, datefmt)
@@ -370,68 +493,3 @@ def level(loglevel, nostream=False):
 
 def rlog(level, txt):
     logging.log(LEVELS.get(level, "error"), txt)
-
-## types
-
-def get_cls(name):
-    try:
-        modname, clsname = name.rsplit(".", 1)
-    except:
-        raise ENOCLASS(name)
-    if modname in sys.modules:
-        mod = sys.modules[modname]
-    else:
-        mod = importlib.import_module(modname)
-    return getattr(mod, clsname)
-
-def get_type(o):
-    t = type(o)
-    if t == type:
-        try:
-            return "%s.%s" % (o.__module__, o.__name__)
-        except AttributeError:
-            pass
-    return str(type(o)).split()[-1][1:-2]
-
-def hook(fn):
-    t = fn.split(os.sep)[0]
-    if not t:
-        t = fn.split(os.sep)[0][1:]
-    if not t:
-        raise ENOFILE(fn)
-    o = get_cls(t)()
-    o.load(fn)
-    return o
-
-def hooked(d):
-    if "stamp" in d:
-        t = d["stamp"].split(os.sep)[0]
-        o = get_cls(t)()
-        o.update(d)
-        return o
-
-def stamp(o):
-    from .obj import Object
-    for k in dir(o):
-        oo = getattr(o, k, None)
-        if isinstance(oo, Object):
-            stamp(oo)
-            oo.__dict__["stamp"] = oo._path
-            o[k] = oo
-        else:
-            continue
-    o.__dict__["stamp"] = o._path
-    return o
-
-## string
-
-def strip(o, vals=["",]):
-    rip = []
-    for k in o:
-        value = o.get(k, None)
-        for v in vals:
-            if value == v:
-                rip.append(k)
-    for k in rip:
-        del o[k]
-    return o

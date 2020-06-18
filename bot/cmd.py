@@ -4,12 +4,11 @@
 
 __version__ = 1
 
-from .spc import Cfg, Db, Object, __version__
-from .spc import cdir, get_kernel, k, os
-from .spc import list_files, get_cls, get_type
-from .obj import ENOCLASS
+import bot.tbl, os
 
-import bot.tbl
+from .obj import ENOCLASS, Cfg, Db, Object
+from .krn import k
+from .utl import cdir, get_cls, get_type, list_files
 
 class Log(Object):
 
@@ -33,7 +32,7 @@ def cfg(event):
         cfg.channel = "#%s" % k.cfg.name
         cfg.nick = k.cfg.name
     cfg.save()
-    event.reply(cfg)
+    event.reply(cfg.format())
 
 def cmds(event):
     event.reply("|".join(sorted(bot.tbl.names)))
@@ -119,7 +118,7 @@ def fleet(event):
     event.reply([get_type(x) for x in k.fleet])
 
 def log(event):
-    if not event.rest:
+    if not event.args:
        db = Db()
        nr = 0
        for o in db.find("bot.cmd.Log", {"txt": ""}):
@@ -127,7 +126,7 @@ def log(event):
             nr += 1
        return
     l = Log()
-    l.txt = event.rest
+    l.txt = event.args
     l.save()
     event.reply("ok")
 
@@ -145,4 +144,5 @@ def todo(event):
     event.reply("ok %s" % p)
 
 def v(event):
+    from bot.krn import __version__
     event.reply("%s %s" % (k.cfg.name.upper() or "BOTLIB", k.cfg.version or __version__))

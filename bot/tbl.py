@@ -9,7 +9,6 @@ names = {
     "fetch": "bot.rss",
     "find": "bot.cmd",
     "fleet": "bot.cmd",
-    "icfg": "bot.cmd",
     "log": "bot.cmd",
     "meet": "bot.opr",
     "ps": "bot.opr",

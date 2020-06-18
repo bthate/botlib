@@ -4,9 +4,7 @@
 
 __version__ = 87
 
-## imports
-
-import inspect, os, sys, threading, time, _thread
+import inspect, os, sys, threading, time, traceback, _thread
 
 from .obj import Cfg, Db, Object
 from .flt import Fleet
@@ -15,12 +13,7 @@ from .thr import Launcher
 from .utl import elapsed
 from .usr import Users
 
-## defines
-
-
 starttime = time.time()
-
-## classes
 
 class ENOKERNEL(Exception):
 
@@ -58,7 +51,31 @@ class Kernel(Handler):
         while 1:
             time.sleep(1.0)
 
-## runtime
+def direct(name):
+    return importlib.import_module(name)
+
+def get_exception(txt="", sep=" "):
+    exctype, excvalue, tb = sys.exc_info()
+    trace = traceback.extract_tb(tb)
+    result = []
+    for elem in trace:
+        fname = elem[0]
+        linenr = elem[1]
+        func = elem[2]
+        if fname.endswith(".py"):
+            plugfile = fname[:-3].split(os.sep)
+        else:
+            plugfile = fname.split(os.sep)
+        mod = []
+        for element in plugfile[::-1]:
+            mod.append(element)
+            if "ok" in element:
+                break
+        ownname = ".".join(mod[::-1])
+        result.append("%s:%s" % (ownname, linenr))
+    res = "%s %s: %s %s" % (sep.join(result), exctype, excvalue, str(txt))
+    del trace
+    return res
 
 k = Kernel()
 

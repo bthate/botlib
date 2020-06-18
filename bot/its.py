@@ -8,8 +8,8 @@ __version__ = 1
 
 import inspect, os
 
-from bot.obj import Object
-from bot.utl import direct
+from .obj import Object
+from .utl import direct
 
 ## inspectors
 

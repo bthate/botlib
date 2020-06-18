@@ -4,15 +4,21 @@
 
 import atexit, argparse, logging, os, readline, sys, termios, time, _thread
 
-from .obj import Default, Object
-from .krn import get_kernel, __version__
-from .utl import cdir, level
+from .obj import Default, Object, cdir
 
 cmds = []
 cfg = Object()
-logfiled = ""
+logfile = ""
 resume = {}
 HISTFILE = ""
+
+def bexec(f, *args, **kwargs):
+    try:
+        return f(*args, **kwargs)
+    except KeyboardInterrupt:
+        print("")
+    except PermissionError:
+        print("you need root permissions.")
 
 def close_history():
     global HISTFILE
@@ -76,6 +82,54 @@ def execute(main):
 
 def get_completer():
     return readline.get_completer()
+
+def level(loglevel, nostream=False):
+    if not loglevel:
+        loglevel = "error"
+    if logfile and not os.path.exists(logfile):
+        cdir(logfile)
+        touch(logfile)
+    datefmt = '%H:%M:%S'
+    format_time = "%(asctime)-8s %(message)-70s"
+    format_plain = "%(message)-0s"
+    loglevel = loglevel.upper()
+    logger = logging.getLogger("")
+    if logger.handlers:
+        for handler in logger.handlers:
+            logger.removeHandler(handler)
+    if logger.handlers:
+        for handler in logger.handlers:
+            logger.removeHandler(handler)
+    try:
+        logger.setLevel(loglevel)
+    except ValueError:
+        pass
+    formatter = logging.Formatter(format_plain, datefmt)
+    if nostream:
+        dhandler = DumpHandler()
+        dhandler.propagate = False
+        dhandler.setLevel(loglevel)
+        logger.addHandler(dhandler)
+    else:
+        handler = logging.StreamHandler()
+        handler.propagate = False
+        handler.setFormatter(formatter)
+        try:
+            handler.setLevel(loglevel)
+            logger.addHandler(handler)
+        except ValueError:
+            loglevel = "ERROR"
+    if logfile:
+        formatter2 = logging.Formatter(format_time, datefmt)
+        filehandler = logging.handlers.TimedRotatingFileHandler(logfile, 'midnight')
+        filehandler.propagate = False
+        filehandler.setFormatter(formatter2)
+        try:
+            filehandler.setLevel(loglevel)
+        except ValueError:
+            pass
+        logger.addHandler(filehandler)
+    return logger
 
 def make_opts(ns, options, usage="", **kwargs):
     kwargs["usage"] = usage

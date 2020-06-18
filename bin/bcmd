@@ -3,9 +3,10 @@
 #
 #
 
-import os, sys ; sys.path.insert(0, os.getcwd())
+import os
 
-from bot.spc import execute, k, os, parse_cli
+from bot.shl import execute, parse_cli
+from bot.krn import k
 
 opts = [
     ('-l', '--loglevel', 'store', str, "debug", 'set loglevel.', 'level'),

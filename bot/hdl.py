@@ -4,17 +4,13 @@
 
 __version__ = 1
 
-## imports
-
-import os, pkg_resources, queue
+import importlib, os, pkg_resources, queue
 
 from .its import find_cmds
 from .obj import Default, Object
-from .utl import direct, get_exception, get_type
+from .utl import get_exception, direct, get_type
 
 import bot.tbl
-
-## classes
 
 class NOTIMPLEMENTED(Exception):
 
@@ -50,7 +46,6 @@ class Handler(Loader):
                 func(event)
             except Exception as ex:
                 print(get_exception())
-            print(event)
             event.show(self)
 
     def callback(self, event):
@@ -98,13 +93,14 @@ class Event(Default):
 
     def __init__(self, txt=""):
         super().__init__()
+        self.type = "event"
         self.result = []
         self.txt = txt
         if self.txt:
             self.args = self.txt.split()[1:]
         else:
             self.args = []
-        self.type = "event"
+        self.rest = " ".join(self.args)
 
     def reply(self, txt):
         self.result.append(txt)
@@ -112,3 +108,6 @@ class Event(Default):
     def show(self, bot):
         for txt in self.result:
             bot.say(self.channel, txt)
+
+def direct(name):
+    return importlib.import_module(name)

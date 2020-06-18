@@ -4,34 +4,17 @@
 
 import datetime, importlib, json, os, random, sys, time, _thread
 
-from .utl import cdir, get_type, hook, hooked, stamp
+from .utl import cdir, get_type, names, hook, hooked
 
 lock = _thread.allocate_lock()
 starttime = time.time()
-workdir = ""
+workdir = os.path.expanduser("~/.bot")
 
 class ENOCLASS(Exception): pass
 
 class ENOFILE(Exception): pass
 
 class EJSON(Exception): pass
-
-## utilities
-
-def fntime(daystr):
-    daystr = daystr.replace("_", ":")
-    datestr = " ".join(daystr.split(os.sep)[-2:])
-    try:
-        datestr, rest = datestr.rsplit(".", 1)
-    except ValueError:
-        rest = ""
-    try:
-        t = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
-        if rest:
-            t += float("." + rest)
-    except ValueError:
-        t = 0
-    return t
 
 def locked(lock):
     def lockeddec(func, *args, **kwargs):
@@ -45,26 +28,6 @@ def locked(lock):
             return res
         return lockedfunc
     return lockeddec
-
-def names(name, delta=None):
-    if not name:
-        return []
-    assert workdir
-    p = os.path.join(workdir, "store", name) + os.sep
-    res = []
-    now = time.time()
-    if delta:
-        past = now + delta
-    for rootdir, dirs, files in os.walk(p, topdown=False):
-        for fn in files:
-            fnn = os.path.join(rootdir, fn).split(os.path.join(workdir, "store"))[-1]
-            if delta:
-                if fntime(fnn) < past:
-                    continue
-            res.append(os.sep.join(fnn.split(os.sep)[1:]))
-    return sorted(res, key=fntime)
-
-## classes
 
 class ObjectEncoder(json.JSONEncoder):
 
@@ -192,9 +155,9 @@ class Object(O):
             val = str(val)
             if key == "text":
                 val = val.replace("\\n", "\n")
-            res.append(val)
-        for val in res:
-            txt += "%s%s" % (val.strip(), " ")
+            res.append((key, val))
+        for key, val in res:
+            txt += "%s=%s%s" % (key, val.strip(), " ")
         return txt.strip()
 
     def last(self, strip=False):
@@ -370,3 +333,15 @@ class Db(Object):
             if s:
                 return s[-1][-1]
         return None
+
+def stamp(o):
+    for k in dir(o):
+        oo = getattr(o, k, None)
+        if isinstance(oo, Object):
+            stamp(oo)
+            oo.__dict__["stamp"] = oo._path
+            o[k] = oo
+        else:
+            continue
+    o.__dict__["stamp"] = o._path
+    return o

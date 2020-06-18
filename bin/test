@@ -33,7 +33,6 @@ def main():
     k.start()
     k.scan()
     test_path = os.getcwd() + os.sep + "tests"
-    print(k.fleet.bots)
     suite = unittest.loader.TestLoader().discover(test_path, pattern="test*")
     unittest.TextTestRunner(verbosity=3).run(suite)
     k.wait()
