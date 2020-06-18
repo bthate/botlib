@@ -2,7 +2,7 @@
 #
 #
 
-import logging, os, string, sys, traceback, time
+import logging, importlib, os, string, sys, traceback, time
 
 format = {}
 format["large"] = "%(asctime)-8s %(module)10s.%(lineno)-4s %(message)-50s (%(threadName)s)"
@@ -268,8 +268,8 @@ def elapsed(seconds, short=True):
         return txt
     if sec == 0:
         txt += "0s"
-    elif sec < 1 or not short:
-        txt += "%.3fs" % sec
+    #elif sec < 1 or not short:
+    #    txt += "%.3fs" % sec
     else:
         txt += "%ss" % int(sec)
     txt = txt.strip()

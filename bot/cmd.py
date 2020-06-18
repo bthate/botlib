@@ -4,11 +4,11 @@
 
 __version__ = 1
 
-import bot.tbl, os
+import bot.tbl, os, time
 
 from .obj import ENOCLASS, Cfg, Db, Object
 from .krn import k
-from .utl import cdir, get_cls, get_type, list_files
+from .utl import cdir, elapsed, fntime, get_cls, get_type, list_files
 
 class Log(Object):
 
@@ -31,9 +31,12 @@ def cfg(event):
         cfg.server = event.args[0]
         cfg.channel = "#%s" % k.cfg.name
         cfg.nick = k.cfg.name
-    cfg.save()
-    event.reply(cfg.format())
-
+    if cfg:
+        cfg.save()
+        event.reply(cfg.format())
+        return
+    event.reply("config is empty.")
+        
 def cmds(event):
     event.reply("|".join(sorted(bot.tbl.names)))
 
@@ -122,11 +125,11 @@ def log(event):
        db = Db()
        nr = 0
        for o in db.find("bot.cmd.Log", {"txt": ""}):
-            event.display(o, str(nr), strict=True)
+            event.reply("%s %s %s" % (str(nr), o.txt, elapsed(time.time() - fntime(o._path))))
             nr += 1
        return
     l = Log()
-    l.txt = event.args
+    l.txt = event.rest
     l.save()
     event.reply("ok")
 
@@ -135,7 +138,7 @@ def todo(event):
        db = Db()
        nr = 0
        for o in db.find("bot.cmd.Todo", {"txt": ""}):
-            event.display(o, str(nr), strict=True)
+            event.reply("%s %s %s" % (str(nr), o.txt, elapsed(time.time() - fntime(o._path))))
             nr += 1
        return
     o = Todo()
