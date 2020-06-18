@@ -8,14 +8,8 @@ import os
 from bot.shl import execute, parse_cli
 from bot.krn import k
 
-opts = [
-    ('-l', '--loglevel', 'store', str, "debug", 'set loglevel.', 'level'),
-    ('-o', '--options', 'store', str, "", "options to use", 'options'),
-    ('-w', '--workdir', 'store', str, "", "directory to work on", 'workdir'),
-]
-
 def main():
-    cfg = parse_cli("bcmd", opts)
+    cfg = parse_cli("bcmd")
     k.cmd(cfg.txt)
 
 execute(main)

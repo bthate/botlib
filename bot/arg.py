@@ -7,9 +7,9 @@ from .obj import O, Object
 class Arg(O):
 
     def __init__(self, txt):
-        self.txt = txt
+        self._txt = txt
         try:
-            self.pre, self.post = txt.split("=")
+            self.pre, self.post = self._txt.split("=")
         except ValueError:
             self.pre = self.post = ""
                     
@@ -17,8 +17,9 @@ class Args(Object):
 
     def __init__(self, txt):
         super().__init__()
+        self._txt = txt
         nr = 0
-        for l in txt.split():
+        for l in self._txt.split():
             if l:
                 self[str(nr)] = Arg(l)
                 nr += 1
@@ -31,6 +32,7 @@ class Args(Object):
                 except KeyError:
                     pass
 
+
 class Options(Object):
 
     def __init__(self, txt):
@@ -38,9 +40,3 @@ class Options(Object):
         for arg in Args(txt):
             if arg.pre:
                 self[arg.pre] = arg.post
-        self.parse()
-
-    def parse(self):
-        for arg in self:
-            print(arg)
-       

@@ -24,7 +24,6 @@ def cfg(event):
     cfg = Cfg()
     cfg.last()
     o = Options(event.rest)
-    print(o)
     cfg.update(o)
     cfg.save()
     event.reply(cfg.format())

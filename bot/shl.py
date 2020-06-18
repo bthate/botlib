@@ -4,6 +4,7 @@
 
 import atexit, argparse, logging, os, readline, sys, termios, time, _thread
 
+from .arg import Options
 from .obj import Default, Object, cdir
 
 cmds = []
@@ -150,7 +151,16 @@ def make_opts(ns, options, usage="", **kwargs):
     parser.add_argument('args', nargs='*')
     parser.parse_known_args(namespace=ns)
 
-def parse_cli(name, opts=[], version="", wd=""):
+def parse_cli(name):
+    ns = Default()
+    if len(sys.argv) <= 1:
+        return ns
+    ns.name = name
+    ns.txt = " ".join(sys.argv[1:])
+    ns.update(Options(ns.txt))
+    return ns
+    
+def parse_cli2(name, opts=[], version="", wd=""):
     import bot.obj
     ns = Object()
     make_opts(ns, opts)

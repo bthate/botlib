@@ -34,6 +34,8 @@ class Kernel(Handler):
         self.fleet.add(self)
 
     def cmd(self, txt):
+        if not txt:
+            return
         e = Event(txt)
         self.dispatch(e)
         return e
