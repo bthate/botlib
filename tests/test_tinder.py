@@ -1,17 +1,13 @@
-# tinder tests.
-
-__version__ = 1
-
-## imports
+# BOTLIB - the bot library !
+#
+#
 
 import logging, os, random, sys, time, unittest
 
-from bot.spc import Object, Event, Command, get_kernel
-
-## define
-
-event = Event()
-event.parse()
+from bot.evt import Event
+from bot.krn import k
+from bot.obj import Object
+from bot.thr import launch
 
 param = Object()
 param.ed = ["bot.irc.Cfg", "bot.rss.Cfg", "bot.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel \#dunkbots", "bot.krn.Cfg modules bot.udp"]
@@ -24,10 +20,6 @@ param.meet = ["test@shell", "bart"]
 param.rss = ["https://www.reddit.com/r/python/.rss", ""]
 param.todo = ["test4!", ""]
 
-k = get_kernel()
-
-## classes
-
 class Event(Event):
 
     def show(self):
@@ -37,24 +29,19 @@ class Event(Event):
 class Test_Tinder(unittest.TestCase):
 
     def test_thrs(self):
-        k = get_kernel()
         thrs = []
         for x in range(k.cfg.index or 1):
-            thrs.append(k.launch(tests, k))
+            thrs.append(launch(tests, k))
         for t in thrs:
             t.join()
 
     def test_all(self):
-        k = get_kernel()
         for x in range(k.cfg.index or 1):
             tests(k)
-
-## functions
 
 def consume(elems):
     fixed = []
     for e in elems:
-        print(e)
         e.wait()
         fixed.append(e)
     for f in fixed:
@@ -70,7 +57,7 @@ def tests(b):
     for cmd in keys:
         events.extend(do_cmd(k, cmd))
     consume(events)
-    k.ready()
+    k.stop()
 
 def do_cmd(b, cmd):
     exs = param.get(cmd, [])

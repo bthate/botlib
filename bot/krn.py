@@ -48,7 +48,7 @@ class Kernel(Handler):
         self.cfg.update(cfg)
 
     def stop(self):
-        self._queue.put(None)
+        self.queue.put(None)
 
     def wait(self):
         while 1:
