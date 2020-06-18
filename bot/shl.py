@@ -4,7 +4,6 @@
 
 import atexit, argparse, logging, os, readline, sys, termios, time, _thread
 
-from .arg import Options
 from .obj import Default, Object, cdir
 
 cmds = []

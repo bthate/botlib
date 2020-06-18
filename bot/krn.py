@@ -8,9 +8,9 @@ import inspect, os, sys, threading, time, traceback, _thread
 
 from .obj import Cfg, Db, Object
 from .flt import Fleet
-from .hdl import Event, Handler
+from .hdl import Handler
 from .thr import Launcher
-from .utl import elapsed
+from .utl import elapsed, get_exception
 from .usr import Users
 
 starttime = time.time()
@@ -32,10 +32,11 @@ class Kernel(Handler):
         self.fleet = Fleet()
         self.users = Users()
         self.fleet.add(self)
-
+        
     def cmd(self, txt):
         if not txt:
             return
+        from .evt import Event
         e = Event(txt)
         self.dispatch(e)
         return e
@@ -52,32 +53,6 @@ class Kernel(Handler):
     def wait(self):
         while 1:
             time.sleep(1.0)
-
-def direct(name):
-    return importlib.import_module(name)
-
-def get_exception(txt="", sep=" "):
-    exctype, excvalue, tb = sys.exc_info()
-    trace = traceback.extract_tb(tb)
-    result = []
-    for elem in trace:
-        fname = elem[0]
-        linenr = elem[1]
-        func = elem[2]
-        if fname.endswith(".py"):
-            plugfile = fname[:-3].split(os.sep)
-        else:
-            plugfile = fname.split(os.sep)
-        mod = []
-        for element in plugfile[::-1]:
-            mod.append(element)
-            if "ok" in element:
-                break
-        ownname = ".".join(mod[::-1])
-        result.append("%s:%s" % (ownname, linenr))
-    res = "%s %s: %s %s" % (sep.join(result), exctype, excvalue, str(txt))
-    del trace
-    return res
 
 k = Kernel()
 

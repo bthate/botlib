@@ -6,7 +6,6 @@ __version__ = 1
 
 import bot.tbl, os, time
 
-from .arg import Options
 from .obj import ENOCLASS, Cfg, Db, Object
 from .krn import k
 from .utl import cdir, elapsed, fntime, get_cls, get_type, list_files
@@ -23,8 +22,7 @@ def cfg(event):
     from .irc import Cfg
     cfg = Cfg()
     cfg.last()
-    o = Options(event.rest)
-    cfg.update(o)
+    cfg.update(event.opts)
     cfg.save()
     event.reply(cfg.format())
         

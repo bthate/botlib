@@ -4,10 +4,11 @@
 
 import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 
+from .evt import Event
 from .obj import Cfg, Object, locked
 from .krn import k
 from .thr import launch
-from .hdl import Event, Handler
+from .hdl import Handler
 from .utl import get_exception
 
 saylock = _thread.allocate_lock()
@@ -19,7 +20,10 @@ def init(k):
 
 class Cfg(Cfg):
 
-    pass
+    def __init__(self, cfg={}):
+        super().__init__(cfg)
+        self.realname = "botlib"
+        self.username = "botlib"
 
 class Event(Event):
 
@@ -63,7 +67,11 @@ class IRC(Handler):
         self.state.pongcheck = False
         self.threaded = False
         k.fleet.add(self)
-
+        self.register("ERROR", self.ERROR)
+        self.register("NOTICE", self.NOTICE)
+        self.register("PRIVMSG", self.PRIVMSG)
+        self.register("QUIT", self.QUIT)
+        
     def _connect(self, server):
         try:
             oldsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -106,7 +114,7 @@ class IRC(Handler):
             o.origin = o.origin[1:]
             if len(arguments) > 1:
                 o.command = arguments[1]
-                o.etype = o.command
+                o.type = o.command
             if len(arguments) > 2:
                 txtlist = []
                 adding = False
@@ -143,10 +151,11 @@ class IRC(Handler):
         spl = o.txt.split()
         if len(spl) > 1:
             o.args = spl[1:]
+        o.parse(o.txt)
         return o
 
     @locked(saylock)
-    def _say(self, channel, txt, mtype="chat"):
+    def _say(self, channel, txt, type="chat"):
         wrapper = TextWrap()
         txt = str(txt).replace("\n", "")
         for t in wrapper.wrap(txt):
@@ -199,7 +208,7 @@ class IRC(Handler):
         self.logon(server, nick)
 
     def dispatch(self, event):
-        func = self.get_cmd(event.command)
+        func = self.cmds.get(event.command)
         if func:
             func(event)
 
@@ -210,9 +219,10 @@ class IRC(Handler):
                 self._some()
             except (OSError, ConnectionError) as ex:
                 e = Event()
-                e.type = "error"
+                e.cmd = "ERROR"
                 e.error = str(ex)
                 e.trc = get_exception()
+                print(e.trc)
                 return e
         e = self._parsing(self._buffer.pop(0))
         cmd = e.command
@@ -238,8 +248,10 @@ class IRC(Handler):
 
     def logon(self, server, nick):
         self._connected.wait()
+        assert self.cfg.username
+        assert self.cfg.realname
         self.raw("NICK %s" % nick)
-        self.raw("USER %s %s %s :%s" % (self.cfg.username or "okbot", server, server, self.cfg.realname or "okbot"))
+        self.raw("USER %s %s %s :%s" % (self.cfg.username, server, server, self.cfg.realname))
 
     def input(self):
         while 1:
@@ -268,6 +280,7 @@ class IRC(Handler):
             self._sock.send(txt)
         except (OSError, ConnectionError) as ex:
             e = Event()
+            e.type = "ERROR"
             e.error = str(ex) 
             e.trc = get_exception()
             self.put(e)
@@ -282,11 +295,15 @@ class IRC(Handler):
             self.cfg.update(cfg)
         else:
             self.cfg.last()
-        self.channels.append(self.cfg.channel or "#okbot")
+        assert self.cfg.channel
+        assert self.cfg.server
+        self.channels.append(self.cfg.channel)
         launch(self.doconnect)
-        
+
     def doconnect(self):
-        self.connect(self.cfg.server or "localhost", self.cfg.nick or "okbot")
+        assert self.cfg.server
+        assert self.cfg.nick
+        self.connect(self.cfg.server, self.cfg.nick)
         super().start()
         launch(self.input)
         launch(self.output)
@@ -323,13 +340,11 @@ class IRC(Handler):
                 return
             except ConnectionError:
                 return
-        if event.txt and event.txt[0] == handler.cc:
+        if event.txt and event.txt[0] == self.cc:
             if k.cfg.users and not k.users.allowed(event.origin, "USER"):
                return
-            e = Event(event.txt[1:])
-            e.orig = event.orig
-            e.origin = event.origin
-            k.put(e)
+            event.parse(event.txt[1:])
+            k.dispatch(event)
 
     def QUIT(self, event):
         if self.cfg.server in event.orig:
@@ -399,7 +414,7 @@ class DCC(Handler):
         e.channel = self.origin
         e.origin = self.origin or "root@dcc"
         e.orig = repr(self)
-        e.parse()
+        e.parse(e.txt)
         return e
 
     def say(self, channel, txt, type="chat"):

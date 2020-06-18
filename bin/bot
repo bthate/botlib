@@ -6,22 +6,17 @@
 __version__ = 86
 
 from bot.csl import Console
+from bot.irc import IRC
 from bot.krn import k
-from bot.shl import daemon, execute, parse_cli
-
-import os
-
-opts = [
-    ('-l', '--loglevel', 'store', str, "debug", 'set loglevel.', 'level'),
-    ('-o', '--options', 'store', str, "", "options to use", 'options'),
-    ('-w', '--workdir', 'store', str, os.path.expanduser("~/.bot"), "directory to work on", 'workdir'),
-]
+from bot.shl import execute, parse_cli
 
 def main():
-    cfg = parse_cli("bot", opts, version=__version__)
+    cfg = parse_cli("bot")
     k.start(cfg)
+    i = IRC()
+    i.start(cfg)
     c = Console()
-    c.start()
+    c.start(cfg)
     k.wait()
 
 execute(main)

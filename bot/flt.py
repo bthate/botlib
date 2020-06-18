@@ -3,7 +3,6 @@
 #
 
 from .obj import Object, get_type
-from .hdl import Loader
 
 class Fleet(Object):
 

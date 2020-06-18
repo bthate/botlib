@@ -5,6 +5,7 @@
 import importlib, inspect, os, pkg_resources, queue
 
 from .obj import Default, Object
+from .tbl import names
 from .utl import get_exception, direct, get_type
 
 class NOTIMPLEMENTED(Exception):
@@ -15,52 +16,24 @@ class ETYPE(Exception):
 
     pass
 
-class Loader(Object):
-
-    def __init__(self):
-        super().__init__()
-        self.table = Object()
-
-    def load_mod(self, name):
-        if not name:
-            return
-        self.table[name] = direct(name)
-        return self.table[name]
-
-class Handler(Loader):
+class Handler(Object):
  
     def __init__(self):
         super().__init__()
-        self.cbs = Object()
         self.cmds = Object()
         self.queue = queue.Queue()
-
+        self.names = names
+                
     def dispatch(self, event):
-        if not event.txt:
-            return
-        cmd = event.txt.split()[0]
-        func = self.get_cmd(cmd)
+        func = self.get_cmd(event.cmd)
         if func:
-            try:
-                func(event)
-            except Exception as ex:
-                print(get_exception())
-            event.show(self)
-
-    def callback(self, event):
-        t = get_type(event)
-        if t in self.cbs:
-            self.cbs[t](self, event)
+            func(event)
+            event.show()
 
     def get_cmd(self, cmd, dft=None):
-        import bot.tbl
-        name = bot.tbl.names.get(cmd, dft)
-        mod = None
+        name = self.names.get(cmd, dft)
         if name:
-            mod = self.table.get(name)
-        if not mod:
-            mod = self.load_mod(name)
-        if mod:
+            mod = direct(name)
             return getattr(mod, cmd, None)
 
     def handler(self):
@@ -78,6 +51,9 @@ class Handler(Loader):
     def put(self, event):
         self.queue.put(event)
 
+    def register(self, cmd, cb):
+        self.cmds[cmd] = cb
+
     def scan(self, mod):
         self.cmds.update(find_cmds(mod))
 
@@ -87,30 +63,6 @@ class Handler(Loader):
             
     def stop(self):
         self.queue.put(None)
-
-class Event(Default):
-
-    def __init__(self, txt=""):
-        super().__init__()
-        if type(txt) != str:
-            raise ETYPE(str(type(txt)))
-        self.type = "event"
-        self.result = []
-        self.txt = txt
-        if self.txt:
-            self.args = self.txt.split()[1:]
-        else:
-            self.args = []
-        self.rest = " ".join(self.args)
-
-    def reply(self, txt):
-        self.result.append(txt)
- 
-    def show(self, bot):
-        for txt in self.result:
-            bot.say(self.channel, txt)
-
-## inspectors
 
 def find_names(mod):
     names = {}
@@ -156,7 +108,6 @@ def find_modules(pkgs, filter=None):
             if m not in mods:
                 mods.append(m)
     return mods
-
 
 def find_shorts(mn):
     shorts = {}

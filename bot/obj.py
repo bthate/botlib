@@ -252,6 +252,24 @@ class DoL(Object):
         for k, v in d.items():
             self.append(k, v)
 
+class List(Object):
+
+    def __init__(self, txt):
+        super().__init__()
+        nr = 0
+        for l in txt.split():
+            if l:
+                self[str(nr)] = arg(l)
+                nr += 1
+
+    def __iter__(self):
+        for nr in range(len(self)):
+            if type(nr) == int:
+                try:
+                    yield self[str(nr)]
+                except KeyError:
+                    pass
+
 class Db(Object):
 
     def all(self, otype, selector={}, index=None, delta=0):

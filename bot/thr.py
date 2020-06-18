@@ -67,4 +67,4 @@ def get_name(o):
 l = Launcher()
 
 def launch(func, *args, **kwargs):
-    l.launch(func, *args, **kwargs)
+    return l.launch(func, *args, **kwargs)

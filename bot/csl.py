@@ -8,16 +8,26 @@ __version__ = 1
 
 import sys, threading
 
+from .evt import Event
 from .krn import k
-from .obj import Object
-from .hdl import Event, Handler
+from .obj import Cfg, Object
+from .hdl import Handler
 from .shl import setcompleter
 from .tbl import names
 from .thr import launch
 
 ## classes
 
+class Cfg(Cfg):
+
+    pass
+
 class Console(Object):
+
+    def  __init__(self):
+        super().__init__()
+        self.cfg = Cfg()
+        k.fleet.add(self)
 
     def announce(self, txt):
         self.raw(txt)
@@ -30,7 +40,11 @@ class Console(Object):
             k.dispatch(e)
 
     def poll(self):
-        return Event(input("> "))
+        txt = input("> ")
+        e = Event()
+        e.parse(txt)
+        e.orig = repr(self)
+        return e
 
     def raw(self, txt):
         print(txt.rstrip())
@@ -38,6 +52,10 @@ class Console(Object):
     def say(self, channel, txt, type="chat"):
         self.raw(txt)
 
-    def start(self):
+    def start(self, cfg):
+        if cfg:
+            self.cfg.update(cfg)
+        else:
+            self.cfg.last()
         setcompleter(names)
         launch(self.input)
