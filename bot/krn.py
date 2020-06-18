@@ -6,6 +6,7 @@ __version__ = 87
 
 import inspect, os, sys, threading, time, traceback, _thread
 
+from .evt import Event
 from .obj import Cfg, Db, Object
 from .flt import Fleet
 from .hdl import Handler
@@ -36,8 +37,9 @@ class Kernel(Handler):
     def cmd(self, txt):
         if not txt:
             return
-        from .evt import Event
-        e = Event(txt)
+        e = Event()
+        e.parse(txt)
+        e.orig = repr(self)
         self.dispatch(e)
         return e
 

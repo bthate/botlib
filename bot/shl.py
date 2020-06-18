@@ -4,10 +4,10 @@
 
 import atexit, argparse, logging, os, readline, sys, termios, time, _thread
 
-from .obj import Default, Object, cdir
+from .prs import Parsed
+from .obj import cdir
 
 cmds = []
-cfg = Object()
 logfile = ""
 resume = {}
 HISTFILE = ""
@@ -131,55 +131,15 @@ def level(loglevel, nostream=False):
         logger.addHandler(filehandler)
     return logger
 
-def make_opts(ns, options, usage="", **kwargs):
-    kwargs["usage"] = usage
-    kwargs["allow_abbrev"] = False
-    kwargs["argument_default"] = argparse.SUPPRESS
-    kwargs["formatter_class"] = argparse.HelpFormatter
-    parser = argparse.ArgumentParser(**kwargs)
-    for opt in options:
-        if not opt:
-            continue
-        try:
-            parser.add_argument(opt[0], opt[1], action=opt[2], type=opt[3], default=opt[4], help=opt[5], dest=opt[6], const=opt[4], nargs="?")
-        except Exception as ex:
-            try:
-                parser.add_argument(opt[0], opt[1], action=opt[2], default=opt[3], help=opt[4], dest=opt[5])
-            except Exception as ex:
-                pass
-    parser.add_argument('args', nargs='*')
-    parser.parse_known_args(namespace=ns)
-
 def parse_cli(name):
-    ns = Default()
+    cfg = Parsed()
     if len(sys.argv) <= 1:
-        return ns
-    ns.name = name
-    ns.txt = " ".join(sys.argv[1:])
-    ns.update(Options(ns.txt))
-    return ns
-    
-def parse_cli2(name, opts=[], version="", wd=""):
-    import bot.obj
-    ns = Object()
-    make_opts(ns, opts)
-    cfg = Default(ns)
+        return cfg
     cfg.name = name
-    if cfg.args:
-        cfg.txt = " ".join(cfg.args)
-    if version:
-        cfg.version = version
-    bot.obj.workdir = cfg.workdir = cfg.workdir or wd or os.path.expanduser("~/.bot")
-    if cfg.options:
-        for opt in cfg.options.split(","):
-            try:
-                cfg.index = int(opt)
-            except ValueError:
-                continue
-    level(cfg.level)
-    cdir(os.path.join(bot.obj.workdir, "store", ""))
+    txt = " ".join(sys.argv[1:])
+    cfg.parse(txt)
     return cfg
-
+    
 def setcompleter(commands):
     global cmds
     cmds = commands

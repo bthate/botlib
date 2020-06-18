@@ -4,24 +4,21 @@
 
 import importlib, inspect, os, pkg_resources, queue
 
-from .krn import k
 from .prs import Parsed
 from .obj import Default, Object
 
 class Event(Parsed):
 
-    def __init__(self, txt=""):
+    def __init__(self):
         super().__init__()
-        if type(txt) != str:
-            raise ETYPE(str(type(txt)))
         self.type = "event"
         self.result = []
-        self.parse(txt)
 
     def reply(self, txt):
         self.result.append(txt)
  
     def show(self):
+        from .krn import k
         for txt in self.result:
             k.fleet.say(self.orig, self.channel, txt)
 
