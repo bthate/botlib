@@ -5,18 +5,18 @@
 
 __version__ = 86
 
-from bot.utl.shl import execute, parse_cli
 from bot.csl import Console
 from bot.irc import IRC
 from bot.krn import k
+from bot.shl import cfg, execute, parse_cli
 
 def main():
-    cfg = parse_cli("bot")
-    k.start(cfg)
-    i = IRC()
-    i.start(cfg)
+    parse_cli("bot")
+    k.start()
+    #i = IRC()
+    #i.start(cfg)
     c = Console()
-    c.start(cfg)
+    c.start()
     k.wait()
 
 execute(main)

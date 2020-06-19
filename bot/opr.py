@@ -5,10 +5,8 @@
 import os, select, socket, threading, time
 
 from .obj import Object, starttime
-from .krn import get_kernel
-from .utl import elapsed
-
-k = get_kernel()
+from .krn import k
+from .tms import elapsed
 
 def meet(event):
     if not event.args:

@@ -4,12 +4,12 @@
 
 import sys, threading
 
-from .utl.shl import setcompleter
-from .utl.thr import launch
 from .krn import k
 from .obj import Cfg, Object
 from .hdl import Event, Handler
+from .shl import setcompleter
 from .tbl import names
+from .thr import launch
 
 class Cfg(Cfg):
 
@@ -19,7 +19,6 @@ class Console(Object):
 
     def  __init__(self):
         super().__init__()
-        self.cfg = Cfg()
         k.fleet.add(self)
 
     def announce(self, txt):
@@ -27,16 +26,17 @@ class Console(Object):
 
     def input(self):
         while 1:
-            e = self.poll()
-            if not e:
+            event = self.poll()
+            event.orig = repr(self)
+            if not event:
                 break
-            k.dispatch(e)
+            print(event)
+            k.put(event)
+        print("stop console")
 
     def poll(self):
-        txt = input("> ")
         e = Event()
-        e.parse(txt)
-        e.orig = repr(self)
+        e.parse(input("> "))
         return e
 
     def raw(self, txt):
@@ -45,10 +45,6 @@ class Console(Object):
     def say(self, channel, txt, type="chat"):
         self.raw(txt)
 
-    def start(self, cfg):
-        if cfg:
-            self.cfg.update(cfg)
-        else:
-            self.cfg.last()
+    def start(self):
         setcompleter(names)
         launch(self.input)

@@ -4,8 +4,8 @@
 
 import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 
-from .utl.thr import launch
-from .utl.trc import get_exception
+from .thr import launch
+from .trc import get_exception
 from .obj import Cfg, Object, last, locked
 from .krn import k
 from .hdl import Event, Handler
@@ -19,9 +19,13 @@ def init(k):
 
 class Cfg(Cfg):
 
-    def __init__(self, cfg={}):
-        super().__init__(cfg)
+    def __init__(self):
+        super().__init__()
+        self.channel = "#botlib"
+        self.nick = "botlib"
+        self.port = 6667
         self.realname = "botlib"
+        self.server = "localhost"
         self.username = "botlib"
 
 class Event(Event):
@@ -53,7 +57,6 @@ class IRC(Handler):
         self._trc = ""
         self.cc = "!"
         self.cfg = Cfg()
-        self.cfg.update(k.cfg)
         self.channels = []
         self.state = Object()
         self.state.needconnect = False

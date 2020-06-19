@@ -6,11 +6,11 @@ __version__ = 87
 
 import inspect, os, sys, threading, time, traceback, _thread
 
-from .utl.gnr import get_type
-from .utl.tms import elapsed
-from .utl.trc import get_exception
+from .gnr import get_type
+from .tms import elapsed
+from .trc import get_exception
 from .obj import Cfg, Db, Object
-from .hdl import Handler
+from .hdl import Event, Handler
 from .usr import Users
 
 starttime = time.time()
@@ -92,6 +92,7 @@ class Kernel(Handler):
         print(txt)
 
     def start(self, cfg={}):
+        super().start()
         self.cfg.update(cfg)
 
     def stop(self):

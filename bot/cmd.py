@@ -6,9 +6,11 @@ __version__ = 1
 
 import bot.tbl, os, time
 
-from .obj import ENOCLASS, Cfg, Db, Object
+from .fil import cdir
+from .gnr import get_type
+from .obj import ENOCLASS, Cfg, Db, Object, cls, last
 from .krn import k
-from .utl import cdir, elapsed, fntime, get_cls, get_type, list_files
+from .tms import elapsed, fntime
 
 class Log(Object):
 
@@ -20,11 +22,12 @@ class Todo(Object):
 
 def cfg(event):
     from .irc import Cfg
-    cfg = Cfg()
-    cfg.last()
-    cfg.update(event.opts)
-    cfg.save()
-    event.reply(cfg.format())
+    c = Cfg()
+    last(c)
+    print(event, c)
+    c.update(event.sets)
+    c.save()
+    event.reply(c.format())
         
 def cmds(event):
     event.reply("|".join(sorted(bot.tbl.names)))
@@ -54,7 +57,7 @@ def ed(event):
     l = db.last(cn)
     if not l:
         try:
-            c = get_cls(cn)
+            c = cls(cn)
             l = c()
             event.reply("created %s" % cn)
         except ENOCLASS:

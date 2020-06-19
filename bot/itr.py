@@ -2,6 +2,8 @@
 #
 #
 
+import inspect
+
 def find_names(mod):
     names = {}
     for key, o in inspect.getmembers(mod, inspect.isfunction):

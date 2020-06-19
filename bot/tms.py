@@ -2,6 +2,7 @@
 #
 #
 
+import os, time
 
 def day():
     return str(datetime.datetime.today()).split()[0]

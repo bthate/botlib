@@ -4,9 +4,11 @@
 
 import atexit, argparse, logging, os, readline, sys, termios, time, _thread
 
+from .obj import Cfg
 from .prs import Parsed
 from .fil import cdir
 
+cfg = Cfg()
 cmds = []
 logfile = ""
 resume = {}
@@ -40,6 +42,7 @@ def complete(text, state):
         return matches[state]
     except IndexError:
         return None
+
 
 def daemon():
     pid = os.fork()
@@ -132,14 +135,18 @@ def level(loglevel, nostream=False):
     return logger
 
 def parse_cli(name):
-    cfg = Parsed()
     if len(sys.argv) <= 1:
         return cfg
+    setwd(name)
     cfg.name = name
-    txt = " ".join(sys.argv[1:])
-    cfg.parse(txt)
+    cfg.txt = " ".join(sys.argv[1:])
     return cfg
-    
+
+def root():
+    if os.geteuid() != 0:
+        return False
+    return True
+
 def setcompleter(commands):
     global cmds
     cmds = commands
@@ -149,6 +156,13 @@ def setcompleter(commands):
         
 def setup(fd):
     return termios.tcgetattr(fd)
+
+def setwd(name):
+    import bot.obj
+    if root():
+        bot.obj.workdir = "/var/lib/%s" % name
+    else:
+        bot.obj.workdir = os.path.expanduser("~/.%s" % name)
 
 def termreset():
     if "old" in resume:

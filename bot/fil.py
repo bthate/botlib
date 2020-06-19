@@ -2,6 +2,8 @@
 #
 #
 
+import os
+
 def cdir(path):
     if os.path.exists(path):
         return
@@ -16,14 +18,6 @@ def cdir(path):
             pass
     return True
 
-def check(name):
-    import bot.obj
-    if root():
-        bot.obj.workdir = "/var/lib/%s" % name
-    else:
-        bot.obj.workdir = os.path.expanduser("~/.%s" % name)
-    if len(sys.argv) > 1:
-        return " ".join(sys.argv[1:])
 
 def fntime(daystr):
     daystr = daystr.replace("_", ":")
@@ -59,6 +53,18 @@ def names(name, delta=None):
             res.append(os.sep.join(fnn.split(os.sep)[1:]))
     return sorted(res, key=fntime)
 
+def root():
+    if os.geteuid() != 0:
+        return False
+    return True
+
+def setwd(name):
+    import bot.obj
+    if root():
+        bot.obj.workdir = "/var/lib/%s" % name
+    else:
+        bot.obj.workdir = os.path.expanduser("~/.%s" % name)
+
 def touch(fname):
     try:
         fd = os.open(fname, os.O_RDWR | os.O_CREAT)
@@ -68,4 +74,3 @@ def touch(fname):
 
 def list_files(wd):
     return "|".join([x for x in os.listdir(os.path.join(wd, "store"))])
-

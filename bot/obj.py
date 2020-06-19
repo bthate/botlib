@@ -4,8 +4,7 @@
 
 import datetime, importlib, json, os, random, sys, time, _thread
 
-from .utl.gnr import get_type
-from .utl.tms import fntime
+from .fil import cdir
 
 lock = _thread.allocate_lock()
 starttime = time.time()
@@ -30,6 +29,7 @@ def locked(lock):
         return lockedfunc
     return lockeddec
 
+
 class ObjectEncoder(json.JSONEncoder):
 
     def default(self, o):
@@ -53,6 +53,7 @@ class O:
     __slots__ = ("__dict__", "_path")
 
     def __init__(self):
+        super().__init__()
         stime = str(datetime.datetime.now()).replace(" ", os.sep)
         self._path = os.path.join(get_type(self), stime)
 
@@ -63,7 +64,7 @@ class O:
         return self.__dict__[k]
 
     def __iter__(self):
-        return iter(self.__dict__)
+        return iter(self.keys())
 
     def __len__(self):
         return len(self.__dict__)
@@ -79,8 +80,7 @@ class O:
         return self.json()
 
     def json(self):
-        print(self._path)
-        return json.dumps(self, cls=ObjectEncoder, indent=4, sort_keys=True)
+        return json.dumps(self, skipkeys=True, cls=ObjectEncoder, indent=4, sort_keys=True)
 
     def get(self, k, d=None):
         return self.__dict__.get(k, d)
@@ -112,6 +112,7 @@ class Object(O):
     def load(self, path, force=False):
         assert path
         assert workdir
+        print(self.__qualname__)
         lpath = os.path.join(workdir, "store", path)
         if not os.path.exists(lpath):
             cdir(lpath)
@@ -138,21 +139,11 @@ class Object(O):
         opath = os.path.join(workdir, "store", self._path)
         cdir(opath)
         with open(opath, "w") as ofile:
-            json.dump(stamp(self), ofile, cls=ObjectEncoder, indent=4, sort_keys=True)
+            json.dump(self, ofile, cls=ObjectEncoder, indent=4, skipkeys=True,sort_keys=True)
         return self._path
 
 
 class Default(Object):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__()
-        if args:
-            try:
-                self.update(args[0])
-            except TypeError:
-                self.update(vars(args[0]))
-        if kwargs:
-            self.update(kwargs)
 
     def __getattr__(self, k):
         if k not in self:
@@ -289,6 +280,30 @@ def cls(name):
         mod = importlib.import_module(modname)
     return getattr(mod, clsname)
 
+def fntime(daystr):
+    daystr = daystr.replace("_", ":")
+    datestr = " ".join(daystr.split(os.sep)[-2:])
+    try:
+        datestr, rest = datestr.rsplit(".", 1)
+    except ValueError:
+        rest = ""
+    try:
+        t = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
+        if rest:
+            t += float("." + rest)
+    except ValueError:
+        t = 0
+    return t
+
+def get_type(o):
+    t = type(o)
+    if t == type:
+        try:
+            return "%s.%s" % (o.__module__, o.__name__)
+        except AttributeError:
+            pass
+    return str(type(o)).split()[-1][1:-2]
+
 def hook(fn):
     t = fn.split(os.sep)[0]
     if not t:
@@ -332,6 +347,18 @@ def names(name, delta=None):
                     continue
             res.append(os.sep.join(fnn.split(os.sep)[1:]))
     return sorted(res, key=fntime)
+
+def stamp(o):
+    for k in xdir(o):
+        oo = getattr(o, k, None)
+        if isinstance(oo, Object):
+            stamp(oo)
+            oo.__dict__["stamp"] = oo._path
+            o[k] = oo
+        else:
+            continue
+    o.__dict__["stamp"] = o._path
+    return o
 
 def xdir(o, skip=""):
     res = []

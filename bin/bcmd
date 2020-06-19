@@ -5,10 +5,12 @@
 
 import os
 
+from bot.fil import setwd
 from bot.shl import execute, parse_cli
 from bot.krn import k
 
 def main():
+    setwd("bot")
     cfg = parse_cli("bcmd")
     k.cmd(cfg.txt)
 

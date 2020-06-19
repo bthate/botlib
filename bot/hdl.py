@@ -2,13 +2,16 @@
 #
 #
 
-import importlib, inspect, os, pkg_resources, queue
+import importlib, queue
 
-from .utl.gnr import get_type
-from .utl.prs import Parsed
-from .utl.trc import get_exception
-from .obj import Default, Object
+from .itr import find_cmds
+from .prs import Parsed
+from .obj import Object
 from .tbl import names
+from .thr import launch
+
+def direct(name):
+    return importlib.import_module(name)
 
 class NOTIMPLEMENTED(Exception):
 
@@ -21,55 +24,60 @@ class ETYPE(Exception):
 class Event(Parsed):
 
     pass
-        
 
+        
 class Handler(Object):
  
     def __init__(self):
         super().__init__()
         self.cmds = Object()
         self.queue = queue.Queue()
-        self.names = names
+        self.table = Object()
                 
     def dispatch(self, event):
-        func = self.get_cmd(event.cmd)
-        if func:
-            func(event)
+        if not event.cmd and event.txt:
+            event.cmd = event.txt.split()[0]
+        event.func = self.get_cmd(event.cmd)
+        if event.func:
+            event.func(event)
             event.show()
-
+            
     def get_cmd(self, cmd, dft=None):
-        name = self.names.get(cmd, dft)
-        if name:
-            mod = direct(name)
-            return getattr(mod, cmd, None)
+        func = self.cmds.get(cmd, None)
+        print(func)
+        if not func:
+            name = names.get(cmd, None)
+            if name:
+                print("autoload %s" % name) 
+                self.load_mod(name)
+                func = self.cmds.get(cmd, dft)
+        return func
 
     def handler(self):
         while 1:
-            e = self.queue.get()
-            if e == None:
+            event = self.queue.get()
+            if event is None:
                 break
-            self.dispatch(e)
+            print(event)
+            launch(self.dispatch, event)
 
     def load_mod(self, name):
-        mod = super().load_mod(name)
+        self.table[name] = mod = direct(name)
         self.cmds.update(find_cmds(mod))
-        return mod
+        return self.table[name]
 
     def put(self, event):
         self.queue.put(event)
 
-    def register(self, cmd, cb):
-        self.cmds[cmd] = cb
+    def register(self, cmd, func):
+        self.cmds[cmd] = func
 
     def scan(self, mod):
         self.cmds.update(find_cmds(mod))
 
     def start(self):
-        from .thr import launch
         launch(self.handler)
             
     def stop(self):
         self.queue.put(None)
 
-def direct(self, name):
-    return importlib.import_module(name)
