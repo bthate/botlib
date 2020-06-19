@@ -129,7 +129,6 @@ class Object(O):
             self._path = os.path.join(get_type(self), stime) + "." + str(random.randint(1, 100000))
         opath = os.path.join(workdir, "store", self._path)
         cdir(opath)
-        print("save %s" % self._path)
         with open(opath, "w") as ofile:
             json.dump(stamp(self), ofile, cls=ObjectEncoder, indent=4, skipkeys=True,sort_keys=True)
         return self._path

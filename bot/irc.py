@@ -305,7 +305,6 @@ class IRC(Handler):
             self.cfg.update(cfg)
         else:
             last(self.cfg)
-        print(self.cfg)
         assert self.cfg.channel
         assert self.cfg.server
         self.channels.append(self.cfg.channel)
