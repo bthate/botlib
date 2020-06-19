@@ -8,10 +8,11 @@ __version__ = 86
 from bot.csl import Console
 from bot.irc import IRC
 from bot.krn import k
-from bot.shl import cfg, execute, parse_cli
+from bot.shl import cfg, execute, parse_cli, setwd
 
 def main():
     parse_cli("bot")
+    setwd("bot")
     k.start()
     #i = IRC()
     #i.start(cfg)

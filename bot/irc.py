@@ -4,11 +4,12 @@
 
 import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 
-from .thr import launch
-from .trc import get_exception
+from .gnr import format
 from .obj import Cfg, Object, last, locked
 from .krn import k, Event
 from .hdl import Handler
+from .thr import launch
+from .trc import get_exception
 
 saylock = _thread.allocate_lock()
 

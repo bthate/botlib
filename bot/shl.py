@@ -43,7 +43,6 @@ def complete(text, state):
     except IndexError:
         return None
 
-
 def daemon():
     pid = os.fork()
     if pid != 0:

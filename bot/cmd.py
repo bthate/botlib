@@ -7,7 +7,7 @@ __version__ = 1
 import bot.tbl, os, time
 
 from .fil import cdir
-from .gnr import get_type
+from .gnr import format, get_type
 from .obj import ENOCLASS, Cfg, Db, Object, cls, last
 from .krn import k
 from .tms import elapsed, fntime
@@ -24,9 +24,14 @@ def cfg(event):
     from .irc import Cfg
     c = Cfg()
     last(c)
-    c.update(event.sets)
+    if len(event.args) == 3:
+        c.server, c.channel, c.nick = event.args
+    elif len(event.args) == 2:
+        c.server, c.channel = event.args
+    elif len(event.args) == 1:
+        c.server = event.args[0]
     c.save()
-    event.reply(c.format())
+    event.reply(format(c))
         
 def cmds(event):
     event.reply("|".join(sorted(bot.tbl.cmds)))
