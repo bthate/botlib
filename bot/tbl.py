@@ -8,13 +8,14 @@ cmds = {
     "feed": "bot.rss",
     "fetch": "bot.rss",
     "find": "bot.cmd",
-    "fleet": "bot.cmd",
+    "fl": "bot.cmd",
     "log": "bot.cmd",
     "meet": "bot.opr",
     "ps": "bot.opr",
     "rss": "bot.rss",
     "todo": "bot.cmd",
     "udp": "bot.udp",
+    "up": "bot.cmd",
     "v": "bot.cmd"
 }
 classes = {
@@ -28,6 +29,7 @@ classes = {
     "Feed": "bot.rss",
     "Fetcher": "bot.rss",
     "Fleet": "bot.krn",
+    "Getter": "bot.prs",
     "Handler": "bot.hdl",
     "IRC": "bot.irc",
     "Kernel": "bot.krn",
@@ -38,8 +40,10 @@ classes = {
     "Repeater": "bot.clk",
     "Rss": "bot.rss",
     "Seen": "bot.rss",
+    "Setter": "bot.prs",
     "Timer": "bot.clk",
     "Todo": "bot.cmd",
+    "Token": "bot.prs",
     "UDP": "bot.udp",
     "User": "bot.krn",
     "Users": "bot.krn"

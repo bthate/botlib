@@ -8,7 +8,7 @@ import os, time
 
 from .fil import cdir, list_files
 from .obj import ENOCLASS, Cfg, Db, Object, format, get_cls, get_type, last, load, save
-from .krn import k
+from .krn import k, starttime
 from .tms import elapsed, fntime
 
 import bot.obj
@@ -109,7 +109,7 @@ def find(event):
     if nr == -1:
         event.reply("no %s found." % otype)
 
-def fleet(event):
+def fl(event):
     try:
         index = int(event.args[0])
         event.reply(str(k.fleet.bots[index]))
@@ -152,6 +152,9 @@ def todo(event):
     save(o)
     event.reply("ok")
 
+def up(event):
+    event.reply(elapsed(time.time() - starttime))
+    
 def v(event):
     from bot.krn import __version__
     event.reply("%s %s" % (k.cfg.name.upper() or "BOTLIB", k.cfg.version or __version__))

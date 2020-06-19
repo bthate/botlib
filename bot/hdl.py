@@ -2,16 +2,13 @@
 #
 #
 
-import importlib, queue
+import queue
 
-from .itr import find_cmds
+from .itr import find_cmds, direct
 from .obj import Object
 from .thr import launch
 
 import bot.tbl
-
-def direct(name):
-    return importlib.import_module(name)
 
 class NOTIMPLEMENTED(Exception):
 
