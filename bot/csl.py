@@ -43,6 +43,6 @@ class Console(Object):
         self.raw(txt)
 
     def start(self):
-        from .tbl import names
-        setcompleter(names)
+        from .tbl import cmds
+        setcompleter(cmds)
         launch(self.input)

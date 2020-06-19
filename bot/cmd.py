@@ -24,13 +24,12 @@ def cfg(event):
     from .irc import Cfg
     c = Cfg()
     last(c)
-    print(event, c)
     c.update(event.sets)
     c.save()
     event.reply(c.format())
         
 def cmds(event):
-    event.reply("|".join(sorted(bot.tbl.names)))
+    event.reply("|".join(sorted(bot.tbl.cmds)))
 
 def done(event):
     if not event.args:

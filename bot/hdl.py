@@ -40,7 +40,7 @@ class Handler(Object):
     def get_cmd(self, cmd, dft=None):
         func = self.cmds.get(cmd, None)
         if not func:
-            name = bot.tbl.names.get(cmd, None)
+            name = bot.tbl.cmds.get(cmd, None)
             if name:
                 self.load_mod(name)
                 func = self.cmds.get(cmd, dft)
