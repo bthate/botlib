@@ -6,11 +6,10 @@ __version__ = 87
 
 import inspect, os, sys, threading, time, traceback, _thread
 
-from .gnr import get_type
 from .prs import Parsed
 from .tms import elapsed
 from .trc import get_exception
-from .obj import Cfg, Db, Object
+from .obj import Cfg, Db, Object, get_type
 from .hdl import Handler
 
 starttime = time.time()
@@ -22,6 +21,48 @@ class ENOKERNEL(Exception):
 class ENOUSER(Exception):
 
     pass
+
+
+class Kernel(Handler):
+
+    def __init__(self):
+        super().__init__()
+        self.cfg = Cfg()
+        self.db = Db()
+        self.fleet = Fleet()
+        self.users = Users()
+        self.fleet.add(self)
+        
+    def cmd(self, txt):
+        if not txt:
+            return
+        e = Event()
+        e.parse(txt)
+        e.orig = repr(self)
+        self.dispatch(e)
+        return e
+
+    def dispatch(self, event):
+        if not event.cmd and event.txt:
+            event.cmd = event.txt.split()[0]
+        event.func = self.get_cmd(event.cmd)
+        if event.func:
+            event.func(event)
+        event.show()
+
+    def say(self, channel, txt):
+        print(txt)
+
+    def start(self, cfg={}):
+        super().start()
+        self.cfg.update(cfg)
+
+    def stop(self):
+        self.queue.put(None)
+
+    def wait(self):
+        while 1:
+            time.sleep(1.0)
 
 class Cfg(Cfg):
 
@@ -46,39 +87,6 @@ class Event(Parsed):
     def wait(self):
         for thr in self.thrs:
             thr.join()
-
-class Kernel(Handler):
-
-    def __init__(self):
-        super().__init__()
-        self.cfg = Cfg()
-        self.db = Db()
-        self.fleet = Fleet()
-        self.users = Users()
-        self.fleet.add(self)
-        
-    def cmd(self, txt):
-        if not txt:
-            return
-        e = Event()
-        e.parse(txt)
-        e.orig = repr(self)
-        self.dispatch(e)
-        return e
-
-    def say(self, channel, txt):
-        print(txt)
-
-    def start(self, cfg={}):
-        super().start()
-        self.cfg.update(cfg)
-
-    def stop(self):
-        self.queue.put(None)
-
-    def wait(self):
-        while 1:
-            time.sleep(1.0)
 
 class Fleet(Object):
 
@@ -150,7 +158,7 @@ class Users(Db):
         for user in self.get_users(origin):
             try:
                 user.perms.remove(perm)
-                user.save()
+                save(user)
                 return True
             except ValueError:
                 pass
@@ -171,7 +179,7 @@ class Users(Db):
         user = User()
         user.user = origin
         user.perms = ["USER", ]
-        user.save()
+        save(user)
         return user
 
     def oper(self, origin):
@@ -181,7 +189,7 @@ class Users(Db):
         user = User()
         user.user = origin
         user.perms = ["OPER", "USER"]
-        user.save()
+        save(user)
         return user
 
     def perm(self, origin, permission):

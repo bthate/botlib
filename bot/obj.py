@@ -48,12 +48,11 @@ class ObjectDecoder(json.JSONDecoder):
     def decode(self, s):
         return json.loads(s, object_hook=hooked)
 
-class O:
+class Object:
 
     __slots__ = ("__dict__", "_path")
 
     def __init__(self):
-        super().__init__()
         stime = str(datetime.datetime.now()).replace(" ", os.sep)
         self._path = os.path.join(get_type(self), stime)
 
@@ -106,41 +105,12 @@ class O:
     def values(self):
         return self.__dict__.values()
 
-class Object(O):
-
-    @locked(lock)
-    def load(self, path, force=False):
-        assert path
-        assert workdir
-        lpath = os.path.join(workdir, "store", path)
-        if not os.path.exists(lpath):
-            cdir(lpath)
-        self._path = path
-        with open(lpath, "r") as ofile:
-            val = json.load(ofile, cls=ObjectDecoder)
-            if val:
-                self.update(val)
-        return self
-
-    @locked(lock)
-    def save(self, stime=None):
-        assert workdir
-        if stime:
-            self._path = os.path.join(get_type(self), stime) + "." + str(random.randint(1, 100000))
-        opath = os.path.join(workdir, "store", self._path)
-        cdir(opath)
-        with open(opath, "w") as ofile:
-            json.dump(stamp(self), ofile, cls=ObjectEncoder, indent=4, skipkeys=True,sort_keys=True)
-        return self._path
-
-
 class Default(Object):
 
     def __getattr__(self, k):
         if k not in self:
             self.__dict__.__setitem__(k, "")
         return self.__dict__[k]
-
 
 class Cfg(Default):
 
@@ -187,7 +157,7 @@ class Db(Object):
             nr += 1
             if index is not None and nr != index:
                 continue
-            if selector and not o.search(selector):
+            if selector and not search(o, selector):
                 continue
             if "_deleted" in o and o._deleted:
                 continue
@@ -198,7 +168,7 @@ class Db(Object):
         for fn in names(otype):
             o = hook(fn)
             nr += 1
-            if selector and not o.search(selector):
+            if selector and not search(o, selector):
                 continue
             if "_deleted" not in o or not o._deleted:
                 continue
@@ -208,7 +178,7 @@ class Db(Object):
         nr = -1
         for fn in names(otype, delta):
             o = hook(fn)
-            if o.search(selector):
+            if search(o, selector):
                 nr += 1
                 if index is not None and nr != index:
                     continue
@@ -221,7 +191,7 @@ class Db(Object):
         res = []
         for fn in names(otype, delta):
             o = hook(fn)
-            if o.find(value):
+            if find(o, value):
                 nr += 1
                 if index is not None and nr != index:
                     continue
@@ -247,7 +217,7 @@ class Db(Object):
         res = []
         for fn in names(otype, delta):
             o = hook(fn)
-            if selector and o.search(selector):
+            if selector and search(o, selector):
                 nr += 1
                 if index is not None and nr != index:
                     continue
@@ -302,7 +272,7 @@ def hook(fn):
     if not t:
         raise ENOFILE(fn)
     o = get_cls(t)()
-    o.load(fn)
+    load(o, fn)
     return o
 
 def hooked(d):
@@ -311,6 +281,7 @@ def hooked(d):
         o = get_cls(t)()
         o.update(d)
         return o
+    return d
 
 def last(o, strip=False):
     db = Db()
@@ -321,6 +292,63 @@ def last(o, strip=False):
         else:
             o.update(l)
         o._path = path
+
+def search(o, match=None):
+    res = False
+    if match == None:
+        return res
+    for key, value in match.items():
+        val = o.get(key, None)
+        if val:
+            if not value:
+                res = True
+                continue
+            if value in str(val):
+                res = True
+                continue
+            else:
+                res = False
+                break
+        else:
+            res = False
+            break
+    return res
+
+def stamp(o):
+    for k in xdir(o):
+        oo = getattr(o, k, None)
+        if isinstance(oo, Object):
+            stamp(oo)
+            oo.__dict__["stamp"] = oo._path
+            o[k] = oo
+        else:
+            continue
+    o.__dict__["stamp"] = o._path
+    return o
+
+@locked(lock)
+def load(o, path, force=False):
+    assert path
+    assert workdir
+    lpath = os.path.join(workdir, "store", path)
+    if not os.path.exists(lpath):
+        cdir(lpath)
+    o._path = path
+    with open(lpath, "r") as ofile:
+        val = json.load(ofile, cls=ObjectDecoder)
+        if val:
+            o.update(val)
+
+@locked(lock)
+def save(o, stime=None):
+    assert workdir
+    if stime:
+        o._path = os.path.join(get_type(self), stime) + "." + str(random.randint(1, 100000))
+    opath = os.path.join(workdir, "store", o._path)
+    cdir(opath)
+    with open(opath, "w") as ofile:
+        json.dump(stamp(o), ofile, cls=ObjectEncoder, indent=4, skipkeys=True,sort_keys=True)
+    return o._path
 
 def names(name, delta=None):
     if not name:
@@ -364,3 +392,57 @@ def xdir(o, skip=""):
             continue
         res.append(k)
     return res
+
+def edit(o, setter, skip=False):
+    try:
+        setter = vars(setter)
+    except:
+        pass
+    if not setter:
+        setter = {}
+    count = 0
+    for key, value in setter.items():
+        if skip and value == "":
+            continue
+        count += 1
+        if value in ["True", "true"]:
+            o[key] = True
+        elif value in ["False", "false"]:
+            o[key] = False
+        else:
+            o[key] = value
+    return count
+
+def find(o, val):
+    for item in o.values():
+        if val in item:
+            return True
+    return False
+
+def format(o, keys=None):
+    if keys is None:
+        keys = vars(o).keys()
+    res = []
+    txt = ""
+    for key in keys:
+        if key == "stamp":
+            continue
+        val = o.get(key, None)
+        if not val:
+            continue
+        val = str(val)
+        if key == "text":
+            val = val.replace("\\n", "\n")
+        res.append((key, val))
+    for key, val in res:
+        txt += "%s=%s%s" % (key, val.strip(), " ")
+    return txt.strip()
+
+def get_type(o):
+    t = type(o)
+    if t == type:
+        try:
+            return "%s.%s" % (o.__module__, o.__name__)
+        except AttributeError:
+            pass
+    return str(type(o)).split()[-1][1:-2]

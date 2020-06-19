@@ -2,14 +2,14 @@
 #
 #
 
-from .obj import O, Object, Default
+from .obj import Object, Default
 
-class Token(O):
+class Token(Object):
 
     def __init__(self, txt):
         self.txt = txt
 
-class Getter(O):
+class Getter(Object):
 
     def __init__(self, txt):
         super().__init__()
@@ -20,7 +20,7 @@ class Getter(O):
         if pre:
             self[pre] = post
         
-class Setter(O):
+class Setter(Object):
 
     def __init__(self, txt):
         try:
@@ -43,14 +43,13 @@ class Parsed(Default):
         nr = -1
         for token in tokens:
             nr += 1
-            if not token.txt:
-                continue
             if self.gets.update(Getter(token.txt)):
                 continue
             if self.sets.update(Setter(token.txt)):
                 continue            
+            if nr == 0:
+                self.cmd = token.txt
             self.args.append(token.txt)
         self.txt =  " ".join(self.args)
         self.args = self.args[1:]
-        self.rest = " ".join(self.args[1:])
-        self.cmd = tokens[0].txt
+        self.rest = " ".join(self.args)

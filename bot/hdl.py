@@ -30,6 +30,7 @@ class Handler(Object):
         self.table = Object()
                 
     def dispatch(self, event):
+        event.parse()            
         if not event.cmd and event.txt:
             event.cmd = event.txt.split()[0]
         event.func = self.get_cmd(event.cmd)
