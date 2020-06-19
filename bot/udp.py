@@ -4,7 +4,7 @@
 
 import select, socket, sys, time
 
-from .obj import Cfg, Object
+from .obj import Cfg, Object, last
 from .krn import get_kernel
 
 k = get_kernel()
@@ -52,7 +52,7 @@ class UDP(Object):
         self._sock.sendto(bytes("exit", "utf-8"), (self.cfg.host, self.cfg.port))
 
     def start(self):
-        self.cfg.last()
+        last(self.cfg)
         k.launch(self.server)
 
 def toudp(host, port, txt):
@@ -61,7 +61,7 @@ def toudp(host, port, txt):
 
 def udp(event):
     cfg = Cfg()
-    cfg.last()
+    last(cfg)
     if len(sys.argv) > 2:
         txt = " ".join(sys.argv[2:])
         toudp(cfg.host, cfg.port, txt)

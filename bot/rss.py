@@ -8,7 +8,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode, urlunparse
 from urllib.request import Request, urlopen
 
-from .obj import Cfg, Db, Default, Object
+from .obj import Cfg, Db, Default, Object, last
 from .clk import Repeater
 from .krn import get_kernel
 from .tms import to_time, day
@@ -121,8 +121,8 @@ class Fetcher(Object):
         return thrs
 
     def start(self, repeat=True):
-        Fetcher.cfg.last()
-        Fetcher.seen.last()
+        last(Fetcher.cfg)
+        last(Fetcher.seen)
         if repeat:
             repeater = Repeater(300.0, self.run)
             repeater.start()

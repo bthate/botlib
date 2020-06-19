@@ -4,12 +4,15 @@
 
 __version__ = 1
 
-import bot.tbl, os, time
+import os, time
 
-from .fil import cdir
+from .fil import cdir, list_files
 from .obj import ENOCLASS, Cfg, Db, Object, format, get_cls, get_type, last, load, save
 from .krn import k
 from .tms import elapsed, fntime
+
+import bot.obj
+import bot.tbl
 
 class Log(Object):
 
@@ -50,7 +53,7 @@ def done(event):
 
 def ed(event):
     if not event.args:
-        event.reply(list_files(k.cfg.workdir) or "no files yet")
+        event.reply(list_files(bot.obj.workdir) or "no files yet")
         return
     cn = event.args[0]
     shorts = k.find_shorts("bot")
@@ -128,8 +131,8 @@ def log(event):
         return
     l = Log()
     l.txt = event.rest
-    p = save(l)
-    event.reply("ok %s" % p)
+    save(l)
+    event.reply("ok")
 
 def todo(event):
     db = Db()

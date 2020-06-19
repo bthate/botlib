@@ -29,6 +29,75 @@ def locked(lock):
         return lockedfunc
     return lockeddec
 
+def names(name, delta=None):
+    if not name:
+        return []
+    p = os.path.join(workdir, "store", name) + os.sep
+    res = []
+    now = time.time()
+    if delta:
+        past = now + delta
+    for rootdir, dirs, files in os.walk(p, topdown=False):
+        for fn in files:
+            fnn = os.path.join(rootdir, fn).split(os.path.join(workdir, "store"))[-1]
+            if delta:
+                if fntime(fnn) < past:
+                    continue
+            res.append(os.sep.join(fnn.split(os.sep)[1:]))
+    return sorted(res, key=fntime)
+
+def fntime(daystr):
+    daystr = daystr.replace("_", ":")
+    datestr = " ".join(daystr.split(os.sep)[-2:])
+    try:
+        datestr, rest = datestr.rsplit(".", 1)
+    except ValueError:
+        rest = ""
+    try:
+        t = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
+        if rest:
+            t += float("." + rest)
+    except ValueError:
+        t = 0
+    return t
+
+def get_cls(name):
+    try:
+        modname, clsname = name.rsplit(".", 1)
+    except:
+        raise ENOCLASS(name)
+    if modname in sys.modules:
+        mod = sys.modules[modname]
+    else:
+        mod = importlib.import_module(modname)
+    return getattr(mod, clsname)
+
+def get_type(o):
+    t = type(o)
+    if t == type:
+        try:
+            return "%s.%s" % (o.__module__, o.__name__)
+        except AttributeError:
+            pass
+    return str(type(o)).split()[-1][1:-2]
+
+def hook(fn):
+    t = fn.split(os.sep)[0]
+    if not t:
+        t = fn.split(os.sep)[0][1:]
+    if not t:
+        raise ENOFILE(fn)
+    o = get_cls(t)()
+    load(o, fn)
+    return o
+
+def hooked(d):
+    if "stamp" in d:
+        t = d["stamp"].split(os.sep)[0]
+        o = get_cls(t)()
+        o.update(d)
+        return o
+    return d
 
 class ObjectEncoder(json.JSONEncoder):
 
@@ -47,6 +116,7 @@ class ObjectDecoder(json.JSONDecoder):
 
     def decode(self, s):
         return json.loads(s, object_hook=hooked)
+
 
 class Object:
 
@@ -78,9 +148,6 @@ class Object:
     def __str__(self):
         return self.json()
 
-    def json(self):
-        return json.dumps(self, skipkeys=True, cls=ObjectEncoder, indent=4, sort_keys=True)
-
     def get(self, k, d=None):
         return self.__dict__.get(k, d)
 
@@ -89,9 +156,6 @@ class Object:
 
     def keys(self):
         return self.__dict__.keys()
-
-    def merge(self, o, vals=["",]):
-        return self.update(strip(o, vals))
 
     def register(self, k, v):
         self.__dict__[k] = v
@@ -104,6 +168,22 @@ class Object:
 
     def values(self):
         return self.__dict__.values()
+
+class Obj(dict):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        stime = str(datetime.datetime.now()).replace(" ", os.sep)
+        self["_path"] = os.path.join(get_type(self), stime)
+
+    def __getattr__(self, k):
+        try:
+            return self[k]
+        except KeyError:
+            return super().__getattr__(k)
+            
+    def __setattr__(self, k, v):
+        self[k] = v
 
 class Default(Object):
 
@@ -230,59 +310,6 @@ class Db(Object):
                 return s[-1][-1]
         return None
 
-def fntime(daystr):
-    daystr = daystr.replace("_", ":")
-    datestr = " ".join(daystr.split(os.sep)[-2:])
-    try:
-        datestr, rest = datestr.rsplit(".", 1)
-    except ValueError:
-        rest = ""
-    try:
-        t = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
-        if rest:
-            t += float("." + rest)
-    except ValueError:
-        t = 0
-    return t
-
-def get_cls(name):
-    try:
-        modname, clsname = name.rsplit(".", 1)
-    except:
-        raise ENOCLASS(name)
-    if modname in sys.modules:
-        mod = sys.modules[modname]
-    else:
-        mod = importlib.import_module(modname)
-    return getattr(mod, clsname)
-
-def get_type(o):
-    t = type(o)
-    if t == type:
-        try:
-            return "%s.%s" % (o.__module__, o.__name__)
-        except AttributeError:
-            pass
-    return str(type(o)).split()[-1][1:-2]
-
-def hook(fn):
-    t = fn.split(os.sep)[0]
-    if not t:
-        t = fn.split(os.sep)[0][1:]
-    if not t:
-        raise ENOFILE(fn)
-    o = get_cls(t)()
-    load(o, fn)
-    return o
-
-def hooked(d):
-    if "stamp" in d:
-        t = d["stamp"].split(os.sep)[0]
-        o = get_cls(t)()
-        o.update(d)
-        return o
-    return d
-
 def last(o, strip=False):
     db = Db()
     path, l = db.last_fn(str(get_type(o)))
@@ -313,6 +340,9 @@ def search(o, match=None):
             res = False
             break
     return res
+
+def merge(self, o, vals=["",]):
+    return self.update(strip(o, vals))
 
 def stamp(o):
     for k in xdir(o):
@@ -350,22 +380,9 @@ def save(o, stime=None):
         json.dump(stamp(o), ofile, cls=ObjectEncoder, indent=4, skipkeys=True,sort_keys=True)
     return o._path
 
-def names(name, delta=None):
-    if not name:
-        return []
-    p = os.path.join(workdir, "store", name) + os.sep
-    res = []
-    now = time.time()
-    if delta:
-        past = now + delta
-    for rootdir, dirs, files in os.walk(p, topdown=False):
-        for fn in files:
-            fnn = os.path.join(rootdir, fn).split(os.path.join(workdir, "store"))[-1]
-            if delta:
-                if fntime(fnn) < past:
-                    continue
-            res.append(os.sep.join(fnn.split(os.sep)[1:]))
-    return sorted(res, key=fntime)
+def tojson(o):
+    return json.dumps(o, skipkeys=True, cls=ObjectEncoder, indent=4, sort_keys=True)
+
 
 def stamp(o):
     for k in xdir(o):
