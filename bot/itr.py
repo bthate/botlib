@@ -2,7 +2,12 @@
 #
 #
 
-import inspect
+import importlib, inspect, os
+
+from .obj import Object
+
+def direct(name):
+    return importlib.import_module(name)
 
 def find_names(mod):
     names = {}
@@ -26,6 +31,13 @@ def find_callbacks(mod):
             if o.__code__.co_argcount == 2:
                 cbs[key] = o
     return cbs
+
+def find_cls(mod):
+    res = {}
+    for key, o in inspect.getmembers(mod, inspect.isclass):
+        if issubclass(o, Object):
+            res[o.__name__] = o.__module__
+    return res
 
 def find_cmds(mod):
     cmds = {}
@@ -59,11 +71,11 @@ def find_shorts(mn):
     return shorts
 
 def find_types(mod):
-    res = []
+    res = {}
     for key, o in inspect.getmembers(mod, inspect.isclass):
         if issubclass(o, Object):
             t = "%s.%s" % (o.__module__, o.__name__)
-            res.append(t)
+            res[t] = o.__module__
     return res
 
 def resources(name):

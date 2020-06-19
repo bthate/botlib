@@ -8,7 +8,6 @@ from .krn import Event, k
 from .obj import Cfg, Object
 from .hdl import Handler
 from .shl import setcompleter
-from .tbl import names
 from .thr import launch
 
 class Cfg(Cfg):
@@ -44,5 +43,6 @@ class Console(Object):
         self.raw(txt)
 
     def start(self):
+        from .tbl import names
         setcompleter(names)
         launch(self.input)

@@ -296,6 +296,17 @@ def fntime(daystr):
         t = 0
     return t
 
+def get_cls(name):
+    try:
+        modname, clsname = name.rsplit(".", 1)
+    except:
+        raise ENOCLASS(name)
+    if modname in sys.modules:
+        mod = sys.modules[modname]
+    else:
+        mod = importlib.import_module(modname)
+    return getattr(mod, clsname)
+
 def get_type(o):
     t = type(o)
     if t == type:

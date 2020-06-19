@@ -6,8 +6,9 @@ import importlib, queue
 
 from .itr import find_cmds
 from .obj import Object
-from .tbl import names
 from .thr import launch
+
+import bot.tbl
 
 def direct(name):
     return importlib.import_module(name)
@@ -39,7 +40,7 @@ class Handler(Object):
     def get_cmd(self, cmd, dft=None):
         func = self.cmds.get(cmd, None)
         if not func:
-            name = names.get(cmd, None)
+            name = bot.tbl.names.get(cmd, None)
             if name:
                 self.load_mod(name)
                 func = self.cmds.get(cmd, dft)

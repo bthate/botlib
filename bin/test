@@ -7,7 +7,7 @@ import logging, os, shutil, time, unittest
 from bot.obj import cdir
 from bot.krn import k, starttime
 from bot.shl import execute, parse_cli
-from bot.utl import elapsed
+from bot.tms import elapsed
 
 import bot.rss
 

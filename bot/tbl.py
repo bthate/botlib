@@ -1,4 +1,4 @@
-names = {
+cmds = {
     "cfg": "bot.cmd",
     "cmds": "bot.cmd",
     "delete": "bot.rss",
@@ -16,4 +16,31 @@ names = {
     "todo": "bot.cmd",
     "udp": "bot.udp",
     "v": "bot.cmd"
+}
+classes = {
+    "Cfg": "bot.obj",
+    "Console": "bot.csl",
+    "DCC": "bot.irc",
+    "Db": "bot.obj",
+    "Default": "bot.obj",
+    "DoL": "bot.obj",
+    "Event": "bot.evt",
+    "Feed": "bot.rss",
+    "Fetcher": "bot.rss",
+    "Fleet": "bot.krn",
+    "Handler": "bot.hdl",
+    "IRC": "bot.irc",
+    "Kernel": "bot.krn",
+    "List": "bot.obj",
+    "Log": "bot.cmd",
+    "Object": "bot.obj",
+    "Parsed": "bot.prs",
+    "Repeater": "bot.clk",
+    "Rss": "bot.rss",
+    "Seen": "bot.rss",
+    "Timer": "bot.clk",
+    "Todo": "bot.cmd",
+    "UDP": "bot.udp",
+    "User": "bot.krn",
+    "Users": "bot.krn"
 }
