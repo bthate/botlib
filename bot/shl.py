@@ -5,7 +5,7 @@
 import atexit, argparse, logging, os, readline, sys, termios, time, _thread
 
 from .prs import Parsed
-from .obj import cdir
+from .utl.fil import cdir
 
 cmds = []
 logfile = ""

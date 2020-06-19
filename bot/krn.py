@@ -6,9 +6,8 @@ __version__ = 87
 
 import inspect, os, sys, threading, time, traceback, _thread
 
-from .evt import Event
-from .obj import Cfg, Db, Object, get_type
-from .flt import Fleet
+from .utl.gnr import get_type
+from .obj import Cfg, Db, Object
 from .hdl import Handler
 from .thr import Launcher
 from .utl import elapsed, get_exception

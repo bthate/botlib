@@ -4,14 +4,12 @@
 
 import datetime, importlib, json, os, random, sys, time, _thread
 
-from .cls import get_cls
-from .gnr import type
-from .tms import fntime
-from .utl import cdir, xdir
+from .utl.gnr import type
+from .utl.tms import fntime
 
 lock = _thread.allocate_lock()
 starttime = time.time()
-workdir = os.path.expanduser("~/.bot")
+workdir = ""
 
 class ENOCLASS(Exception): pass
 
@@ -108,7 +106,7 @@ class O:
     def values(self):
         return self.__dict__.values()
 
-class Obj(O):
+class Object(O):
 
     @locked(lock)
     def load(self, path, force=False):
@@ -373,7 +371,7 @@ def hook(fn):
         t = fn.split(os.sep)[0][1:]
     if not t:
         raise ENOFILE(fn)
-    o = get_cls(t)()
+    o = cls(t)()
     o.load(fn)
     return o
 
