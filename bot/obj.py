@@ -39,7 +39,7 @@ class ObjectEncoder(json.JSONEncoder):
             return o.items()
         if isinstance(o, list):
             return iter(o)
-        if type(o) in [str, True, False, int, float, None]:
+        if type(o) in [str, True, False, int, float]:
             return o
         return repr(o)
 
@@ -102,7 +102,6 @@ class O:
 
     def update(self, d):
         self.__dict__.update(d)
-        return self.__dict__
 
     def values(self):
         return self.__dict__.values()
@@ -113,23 +112,14 @@ class Object(O):
     def load(self, path, force=False):
         assert path
         assert workdir
-        print(self.__qualname__)
         lpath = os.path.join(workdir, "store", path)
         if not os.path.exists(lpath):
             cdir(lpath)
         self._path = path
         with open(lpath, "r") as ofile:
-            try:
-                val = json.load(ofile, cls=ObjectDecoder)
-            except json.decoder.JSONDecodeError as ex:
-                raise EJSON(str(ex) + " " + lpath)
-            if not val:
-                raise EJSON("failed %s" % lpath)
-            try:
-                del val.__dict__["stamp"]
-            except KeyError:
-                pass
-            self.update(val.__dict__)
+            val = json.load(ofile, cls=ObjectDecoder)
+            if val:
+                self.update(val)
         return self
 
     @locked(lock)
@@ -139,8 +129,9 @@ class Object(O):
             self._path = os.path.join(get_type(self), stime) + "." + str(random.randint(1, 100000))
         opath = os.path.join(workdir, "store", self._path)
         cdir(opath)
+        print("save %s" % self._path)
         with open(opath, "w") as ofile:
-            json.dump(self, ofile, cls=ObjectEncoder, indent=4, skipkeys=True,sort_keys=True)
+            json.dump(stamp(self), ofile, cls=ObjectEncoder, indent=4, skipkeys=True,sort_keys=True)
         return self._path
 
 
@@ -270,17 +261,6 @@ class Db(Object):
                 return s[-1][-1]
         return None
 
-def cls(name):
-    try:
-        modname, clsname = name.rsplit(".", 1)
-    except:
-        raise ENOCLASS(name)
-    if modname in sys.modules:
-        mod = sys.modules[modname]
-    else:
-        mod = importlib.import_module(modname)
-    return getattr(mod, clsname)
-
 def fntime(daystr):
     daystr = daystr.replace("_", ":")
     datestr = " ".join(daystr.split(os.sep)[-2:])
@@ -322,7 +302,7 @@ def hook(fn):
         t = fn.split(os.sep)[0][1:]
     if not t:
         raise ENOFILE(fn)
-    o = cls(t)()
+    o = get_cls(t)()
     o.load(fn)
     return o
 
@@ -370,6 +350,12 @@ def stamp(o):
         else:
             continue
     o.__dict__["stamp"] = o._path
+    return o
+
+def strip(o):
+    for k in o:
+       if not k:
+          del o[k]
     return o
 
 def xdir(o, skip=""):

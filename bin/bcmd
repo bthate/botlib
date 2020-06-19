@@ -11,7 +11,7 @@ from bot.krn import k
 
 def main():
     setwd("bot")
-    cfg = parse_cli("bcmd")
+    cfg = parse_cli("bot")
     k.cmd(cfg.txt)
 
 execute(main)

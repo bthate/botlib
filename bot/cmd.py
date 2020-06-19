@@ -8,7 +8,7 @@ import bot.tbl, os, time
 
 from .fil import cdir
 from .gnr import format, get_type
-from .obj import ENOCLASS, Cfg, Db, Object, cls, last
+from .obj import ENOCLASS, Cfg, Db, Object, get_cls, last
 from .krn import k
 from .tms import elapsed, fntime
 
@@ -61,7 +61,7 @@ def ed(event):
     l = db.last(cn)
     if not l:
         try:
-            c = cls(cn)
+            c = get_cls(cn)
             l = c()
             event.reply("created %s" % cn)
         except ENOCLASS:

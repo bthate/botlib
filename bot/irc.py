@@ -300,11 +300,12 @@ class IRC(Handler):
     def say(self, channel, txt, mtype="chat"):
         self._outqueue.put_nowait((channel, txt, mtype))
 
-    def start(self, cfg=None):
+    def start(self, cfg={}):
         if cfg:
             self.cfg.update(cfg)
         else:
             last(self.cfg)
+        print(self.cfg)
         assert self.cfg.channel
         assert self.cfg.server
         self.channels.append(self.cfg.channel)
