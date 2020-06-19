@@ -45,9 +45,12 @@ class Parsed(Default):
             nr += 1
             if not token.txt:
                 continue
-            self.gets.update(Getter(token.txt))
-            self.sets.update(Setter(token.txt))            
-            if nr and "=" not in token.txt:
-                self.args.append(token.txt)
-        self.rest = " ".join(self.args)
+            if self.gets.update(Getter(token.txt)):
+                continue
+            if self.sets.update(Setter(token.txt)):
+                continue            
+            self.args.append(token.txt)
+        self.txt =  " ".join(self.args)
+        self.args = self.args[1:]
+        self.rest = " ".join(self.args[1:])
         self.cmd = tokens[0].txt

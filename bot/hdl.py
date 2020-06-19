@@ -5,7 +5,6 @@
 import importlib, queue
 
 from .itr import find_cmds
-from .prs import Parsed
 from .obj import Object
 from .tbl import names
 from .thr import launch
@@ -21,11 +20,6 @@ class ETYPE(Exception):
 
     pass
 
-class Event(Parsed):
-
-    pass
-
-        
 class Handler(Object):
  
     def __init__(self):
@@ -40,15 +34,13 @@ class Handler(Object):
         event.func = self.get_cmd(event.cmd)
         if event.func:
             event.func(event)
-            event.show()
-            
+        event.show()
+                    
     def get_cmd(self, cmd, dft=None):
         func = self.cmds.get(cmd, None)
-        print(func)
         if not func:
             name = names.get(cmd, None)
             if name:
-                print("autoload %s" % name) 
                 self.load_mod(name)
                 func = self.cmds.get(cmd, dft)
         return func
@@ -58,8 +50,8 @@ class Handler(Object):
             event = self.queue.get()
             if event is None:
                 break
-            print(event)
-            launch(self.dispatch, event)
+            thr = launch(self.dispatch, event)
+            event.thrs.append(thr)
 
     def load_mod(self, name):
         self.table[name] = mod = direct(name)

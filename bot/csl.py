@@ -4,9 +4,9 @@
 
 import sys, threading
 
-from .krn import k
+from .krn import Event, k
 from .obj import Cfg, Object
-from .hdl import Event, Handler
+from .hdl import Handler
 from .shl import setcompleter
 from .tbl import names
 from .thr import launch
@@ -30,9 +30,7 @@ class Console(Object):
             event.orig = repr(self)
             if not event:
                 break
-            print(event)
-            k.put(event)
-        print("stop console")
+            k.dispatch(event)
 
     def poll(self):
         e = Event()

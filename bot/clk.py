@@ -4,9 +4,9 @@
 
 import threading, time
 
+from .gnr import get_name
 from .obj import Object
 from .thr import launch
-from .utl import get_name
 
 class Timer(Object):
 

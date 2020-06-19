@@ -7,11 +7,11 @@ __version__ = 87
 import inspect, os, sys, threading, time, traceback, _thread
 
 from .gnr import get_type
+from .prs import Parsed
 from .tms import elapsed
 from .trc import get_exception
 from .obj import Cfg, Db, Object
-from .hdl import Event, Handler
-from .usr import Users
+from .hdl import Handler
 
 starttime = time.time()
 
@@ -19,9 +19,66 @@ class ENOKERNEL(Exception):
 
     pass
 
+class ENOUSER(Exception):
+
+    pass
+
 class Cfg(Cfg):
 
     pass
+
+class Event(Parsed):
+
+    def __init__(self):
+        super().__init__()
+        self.result = []
+        self.thrs = []
+
+    def reply(self, txt):
+        if not self.result:
+            self.result = []
+        self.result.append(txt)
+        
+    def show(self):
+        for txt in self.result:
+            k.fleet.say(self.orig, self.channel, txt)
+
+    def wait(self):
+        for thr in self.thrs:
+            thr.join()
+
+class Kernel(Handler):
+
+    def __init__(self):
+        super().__init__()
+        self.cfg = Cfg()
+        self.db = Db()
+        self.fleet = Fleet()
+        self.users = Users()
+        self.fleet.add(self)
+        
+    def cmd(self, txt):
+        if not txt:
+            return
+        e = Event()
+        e.parse(txt)
+        e.orig = repr(self)
+        self.dispatch(e)
+        return e
+
+    def say(self, channel, txt):
+        print(txt)
+
+    def start(self, cfg={}):
+        super().start()
+        self.cfg.update(cfg)
+
+    def stop(self):
+        self.queue.put(None)
+
+    def wait(self):
+        while 1:
+            time.sleep(1.0)
 
 class Fleet(Object):
 
@@ -69,40 +126,75 @@ class Fleet(Object):
             if repr(o) == orig:
                 o.say(channel, str(txt))
 
-class Kernel(Handler):
+class User(Object):
 
     def __init__(self):
         super().__init__()
-        self.cfg = Cfg()
-        self.db = Db()
-        self.fleet = Fleet()
-        self.users = Users()
-        self.fleet.add(self)
-        
-    def cmd(self, txt):
-        if not txt:
-            return
-        e = Event()
-        e.parse(txt)
-        e.orig = repr(self)
-        self.dispatch(e)
-        return e
+        self.user = ""
+        self.perms = []
 
-    def say(self, channel, txt):
-        print(txt)
+class Users(Db):
 
-    def start(self, cfg={}):
-        super().start()
-        self.cfg.update(cfg)
+    userhosts = Object()
 
-    def stop(self):
-        self.queue.put(None)
+    def allowed(self, origin, perm):
+        perm = perm.upper()
+        origin = self.userhosts.get(origin, origin)
+        user = self.get_user(origin)
+        if user:
+            if perm in user.perms:
+                return True
+        return False
 
-    def wait(self):
-        while 1:
-            time.sleep(1.0)
+    def delete(self, origin, perm):
+        for user in self.get_users(origin):
+            try:
+                user.perms.remove(perm)
+                user.save()
+                return True
+            except ValueError:
+                pass
+
+    def get_users(self, origin=""):
+        s = {"user": origin}
+        return self.all("bot.usr.User", s)
+
+    def get_user(self, origin):
+        u =  list(self.get_users(origin))
+        if u:
+            return u[-1]
+ 
+    def meet(self, origin, perms=None):
+        user = self.get_user(origin)
+        if user:
+            return user
+        user = User()
+        user.user = origin
+        user.perms = ["USER", ]
+        user.save()
+        return user
+
+    def oper(self, origin):
+        user = self.get_user(origin)
+        if user:
+            return user
+        user = User()
+        user.user = origin
+        user.perms = ["OPER", "USER"]
+        user.save()
+        return user
+
+    def perm(self, origin, permission):
+        user = self.get_user(origin)
+        if not user:
+            raise ENOUSER(origin)
+        if permission.upper() not in user.perms:
+            user.perms.append(permission.upper())
+            user.save()
+        return user
 
 k = Kernel()
 
 def get_kernel():
     return k
+

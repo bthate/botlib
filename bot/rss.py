@@ -11,7 +11,7 @@ from urllib.request import Request, urlopen
 from .obj import Cfg, Db, Default, Object
 from .clk import Repeater
 from .krn import get_kernel
-from .utl import to_time, day
+from .tms import to_time, day
 
 try:
     import feedparser

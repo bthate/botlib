@@ -101,8 +101,9 @@ class O:
         self.__dict__[k] = v
 
     def update(self, d):
-        return self.__dict__.update(d)
-        
+        self.__dict__.update(d)
+        return self.__dict__
+
     def values(self):
         return self.__dict__.values()
 
