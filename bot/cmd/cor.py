@@ -101,6 +101,7 @@ def find(event):
         event.reply("no %s found." % otype)
 
 def fleet(event):
+    print(event)
     try:
         index = int(event.args[0])
         event.reply(str(k.fleet.bots[index]))

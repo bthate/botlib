@@ -11,8 +11,9 @@ class Event(Parsed):
 
     def __init__(self):
         super().__init__()
-        self.type = "event"
+        self.channel = ""
         self.result = []
+        self.txt = ""
 
     def reply(self, txt):
         self.result.append(txt)

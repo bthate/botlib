@@ -9,17 +9,27 @@ __version__ = 1
 
 import os, sys ; sys.path.insert(0, os.getcwd())
 
-from bot.spc import Object, direct, execute, k, find_names, walk
+from bot.obj import Object
+from bot.krn import k
+from bot.hdl import find_names, find_types, walk
+from bot.shl import execute
+from bot.utl import direct
 
 ## main
 
 def main():
     mods = walk("bot")
     names = Object()
+    types = Object()
     for mod in mods.values():
         nms = find_names(mod)
         if nms:
             names.update(nms)
-    print("names = %s" % names.json())
-        
+    print("cmds = %s" % names.json())
+    for mod in mods.values():
+        tps = find_types(mod)
+        if tps:
+            types.update(tps)
+    print("types = %s" % types.json())
+ 
 execute(main)

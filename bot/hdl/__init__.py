@@ -118,13 +118,12 @@ def find_shorts(mn):
                 shorts[o.__name__.lower()] = t.lower()
     return shorts
 
-def find_types(mn):
+def find_types(mod):
     res = []
-    for mod in find_modules(mn):
-        for key, o in inspect.getmembers(mod, inspect.isclass):
-            if issubclass(o, Object):
-                t = "%s.%s" % (o.__module__, o.__name__)
-                res.append(t)
+    for key, o in inspect.getmembers(mod, inspect.isclass):
+        if issubclass(o, Object):
+            t = "%s.%s" % (o.__module__, o.__name__)
+            res.append(t)
     return res
 
 def resources(name):

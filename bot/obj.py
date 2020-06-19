@@ -4,7 +4,10 @@
 
 import datetime, importlib, json, os, random, sys, time, _thread
 
-from .utl import cdir, get_type, names, hook, hooked
+from .cls import get_cls
+from .gnr import type
+from .tms import fntime
+from .utl import cdir, xdir
 
 lock = _thread.allocate_lock()
 starttime = time.time()
@@ -38,7 +41,7 @@ class ObjectEncoder(json.JSONEncoder):
             return o.items()
         if isinstance(o, list):
             return iter(o)
-        if type(o) in [str, True, False, int, float]:
+        if type(o) in [str, True, False, int, float, None]:
             return o
         return repr(o)
 
@@ -51,11 +54,9 @@ class O:
 
     __slots__ = ("__dict__", "_path")
 
-    def __init__(self, *args, **kwargs):
-        super().__init__()
+    def __init__(self):
         stime = str(datetime.datetime.now()).replace(" ", os.sep)
-        self._path = os.path.join(get_type(self), stime)
-        return self
+        self._path = os.path.join(type(self), stime)
 
     def __delitem__(self, k):
         del self.__dict__[k]
@@ -64,7 +65,7 @@ class O:
         return self.__dict__[k]
 
     def __iter__(self):
-        return iter(self.keys())
+        return iter(self.__dict__)
 
     def __len__(self):
         return len(self.__dict__)
@@ -76,20 +77,27 @@ class O:
         self.__dict__[k] = v
         return self.__dict__[k]
 
+    def __str__(self):
+        return self.json()
+
+    def json(self):
+        print(self._path)
+        return json.dumps(self, cls=ObjectEncoder, indent=4, sort_keys=True)
+
     def get(self, k, d=None):
         return self.__dict__.get(k, d)
 
     def items(self):
         return self.__dict__.items()
 
-    def json(self):
-        return json.dumps(self, cls=ObjectEncoder, indent=4, sort_keys=True)
-
     def keys(self):
         return self.__dict__.keys()
 
     def merge(self, o, vals=["",]):
         return self.update(strip(o, vals))
+
+    def register(self, k, v):
+        self.__dict__[k] = v
 
     def set(self, k, v):
         self.__dict__[k] = v
@@ -100,75 +108,7 @@ class O:
     def values(self):
         return self.__dict__.values()
 
-class Object(O):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__()
-        if args:
-            try:
-                self.update(args[0])
-            except TypeError:
-                self.update(vars(args[0]))
-        if kwargs:
-            self.update(kwargs)
-
-    def __str__(self):
-        return self.json()
-
-    def edit(self, setter, skip=False):
-        try:
-            setter = vars(setter)
-        except:
-            pass
-        if not setter:
-            setter = {}
-        count = 0
-        for key, value in setter.items():
-            if skip and value == "":
-                continue
-            count += 1
-            if value in ["True", "true"]:
-                self[key] = True
-            elif value in ["False", "false"]:
-                self[key] = False
-            else:
-                self[key] = value
-        return count
-
-    def find(self, val):
-        for item in self.values():
-            if val in item:
-                return True
-        return False
-
-    def format(self, keys=None):
-        if keys is None:
-            keys = vars(self).keys()
-        res = []
-        txt = ""
-        for key in keys:
-            if key == "stamp":
-                continue
-            val = self.get(key, None)
-            if not val:
-                continue
-            val = str(val)
-            if key == "text":
-                val = val.replace("\\n", "\n")
-            res.append((key, val))
-        for key, val in res:
-            txt += "%s=%s%s" % (key, val.strip(), " ")
-        return txt.strip()
-
-    def last(self, strip=False):
-        db = Db()
-        path, l = db.last_fn(str(get_type(self)))
-        if l:
-            if strip:
-                self.update(strip(l))
-            else:
-                self.update(l)
-            self._path = path
+class Obj(O):
 
     @locked(lock)
     def load(self, path, force=False):
@@ -192,9 +132,6 @@ class Object(O):
             self.update(val.__dict__)
         return self
 
-    def register(self, k, v):
-        self[k] = v
-
     @locked(lock)
     def save(self, stime=None):
         assert workdir
@@ -206,33 +143,100 @@ class Object(O):
             json.dump(stamp(self), ofile, cls=ObjectEncoder, indent=4, sort_keys=True)
         return self._path
 
-    def search(self, match=None):
-        res = False
-        if match == None:
-            return res
-        for key, value in match.items():
-            val = self.get(key, None)
-            if val:
-                if not value:
-                    res = True
-                    continue
-                if value in str(val):
-                    res = True
-                    continue
-                else:
-                    res = False
-                    break
+
+def edit(self, setter, skip=False):
+    try:
+        setter = vars(setter)
+    except:
+        pass
+    if not setter:
+        setter = {}
+    count = 0
+    for key, value in setter.items():
+        if skip and value == "":
+            continue
+        count += 1
+        if value in ["True", "true"]:
+            self[key] = True
+        elif value in ["False", "false"]:
+            self[key] = False
+        else:
+            self[key] = value
+    return count
+
+def find(self, val):
+    for item in self.values():
+        if val in item:
+            return True
+    return False
+
+def format(self, keys=None):
+    if keys is None:
+        keys = vars(self).keys()
+    res = []
+    txt = ""
+    for key in keys:
+        if key == "stamp":
+            continue
+        val = self.get(key, None)
+        if not val:
+            continue
+        val = str(val)
+        if key == "text":
+            val = val.replace("\\n", "\n")
+        res.append((key, val))
+    for key, val in res:
+        txt += "%s=%s%s" % (key, val.strip(), " ")
+    return txt.strip()
+
+def last(self, strip=False):
+    db = Db()
+    path, l = db.last_fn(str(get_type(self)))
+    if l:
+        if strip:
+            self.update(strip(l))
+        else:
+            self.update(l)
+        self._path = path
+
+def search(self, match=None):
+    res = False
+    if match == None:
+        return res
+    for key, value in match.items():
+        val = self.get(key, None)
+        if val:
+            if not value:
+                res = True
+                continue
+            if value in str(val):
+                res = True
+                continue
             else:
                 res = False
                 break
-        return res
+        else:
+            res = False
+            break
+    return res
 
 class Default(Object):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+        if args:
+            try:
+                self.update(args[0])
+            except TypeError:
+                self.update(vars(args[0]))
+        if kwargs:
+            self.update(kwargs)
 
     def __getattr__(self, k):
         if k not in self:
             self.__dict__.__setitem__(k, "")
         return self.__dict__[k]
+
 
 class Cfg(Default):
 
@@ -352,14 +356,55 @@ class Db(Object):
                 return s[-1][-1]
         return None
 
-def stamp(o):
-    for k in dir(o):
-        oo = getattr(o, k, None)
-        if isinstance(oo, Object):
-            stamp(oo)
-            oo.__dict__["stamp"] = oo._path
-            o[k] = oo
-        else:
-            continue
-    o.__dict__["stamp"] = o._path
+def cls(name):
+    try:
+        modname, clsname = name.rsplit(".", 1)
+    except:
+        raise ENOCLASS(name)
+    if modname in sys.modules:
+        mod = sys.modules[modname]
+    else:
+        mod = importlib.import_module(modname)
+    return getattr(mod, clsname)
+
+def hook(fn):
+    t = fn.split(os.sep)[0]
+    if not t:
+        t = fn.split(os.sep)[0][1:]
+    if not t:
+        raise ENOFILE(fn)
+    o = get_cls(t)()
+    o.load(fn)
     return o
+
+def hooked(d):
+    if "stamp" in d:
+        t = d["stamp"].split(os.sep)[0]
+        o = get_cls(t)()
+        o.update(d)
+        return o
+
+def names(name, delta=None):
+    if not name:
+        return []
+    p = os.path.join(workdir, "store", name) + os.sep
+    res = []
+    now = time.time()
+    if delta:
+        past = now + delta
+    for rootdir, dirs, files in os.walk(p, topdown=False):
+        for fn in files:
+            fnn = os.path.join(rootdir, fn).split(os.path.join(workdir, "store"))[-1]
+            if delta:
+                if fntime(fnn) < past:
+                    continue
+            res.append(os.sep.join(fnn.split(os.sep)[1:]))
+    return sorted(res, key=fntime)
+
+def xdir(o, skip=""):
+    res = []
+    for k in dir(o):
+        if skip and skip in k:
+            continue
+        res.append(k)
+    return res
