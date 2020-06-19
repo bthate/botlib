@@ -2,7 +2,7 @@
 #
 #
 
-from .obj import O, Object, Default
+from ..obj import O, Object, Default
 
 class Token(O):
 

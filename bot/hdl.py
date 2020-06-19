@@ -4,9 +4,11 @@
 
 import importlib, inspect, os, pkg_resources, queue
 
+from .utl.gnr import get_type
+from .utl.prs import Parsed
+from .utl.trc import get_exception
 from .obj import Default, Object
 from .tbl import names
-from .utl import get_exception, direct, get_type
 
 class NOTIMPLEMENTED(Exception):
 
@@ -15,6 +17,11 @@ class NOTIMPLEMENTED(Exception):
 class ETYPE(Exception):
 
     pass
+
+class Event(Parsed):
+
+    pass
+        
 
 class Handler(Object):
  
@@ -64,109 +71,5 @@ class Handler(Object):
     def stop(self):
         self.queue.put(None)
 
-def find_names(mod):
-    names = {}
-    for key, o in inspect.getmembers(mod, inspect.isfunction):
-        if "event" in o.__code__.co_varnames:
-            if o.__code__.co_argcount == 1:
-                names[key] = o.__module__
-    return names
-
-def find_allnames(name):
-    mns = Object()
-    pkg = direct(name)
-    for mod in find_modules(pkg):
-        mns.update(find_names(mod))
-    return mns
-
-def find_callbacks(mod):
-    cbs = {}
-    for key, o in inspect.getmembers(mod, inspect.isfunction):
-       if "event" in o.__code__.co_varnames:
-            if o.__code__.co_argcount == 2:
-                cbs[key] = o
-    return cbs
-
-def find_cmds(mod):
-    cmds = {}
-    for key, o in inspect.getmembers(mod, inspect.isfunction):
-       if "event" in o.__code__.co_varnames:
-            if o.__code__.co_argcount == 1:
-                cmds[key] = o
-    return cmds
-
-def find_modules(pkgs, filter=None):
-    mods = []
-    for pkg in pkgs.split(","):
-        if filter and filter not in mn:
-            continue
-        try:
-            p = direct(pkg)
-        except ModuleNotFoundError:
-            continue
-        for key, m in inspect.getmembers(p, inspect.ismodule):
-            if m not in mods:
-                mods.append(m)
-    return mods
-
-def find_shorts(mn):
-    shorts = {}
-    for mod in find_modules(mn):
-        for key, o in inspect.getmembers(mod, inspect.isclass):
-            if issubclass(o, Object) and key == o.__name__.lower():
-                t = "%s.%s" % (o.__module__, o.__name__)
-                shorts[o.__name__.lower()] = t.lower()
-    return shorts
-
-def find_types(mod):
-    res = []
-    for key, o in inspect.getmembers(mod, inspect.isclass):
-        if issubclass(o, Object):
-            t = "%s.%s" % (o.__module__, o.__name__)
-            res.append(t)
-    return res
-
-def resources(name):
-    resources = {}
-    for x in pkg_resources.resource_listdir(name, ""):
-        if x.startswith("_") or not x.endswith(".py"):
-            continue
-        mmn = "%s.%s" % (mn, x[:-3])
-        resources[mmn] = direct(mmn)
-    return mmn
-
-def walk(name):
-    mods = {}
-    mod = direct(name)
-    for pkg in mod.__path__:
-        for x in os.listdir(pkg):
-            if x.startswith("_") or not x.endswith(".py"):
-                continue
-            mmn = "%s.%s" % (mod.__name__, x[:-3])
-            mods[mmn] = direct(mmn)
-    return mods
-# BOTLIB - the bot library !
-#
-#
-
-import importlib, inspect, os, pkg_resources, queue
-
-from .prs import Parsed
-from .obj import Default, Object
-
-class Event(Parsed):
-
-    def __init__(self):
-        super().__init__()
-        self.channel = ""
-        self.result = []
-        self.txt = ""
-
-    def reply(self, txt):
-        self.result.append(txt)
- 
-    def show(self):
-        from .krn import k
-        for txt in self.result:
-            k.fleet.say(self.orig, self.channel, txt)
-
+def direct(self, name):
+    return importlib.import_module(name)

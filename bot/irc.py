@@ -4,12 +4,11 @@
 
 import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 
-from .evt import Event
-from .obj import Cfg, Object, locked
+from .utl.thr import launch
+from .utl.trc import get_exception
+from .obj import Cfg, Object, last, locked
 from .krn import k
-from .thr import launch
-from .hdl import Handler
-from .utl import get_exception
+from .hdl import Event, Handler
 
 saylock = _thread.allocate_lock()
 
@@ -301,7 +300,7 @@ class IRC(Handler):
         if cfg:
             self.cfg.update(cfg)
         else:
-            self.cfg.last()
+            last(self.cfg)
         assert self.cfg.channel
         assert self.cfg.server
         self.channels.append(self.cfg.channel)

@@ -4,7 +4,7 @@
 
 import datetime, importlib, json, os, random, sys, time, _thread
 
-from .utl.gnr import type
+from .utl.gnr import get_type
 from .utl.tms import fntime
 
 lock = _thread.allocate_lock()
@@ -54,7 +54,7 @@ class O:
 
     def __init__(self):
         stime = str(datetime.datetime.now()).replace(" ", os.sep)
-        self._path = os.path.join(type(self), stime)
+        self._path = os.path.join(get_type(self), stime)
 
     def __delitem__(self, k):
         del self.__dict__[k]
@@ -141,82 +141,6 @@ class Object(O):
             json.dump(stamp(self), ofile, cls=ObjectEncoder, indent=4, sort_keys=True)
         return self._path
 
-
-def edit(self, setter, skip=False):
-    try:
-        setter = vars(setter)
-    except:
-        pass
-    if not setter:
-        setter = {}
-    count = 0
-    for key, value in setter.items():
-        if skip and value == "":
-            continue
-        count += 1
-        if value in ["True", "true"]:
-            self[key] = True
-        elif value in ["False", "false"]:
-            self[key] = False
-        else:
-            self[key] = value
-    return count
-
-def find(self, val):
-    for item in self.values():
-        if val in item:
-            return True
-    return False
-
-def format(self, keys=None):
-    if keys is None:
-        keys = vars(self).keys()
-    res = []
-    txt = ""
-    for key in keys:
-        if key == "stamp":
-            continue
-        val = self.get(key, None)
-        if not val:
-            continue
-        val = str(val)
-        if key == "text":
-            val = val.replace("\\n", "\n")
-        res.append((key, val))
-    for key, val in res:
-        txt += "%s=%s%s" % (key, val.strip(), " ")
-    return txt.strip()
-
-def last(self, strip=False):
-    db = Db()
-    path, l = db.last_fn(str(get_type(self)))
-    if l:
-        if strip:
-            self.update(strip(l))
-        else:
-            self.update(l)
-        self._path = path
-
-def search(self, match=None):
-    res = False
-    if match == None:
-        return res
-    for key, value in match.items():
-        val = self.get(key, None)
-        if val:
-            if not value:
-                res = True
-                continue
-            if value in str(val):
-                res = True
-                continue
-            else:
-                res = False
-                break
-        else:
-            res = False
-            break
-    return res
 
 class Default(Object):
 
@@ -381,6 +305,16 @@ def hooked(d):
         o = get_cls(t)()
         o.update(d)
         return o
+
+def last(o, strip=False):
+    db = Db()
+    path, l = db.last_fn(str(get_type(o)))
+    if l:
+        if strip:
+            o.update(strip(l))
+        else:
+            o.update(l)
+        o._path = path
 
 def names(name, delta=None):
     if not name:

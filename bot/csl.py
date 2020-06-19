@@ -2,21 +2,14 @@
 #
 #
 
-__version__ = 1
-
-## imports
-
 import sys, threading
 
-from .evt import Event
+from .utl.shl import setcompleter
+from .utl.thr import launch
 from .krn import k
 from .obj import Cfg, Object
-from .hdl import Handler
-from .shl import setcompleter
+from .hdl import Event, Handler
 from .tbl import names
-from .thr import launch
-
-## classes
 
 class Cfg(Cfg):
 
