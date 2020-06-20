@@ -27,13 +27,12 @@ def cfg(event):
     from .irc import Cfg
     c = Cfg()
     last(c)
-    if len(event.args) == 3:
-        c.server, c.channel, c.nick = event.args
-    elif len(event.args) == 2:
-        c.server, c.channel = event.args
-    elif len(event.args) == 1:
-        c.server = event.args[0]
-    save(c)
+    if not event.args and not event.sets:
+        event.reply(format(c))
+        return
+    if event.sets:
+        c.update(event.sets)
+        save(c)
     event.reply(format(c))
         
 def cmds(event):

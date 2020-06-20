@@ -7,6 +7,7 @@ from .obj import Object, Default
 class Token(Object):
 
     def __init__(self, txt):
+        super().__init__()
         self.txt = txt
 
 class Getter(Object):
