@@ -82,7 +82,7 @@ class Handler(Object):
             if not event.orig:
                 event.orig = repr(self)
             event.speed = self.speed
-            thr = launch(self.dispatch, event)
+            thr = launch(self.dispatch, event, name=event.txt)
             event.thrs.append(thr)
             event.started.set()
 

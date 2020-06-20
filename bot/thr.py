@@ -5,7 +5,7 @@
 import queue, threading, time, types
 
 def __dir__():
-    return ("Launcher", "Thr", "get_name", "launch", "ps")
+    return ("Launcher", "Thr", "get_name", "launch")
 
 class Thr(threading.Thread):
 

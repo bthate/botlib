@@ -47,6 +47,7 @@ class Test_Tinder(unittest.TestCase):
             thrs.append(launch(tests, k))
         for t in thrs:
             t.join()
+        
 
 def consume(elems):
     fixed = []
@@ -60,6 +61,7 @@ def consume(elems):
             elems.remove(f)
         except ValueError:
             continue
+    k.ready.set()
     return res
     
 def tests(b):
@@ -68,12 +70,10 @@ def tests(b):
     random.shuffle(keys)
     for cmd in keys:
         events.extend(do_cmd(cmd))
-    k.ready.set()
+    consume(events)
 
 def do_cmd(cmd):
-    exs = param.get(cmd, [])
-    if not exs:
-        exs = ["test1",]
+    exs = param.get(cmd, ["aap", "noot", "mies"])
     e = list(exs)
     random.shuffle(e)
     events = []
@@ -81,6 +81,6 @@ def do_cmd(cmd):
         txt = cmd + " " + ex
         e = Event()
         e.txt = txt
-        k.dispatch(e)
+        k.put(e)
         events.append(e)
     return events
