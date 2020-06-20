@@ -31,6 +31,10 @@ class Event(Parsed):
             self.result = []
         self.result.append(txt)
 
+    def show(self):
+        for txt in self.result:
+            print(txt)
+
     def wait(self):
         self.started.wait()
         res = []
@@ -45,6 +49,7 @@ class Handler(Object):
         self.cmds = Object()
         self.queue = queue.Queue()
         self.speed  = "fast"
+        self.stopped = False
 
     def cmd(self, txt):
         if not txt:
@@ -64,6 +69,8 @@ class Handler(Object):
         event.func = self.get_cmd(event.cmd)
         if event.func:
             event.func(event)
+        event.show()
+        event.started.set()
                     
     def get_cmd(self, cmd, dft=None):
         func = self.cmds.get(cmd, None)
@@ -75,33 +82,21 @@ class Handler(Object):
         return func
 
     def handler(self):
-        while 1:
+        while not self.stopped:
             event = self.queue.get()
-            if event is None:
-                break
             if not event.orig:
                 event.orig = repr(self)
             event.speed = self.speed
             thr = launch(self.dispatch, event, name=event.txt)
             event.thrs.append(thr)
-            event.started.set()
 
     def load_mod(self, name):
         mod = direct(name)
         self.cmds.update(find_cmds(mod))
         return mod
 
-    def put(self, event):
-        self.queue.put(event)
-
-    def register(self, cmd, func):
-        self.cmds[cmd] = func
-
     def scan(self, mod):
         self.cmds.update(find_cmds(mod))
 
     def start(self):
         launch(self.handler)
-            
-    def stop(self):
-        self.queue.put(None)

@@ -18,7 +18,7 @@ class UDP(Object):
 
     def __init__(self):
         super().__init__()
-        self._stopped = False
+        self.stopped = False
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
@@ -35,9 +35,9 @@ class UDP(Object):
             self._sock.bind((self.cfg.host, self.cfg.port))
         except socket.gaierror as ex:
             return
-        while not self._stopped:
+        while not self.stopped:
             (txt, addr) = self._sock.recvfrom(64000)
-            if self._stopped:
+            if self.stopped:
                 break
             data = str(txt.rstrip(), "utf-8")
             if not data:
@@ -45,7 +45,7 @@ class UDP(Object):
             self.output(data, addr)
 
     def exit(self):
-        self._stopped = True
+        self.stopped = True
         self._sock.settimeout(0.01)
         self._sock.sendto(bytes("exit", "utf-8"), (self.cfg.host, self.cfg.port))
 

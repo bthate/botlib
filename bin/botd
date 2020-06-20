@@ -4,20 +4,17 @@
 #
 
 from bot.krn import k
-from bot.shl import daemon, execute, parse_cli, root
+from bot.shl import daemon, execute, parse_cli, root, setwd
 from bot.rss import Fetcher
 from bot.irc import IRC
 
 ## main
 
 def main():
-    cfg = parse_cli("botd")
-    if root():
-        k.cmds.register("hup", hup)
-        k.cmds.register("install", install)
-        k.cmds.register("remove", remove)
-    else:
-        daemon()
+    setwd("bot")
+    if not root():
+        daemon()        
+    cfg = parse_cli("bot")
     i = IRC()
     i.start()
     f = Fetcher()

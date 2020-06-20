@@ -62,7 +62,7 @@ def hup(event):
     
 def install(event):
     f = open("/etc/systemd/system/botd.service", "w")
-    f.write(txt % (k.cfg.name, k.cfg.name))
+    f.write(txt)
     f.close()
     os.popen("systemctl enable botd")
     os.popen("systemctl daemon-reload")
@@ -83,6 +83,7 @@ def main():
         k.cmds.register("install", install)
         k.cmds.register("remove", remove)
     k.cmds.register("ed", ed)
-    k.cmd(cfg.txt)
+    if cfg.txt:
+        k.cmd(cfg.txt)
 
 execute(main)

@@ -50,7 +50,8 @@ class Kernel(Handler):
         self.queue.put(None)
 
     def wait(self):
-        self.ready.wait()
+        while not self.stopped:
+            time.sleep(1.0)
 
 class Fleet(Object):
 

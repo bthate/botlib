@@ -225,7 +225,7 @@ class IRC(Handler):
             e = self.poll()
             if not e:
                 break
-            self.put(e)
+            self.queue.put(e)
 
     def joinall(self):
         for channel in self.channels:
@@ -291,7 +291,7 @@ class IRC(Handler):
             e.type = "ERROR"
             e.error = str(ex) 
             e.trc = get_exception()
-            self.put(e)
+            self.queue.put(e)
         self.state.last = time.time()
         self.state.nrsend += 1
 
@@ -399,7 +399,7 @@ class DCC(Handler):
                 e = self.poll()
             except EOFError:
                 break
-            k.put(e)
+            k.queue.put(e)
 
     def poll(self):
         self._connected.wait()

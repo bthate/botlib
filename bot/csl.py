@@ -15,11 +15,6 @@ class Cfg(Cfg):
 
     pass
 
-class Event(Event):
-
-    def reply(self, txt):
-        print(txt)
-
 class Console(Object):
 
     def announce(self, txt):
@@ -31,7 +26,7 @@ class Console(Object):
             event.orig = repr(self)
             if not event:
                 break
-            k.put(event)
+            k.queue.put(event)
             event.wait()
 
     def poll(self):
