@@ -21,6 +21,8 @@ param.meet = ["test@shell", "bart"]
 param.rss = ["https://www.reddit.com/r/python/.rss", ""]
 param.todo = ["test4!", ""]
 
+events = []
+ignore = ["ps"]
 nrtimes = 1
 
 class Event(Event):
@@ -44,10 +46,8 @@ class Test_Tinder(unittest.TestCase):
     def test_thrs(self):
         thrs = []
         for x in range(nrtimes):
-            thrs.append(launch(tests, k))
-        for t in thrs:
-            t.join()
-        
+            launch(tests, k)
+        consume(events)
 
 def consume(elems):
     fixed = []
@@ -65,12 +65,12 @@ def consume(elems):
     return res
     
 def tests(b):
-    events = []
     keys = list(names)
     random.shuffle(keys)
     for cmd in keys:
+        if cmd in ignore:
+            continue
         events.extend(do_cmd(cmd))
-    consume(events)
 
 def do_cmd(cmd):
     exs = param.get(cmd, ["aap", "noot", "mies"])

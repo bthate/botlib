@@ -15,11 +15,12 @@ class Cfg(Cfg):
 
     pass
 
-class Console(Object):
+class Event(Event):
 
-    def  __init__(self):
-        super().__init__()
-        k.fleet.add(self)
+    def reply(self, txt):
+        print(txt)
+
+class Console(Object):
 
     def announce(self, txt):
         self.raw(txt)
@@ -30,7 +31,8 @@ class Console(Object):
             event.orig = repr(self)
             if not event:
                 break
-            k.dispatch(event)
+            k.put(event)
+            event.wait()
 
     def poll(self):
         e = Event()
