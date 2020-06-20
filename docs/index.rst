@@ -1,5 +1,5 @@
-BOTLIB
-======
+B O T L I B
+###########
 
 Welcome to BOTLIB, the bot library ! see https://pypi.org/project/botlib/ , it's public domain ;]
 
@@ -12,12 +12,8 @@ using and programming BOTLIB till the point you start programming your own bots 
 
 have fun coding, source is :ref:`here <source>` ;]
 
-|
-
 I N S T A L L
 =============
-
-|
 
 you can download with pip3 and install globally:
 
@@ -38,32 +34,26 @@ the systemd daemon. You can do this by running the following:
 
 ::
 
- > sudo bot cmd install
+ > sudo bcmd install
 
 if you don't want the bot to startup at boot, remove the service file:
 
 ::
 
- > sudo bot cmd remove
-
-|
+ > sudo bcmd remove
 
 C O N F I G
 ===========
-
-|
 
 to configure the bot use the ed (edit) command, with sudo:
 
 ::
 
- > bot cmd cfg <server> <channel> <nick>
- > bot cmd hup
+ > bcmd cfg <server> <channel> <nick>
+ > bcmd hup
 
 U S A G E
 =========
-
-|
 
 BOTLIB detects whether it is run as root or as a user. if it's root it
 will use the /var/lib/botd directory and it it's user it will use ~/.bot
@@ -82,54 +72,50 @@ you can use bot cmd with arguments to run a command directly:
 
 ::
 
- > bot cmd cmds
+ > bcmd cmds
  cfg|cmds|ed|find|fleet|meet|ps|udp
 
 if you run with sudo, you will get additional command like install,cfg and hup:
 
 ::
 
- > sudo bot cmd cmds
+ > sudo bcmd cmds
  cfg|cmds|ed|find|fleet|hup|install|meet|ps|remove|udp
 
 
 R S S
 =====
 
-|
-
 to add an url use the rss command with an url:
 
 ::
 
- > bot cmd rss https://news.ycombinator.com/rss
+ > bcmd rss https://news.ycombinator.com/rss
  ok 1
 
 run the rss command to see what urls are registered:
 
 ::
 
- > bot cmd rss
+ > bcmd rss
  0 https://news.ycombinator.com/rss
 
 the fetch command can be used to poll the added feeds:
 
 ::
 
- > bot cmd fetch
+ > bcmd fetch
  fetched 0
 
 U D P
 =====
-
-|
 
 using udp to relay text into a channel, use the okudp program to send text via the bot 
 to the channel on the irc server:
 
 ::
 
- > tail -f /var/log/syslog | bot cmd udp
+ > tail -f /var/log/syslog | bcmd udp
 
 to send the tail output to the IRC channel, send a udp packet to the bot:
 
@@ -144,33 +130,30 @@ to send the tail output to the IRC channel, send a udp packet to the bot:
 S O U R C E
 ===========
 
-|
-
 BOTLIB used the oklib package that has the following modules.
 
 ::
 
-    bot.cbs		- callbacks
-    bot.clk		- clock/repeater
-    bot.cmd		- commands
-    bot.csl		- console 
-    bot.flt		- fleet
-    bot.hdl		- handler
-    bot.irc		- internet relay chat
-    bot.krn		- core handler
-    bot.obj		- base classes
-    bot.opr		- opers
-    bot.rss		- rich site syndicate
-    bot.shl		- shell
-    bot.spc		- space
-    bot.thr		- threads
-    bot.udp		- udp to channel
-    bot.usr		- users
-    bot.utl		- utilities
+    bot.clk             - clock/repeater
+    bot.cmd             - commands
+    bot.csl             - console
+    bot.fil             - file 
+    bot.hdl             - handler
+    bot.irc             - internet relay chat
+    bot.itr             - introspect
+    bot.krn             - core handler
+    bot.obj             - base classes
+    bot.opr             - opers
+    bot.prs             - parse
+    bot.rss             - rich site syndicate
+    bot.shl             - shell
+    bot.thr             - threads
+    bot.tms             - time
+    bot.trc             - trace
+    bot.udp             - udp to channel
+
 
 You can add you own modules to the bot package, its a namespace package.
-
-|
 
 C O N T A C T
 =============
