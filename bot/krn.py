@@ -42,8 +42,8 @@ class Kernel(Handler):
         print(txt)
 
     def start(self, cfg={}):
-        super().start()
         self.cfg.update(cfg)
+        super().start()
 
     def stop(self):
         self.stopped = True

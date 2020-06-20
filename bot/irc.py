@@ -30,7 +30,10 @@ class Cfg(Cfg):
 
 class Event(Event):
 
-    pass
+
+    def show(self):
+        for txt in self.result:
+            k.fleet.say(self.orig, self.channel, txt)
 
 class TextWrap(textwrap.TextWrapper):
 
@@ -67,10 +70,10 @@ class IRC(Handler):
         self.state.nrsend = 0
         self.state.pongcheck = False
         self.threaded = False
-        self.register("ERROR", self.ERROR)
-        self.register("NOTICE", self.NOTICE)
-        self.register("PRIVMSG", self.PRIVMSG)
-        self.register("QUIT", self.QUIT)
+        self.cmds.register("ERROR", self.ERROR)
+        self.cmds.register("NOTICE", self.NOTICE)
+        self.cmds.register("PRIVMSG", self.PRIVMSG)
+        self.cmds.register("QUIT", self.QUIT)
         k.fleet.add(self)
         
     def _connect(self, server):
@@ -215,8 +218,8 @@ class IRC(Handler):
     def doconnect(self):
         assert self.cfg.server
         assert self.cfg.nick
-        super().start()
         self.connect(self.cfg.server, self.cfg.nick)
+        super().start()
         launch(self.input)
         launch(self.output)
 
@@ -330,7 +333,6 @@ class IRC(Handler):
             self.command("NOTICE", event.channel, txt)
 
     def PRIVMSG(self, event):
-        print(event)
         if event.txt.startswith("DCC CHAT"):
             if k.cfg.users and not k.users.allowed(event.origin, "USER"):
                 return
@@ -345,7 +347,7 @@ class IRC(Handler):
             if k.cfg.users and not k.users.allowed(event.origin, "USER"):
                return
             event.parse(event.txt[1:])
-            k.put(event)
+            k.queue.put(event)
 
     def QUIT(self, event):
         if self.cfg.server in event.orig:
