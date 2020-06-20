@@ -3,74 +3,21 @@
 #
 #
 
-## imports
-
-import os, sys ; sys.path.insert(0, os.getcwd())
-
-from bot.spc import Console
-from bot.spc import daemon, execute, k, os, parse_cli, root
-
-from bot.krn import __version__
+from bot.krn import k
+from bot.shl import daemon, execute, parse_cli, root
 from bot.rss import Fetcher
 from bot.irc import IRC
-
-## defines
-
-opts = [
-    ('-l', '--loglevel', 'store', str, "debug", 'set loglevel.', 'level'),
-    ('-o', '--options', 'store', str, "", "options to use", 'options'),
-    ('-w', '--workdir', 'store', str, "/var/lib/botd", "directory to work on", 'workdir'),
-]
-
-
-txt="""[Unit]
-Description=BOTD - the 24/7 channel daemon
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-ExecStart=/usr/local/bin/botd
-
-[Install]
-WantedBy=multi-user.target
-"""
-
-
-## functions
-
-def hup(event):
-    for x in os.popen("service botd stop").readlines():
-        print(x.rstrip())
-    for x in os.popen("service botd start").readlines():
-        print(x.rstrip())
-    for x in os.popen("systemctl status botd --no-pager").readlines():
-        print(x.rstrip())
-    event.reply("ok")
-    
-def install(event):
-    k = get_kernel()
-    f = open("/etc/systemd/system/botd.service", "w")
-    f.write(txt % (k.cfg.name, k.cfg.name))
-    f.close()
-    os.popen("systemctl enable botd")
-    os.popen("systemctl daemon-reload")
-    event.reply("ok")
-
-def remove(event):
-    p = "/etc/systemd/system/botd.service"
-    if os.path.exists(p):
-        for l in os.popen("rm %s" % p).readlines():
-            print(l) 
-    event.reply("ok")
 
 ## main
 
 def main():
-    cfg = parse_cli("botd", opts)
+    cfg = parse_cli("botd")
     if root():
         k.cmds.register("hup", hup)
         k.cmds.register("install", install)
         k.cmds.register("remove", remove)
+    else:
+        daemon()
     i = IRC()
     i.start()
     f = Fetcher()
