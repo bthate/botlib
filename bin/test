@@ -21,7 +21,7 @@ def main():
     test_path = os.getcwd() + os.sep + "tests"
     suite = unittest.loader.TestLoader().discover(test_path, pattern="test*")
     unittest.TextTestRunner(verbosity=3).run(suite)
-    k.wait()
+    res = k.wait()
    
 execute(main)
 

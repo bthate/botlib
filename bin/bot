@@ -10,12 +10,15 @@ from bot.irc import IRC
 from bot.krn import k
 from bot.shl import cfg, execute, parse_cli, setwd
 
+import sys
+
 def main():
     parse_cli("bot")
     setwd("bot")
     k.start()
-    i = IRC()
-    i.start()
+    if "-i" in sys.argv:
+        i = IRC()
+        i.start()
     c = Console()
     c.start()
     k.wait()

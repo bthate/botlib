@@ -5,9 +5,7 @@
 import select, socket, sys, time
 
 from .obj import Cfg, Object, last
-from .krn import get_kernel
-
-k = get_kernel()
+from .krn import k
 
 class Cfg(Cfg):
 

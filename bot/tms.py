@@ -2,7 +2,47 @@
 #
 #
 
-import os, time
+import datetime, os, time
+
+timestrings = [
+    "%a, %d %b %Y %H:%M:%S %z",
+    "%d %b %Y %H:%M:%S %z",
+    "%d %b %Y %H:%M:%S",
+    "%a, %d %b %Y %H:%M:%S",
+    "%d %b %a %H:%M:%S %Y %Z",
+    "%d %b %a %H:%M:%S %Y %z",
+    "%a %d %b %H:%M:%S %Y %z",
+    "%a %b %d %H:%M:%S %Y",
+    "%d %b %Y %H:%M:%S",
+    "%a %b %d %H:%M:%S %Y",
+    "%Y-%m-%d %H:%M:%S",
+    "%Y-%m-%dt%H:%M:%S+00:00",
+    "%a, %d %b %Y %H:%M:%S +0000",
+    "%d %b %Y %H:%M:%S +0000",
+   "%d, %b %Y %H:%M:%S +0000"
+]
+
+year_formats = [
+    "%b %H:%M",
+    "%b %H:%M:%S",
+    "%a %H:%M %Y",
+    "%a %H:%M",
+    "%a %H:%M:%S",
+    "%Y-%m-%d",
+    "%d-%m-%Y",
+    "%d-%m",
+    "%m-%d",
+    "%Y-%m-%d %H:%M:%S",
+    "%d-%m-%Y %H:%M:%S",
+    "%d-%m %H:%M:%S",
+    "%m-%d %H:%M:%S",
+    "%Y-%m-%d %H:%M",
+    "%d-%m-%Y %H:%M",
+    "%d-%m %H:%M",
+    "%m-%d %H:%M",
+    "%H:%M:%S",
+    "%H:%M"
+]
 
 def day():
     return str(datetime.datetime.today()).split()[0]

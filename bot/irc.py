@@ -5,8 +5,8 @@
 import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 
 from .obj import Cfg, Object, format, last, locked
-from .krn import k, Event
-from .hdl import Handler
+from .krn import k
+from .hdl import Event, Handler
 from .thr import launch
 from .trc import get_exception
 
@@ -30,9 +30,7 @@ class Cfg(Cfg):
 
 class Event(Event):
 
-    def show(self):
-        for txt in self.result:
-            k.fleet.say(self.orig, self.channel, txt)
+    pass
 
 class TextWrap(textwrap.TextWrapper):
 

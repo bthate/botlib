@@ -1,4 +1,4 @@
-cmds = {
+names = {
     "cfg": "bot.cmd",
     "cmds": "bot.cmd",
     "delete": "bot.rss",
@@ -24,7 +24,7 @@ classes = {
     "Db": "bot.obj",
     "Default": "bot.obj",
     "DoL": "bot.obj",
-    "Event": "bot.irc",
+    "Event": "bot.hdl",
     "Feed": "bot.rss",
     "Fetcher": "bot.rss",
     "Fleet": "bot.krn",

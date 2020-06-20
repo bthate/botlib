@@ -22,11 +22,15 @@ class ENOUSER(Exception):
 
     pass
 
+class Cfg(Cfg):
+
+    pass
 
 class Kernel(Handler):
 
     def __init__(self):
         super().__init__()
+        self.ready = threading.Event()
         self.stopped = False
         self.cfg = Cfg()
         self.db = Db()
@@ -34,23 +38,6 @@ class Kernel(Handler):
         self.users = Users()
         self.fleet.add(self)
         
-    def cmd(self, txt):
-        if not txt:
-            return
-        e = Event()
-        e.parse(txt)
-        e.orig = repr(self)
-        self.dispatch(e)
-        return e
-
-    def dispatch(self, event):
-        if not event.cmd and event.txt:
-            event.cmd = event.txt.split()[0]
-        event.func = self.get_cmd(event.cmd)
-        if event.func:
-            event.func(event)
-        event.show()
-
     def say(self, channel, txt):
         print(txt)
 
@@ -63,32 +50,7 @@ class Kernel(Handler):
         self.queue.put(None)
 
     def wait(self):
-        while not self.stopped:
-            time.sleep(1.0)
-
-class Cfg(Cfg):
-
-    pass
-
-class Event(Parsed):
-
-    def __init__(self):
-        super().__init__()
-        self.result = []
-        self.thrs = []
-
-    def reply(self, txt):
-        if not self.result:
-            self.result = []
-        self.result.append(txt)
-        
-    def show(self):
-        for txt in self.result:
-            k.fleet.say(self.orig, self.channel, txt)
-
-    def wait(self):
-        for thr in self.thrs:
-            thr.join()
+        self.ready.wait()
 
 class Fleet(Object):
 
@@ -204,7 +166,3 @@ class Users(Db):
         return user
 
 k = Kernel()
-
-def get_kernel():
-    return k
-

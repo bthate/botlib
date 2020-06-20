@@ -122,7 +122,15 @@ class Object:
 
     __slots__ = ("__dict__", "_path")
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+        if args:
+            try:
+                self.update(args[0])
+            except TypeError:
+                self.update(vars(args[0]))
+        if kwargs:
+            self.update(kwargs)
         stime = str(datetime.datetime.now()).replace(" ", os.sep)
         self._path = os.path.join(get_type(self), stime)
 
@@ -146,7 +154,7 @@ class Object:
         return self.__dict__[k]
 
     def __str__(self):
-        return self.json()
+        return tojson(self)
 
     def get(self, k, d=None):
         return self.__dict__.get(k, d)
@@ -382,7 +390,6 @@ def save(o, stime=None):
 
 def tojson(o):
     return json.dumps(o, skipkeys=True, cls=ObjectEncoder, indent=4, sort_keys=True)
-
 
 def stamp(o):
     for k in xdir(o):

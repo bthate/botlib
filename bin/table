@@ -19,7 +19,7 @@ def main():
         nms = find_names(mod)
         if nms:
             names.update(nms)
-    print("cmds = %s" % tojson(names))
+    print("names = %s" % tojson(names))
     for mod in mods.values():
         c = find_cls(mod)
         if c:

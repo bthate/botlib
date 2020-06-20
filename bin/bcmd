@@ -6,7 +6,7 @@
 import os
 
 from bot.csl import Console
-from bot.its import find_shorts
+from bot.itr import find_shorts
 from bot.shl import daemon, execute, parse_cli, root, setwd
 from bot.krn import k, __version__
 
@@ -61,7 +61,6 @@ def hup(event):
     event.reply("ok")
     
 def install(event):
-    k = get_kernel()
     f = open("/etc/systemd/system/botd.service", "w")
     f.write(txt % (k.cfg.name, k.cfg.name))
     f.close()

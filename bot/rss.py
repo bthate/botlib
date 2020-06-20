@@ -8,9 +8,10 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode, urlunparse
 from urllib.request import Request, urlopen
 
-from .obj import Cfg, Db, Default, Object, last, save
+from .obj import Cfg, Db, Default, Object, edit, last, save
 from .clk import Repeater
-from .krn import get_kernel
+from .krn import k
+from .thr import launch
 from .tms import to_time, day
 
 try:
@@ -20,8 +21,6 @@ except ModuleNotFoundError:
     gotparser = False
 
 debug = False
-
-k = get_kernel()
 
 def init(kernel):
     fetcher = Fetcher()
@@ -117,7 +116,7 @@ class Fetcher(Object):
         thrs = []
         db = Db()
         for o in db.all("bot.rss.Rss"):
-            thrs.append(k.launch(self.fetch, o))
+            thrs.append(launch(self.fetch, o))
         return thrs
 
     def start(self, repeat=True):
@@ -198,7 +197,7 @@ def delete(event):
         rss._deleted = True
         got.append(rss)
     for rss in got:
-        rss.save()
+        save(rss)
     event.reply("ok")
 
 def display(event):
@@ -210,8 +209,8 @@ def display(event):
     db = Db()
     for o in db.find("bot.rss.Rss", {"rss": event.args[0]}):
         nr += 1
-        o.edit(setter)
-        o.save()
+        edit(o, setter)
+        save(o)
     event.reply("ok")
 
 def feed(event):
@@ -272,5 +271,5 @@ def rss(event):
         return
     o = Rss()
     o.rss = event.args[0]
-    o.save()
+    save(o)
     event.reply("ok")

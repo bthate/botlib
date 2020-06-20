@@ -9,6 +9,7 @@ import os, time
 from .fil import cdir, list_files
 from .obj import ENOCLASS, Cfg, Db, Object, format, get_cls, get_type, last, load, save
 from .krn import k, starttime
+from .tbl import names
 from .tms import elapsed, fntime
 
 import bot.obj
@@ -36,7 +37,7 @@ def cfg(event):
     event.reply(format(c))
         
 def cmds(event):
-    event.reply("|".join(sorted(bot.tbl.cmds)))
+    event.reply("|".join(sorted(names)))
 
 def done(event):
     if not event.args:
