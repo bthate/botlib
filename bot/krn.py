@@ -9,7 +9,7 @@ import inspect, os, sys, threading, time, traceback, _thread
 from .prs import Parsed
 from .tms import elapsed
 from .trc import get_exception
-from .obj import Cfg, Db, Object, get_type
+from .obj import Cfg, Db, Object, get_type, save
 from .hdl import Handler
 
 starttime = time.time()
@@ -27,6 +27,7 @@ class Kernel(Handler):
 
     def __init__(self):
         super().__init__()
+        self.stopped = False
         self.cfg = Cfg()
         self.db = Db()
         self.fleet = Fleet()
@@ -58,10 +59,11 @@ class Kernel(Handler):
         self.cfg.update(cfg)
 
     def stop(self):
+        self.stopped = True
         self.queue.put(None)
 
     def wait(self):
-        while 1:
+        while not self.stopped:
             time.sleep(1.0)
 
 class Cfg(Cfg):

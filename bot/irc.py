@@ -58,6 +58,7 @@ class IRC(Handler):
         self.cc = "!"
         self.cfg = Cfg()
         self.channels = []
+        self.speed = "slow"
         self.state = Object()
         self.state.needconnect = False
         self.state.error = ""

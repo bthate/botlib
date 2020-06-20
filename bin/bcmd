@@ -6,6 +6,7 @@
 import os
 
 from bot.csl import Console
+from bot.its import find_shorts
 from bot.shl import daemon, execute, parse_cli, root, setwd
 from bot.krn import k, __version__
 
@@ -26,7 +27,7 @@ def ed(event):
         event.reply(list_files(bot.obj.workdir) or "no files yet")
         return
     cn = event.args[0]
-    shorts = k.find_shorts("bot")
+    shorts = find_shorts("bot")
     if shorts:
         cn = shorts[0]
     db = Db()

@@ -8,6 +8,7 @@ from bot.evt import Event
 from bot.krn import k
 from bot.obj import Object
 from bot.thr import launch
+from bot.tbl import cmds
 
 param = Object()
 param.ed = ["bot.irc.Cfg", "bot.rss.Cfg", "bot.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel \#dunkbots", "bot.krn.Cfg modules bot.udp"]
@@ -52,7 +53,7 @@ def consume(elems):
         
 def tests(b):
     events = []
-    keys = list(k.cmds)
+    keys = list(cmds)
     random.shuffle(keys)
     for cmd in keys:
         events.extend(do_cmd(k, cmd))
@@ -68,7 +69,8 @@ def do_cmd(b, cmd):
     events = []
     for ex in e:
         txt = cmd + " " + ex
-        e = Command(txt)
+        e = Event()
+        e.parse(txt)
         k.dispatch(e)
         events.append(e)
     return events

@@ -51,37 +51,11 @@ def done(event):
         event.reply("ok")
         break
 
-def ed(event):
-    if not event.args:
-        event.reply(list_files(bot.obj.workdir) or "no files yet")
-        return
-    cn = event.args[0]
-    shorts = k.find_shorts("bot")
-    if shorts:
-        cn = shorts[0]
-    db = Db()
-    l = db.last(cn)
-    if not l:
-        try:
-            c = get_cls(cn)
-            l = c()
-            event.reply("created %s" % cn)
-        except ENOCLASS:
-            event.reply(list_files(bot.obj.workdir) or "no files yet")
-            return
-    if len(event.args) == 1:
-        event.reply(l)
-        return
-    if len(event.args) == 2:
-        setter = {event.args[1]: ""}
-    else:
-        setter = {event.args[1]: event.args[2]}
-    edit(l, setter)
-    save(l)
-    event.reply("ok")
-
 def find(event):
     import bot.obj
+    if event.speed != "fast":
+        event.reply("use a faster bot to display (dcc).")
+        return
     if not event.args:
         wd = os.path.join(bot.obj.workdir, "store", "")
         cdir(wd)
@@ -112,6 +86,9 @@ def find(event):
 def fl(event):
     try:
         index = int(event.args[0])
+        if event.speed != "fast":
+            event.reply("use a faster bot to display.")
+            return
         event.reply(str(k.fleet.bots[index]))
         return
     except (TypeError, ValueError, IndexError):

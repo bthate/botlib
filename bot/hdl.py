@@ -24,6 +24,7 @@ class Handler(Object):
         super().__init__()
         self.cmds = Object()
         self.queue = queue.Queue()
+        self.speed  = "fast"
         self.table = Object()
                 
     def dispatch(self, event):
@@ -49,6 +50,9 @@ class Handler(Object):
             event = self.queue.get()
             if event is None:
                 break
+            if not event.orig:
+                event.orig = repr(self)
+            event.speed = self.speed
             thr = launch(self.dispatch, event)
             event.thrs.append(thr)
 

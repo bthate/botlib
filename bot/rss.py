@@ -8,7 +8,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode, urlunparse
 from urllib.request import Request, urlopen
 
-from .obj import Cfg, Db, Default, Object, last
+from .obj import Cfg, Db, Default, Object, last, save
 from .clk import Repeater
 from .krn import get_kernel
 from .tms import to_time, day
@@ -106,9 +106,9 @@ class Fetcher(Object):
             counter += 1
             objs.append(feed)
             if self.cfg.dosave:
-                feed.save()
+                save(feed)
         if objs:
-            Fetcher.seen.save()
+            save(Fetcher.seen)
         for o in objs:
             k.fleet.announce(self.display(o))
         return counter
@@ -129,7 +129,7 @@ class Fetcher(Object):
             return repeater
 
     def stop(self):
-        Fetcher.seen.save()
+        save(Fetcher.seen)
 
 def file_time(timestamp):
     return str(datetime.datetime.fromtimestamp(timestamp)).replace(" ", os.sep) + "." + str(random.randint(111111, 999999))
