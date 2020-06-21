@@ -2,12 +2,11 @@
 #
 #
 
-import queue, threading
+import pkg_resources, queue, threading
 
 from .itr import find_cmds, direct
 from .obj import Object
 from .prs import Parsed
-from .tbl import names
 from .thr import launch
 
 class NOTIMPLEMENTED(Exception):
@@ -75,7 +74,11 @@ class Handler(Object):
     def get_cmd(self, cmd, dft=None):
         func = self.cmds.get(cmd, None)
         if not func:
-            name = names.get(cmd, None)
+            try:
+                from .tbl import names
+                name = names.get(cmd, None)
+            except:
+                name = None
             if name:
                 self.load_mod(name)
                 func = self.cmds.get(cmd, dft)
@@ -96,7 +99,15 @@ class Handler(Object):
         return mod
 
     def scan(self, mod):
+        print("scan %s" % mod.__name__)
         self.cmds.update(find_cmds(mod))
 
     def start(self):
         launch(self.handler)
+
+    def walk(self, name):
+        for x in pkg_resources.resource_listdir(name, ""):
+            if x.startswith("_") or not x.endswith(".py"):
+                continue
+            mod = direct("%s.%s" % (name, x[:-3]))
+            self.scan(mod)
