@@ -22,9 +22,11 @@ class Console(Object):
     def input(self):
         while 1:
             event = self.poll()
-            event.orig = repr(self)
             if not event:
                 break
+            if not event.txt:
+                continue
+            event.orig = repr(self)
             k.queue.put(event)
             event.wait()
 

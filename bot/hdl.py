@@ -2,7 +2,11 @@
 #
 #
 
-import pkg_resources, queue, threading
+import importlib
+import importlib.resources
+import os
+import queue
+import threading
 
 from .itr import find_cmds, direct
 from .obj import Object
@@ -87,6 +91,8 @@ class Handler(Object):
     def handler(self):
         while not self.stopped:
             event = self.queue.get()
+            if not event:
+                break
             if not event.orig:
                 event.orig = repr(self)
             event.speed = self.speed
@@ -105,9 +111,22 @@ class Handler(Object):
     def start(self):
         launch(self.handler)
 
-    def walk(self, name):
-        for fname in pkg_resources.resource_listdir(name, ""):
-            if fname.startswith("_") or not fname.endswith(".py"):
-                continue
-            mod = direct("%s.%s" % (name, fname[:-3]))
-            self.scan(mod)
+    def stop(self):
+        self.stopped = True
+        self.queue.put(None)
+
+    def walk(self, name): 
+        spec = importlib.util.find_spec(name)
+        if not spec:
+            print("fail %s" % name)
+            return
+        pkg = importlib.util.module_from_spec(spec)
+        mods = []
+        for pn in pkg.__path__:
+            for fn in os.listdir(pn):
+                if fn.startswith("_") or not fn.endswith(".py"):
+                    continue
+                mn = "%s.%s" % (name, fn[:-3])
+                module = self.load_mod(mn)
+                mods.append(module)
+        return mods

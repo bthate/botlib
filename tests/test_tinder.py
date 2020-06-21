@@ -8,7 +8,6 @@ from bot.krn import k
 from bot.hdl import Event
 from bot.obj import Object
 from bot.thr import launch
-from bot.tbl import names
 
 param = Object()
 param.ed = ["bot.irc.Cfg", "bot.rss.Cfg", "bot.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel \#dunkbots", "bot.krn.Cfg modules bot.udp"]
@@ -48,7 +47,8 @@ class Test_Tinder(unittest.TestCase):
         for x in range(nrtimes):
             launch(tests, k)
         consume(events)
-
+        print(k.fleet.bots)
+        
 def consume(elems):
     fixed = []
     res = []
@@ -61,11 +61,11 @@ def consume(elems):
             elems.remove(f)
         except ValueError:
             continue
-    k.ready.set()
+    k.stop()
     return res
     
 def tests(b):
-    keys = list(names)
+    keys = list(k.cmds)
     random.shuffle(keys)
     for cmd in keys:
         if cmd in ignore:
@@ -73,14 +73,18 @@ def tests(b):
         events.extend(do_cmd(cmd))
 
 def do_cmd(cmd):
-    exs = param.get(cmd, ["aap", "noot", "mies"])
+    exs = param.get(cmd, [""])
     e = list(exs)
     random.shuffle(e)
     events = []
+    nr = 0
     for ex in e:
-        txt = cmd + " " + ex
+        nr += 1
+        txt = cmd + " " + ex + " (%s)" % nr
+        if "-v" in sys.argv:
+            print(txt)
         e = Event()
         e.txt = txt
-        k.put(e)
+        k.queue.put(e)
         events.append(e)
     return events

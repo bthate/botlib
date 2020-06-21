@@ -3,25 +3,24 @@
 # run unittests.
 
 import logging, os, shutil, time, unittest
+import bot.obj
 
 from bot.obj import cdir
 from bot.krn import k, starttime
 from bot.shl import execute, parse_cli
 from bot.tms import elapsed
 
-import bot.rss
-
 def main():
     if os.path.exists(".data"):
         shutil.rmtree(".data")
     cfg = parse_cli("test")
     bot.obj.workdir = ".data"
-    bot.rss.debug = True
     k.start()
+    k.walk("mods")
     test_path = os.getcwd() + os.sep + "tests"
     suite = unittest.loader.TestLoader().discover(test_path, pattern="test*")
     unittest.TextTestRunner(verbosity=3).run(suite)
-    res = k.wait()
+    k.wait()
    
 execute(main)
 
