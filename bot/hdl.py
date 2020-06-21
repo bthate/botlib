@@ -46,6 +46,7 @@ class Handler(Object):
     def __init__(self):
         super().__init__()
         self.cmds = Object()
+        self.names = Object()
         self.queue = queue.Queue()
         self.speed  = "fast"
         self.stopped = False
@@ -75,8 +76,7 @@ class Handler(Object):
         func = self.cmds.get(cmd, None)
         if not func:
             try:
-                from .tbl import names
-                name = names.get(cmd, None)
+                name = self.names.get(cmd, None)
             except:
                 name = None
             if name:
@@ -106,8 +106,8 @@ class Handler(Object):
         launch(self.handler)
 
     def walk(self, name):
-        for x in pkg_resources.resource_listdir(name, ""):
-            if x.startswith("_") or not x.endswith(".py"):
+        for fname in pkg_resources.resource_listdir(name, ""):
+            if fname.startswith("_") or not fname.endswith(".py"):
                 continue
-            mod = direct("%s.%s" % (name, x[:-3]))
+            mod = direct("%s.%s" % (name, fname[:-3]))
             self.scan(mod)

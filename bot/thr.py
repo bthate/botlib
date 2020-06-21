@@ -4,6 +4,8 @@
 
 import queue, threading, time, types
 
+from .obj import Object
+
 def __dir__():
     return ("Launcher", "Thr", "get_name", "launch")
 
@@ -15,7 +17,9 @@ class Thr(threading.Thread):
         self._result = None
         self._queue = queue.Queue()
         self._queue.put((func, args))
-
+        self.sleep = None
+        self.state = Object()
+        
     def __iter__(self):
         return self
 

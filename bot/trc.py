@@ -2,6 +2,8 @@
 #
 #
 
+import sys, traceback
+
 def get_exception(txt="", sep=" "):
     exctype, excvalue, tb = sys.exc_info()
     trace = traceback.extract_tb(tb)

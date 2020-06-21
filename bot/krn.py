@@ -4,7 +4,13 @@
 
 __version__ = 87
 
-import inspect, os, sys, threading, time, traceback, _thread
+import inspect
+import os
+import sys
+import threading
+import time
+import traceback
+import _thread
 
 from .prs import Parsed
 from .tms import elapsed
@@ -41,7 +47,7 @@ class Kernel(Handler):
     def say(self, channel, txt):
         print(txt)
 
-    def start(self, cfg={}):
+    def start(self, cfg={}, names={}):
         self.cfg.update(cfg)
         super().start()
 

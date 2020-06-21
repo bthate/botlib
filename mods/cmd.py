@@ -9,11 +9,9 @@ import os, time
 from bot.fil import cdir, list_files
 from bot.obj import ENOCLASS, Cfg, Db, Object, format, get_cls, get_type, last, load, save
 from bot.krn import k, starttime
-from bot.tbl import names
 from bot.tms import elapsed, fntime
 
 import bot.obj
-import bot.tbl
 
 class Log(Object):
 
@@ -52,7 +50,6 @@ def done(event):
         break
 
 def find(event):
-    import bot.obj
     if event.speed != "fast":
         event.reply("use a faster bot to display (dcc).")
         return
