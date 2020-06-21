@@ -52,7 +52,7 @@ class Handler(Object):
         self.cmds = Object()
         self.names = Object()
         self.queue = queue.Queue()
-        self.speed  = "fast"
+        self.speed = "fast"
         self.stopped = False
 
     def cmd(self, txt):
@@ -63,11 +63,11 @@ class Handler(Object):
         e.orig = repr(self)
         self.dispatch(e)
         return e
-                
+
     def dispatch(self, event):
         if not event.txt:
             return
-        event.parse(event.txt)            
+        event.parse(event.txt)
         if not event.cmd and event.txt:
             event.cmd = event.txt.split()[0]
         event.func = self.get_cmd(event.cmd)
@@ -75,14 +75,11 @@ class Handler(Object):
             event.func(event)
         event.show()
         event.started.set()
-                    
+
     def get_cmd(self, cmd, dft=None):
         func = self.cmds.get(cmd, None)
         if not func:
-            try:
-                name = self.names.get(cmd, None)
-            except:
-                name = None
+            name = self.names.get(cmd, None)
             if name:
                 self.load_mod(name)
                 func = self.cmds.get(cmd, dft)
@@ -115,7 +112,7 @@ class Handler(Object):
         self.stopped = True
         self.queue.put(None)
 
-    def walk(self, name): 
+    def walk(self, name):
         spec = importlib.util.find_spec(name)
         if not spec:
             print("fail %s" % name)

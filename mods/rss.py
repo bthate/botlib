@@ -8,7 +8,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode, urlunparse
 from urllib.request import Request, urlopen
 
-from bot.obj import Cfg, Db, Default, Object, edit, last, save
+from bot.dbs import Db, last
+from bot.obj import Cfg, Default, Object, edit, save
 from bot.clk import Repeater
 from bot.krn import k
 from bot.thr import launch

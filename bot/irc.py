@@ -4,7 +4,8 @@
 
 import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 
-from .obj import Cfg, Object, format, last, locked
+from .dbs import last
+from .obj import Cfg, Object, format, locked
 from .krn import k
 from .hdl import Event, Handler
 from .thr import launch

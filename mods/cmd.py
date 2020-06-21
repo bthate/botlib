@@ -6,8 +6,9 @@ __version__ = 1
 
 import os, time
 
+from bot.dbs import Db, last
 from bot.fil import cdir, list_files
-from bot.obj import ENOCLASS, Cfg, Db, Object, format, get_cls, get_type, last, load, save
+from bot.obj import ENOCLASS, Cfg, Object, format, get_cls, get_type, load, save
 from bot.krn import k, starttime
 from bot.tms import elapsed, fntime
 

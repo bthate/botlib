@@ -2,7 +2,14 @@
 #
 #
 
-import datetime, importlib, json, os, random, sys, time, _thread
+import datetime
+import importlib
+import json
+import os
+import random
+import sys
+import time
+import _thread
 
 from .fil import cdir
 
@@ -10,11 +17,17 @@ lock = _thread.allocate_lock()
 starttime = time.time()
 workdir = ""
 
-class ENOCLASS(Exception): pass
+class ENOCLASS(Exception):
 
-class ENOFILE(Exception): pass
+    pass
 
-class EJSON(Exception): pass
+class ENOFILE(Exception):
+
+    pass
+
+class EJSON(Exception):
+
+    pass
 
 def locked(lock):
     def lockeddec(func, *args, **kwargs):
@@ -29,37 +42,6 @@ def locked(lock):
         return lockedfunc
     return lockeddec
 
-def names(name, delta=None):
-    if not name:
-        return []
-    p = os.path.join(workdir, "store", name) + os.sep
-    res = []
-    now = time.time()
-    if delta:
-        past = now + delta
-    for rootdir, dirs, files in os.walk(p, topdown=False):
-        for fn in files:
-            fnn = os.path.join(rootdir, fn).split(os.path.join(workdir, "store"))[-1]
-            if delta:
-                if fntime(fnn) < past:
-                    continue
-            res.append(os.sep.join(fnn.split(os.sep)[1:]))
-    return sorted(res, key=fntime)
-
-def fntime(daystr):
-    daystr = daystr.replace("_", ":")
-    datestr = " ".join(daystr.split(os.sep)[-2:])
-    try:
-        datestr, rest = datestr.rsplit(".", 1)
-    except ValueError:
-        rest = ""
-    try:
-        t = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
-        if rest:
-            t += float("." + rest)
-    except ValueError:
-        t = 0
-    return t
 
 def get_cls(name):
     try:
@@ -108,14 +90,14 @@ class ObjectEncoder(json.JSONEncoder):
             return o.items()
         if isinstance(o, list):
             return iter(o)
-        if type(o) in [str, True, False, int, float]:
+        if isinstance(o, (str, True, False, int, float)):
             return o
         return repr(o)
 
 class ObjectDecoder(json.JSONDecoder):
 
-    def decode(self, s):
-        return json.loads(s, object_hook=hooked)
+    def decode(self, o):
+        return json.loads(o, object_hook=hooked)
 
 
 class Object:
@@ -136,7 +118,7 @@ class Object:
 
     def __delitem__(self, k):
         del self.__dict__[k]
-        
+
     def __getitem__(self, k):
         return self.__dict__[k]
 
@@ -188,8 +170,8 @@ class Obj(dict):
         try:
             return self[k]
         except KeyError:
-            return super().__getattr__(k)
-            
+            return super().__getitem__(k)
+
     def __setattr__(self, k, v):
         self[k] = v
 
@@ -218,115 +200,37 @@ class DoL(Object):
         for k, v in d.items():
             self.append(k, v)
 
-class List(Object):
-
-    def __init__(self, txt):
-        super().__init__()
-        nr = 0
-        for l in txt.split():
-            if l:
-                self[str(nr)] = arg(l)
-                nr += 1
-
-    def __iter__(self):
-        for nr in range(len(self)):
-            if type(nr) == int:
-                try:
-                    yield self[str(nr)]
-                except KeyError:
-                    pass
-
-class Db(Object):
-
-    def all(self, otype, selector={}, index=None, delta=0):
-        nr = -1
-        for fn in names(otype, delta):
-            o = hook(fn)
-            nr += 1
-            if index is not None and nr != index:
-                continue
-            if selector and not search(o, selector):
-                continue
-            if "_deleted" in o and o._deleted:
-                continue
-            yield o
-
-    def deleted(self, otype, selector={}):
-        nr = -1
-        for fn in names(otype):
-            o = hook(fn)
-            nr += 1
-            if selector and not search(o, selector):
-                continue
-            if "_deleted" not in o or not o._deleted:
-                continue
-            yield o
-        
-    def find(self, otype, selector={}, index=None, delta=0):
-        nr = -1
-        for fn in names(otype, delta):
-            o = hook(fn)
-            if search(o, selector):
-                nr += 1
-                if index is not None and nr != index:
+def names(name, delta=None):
+    if not name:
+        return []
+    p = os.path.join(workdir, "store", name) + os.sep
+    res = []
+    now = time.time()
+    if delta:
+        past = now + delta
+    for rootdir, dirs, files in os.walk(p, topdown=False):
+        for fn in files:
+            fnn = os.path.join(rootdir, fn).split(os.path.join(workdir, "store"))[-1]
+            if delta:
+                if fntime(fnn) < past:
                     continue
-                if "_deleted" in o and o._deleted:
-                    continue
-                yield o
+            res.append(os.sep.join(fnn.split(os.sep)[1:]))
+    return sorted(res, key=fntime)
 
-    def find_value(self, otype, value, index=None, delta=0):
-        nr = -1
-        res = []
-        for fn in names(otype, delta):
-            o = hook(fn)
-            if find(o, value):
-                nr += 1
-                if index is not None and nr != index:
-                    continue
-                if "_deleted" in o and o._deleted:
-                    continue
-                yield o
-
-    def last(self, otype, index=None, delta=0):
-        fns = names(otype, delta)
-        if fns:
-            fn = fns[-1]
-            return hook(fn)
-
-    def last_fn(self, otype, index=None, delta=0):
-        fns = names(otype, delta)
-        if fns:
-            fn = fns[-1]
-            return (fn, hook(fn))
-        return (None, None)
-
-    def last_all(self, otype, selector={}, index=None, delta=0):
-        nr = -1
-        res = []
-        for fn in names(otype, delta):
-            o = hook(fn)
-            if selector and search(o, selector):
-                nr += 1
-                if index is not None and nr != index:
-                    continue
-                res.append((fn, o))
-            else:
-                res.append((fn, o))
-        if res:
-            s = sorted(res, key=lambda x: fntime(x[0]))
-            if s:
-                return s[-1][-1]
-        return None
-
-def last(o, strip=False):
-    db = Db()
-    path, l = db.last_fn(str(get_type(o)))
-    if l:
-        if strip:
-            o.update(strip(l))
-        else:
-            o.update(l)
-        o._path = path
+def fntime(daystr):
+    daystr = daystr.replace("_", ":")
+    datestr = " ".join(daystr.split(os.sep)[-2:])
+    try:
+        datestr, rest = datestr.rsplit(".", 1)
+    except ValueError:
+        rest = ""
+    try:
+        t = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
+        if rest:
+            t += float("." + rest)
+    except ValueError:
+        t = 0
+    return t
 
 def search(o, match=None):
     res = False
@@ -349,7 +253,9 @@ def search(o, match=None):
             break
     return res
 
-def merge(self, o, vals=["",]):
+def merge(self, o, vals=None):
+    if vals is None:
+        vals = [""],
     return self.update(strip(o, vals))
 
 def stamp(o):
@@ -381,11 +287,11 @@ def load(o, path, force=False):
 def save(o, stime=None):
     assert workdir
     if stime:
-        o._path = os.path.join(get_type(self), stime) + "." + str(random.randint(1, 100000))
+        o._path = os.path.join(get_type(o), stime) + "." + str(random.randint(1, 100000))
     opath = os.path.join(workdir, "store", o._path)
     cdir(opath)
     with open(opath, "w") as ofile:
-        json.dump(stamp(o), ofile, cls=ObjectEncoder, indent=4, skipkeys=True,sort_keys=True)
+        json.dump(stamp(o), ofile, cls=ObjectEncoder, indent=4, skipkeys=True, sort_keys=True)
     return o._path
 
 def tojson(o):
@@ -405,8 +311,8 @@ def stamp(o):
 
 def strip(o):
     for k in o:
-       if not k:
-          del o[k]
+        if not k:
+            del o[k]
     return o
 
 def xdir(o, skip=""):

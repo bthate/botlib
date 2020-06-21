@@ -12,11 +12,12 @@ import time
 import traceback
 import _thread
 
+from .dbs import Db
+from .hdl import Handler
+from .obj import Cfg, Object, get_type, save
 from .prs import Parsed
 from .tms import elapsed
 from .trc import get_exception
-from .obj import Cfg, Db, Object, get_type, save
-from .hdl import Handler
 
 starttime = time.time()
 

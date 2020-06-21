@@ -42,10 +42,10 @@ class Users(Db):
         return self.all("bot.usr.User", s)
 
     def get_user(self, origin):
-        u =  list(self.get_users(origin))
+        u = list(self.get_users(origin))
         if u:
             return u[-1]
- 
+
     def meet(self, origin, perms=None):
         user = self.get_user(origin)
         if user:
