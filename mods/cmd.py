@@ -24,7 +24,7 @@ class Todo(Object):
     pass
 
 def cfg(event):
-    from .irc import Cfg
+    from bot.irc import Cfg
     c = Cfg()
     last(c)
     if not event.args and not event.sets:
