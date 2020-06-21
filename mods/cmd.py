@@ -6,11 +6,11 @@ __version__ = 1
 
 import os, time
 
-from .fil import cdir, list_files
-from .obj import ENOCLASS, Cfg, Db, Object, format, get_cls, get_type, last, load, save
-from .krn import k, starttime
-from .tbl import names
-from .tms import elapsed, fntime
+from bot.fil import cdir, list_files
+from bot.obj import ENOCLASS, Cfg, Db, Object, format, get_cls, get_type, last, load, save
+from bot.krn import k, starttime
+from bot.tbl import names
+from bot.tms import elapsed, fntime
 
 import bot.obj
 import bot.tbl
@@ -36,7 +36,7 @@ def cfg(event):
     event.reply(format(c))
         
 def cmds(event):
-    event.reply("|".join(sorted(names)))
+    event.reply("|".join(sorted(k.cmds)))
 
 def done(event):
     if not event.args:
@@ -45,7 +45,7 @@ def done(event):
     selector = {"txt": event.args[0]}
     got = []
     db = Db()
-    for todo in db.find("bot.cmd.Todo", selector):
+    for todo in db.find("mods.cmd.Todo", selector):
         todo._deleted = True
         save(todo)
         event.reply("ok")
@@ -98,7 +98,7 @@ def fl(event):
 def log(event):
     if not event.rest:
         db = Db()
-        res = db.find("bot.cmd.Log", {"txt": ""})
+        res = db.find("mods.cmd.Log", {"txt": ""})
         nr = 0
         for o in res:
             event.reply("%s %s %s" % (str(nr), o.txt, elapsed(time.time() - fntime(o._path))))
@@ -114,7 +114,7 @@ def log(event):
 def todo(event):
     db = Db()
     if not event.rest:
-        res = db.find("bot.cmd.Todo", {"txt": ""})
+        res = db.find("mods.cmd.Todo", {"txt": ""})
         if not res:
             return
         nr = 0
@@ -135,4 +135,3 @@ def up(event):
 def v(event):
     from bot.krn import __version__
     event.reply("%s %s" % (k.cfg.name.upper() or "BOTLIB", k.cfg.version or __version__))
-

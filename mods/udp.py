@@ -4,8 +4,8 @@
 
 import select, socket, sys, time
 
-from .obj import Cfg, Object, last
-from .krn import k
+from bot.obj import Cfg, Object, last
+from bot.krn import k
 
 class Cfg(Cfg):
 

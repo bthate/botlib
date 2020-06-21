@@ -324,8 +324,9 @@ class IRC(Handler):
         self.state.error = event.error
         self._connected.clear()
         self.stop()
-        if self.state.nrerror < 3:
-            init(k)
+        if self.state.nrerror > 3:
+            time.sleep(60.0)
+        init(k)
 
     def NOTICE(self, event):
         if event.txt.startswith("VERSION"):

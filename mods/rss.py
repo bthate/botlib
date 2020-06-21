@@ -8,11 +8,11 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode, urlunparse
 from urllib.request import Request, urlopen
 
-from .obj import Cfg, Db, Default, Object, edit, last, save
-from .clk import Repeater
-from .krn import k
-from .thr import launch
-from .tms import to_time, day
+from bot.obj import Cfg, Db, Default, Object, edit, last, save
+from bot.clk import Repeater
+from bot.krn import k
+from bot.thr import launch
+from bot.tms import to_time, day
 
 try:
     import feedparser

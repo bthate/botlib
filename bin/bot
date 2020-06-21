@@ -16,6 +16,7 @@ def main():
     parse_cli("bot")
     setwd("bot")
     k.start()
+    k.walk("mods")
     if "-i" in sys.argv:
         i = IRC()
         i.start()
