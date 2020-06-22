@@ -21,7 +21,7 @@ def get_exception(txt="", sep=" "):
         mod = []
         for element in plugfile[::-1]:
             mod.append(element)
-            if "ok" in element:
+            if "bot" in element:
                 break
         ownname = ".".join(mod[::-1])
         result.append("%s:%s" % (ownname, linenr))

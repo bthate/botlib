@@ -202,7 +202,7 @@ class IRC(Handler):
 
     def connect(self, server, nick):
         nr = 0
-        while 1:
+        while not self.stopped:
             self.state.nrconnect += 1
             if self._connect(server):
                 break
@@ -219,8 +219,8 @@ class IRC(Handler):
     def doconnect(self):
         assert self.cfg.server
         assert self.cfg.nick
-        self.connect(self.cfg.server, self.cfg.nick)
         super().start()
+        self.connect(self.cfg.server, self.cfg.nick)
         launch(self.input)
         launch(self.output)
 
@@ -259,10 +259,9 @@ class IRC(Handler):
                 self._some()
             except (OSError, ConnectionError, socket.timeout) as ex:
                 e = Event()
-                e.cmd = "ERROR"
+                e.command = "ERROR"
                 e.error = str(ex)
                 e.trc = get_exception()
-                print(e.trc)
                 return e
         e = self._parsing(self._buffer.pop(0))
         cmd = e.command
@@ -292,7 +291,7 @@ class IRC(Handler):
             self._sock.send(txt)
         except (OSError, ConnectionError) as ex:
             e = Event()
-            e.type = "ERROR"
+            e.command = "ERROR"
             e.error = str(ex) 
             e.trc = get_exception()
             self.queue.put(e)
@@ -307,6 +306,7 @@ class IRC(Handler):
             self.cfg.update(cfg)
         else:
             last(self.cfg)
+        print(format(self.cfg))
         assert self.cfg.channel
         assert self.cfg.server
         self.channels.append(self.cfg.channel)
@@ -323,6 +323,7 @@ class IRC(Handler):
     def ERROR(self, event):
         self.state.nrerror += 1
         self.state.error = event.error
+        print(event.error)
         self._connected.clear()
         self.stop()
         if self.state.nrerror > 3:

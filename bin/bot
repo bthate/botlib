@@ -5,6 +5,8 @@
 
 __version__ = 86
 
+import os, sys ; sys.path.insert(0, os.getcwd())
+
 from bot.csl import Console
 from bot.irc import IRC
 from bot.krn import k
