@@ -257,7 +257,7 @@ class IRC(Handler):
         if not self._buffer:
             try:
                 self._some()
-            except (OSError, ConnectionError) as ex:
+            except (OSError, ConnectionError, socket.timeout) as ex:
                 e = Event()
                 e.cmd = "ERROR"
                 e.error = str(ex)
