@@ -225,7 +225,7 @@ class IRC(Handler):
         launch(self.output)
 
     def input(self):
-        while 1:
+        while not self.stopped:
             e = self.poll()
             if not e:
                 break
