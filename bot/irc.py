@@ -45,7 +45,7 @@ class TextWrap(textwrap.TextWrapper):
         self.fix_sentence_endings = True
         self.replace_whitespace = True
         self.tabsize = 4
-        self.width = 480
+        self.width = 450
 
 class IRC(Handler):
 
