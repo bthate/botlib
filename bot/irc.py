@@ -94,7 +94,7 @@ class IRC(Handler):
                 self._connected.set()
                 return False
         oldsock.setblocking(1)
-        oldsock.settimeout(180.0)
+        oldsock.settimeout(360.0)
         self._sock = oldsock
         self._fsock = self._sock.makefile("r")
         fileno = self._sock.fileno()
