@@ -15,11 +15,10 @@ from bot.shl import cfg, execute, parse_cli, setwd
 import sys
 
 def main():
-    parse_cli("bot")
-    setwd("bot")
+    cfg = parse_cli()
     k.start()
-    k.walk("mods")
-    if "-i" in sys.argv:
+    k.walk("botd")
+    if "-i" in cfg.args:
         i = IRC()
         i.start()
     c = Console()

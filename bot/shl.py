@@ -2,7 +2,7 @@
 #
 #
 
-import atexit, argparse, logging, os, readline, sys, termios, time, _thread
+import atexit, argparse, grp, logging, os, pwd, readline, sys, termios, time, _thread
 
 from .obj import Cfg
 from .prs import Parsed
@@ -60,6 +60,11 @@ def daemon():
     os.dup2(si.fileno(), sys.stdin.fileno())
     os.dup2(so.fileno(), sys.stdout.fileno())
     os.dup2(se.fileno(), sys.stderr.fileno())
+
+def drop():
+    ruid = pwd.getpwnam("botd")[2]
+    os.setuid(ruid)
+    os.umask(0o77)
 
 def enable_history():
     assert bot.obj.workdir
@@ -133,11 +138,11 @@ def level(loglevel, nostream=False):
         logger.addHandler(filehandler)
     return logger
 
-def parse_cli(name):
+def parse_cli():
+    setwd()
     if len(sys.argv) <= 1:
         return cfg
-    setwd(name)
-    cfg.name = name
+    cfg.name = "bot"
     cfg.txt = " ".join(sys.argv[1:])
     return cfg
 
@@ -156,12 +161,12 @@ def setcompleter(commands):
 def setup(fd):
     return termios.tcgetattr(fd)
 
-def setwd(name):
+def setwd():
     import bot.obj
     if root():
-        bot.obj.workdir = "/var/lib/%s" % name
+        bot.obj.workdir = "/var/lib/botd"
     else:
-        bot.obj.workdir = os.path.expanduser("~/.%s" % name)
+        bot.obj.workdir = os.path.expanduser("~/.bot")
 
 def termreset():
     if "old" in resume:

@@ -373,7 +373,7 @@ class DCC(Handler):
         self._fsock.flush()
 
     def announce(self, txt):
-        self.raw(txt)
+        pass
 
     def connect(self, event):
         arguments = event.txt.split()
