@@ -64,7 +64,7 @@ def daemon():
 def drop():
     ruid = pwd.getpwnam("botd")[2]
     os.setuid(ruid)
-    os.umask(0o77)
+    os.umask(0o007)
 
 def enable_history():
     assert bot.obj.workdir

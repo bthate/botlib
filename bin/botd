@@ -13,8 +13,8 @@ def main():
     cfg = parse_cli()
     if not root():
         daemon()        
+    drop()
     k.walk("botd")
-    #drop()
     i = IRC()
     i.start()
     f = Fetcher()
