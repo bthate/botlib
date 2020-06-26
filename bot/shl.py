@@ -140,10 +140,9 @@ def level(loglevel, nostream=False):
 def parse_cli():
     setwd()
     if len(sys.argv) <= 1:
-        return cfg
+        return Cfg()
     p = Parsed()
     p.parse(" ".join(sys.argv[1:]))
-    print(p)
     cfg = Cfg()
     cfg.name = "bot"
     cfg.update(p)

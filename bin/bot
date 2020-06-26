@@ -16,7 +16,6 @@ import sys
 
 def main():
     cfg = parse_cli()
-    print(cfg)
     k.start()
     k.walk("botd")
     if "i" in cfg.options:
