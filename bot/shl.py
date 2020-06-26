@@ -138,14 +138,13 @@ def level(loglevel, nostream=False):
     return logger
 
 def parse_cli():
-    from .krn import k
-    setwd()
     if len(sys.argv) <= 1:
         return Cfg()
-    k.cfg = Cfg()
-    k.cfg.name = "bot"
-    parse(k.cfg, " ".join(sys.argv[1:]))
-    return k.cfg
+    cfg = Cfg()
+    cfg.name = "bot"
+    setwd(cfg.wd or getwd())
+    parse(cfg, " ".join(sys.argv[1:]))
+    return cfg
 
 def root():
     if os.geteuid() != 0:
@@ -162,12 +161,16 @@ def setcompleter(commands):
 def setup(fd):
     return termios.tcgetattr(fd)
 
-def setwd():
+def setwd(wd):
     import bot.obj
+    bot.obj.workdir = wd    
+
+
+def getwd():
     if root():
-        bot.obj.workdir = "/var/lib/botd"
+        return "/var/lib/botd"
     else:
-        bot.obj.workdir = os.path.expanduser("~/.bot")
+        return os.path.expanduser("~/.botd")
 
 def termreset():
     if "old" in resume:

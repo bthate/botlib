@@ -10,31 +10,25 @@ import os, sys ; sys.path.insert(0, os.getcwd())
 from bot.csl import Console
 from bot.irc import IRC
 from bot.krn import k
-from bot.shl import execute, parse_cli
+from bot.shl import daemon, execute, parse_cli
 
 import sys
 
 def main():
-    parse_cli()
+    cfg = parse_cli()
     k.walk("botd")
-    if not k.cfg.txt:
-        print("""bot <%s>""" % "|".join(sorted(k.cmds)))
-        return
+    if cfg.txt:
+        return k.cmd(cfg.txt)
     k.start()
-    if "d" in k.cfg.opts:
+    wait = False
+    if "d" in cfg.opts:
         daemon()
-    if "i" in k.cfg.opts:
-        i = IRC()
-        i.start()
-    if "r" in k.cfg.opts:
-        f = Fetcher()
-        f.start()
-    if "s" in k.cfg.opts:
+        wait = True
+    if "s" in cfg.opts:
         c = Console()
         c.start()
-    if "w" in k.cfg.opts:
+        wait = True
+    if wait:
         k.wait()
-    else:
-        return k.cmd(k.cfg.txt)
 
 execute(main)

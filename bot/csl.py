@@ -18,15 +18,11 @@ class Cfg(Cfg):
 class Console(Object):
 
     def announce(self, txt):
-        self.raw(txt)
+        pass
 
     def input(self):
         while 1:
             event = self.poll()
-            if not event:
-                break
-            if not event.txt:
-                continue
             event.orig = repr(self)
             k.queue.put(event)
             event.wait()
@@ -43,9 +39,5 @@ class Console(Object):
         self.raw(txt)
 
     def start(self):
-        try:
-            from .tbl import names
-            setcompleter(names)
-        except:
-            pass
+        setcompleter(k.cmds)
         launch(self.input)
