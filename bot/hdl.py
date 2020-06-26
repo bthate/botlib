@@ -9,9 +9,9 @@ import os
 import queue
 import threading
 
-from .itr import find_cmds, direct
-from .obj import Object
-from .prs import Parsed
+from .isp import find_cmds, direct
+from .obj import Default, Object
+from .prs import parse
 from .thr import launch
 
 class NOTIMPLEMENTED(Exception):
@@ -22,7 +22,7 @@ class ETYPE(Exception):
 
     pass
 
-class Event(Parsed):
+class Event(Default):
 
     def __init__(self):
         super().__init__()
@@ -57,18 +57,15 @@ class Handler(Object):
         self.stopped = False
 
     def cmd(self, txt):
-        if not txt:
-            return
         e = Event()
-        e.parse(txt)
-        e.orig = repr(self)
+        parse(e, txt)
         self.dispatch(e)
         return e
 
     def dispatch(self, event):
         if not event.txt:
             return
-        event.parse(event.txt)
+        parse(event, event.txt)
         if not event.cmd and event.txt:
             event.cmd = event.txt.split()[0]
         event.func = self.get_cmd(event.cmd)

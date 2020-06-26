@@ -90,7 +90,7 @@ class ObjectEncoder(json.JSONEncoder):
             return o.items()
         if isinstance(o, list):
             return iter(o)
-        if isinstance(o, (str, True, False, int, float)):
+        if isinstance(o, (type(str), type(True), type(False), type(int), type(float))):
             return o
         return repr(o)
 
@@ -98,7 +98,6 @@ class ObjectDecoder(json.JSONDecoder):
 
     def decode(self, o):
         return json.loads(o, object_hook=hooked)
-
 
 class Object:
 
@@ -309,8 +308,18 @@ def stamp(o):
     o.__dict__["stamp"] = o._path
     return o
 
-def strip(o):
+def slice(o, keys=[]):
+    res = type(o)()
     for k in o:
+        if k in keys:
+            continue
+        res[k] = o[k]
+    return res
+
+def strip(o, skip=[]):
+    for k in o:
+        if skip and k in skip:
+            continue
         if not k:
             del o[k]
     return o

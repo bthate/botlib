@@ -6,6 +6,7 @@ import sys, threading
 
 from .krn import k
 from .obj import Cfg, Object
+from .prs import parse
 from .hdl import Event, Handler
 from .shl import setcompleter
 from .thr import launch
@@ -32,7 +33,7 @@ class Console(Object):
 
     def poll(self):
         e = Event()
-        e.parse(input("> "))
+        e.txt = input("> ")
         return e
 
     def raw(self, txt):

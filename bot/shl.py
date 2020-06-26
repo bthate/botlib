@@ -5,7 +5,7 @@
 import atexit, argparse, grp, logging, os, pwd, readline, sys, termios, time, _thread
 
 from .obj import Cfg
-from .prs import Parsed
+from .prs import parse
 from .fil import cdir
 
 cmds = []
@@ -138,16 +138,14 @@ def level(loglevel, nostream=False):
     return logger
 
 def parse_cli():
+    from .krn import k
     setwd()
     if len(sys.argv) <= 1:
         return Cfg()
-    p = Parsed()
-    p.parse(" ".join(sys.argv[1:]))
-    cfg = Cfg()
-    cfg.name = "bot"
-    cfg.update(p)
-    cfg.update(p.sets)
-    return cfg
+    k.cfg = Cfg()
+    k.cfg.name = "bot"
+    parse(k.cfg, " ".join(sys.argv[1:]))
+    return k.cfg
 
 def root():
     if os.geteuid() != 0:

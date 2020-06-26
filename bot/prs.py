@@ -13,6 +13,7 @@ class Token(Object):
 class Option(Default):
 
     def __init__(self, txt):
+        super().__init__()
         if txt.startswith("--"):
             self.opt = txt[2:]
         if txt.startswith("-"):
@@ -32,6 +33,7 @@ class Getter(Object):
 class Setter(Object):
 
     def __init__(self, txt):
+        super().__init__()
         try:
             pre, post = txt.split("=")
         except ValueError:
@@ -39,37 +41,29 @@ class Setter(Object):
         if pre:
             self[pre] = post
                     
-class Parsed(Default):
-
-    def parse(self, txt):
-        if not txt:
-            return
-        self.gets = Default()
-        self.options = []
-        self.sets = Default()
-        args = []
-        tokens = [Token(txt) for txt in txt.split()]
-        for token in tokens:
-            g = Getter(token.txt)
-            if g:
-                self.gets.update(g)
-                continue
-            s = Setter(token.txt)
-            if s:
-                self.sets.update(s)
-                continue
-            o = Option(token.txt)
-            if o.opt:
-                self.options.append(o.opt)
-                continue
-            args.append(token.txt)
-        self.txt =  " ".join(args)
-        tokens = [Token(txt) for txt in args]
-        nr = -1
-        for token in tokens:
-            nr += 1
-            if nr == 0:
-                self.cmd = token.txt
-                continue
-            self.args.append(token.txt)
-        self.rest = " ".join(self.args)
+def parse(o, txt):
+    args = []
+    opts = []
+    o.gets = Default()
+    o.opts = Default()
+    o.sets = Default()
+    for token in [Token(txt) for txt in txt.split()]:
+        g = Getter(token.txt)
+        if g:
+            o.gets.update(g)
+            continue
+        s = Setter(token.txt)
+        if s:
+            o.sets.update(s)
+            continue
+        opt = Option(token.txt)
+        if opt.opt:
+            o.opts[opt.opt] = True
+            continue
+        args.append(token.txt)
+    if not args:
+        return
+    o.cmd = args[0]
+    o.args = args[1:]
+    o.txt = " ".join(args)
+    o.rest = " ".join(args[1:])

@@ -14,6 +14,7 @@ from bot.fil import cdir
 from bot.irc import Cfg
 from bot.krn import k, starttime
 from bot.obj import Object, format, get_type, save
+from bot.prs import parse
 from bot.tms import elapsed, fntime
 
 from botd.version import __version__
@@ -33,9 +34,6 @@ class Todo(Object):
 def cfg(event):
     c = Cfg()
     last(c)
-    if not event.args and not event.sets:
-        event.reply(format(c))
-        return
     if event.sets:
         c.update(event.sets)
         save(c)

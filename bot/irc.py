@@ -6,6 +6,7 @@ import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
 
 from .dbs import last
 from .obj import Cfg, Object, format, locked
+from .prs import parse
 from .krn import k
 from .hdl import Event, Handler
 from .thr import launch
@@ -348,7 +349,7 @@ class IRC(Handler):
         if event.txt and event.txt[0] == self.cc:
             if k.cfg.users and not k.users.allowed(event.origin, "USER"):
                return
-            event.parse(event.txt[1:])
+            parse(event, event.txt[1:])
             k.queue.put(event)
 
     def QUIT(self, event):
@@ -387,7 +388,7 @@ class DCC(Handler):
             s.connect((addr, port))
         except ConnectionError:
             return
-        s.send(bytes('Welcome to %s %s !!\n' % (k.cfg.name, event.nick), "utf-8"))
+        s.send(bytes('Welcome to BOTD %s !!\n' % event.nick, "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s
@@ -408,9 +409,9 @@ class DCC(Handler):
     def poll(self):
         self._connected.wait()
         e = Event()
-        e.txt = self._fsock.readline()
-        e.txt = e.txt.rstrip()
-        e.parse(e.txt)
+        txt = self._fsock.readline()
+        txt = txt.rstrip()
+        parse(e, txt)
         e._sock = self._sock
         e._fsock = self._fsock
         e.channel = self.origin

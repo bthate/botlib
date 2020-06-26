@@ -15,7 +15,6 @@ import _thread
 from .dbs import Db
 from .hdl import Handler
 from .obj import Cfg, Object, get_type, save
-from .prs import Parsed
 from .tms import elapsed
 from .trc import get_exception
 
@@ -47,10 +46,6 @@ class Kernel(Handler):
         
     def say(self, channel, txt):
         print(txt)
-
-    def start(self, cfg={}, names={}):
-        self.cfg.update(cfg)
-        super().start()
 
     def stop(self):
         self.stopped = True
