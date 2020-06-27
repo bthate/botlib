@@ -7,9 +7,13 @@ __version__ = 86
 
 import os, sys ; sys.path.insert(0, os.getcwd())
 
+import bot.obj
+
 from bot.csl import Console
-from bot.dbs import last
+from bot.dbs import Db, last
+from bot.fil import list_files
 from bot.irc import Cfg, IRC
+from bot.isp import find_shorts
 from bot.krn import k
 from bot.obj import format, save
 from bot.shl import daemon, execute, parse_cli
@@ -24,9 +28,39 @@ def cfg(event):
         save(c)
     event.reply(format(c))
 
+def ed(event):
+    if not event.args:
+        event.reply(list_files(bot.obj.workdir) or "no files yet")
+        return
+    cn = event.args[0]
+    shorts = find_shorts("bot")
+    if shorts:
+        cn = shorts[0]
+    db = Db()
+    l = db.last(cn)
+    if not l:
+        try:
+            c = get_cls(cn)
+            l = c()
+            event.reply("created %s" % cn)
+        except ENOCLASS:
+            event.reply(list_files(bot.obj.workdir) or "no files yet")
+            return
+    if len(event.args) == 1:
+        event.reply(l)
+        return
+    if len(event.args) == 2:
+        setter = {event.args[1]: ""}
+    else:
+        setter = {event.args[1]: event.args[2]}
+    edit(l, setter)
+    save(l)
+    event.reply("ok")
+
 def main():
     c = parse_cli()
     k.cmds.register("cfg", cfg)
+    k.cmds.register("ed", ed)
     if c.txt:
         return k.cmd(c.txt, c)
     k.start()
