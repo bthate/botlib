@@ -62,7 +62,6 @@ def ed(event):
 
 def main():
     c = parse_cli()
-    print(c)
     k.cmds.register("cfg", cfg)
     k.cmds.register("cmds", cmds)
     k.cmds.register("ed", ed)
