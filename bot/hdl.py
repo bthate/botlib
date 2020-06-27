@@ -26,7 +26,6 @@ class Event(Default):
 
     def __init__(self):
         super().__init__()
-        self.started = threading.Event()
         self.result = []
         self.thrs = []
 
@@ -40,7 +39,6 @@ class Event(Default):
             print(txt)
 
     def wait(self):
-        self.started.wait()
         res = []
         for thr in self.thrs:
             res.append(thr.join())
@@ -56,23 +54,28 @@ class Handler(Object):
         self.speed = "fast"
         self.stopped = False
 
-    def cmd(self, txt):
+    def cmd(self, txt, event=None):
         e = Event()
-        parse(e, txt)
+        if event:
+            e.update(event)
+        e.txt = txt
         self.dispatch(e)
         return e
 
-    def dispatch(self, event):
-        if not event.txt:
+    def dispatch(self, e):
+        parse(e, e.txt)
+        func = self.get_cmd(e.cmd)
+        if func:
+            func(e)
+        e.show()
+
+    def find_mod(self, name):
+        spec = importlib.util.find_spec(name)
+        if not spec:
             return
-        parse(event, event.txt)
-        if not event.cmd and event.txt:
-            event.cmd = event.txt.split()[0]
-        event.func = self.get_cmd(event.cmd)
-        if event.func:
-            event.func(event)
-        event.show()
-        event.started.set()
+        mod = importlib.util.module_from_spec(spec)
+        self.scan(mod)
+        return mod
 
     def get_cmd(self, cmd, dft=None):
         func = self.cmds.get(cmd, None)
@@ -96,11 +99,10 @@ class Handler(Object):
 
     def load_mod(self, name):
         mod = direct(name)
-        self.cmds.update(find_cmds(mod))
+        self.scan(mod)
         return mod
 
     def scan(self, mod):
-        print("scan %s" % mod.__name__)
         self.cmds.update(find_cmds(mod))
 
     def start(self):
@@ -113,7 +115,6 @@ class Handler(Object):
     def walk(self, name):
         spec = importlib.util.find_spec(name)
         if not spec:
-            print("fail %s" % name)
             return
         pkg = importlib.util.module_from_spec(spec)
         mods = []
@@ -125,3 +126,4 @@ class Handler(Object):
                 module = self.load_mod(mn)
                 mods.append(module)
         return mods
+

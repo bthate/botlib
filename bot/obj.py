@@ -316,6 +316,9 @@ def slice(o, keys=[]):
         res[k] = o[k]
     return res
 
+def spl(txt):
+    return iter(txt.split(","))
+
 def strip(o, skip=[]):
     for k in o:
         if skip and k in skip:

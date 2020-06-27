@@ -143,8 +143,7 @@ def parse_cli():
     cfg = Cfg()
     cfg.name = "bot"
     setwd(cfg.wd or getwd())
-    parse(cfg, " ".join(sys.argv[1:]))
-    return cfg
+    return parse(cfg, " ".join(sys.argv[1:]))
 
 def root():
     if os.geteuid() != 0:
@@ -164,7 +163,6 @@ def setup(fd):
 def setwd(wd):
     import bot.obj
     bot.obj.workdir = wd    
-
 
 def getwd():
     if root():

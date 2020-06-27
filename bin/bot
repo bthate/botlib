@@ -8,23 +8,37 @@ __version__ = 86
 import os, sys ; sys.path.insert(0, os.getcwd())
 
 from bot.csl import Console
-from bot.irc import IRC
+from bot.dbs import last
+from bot.irc import Cfg, IRC
 from bot.krn import k
+from bot.obj import format, save
 from bot.shl import daemon, execute, parse_cli
 
 import sys
 
+def cfg(event):
+    c = Cfg()
+    last(c)
+    if event.sets:
+        c.update(event.sets)
+        save(c)
+    event.reply(format(c))
+
 def main():
-    cfg = parse_cli()
-    k.walk("botd")
-    if cfg.txt:
-        return k.cmd(cfg.txt)
+    c = parse_cli()
+    k.cmds.register("cfg", cfg)
+    if c.txt:
+        return k.cmd(c.txt, c)
     k.start()
     wait = False
-    if "d" in cfg.opts:
+    if "d" in c.opts:
         daemon()
         wait = True
-    if "s" in cfg.opts:
+    if "i" in c.opts:
+        i = IRC()
+        i.start()
+        wait = True
+    if "s" in c.opts:
         c = Console()
         c.start()
         wait = True

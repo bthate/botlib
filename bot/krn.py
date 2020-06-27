@@ -12,9 +12,9 @@ import time
 import traceback
 import _thread
 
-from .dbs import Db
+from .dbs import Db, last
 from .hdl import Handler
-from .obj import Cfg, Object, get_type, save
+from .obj import Cfg, Object, get_type, save, spl
 from .tms import elapsed
 from .trc import get_exception
 
@@ -53,7 +53,7 @@ class Kernel(Handler):
 
     def wait(self):
         while not self.stopped:
-            time.sleep(1.0)
+            time.sleep(60.0)
 
 class Fleet(Object):
 
