@@ -28,6 +28,9 @@ def cfg(event):
         save(c)
     event.reply(format(c))
 
+def cmds(event):
+    event.reply("|".join(sorted(k.cmds)))
+
 def ed(event):
     if not event.args:
         event.reply(list_files(bot.obj.workdir) or "no files yet")
@@ -60,6 +63,7 @@ def ed(event):
 def main():
     c = parse_cli()
     k.cmds.register("cfg", cfg)
+    k.cmds.register("cmds", cmds)
     k.cmds.register("ed", ed)
     if c.txt:
         return k.cmd(c.txt, c)
