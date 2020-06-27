@@ -63,19 +63,17 @@ class Handler(Object):
         return e
 
     def dispatch(self, e):
-        parse(e, e.txt)
-        func = self.get_cmd(e.cmd)
+        p = parse(e, e.txt)
+        func = self.get_cmd(p.cmd)
         if func:
-            func(e)
-        e.show()
+            func(p)
+        p.show()
 
     def find_mod(self, name):
         spec = importlib.util.find_spec(name)
         if not spec:
             return
-        mod = importlib.util.module_from_spec(spec)
-        self.scan(mod)
-        return mod
+        return importlib.util.module_from_spec(spec)
 
     def get_cmd(self, cmd, dft=None):
         func = self.cmds.get(cmd, None)

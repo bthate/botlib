@@ -140,11 +140,13 @@ def level(loglevel, nostream=False):
 def parse_cli():
     if len(sys.argv) <= 1:
         return Cfg()
-    cfg = Cfg()
-    cfg.name = "bot"
-    setwd(cfg.wd or getwd())
-    return parse(cfg, " ".join(sys.argv[1:]))
-
+    c = Cfg()
+    setwd(c.wd or getwd())
+    p = parse(c, " ".join(sys.argv[1:]))
+    c.update(p.sets)
+    c.txt = p.txt
+    return c
+    
 def root():
     if os.geteuid() != 0:
         return False

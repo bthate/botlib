@@ -15,7 +15,7 @@ from bot.fil import list_files
 from bot.irc import Cfg, IRC
 from bot.isp import find_shorts
 from bot.krn import k
-from bot.obj import format, save
+from bot.obj import format, save, spl
 from bot.shl import daemon, execute, parse_cli
 
 import sys
@@ -62,9 +62,12 @@ def ed(event):
 
 def main():
     c = parse_cli()
+    print(c)
     k.cmds.register("cfg", cfg)
     k.cmds.register("cmds", cmds)
     k.cmds.register("ed", ed)
+    for pkg in spl(c.mods):
+        k.walk(pkg)
     if c.txt:
         return k.cmd(c.txt, c)
     k.start()
