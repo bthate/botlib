@@ -9,7 +9,7 @@ import os, sys ; sys.path.insert(0, os.getcwd())
 
 from bot.csl import Console
 from bot.krn import k
-from bot.shl import execute, parse_cli
+from bot.shl import daemon, execute, parse_cli
 
 def main():
     c = parse_cli()
@@ -18,11 +18,12 @@ def main():
         return k.cmd(c.txt, c)
     if "d" in c.opts:
         daemon()
+    elif "s" not in c.opts:
+        return
     k.init(c.mods)
-    if "s" in c.opts:
-        con = Console()
-        con.start()
-        k.start()
-        k.wait()
+    con = Console()
+    con.start()
+    k.start()
+    k.wait()
 
 execute(main)

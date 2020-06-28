@@ -50,7 +50,6 @@ def daemon():
     os.setsid()
     pid = os.fork()
     if pid != 0:
-        termreset()
         os._exit(0)
     os.umask(0)
     si = open("/dev/null", 'r')
