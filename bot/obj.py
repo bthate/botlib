@@ -178,7 +178,7 @@ class Default(Object):
 
     def __getattr__(self, k):
         if k not in self:
-            self.__dict__.__setitem__(k, "")
+            return ""
         return self.__dict__[k]
 
 class Cfg(Default):
@@ -317,7 +317,7 @@ def slice(o, keys=[]):
     return res
 
 def spl(txt):
-    return iter(txt.split(","))
+    return iter([x for x in txt.split(",") if x])
 
 def strip(o, skip=[]):
     for k in o:

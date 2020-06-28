@@ -2,13 +2,7 @@
 #
 #
 
-import datetime
-import html.parser
-import os
-import random
-import re
-import time
-import urllib
+import datetime, html.parser, os, random, re, time, urllib
 
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
@@ -29,10 +23,10 @@ except ModuleNotFoundError:
 
 debug = False
 
-def init(kernel):
-    fetcher = Fetcher()
-    fetcher.start()
-    return fetcher
+def init(k):
+    f = Fetcher()
+    f.start()
+    return f
 
 class Cfg(Cfg):
 

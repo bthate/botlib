@@ -143,8 +143,12 @@ def parse_cli():
     c = Cfg()
     setwd(c.wd or getwd())
     p = parse(c, " ".join(sys.argv[1:]))
-    c.update(p.sets)
-    c.txt = p.txt
+    if p:
+        c.update(p.sets)
+        if p.opts:
+            c.opts = p.opts
+        if p.txt:
+            c.txt = p.txt
     return c
     
 def root():

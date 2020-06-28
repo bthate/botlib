@@ -55,9 +55,6 @@ def done(event):
         break
 
 def find(event):
-    if event.speed != "fast":
-        event.reply("use a faster bot to display (dcc).")
-        return
     if not event.args:
         wd = os.path.join(bot.obj.workdir, "store", "")
         cdir(wd)
@@ -88,9 +85,6 @@ def find(event):
 def fl(event):
     try:
         index = int(event.args[0])
-        if event.speed != "fast":
-            event.reply("use a faster bot to display.")
-            return
         event.reply(str(k.fleet.bots[index]))
         return
     except (TypeError, ValueError, IndexError):

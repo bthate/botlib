@@ -14,6 +14,7 @@ import _thread
 
 from .dbs import Db, last
 from .hdl import Handler
+from .isp import direct
 from .obj import Cfg, Object, get_type, save, spl
 from .tms import elapsed
 from .trc import get_exception
@@ -43,6 +44,13 @@ class Kernel(Handler):
         self.fleet = Fleet()
         self.users = Users()
         self.fleet.add(self)
+
+    def init(self, mns):
+        for mn in spl(mns):
+            mod = direct(mn)
+            func = getattr(mod, "init", None)
+            if func:
+                func(k)
         
     def say(self, channel, txt):
         print(txt)

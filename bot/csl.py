@@ -11,6 +11,11 @@ from .hdl import Event, Handler
 from .shl import setcompleter
 from .thr import launch
 
+def init(k):
+    c = Console()
+    c.start()
+    return c
+
 class Cfg(Cfg):
 
     pass
@@ -29,6 +34,7 @@ class Console(Object):
 
     def poll(self):
         e = Event()
+        e.speed = "fast"
         e.txt = input("> ")
         return e
 

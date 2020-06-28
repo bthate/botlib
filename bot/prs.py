@@ -43,6 +43,7 @@ class Setter(Object):
                     
 def parse(o, txt):
     n = type(o)()
+    n.update(o)
     args = []
     opts = []
     n.gets = Default()
@@ -63,7 +64,7 @@ def parse(o, txt):
             continue
         args.append(token.txt)
     if not args:
-        return
+        return n
     n.cmd = args[0]
     n.args = args[1:]
     n.txt = " ".join(args)

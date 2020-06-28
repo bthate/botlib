@@ -7,82 +7,22 @@ __version__ = 86
 
 import os, sys ; sys.path.insert(0, os.getcwd())
 
-import bot.obj
-
 from bot.csl import Console
-from bot.dbs import Db, last
-from bot.fil import list_files
-from bot.irc import Cfg, IRC
-from bot.isp import find_shorts
 from bot.krn import k
-from bot.obj import format, save, spl
-from bot.shl import daemon, execute, parse_cli
-
-import sys
-
-def cfg(event):
-    c = Cfg()
-    last(c)
-    if event.sets:
-        c.update(event.sets)
-        save(c)
-    event.reply(format(c))
-
-def cmds(event):
-    event.reply("|".join(sorted(k.cmds)))
-
-def ed(event):
-    if not event.args:
-        event.reply(list_files(bot.obj.workdir) or "no files yet")
-        return
-    cn = event.args[0]
-    shorts = find_shorts("bot")
-    if shorts:
-        cn = shorts[0]
-    db = Db()
-    l = db.last(cn)
-    if not l:
-        try:
-            c = get_cls(cn)
-            l = c()
-            event.reply("created %s" % cn)
-        except ENOCLASS:
-            event.reply(list_files(bot.obj.workdir) or "no files yet")
-            return
-    if len(event.args) == 1:
-        event.reply(l)
-        return
-    if len(event.args) == 2:
-        setter = {event.args[1]: ""}
-    else:
-        setter = {event.args[1]: event.args[2]}
-    edit(l, setter)
-    save(l)
-    event.reply("ok")
+from bot.shl import execute, parse_cli
 
 def main():
     c = parse_cli()
-    k.cmds.register("cfg", cfg)
-    k.cmds.register("cmds", cmds)
-    k.cmds.register("ed", ed)
-    for pkg in spl(c.mods):
-        k.walk(pkg)
+    k.walk("botd")
     if c.txt:
         return k.cmd(c.txt, c)
-    k.start()
-    wait = False
     if "d" in c.opts:
         daemon()
-        wait = True
-    if "i" in c.opts:
-        i = IRC()
-        i.start()
-        wait = True
+    k.init(c.mods)
     if "s" in c.opts:
-        c = Console()
-        c.start()
-        wait = True
-    if wait:
+        con = Console()
+        con.start()
+        k.start()
         k.wait()
 
 execute(main)

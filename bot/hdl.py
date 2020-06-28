@@ -2,12 +2,8 @@
 #
 #
 
-import importlib
-import importlib.util
-import importlib.resources
-import os
-import queue
-import threading
+import importlib, importlib.util, importlib.resources
+import os, queue, threading, time
 
 from .isp import find_cmds, direct
 from .obj import Default, Object
@@ -39,6 +35,7 @@ class Event(Default):
             print(txt)
 
     def wait(self):
+        time.sleep(0.001)
         res = []
         for thr in self.thrs:
             res.append(thr.join())
@@ -111,11 +108,11 @@ class Handler(Object):
         self.queue.put(None)
 
     def walk(self, name):
+        mods = []
         spec = importlib.util.find_spec(name)
         if not spec:
-            return
+            return mods
         pkg = importlib.util.module_from_spec(spec)
-        mods = []
         for pn in pkg.__path__:
             for fn in os.listdir(pn):
                 if fn.startswith("_") or not fn.endswith(".py"):
