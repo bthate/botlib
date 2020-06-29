@@ -14,7 +14,7 @@ from bot.shl import daemon, execute, parse_cli
 def main():
     c = parse_cli()
     k.walk("botd")
-    if c.origtxt:
+    if c.txt:
         return k.cmd(c.origtxt)
     if "d" in c.opts:
         daemon()
