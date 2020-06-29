@@ -51,10 +51,8 @@ class Handler(Object):
         self.speed = "fast"
         self.stopped = False
 
-    def cmd(self, txt, event=None):
+    def cmd(self, txt):
         e = Event()
-        if event:
-            e.update(event)
         e.txt = txt
         self.dispatch(e)
         return e

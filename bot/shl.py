@@ -140,14 +140,10 @@ def parse_cli():
     if len(sys.argv) <= 1:
         return Cfg()
     c = Cfg()
-    setwd(c.wd or getwd())
     p = parse(c, " ".join(sys.argv[1:]))
-    if p:
-        c.update(p.sets)
-        if p.opts:
-            c.opts = p.opts
-        if p.txt:
-            c.txt = p.txt
+    setwd(p.wd or getwd())
+    if len(sys.argv) >= 2:
+        c.txt = " ".join(sys.argv[1:])
     return c
     
 def root():
