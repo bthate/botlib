@@ -3,7 +3,7 @@
 #
 #
 
-import os
+import os, sys
 
 from bot.csl import Console
 from bot.irc import IRC

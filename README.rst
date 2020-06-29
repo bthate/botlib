@@ -38,13 +38,13 @@ the systemd daemon. You can do this by running the following:
 
 ::
 
- > sudo bot cmd install
+ > sudo botd install
 
 if you don't want the bot to startup at boot, remove the service file:
 
 ::
 
- > sudo bot cmd remove
+ > sudo botd remove
 
 |
 
@@ -57,8 +57,8 @@ to configure the bot use the ed (edit) command, with sudo:
 
 ::
 
- > bot cmd cfg <server> <channel> <nick>
- > bot cmd hup
+ > botd cfg <server> <channel> <nick>
+ > botd hup
 
 U S A G E
 =========
@@ -66,26 +66,25 @@ U S A G E
 |
 
 BOTLIB detects whether it is run as root or as a user. if it's root it
-will use the /var/lib/botd directory and it it's user it will use ~/.bot
+will use the /var/lib/botd directory and it it's user it will use ~/.botd
 
-BOTLIB has it's own CLI, you can run it by giving the bot command on the
-prompt, it will return with its own prompt:
+BOTLIB has it's own CLI, you can run it by giving the botd command on the
+prompt, it will return with no response:
 
-::
+:: 
 
- > bot
- > cmds
- cfg|cmds|ed|find|fleet|meet|ps|udp
+ > botd
  >
 
-you can use bot cmd with arguments to run a command directly:
+
+you can use botd cmd with arguments to run a command directly:
 
 ::
 
  > bot cmd cmds
  cfg|cmds|ed|find|fleet|meet|ps|udp
 
-if you run with sudo, you will get additional command like install,cfg and hup:
+if you run with sudo, you will get additional command like install,hup and remove:
 
 ::
 
@@ -93,45 +92,59 @@ if you run with sudo, you will get additional command like install,cfg and hup:
  cfg|cmds|ed|find|fleet|hup|install|meet|ps|remove|udp
 
 
+running botd with the -s option returns a prompt:
+
+::
+
+ > botd -s
+ > cmds
+ cfg|cmds|ed|find|fleet|meet|ps|udp
+ >
+
+giving the -d option runs botd in the background:
+
+::
+
+ > botd -d
+ > ps xa | grep botd
+ 74452 ?        Sl     0:00 /usr/bin/python3 -u ./bin/botd -d
+ >
+
 R S S
 =====
-
-|
 
 to add an url use the rss command with an url:
 
 ::
 
- > bot cmd rss https://news.ycombinator.com/rss
+ > botd rss https://news.ycombinator.com/rss
  ok 1
 
 run the rss command to see what urls are registered:
 
 ::
 
- > bot cmd rss
+ > botd rss
  0 https://news.ycombinator.com/rss
 
 the fetch command can be used to poll the added feeds:
 
 ::
 
- > bot cmd fetch
+ > botd fetch
  fetched 0
 
 U D P
 =====
-
-|
 
 using udp to relay text into a channel, use the okudp program to send text via the bot 
 to the channel on the irc server:
 
 ::
 
- > tail -f /var/log/syslog | bot cmd udp
+ > tail -f /var/log/syslog | botd udp
 
-to send the tail output to the IRC channel, send a udp packet to the bot:
+to send the tail output to the IRC channel, send a udp packet to the botd:
 
 ::
 
@@ -144,38 +157,38 @@ to send the tail output to the IRC channel, send a udp packet to the bot:
 S O U R C E
 ===========
 
-|
-
-BOTLIB used the oklib package that has the following modules.
+BOTLIB has the following modules:
 
 ::
 
-    bot.cbs		- callbacks
-    bot.clk		- clock/repeater
-    bot.cmd		- commands
-    bot.csl		- console 
-    bot.flt		- fleet
-    bot.hdl		- handler
-    bot.irc		- internet relay chat
-    bot.krn		- core handler
-    bot.obj		- base classes
-    bot.opr		- opers
-    bot.rss		- rich site syndicate
-    bot.shl		- shell
-    bot.spc		- space
-    bot.thr		- threads
-    bot.udp		- udp to channel
-    bot.usr		- users
-    bot.utl		- utilities
+    bot.clk             - clock/repeater
+    bot.csl             - console
+    bot.fil             - file 
+    bot.hdl             - handler
+    bot.irc             - internet relay chat
+    bot.itr             - introspect
+    bot.krn             - core handler
+    bot.obj             - base classes
+    bot.prs             - parse
+    bot.shl             - shell
+    bot.thr             - threads
+    bot.tms             - time
+    bot.trc             - trace
+
+
+BOTD itself provides these modules:
+
+::
+
+    botd.cmd             - commands
+    botd.opr             - opers
+    botd.rss             - rich site syndicate
+    botd.udp             - udp to channel
 
 You can add you own modules to the bot package, its a namespace package.
 
-|
-
 C O N T A C T
 =============
-
-|
 
 you can contact me on IRC/freenode/#dunkbots or email me at bthate@dds.nl
 
