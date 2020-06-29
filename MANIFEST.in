@@ -1,2 +1,2 @@
-include bin/bot
+include bin/botd
 recursive-include botd *
