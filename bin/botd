@@ -10,6 +10,8 @@ from bot.irc import IRC
 from bot.krn import k
 from bot.shl import execute, parse_cli, root, termreset
 
+from botd.rss import Fetcher
+
 txt="""[Unit]
 Description=BOTD - the 24/7 IRC channel daemon
 After=network-online.target
@@ -79,6 +81,9 @@ def main():
         return
     if "d" in c.opts:
         daemon()
+    if "r" in c.opts:
+        f = Fetcher()
+        f.start()
     if "s" in c.opts:
         con = Console()
         con.start()
