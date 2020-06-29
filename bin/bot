@@ -42,7 +42,7 @@ def daemon():
     os.dup2(se.fileno(), sys.stderr.fileno())
 
 def help(event):
-    event.reply("botd [<cmd>] [-d (daemon) | -i (irc) | -r (rss) | -u (udp)]")
+    event.reply("bot <cmd> [-d] [-i] [-r] [-s] [-u]")
 
 def hup(event):
     for x in os.popen("service botd stop").readlines():
