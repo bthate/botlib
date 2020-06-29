@@ -42,31 +42,30 @@ class Setter(Object):
             self[pre] = post
                     
 def parse(o, txt):
-    n = type(o)()
-    n.update(o)
     args = []
     opts = []
-    n.gets = Default()
-    n.opts = Default()
-    n.sets = Default()
+    o.origtxt = txt
+    o.gets = Default()
+    o.opts = Default()
+    o.sets = Default()
     for token in [Token(txt) for txt in txt.split()]:
         g = Getter(token.txt)
         if g:
-            n.gets.update(g)
+            o.gets.update(g)
             continue
         s = Setter(token.txt)
         if s:
-            n.sets.update(s)
+            o.sets.update(s)
             continue
         opt = Option(token.txt)
         if opt.opt:
-            n.opts[opt.opt] = True
+            o.opts[opt.opt] = True
             continue
         args.append(token.txt)
     if not args:
-        return n
-    n.cmd = args[0]
-    n.args = args[1:]
-    n.txt = " ".join(args)
-    n.rest = " ".join(args[1:])
-    return n
+        return o
+    o.cmd = args[0]
+    o.args = args[1:]
+    o.txt = " ".join(args)
+    o.rest = " ".join(args[1:])
+    return o
