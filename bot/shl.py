@@ -42,23 +42,6 @@ def complete(text, state):
     except IndexError:
         return None
 
-def daemon():
-    pid = os.fork()
-    if pid != 0:
-        termreset()
-        os._exit(0)
-    os.setsid()
-    pid = os.fork()
-    if pid != 0:
-        os._exit(0)
-    os.umask(0)
-    si = open("/dev/null", 'r')
-    so = open("/dev/null", 'a+')
-    se = open("/dev/null", 'a+')
-    os.dup2(si.fileno(), sys.stdin.fileno())
-    os.dup2(so.fileno(), sys.stdout.fileno())
-    os.dup2(se.fileno(), sys.stderr.fileno())
-
 def drop():
     ruid = pwd.getpwnam("botd")[2]
     os.setuid(ruid)
