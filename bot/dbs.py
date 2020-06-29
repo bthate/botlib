@@ -2,11 +2,7 @@
 #
 #
 
-import os
-import time
-import bot.obj
-
-from .obj import Object, hook, names, fntime, search, get_type
+from .obj import Object, hook, names, fntime, find, get_type, search
 
 class Db(Object):
 
@@ -79,12 +75,12 @@ class Db(Object):
             return (fn, hook(fn))
         return (None, None)
 
-    def last_all(self, otype, selector={}, index=None, delta=0):
+    def last_all(self, otype, selector=None, index=None, delta=0):
         nr = -1
         res = []
         for fn in names(otype, delta):
             o = hook(fn)
-            if selector and search(o, selector):
+            if selector is not None and search(o, selector):
                 nr += 1
                 if index is not None and nr != index:
                     continue

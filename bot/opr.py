@@ -2,13 +2,17 @@
 #
 #
 
-import threading, sys, time
+import threading, time
 
-from bot.dbs import last
-from bot.obj import Object, format, save, starttime
-from bot.irc import Cfg
-from bot.krn import k
-from bot.tms import elapsed
+import bot.obj
+
+from .dbs import Db, last
+from .fil import list_files
+from .obj import ENOCLASS, Object, edit, get_cls, tostr, save, starttime
+from .irc import Cfg
+from .isp import find_shorts
+from .krn import k
+from .tms import elapsed
 
 def cfg(event):
     c = Cfg()
@@ -16,7 +20,7 @@ def cfg(event):
     if event.sets:
         c.update(event.sets)
         save(c)
-    event.reply(format(c))
+    event.reply(tostr(c))
 
 def cmds(event):
     event.reply("|".join(sorted(k.cmds)))

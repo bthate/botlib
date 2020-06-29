@@ -23,7 +23,7 @@ except ModuleNotFoundError:
 
 debug = False
 
-def init(k):
+def init(kernel):
     f = Fetcher()
     f.start()
     return f

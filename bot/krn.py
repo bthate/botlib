@@ -4,20 +4,12 @@
 
 __version__ = 87
 
-import inspect
-import os
-import sys
-import threading
-import time
-import traceback
-import _thread
+import threading, time
 
-from .dbs import Db, last
+from .dbs import Db
 from .hdl import Handler
 from .isp import direct
-from .obj import Cfg, Object, get_type, save, spl
-from .tms import elapsed
-from .trc import get_exception
+from .obj import Cfg, Object, save, spl
 
 starttime = time.time()
 
@@ -51,7 +43,7 @@ class Kernel(Handler):
             func = getattr(mod, "init", None)
             if func:
                 func(k)
-        
+
     def say(self, channel, txt):
         print(txt)
 
@@ -73,9 +65,9 @@ class Fleet(Object):
     def add(self, bot):
         Fleet.bots.append(bot)
 
-    def announce(self, txt, skip=[]):
+    def announce(self, txt, skip=None):
         for h in self.bots:
-            if skip and type(h) in skip:
+            if skip is not None and isinstance(h, skip):
                 continue
             if "announce" in dir(h):
                 h.announce(txt)
@@ -143,10 +135,10 @@ class Users(Db):
         return self.all("bot.usr.User", s)
 
     def get_user(self, origin):
-        u =  list(self.get_users(origin))
+        u = list(self.get_users(origin))
         if u:
             return u[-1]
- 
+
     def meet(self, origin, perms=None):
         user = self.get_user(origin)
         if user:

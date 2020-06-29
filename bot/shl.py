@@ -2,11 +2,13 @@
 #
 #
 
-import atexit, argparse, grp, logging, os, pwd, readline, sys, termios, time, _thread
+import atexit, os, pwd, readline, sys, termios
+
+import bot.obj
 
 from .obj import Cfg
 from .prs import parse
-from .fil import cdir
+from .fil import cdir, touch
 
 cmds = []
 logfile = ""
@@ -49,6 +51,7 @@ def drop():
 
 def enable_history():
     assert bot.obj.workdir
+    global HISTFILE
     HISTFILE = os.path.abspath(os.path.join(bot.obj.workdir, "history"))
     if not os.path.exists(HISTFILE):
         cdir(HISTFILE)
@@ -71,54 +74,6 @@ def execute(main):
 def get_completer():
     return readline.get_completer()
 
-def level(loglevel, nostream=False):
-    if not loglevel:
-        loglevel = "error"
-    if logfile and not os.path.exists(logfile):
-        cdir(logfile)
-        touch(logfile)
-    datefmt = '%H:%M:%S'
-    format_time = "%(asctime)-8s %(message)-70s"
-    format_plain = "%(message)-0s"
-    loglevel = loglevel.upper()
-    logger = logging.getLogger("")
-    if logger.handlers:
-        for handler in logger.handlers:
-            logger.removeHandler(handler)
-    if logger.handlers:
-        for handler in logger.handlers:
-            logger.removeHandler(handler)
-    try:
-        logger.setLevel(loglevel)
-    except ValueError:
-        pass
-    formatter = logging.Formatter(format_plain, datefmt)
-    if nostream:
-        dhandler = DumpHandler()
-        dhandler.propagate = False
-        dhandler.setLevel(loglevel)
-        logger.addHandler(dhandler)
-    else:
-        handler = logging.StreamHandler()
-        handler.propagate = False
-        handler.setFormatter(formatter)
-        try:
-            handler.setLevel(loglevel)
-            logger.addHandler(handler)
-        except ValueError:
-            loglevel = "ERROR"
-    if logfile:
-        formatter2 = logging.Formatter(format_time, datefmt)
-        filehandler = logging.handlers.TimedRotatingFileHandler(logfile, 'midnight')
-        filehandler.propagate = False
-        filehandler.setFormatter(formatter2)
-        try:
-            filehandler.setLevel(loglevel)
-        except ValueError:
-            pass
-        logger.addHandler(filehandler)
-    return logger
-
 def parse_cli():
     if len(sys.argv) <= 1:
         return Cfg()
@@ -126,31 +81,28 @@ def parse_cli():
     parse(c, " ".join(sys.argv[1:]))
     setwd(c.wd or getwd())
     return c
-    
+
 def root():
     if os.geteuid() != 0:
         return False
     return True
 
 def setcompleter(commands):
-    global cmds
     cmds = commands
     readline.set_completer(complete)
     readline.parse_and_bind("tab: complete")
     atexit.register(lambda: readline.set_completer(None))
-        
+
 def setup(fd):
     return termios.tcgetattr(fd)
 
 def setwd(wd):
-    import bot.obj
-    bot.obj.workdir = wd    
+    bot.obj.workdir = wd
 
 def getwd():
     if root():
         return "/var/lib/botd"
-    else:
-        return os.path.expanduser("~/.botd")
+    return os.path.expanduser("~/.botd")
 
 def termreset():
     if "old" in resume:
@@ -162,7 +114,7 @@ def termsave():
         resume["old"] = setup(sys.stdin.fileno())
         atexit.register(termreset)
     except termios.error:
-        pass    
+        pass
 
 def writepid():
     assert bot.obj.workdir

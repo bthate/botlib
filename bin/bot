@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -u
-# BOTD - the 24/7 channel daemon !
+# BOTD - the bot library !
 #
 #
 
@@ -9,16 +9,16 @@ from bot.csl import Console
 from bot.irc import IRC
 from bot.krn import k
 from bot.shl import execute, parse_cli, root, termreset
-
-from botd.rss import Fetcher
+from bot.rss import Fetcher
+from bot.udp import UDP
 
 txt="""[Unit]
-Description=BOTD - the 24/7 IRC channel daemon
+Description=BOTLIB - the bot library !
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/botd -i -r
+ExecStart=/usr/local/bin/bot -i -r
 
 [Install]
 WantedBy=multi-user.target
@@ -40,6 +40,9 @@ def daemon():
     os.dup2(si.fileno(), sys.stdin.fileno())
     os.dup2(so.fileno(), sys.stdout.fileno())
     os.dup2(se.fileno(), sys.stderr.fileno())
+
+def help(event):
+    event.reply("botd [<cmd>] [-d (daemon) | -i (irc) | -r (rss) | -u (udp)]")
 
 def hup(event):
     for x in os.popen("service botd stop").readlines():
@@ -70,8 +73,11 @@ def remove(event):
 
 def main():
     c = parse_cli()
-    k.walk("botd")
-    if root():
+    if "--help" in c.opts:
+        help()
+    k.load_mod("bot.cmd")
+    k.cmds.register("help", help)
+    if root() and "i" not in c.opts:
         k.cmds.register("hup", hup)
         k.cmds.register("install", install)
         k.cmds.register("remove", remove)
@@ -85,12 +91,15 @@ def main():
         f = Fetcher()
         f.start()
     if "s" in c.opts:
+        k.load_mod("bot.opr")
         con = Console()
         con.start()
     if "i" in c.opts:
         i = IRC()
         i.start()
-    k.init(c.mods)
+    if "u" in c.opts:
+        u = UDP
+        u.start()
     k.start()
     k.wait()
 

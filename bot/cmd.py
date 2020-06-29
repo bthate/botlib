@@ -2,22 +2,16 @@
 #
 #
 
-__version__ = 1
-
-import os
-import time
+import os, time
 
 import bot.obj
 
-from bot.dbs import Db, last
-from bot.fil import cdir
-from bot.irc import Cfg
-from bot.krn import k, starttime
-from bot.obj import Object, format, get_type, save
-from bot.prs import parse
-from bot.tms import elapsed, fntime
-
-from botd.version import __version__
+from .dbs import Db, last
+from .fil import cdir
+from .irc import Cfg
+from .krn import k, starttime, __version__
+from .obj import Object, tostr, get_type, save
+from .tms import elapsed, fntime
 
 class Log(Object):
 
@@ -37,7 +31,7 @@ def cfg(event):
     if event.sets:
         c.update(event.sets)
         save(c)
-    event.reply(format(c))
+    event.reply(tostr(c))
 
 def cmds(event):
     event.reply("|".join(sorted(k.cmds)))

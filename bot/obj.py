@@ -29,15 +29,15 @@ class EJSON(Exception):
 
     pass
 
-def locked(lock):
+def locked(l):
     def lockeddec(func, *args, **kwargs):
         def lockedfunc(*args, **kwargs):
-            lock.acquire()
+            l.acquire()
             res = None
             try:
                 res = func(*args, **kwargs)
             finally:
-                lock.release()
+                l.release()
             return res
         return lockedfunc
     return lockeddec
@@ -190,7 +190,7 @@ class DoL(Object):
     def append(self, key, value):
         if key not in self:
             self[key] = []
-        if type(value) == list:
+        if isinstance(value, list):
             self[key].extend(value)
         else:
             self[key].append(value)
@@ -233,7 +233,7 @@ def fntime(daystr):
 
 def search(o, match=None):
     res = False
-    if match == None:
+    if match is None:
         return res
     for key, value in match.items():
         val = o.get(key, None)
@@ -244,17 +244,13 @@ def search(o, match=None):
             if value in str(val):
                 res = True
                 continue
-            else:
-                res = False
-                break
-        else:
             res = False
             break
     return res
 
 def merge(self, o, vals=None):
     if vals is None:
-        vals = [""],
+        vals = ["",]
     return self.update(strip(o, vals))
 
 def stamp(o):
@@ -308,10 +304,10 @@ def stamp(o):
     o.__dict__["stamp"] = o._path
     return o
 
-def slice(o, keys=[]):
+def slc(o, keys=None):
     res = type(o)()
     for k in o:
-        if k in keys:
+        if keys is not None and k in keys:
             continue
         res[k] = o[k]
     return res
@@ -319,18 +315,18 @@ def slice(o, keys=[]):
 def spl(txt):
     return iter([x for x in txt.split(",") if x])
 
-def strip(o, skip=[]):
+def strip(o, skip=None):
     for k in o:
-        if skip and k in skip:
+        if skip is not None and k in skip:
             continue
         if not k:
             del o[k]
     return o
 
-def xdir(o, skip=""):
+def xdir(o, skip=None):
     res = []
     for k in dir(o):
-        if skip and skip in k:
+        if skip is not None and skip in k:
             continue
         res.append(k)
     return res
@@ -338,7 +334,7 @@ def xdir(o, skip=""):
 def edit(o, setter, skip=False):
     try:
         setter = vars(setter)
-    except:
+    except ValueError:
         pass
     if not setter:
         setter = {}
@@ -361,7 +357,7 @@ def find(o, val):
             return True
     return False
 
-def format(o, keys=None):
+def tostr(o, keys=None):
     if keys is None:
         keys = vars(o).keys()
     res = []

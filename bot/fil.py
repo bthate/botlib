@@ -2,7 +2,9 @@
 #
 #
 
-import os
+import os, time
+
+import bot.obj
 
 def cdir(path):
     if os.path.exists(path):
@@ -35,7 +37,6 @@ def fntime(daystr):
     return t
 
 def names(name, delta=None):
-    import bot.obj
     assert bot.obj.workdir
     if not name:
         return []
@@ -59,7 +60,6 @@ def root():
     return True
 
 def setwd(name):
-    import bot.obj
     if root():
         bot.obj.workdir = "/var/lib/%s" % name
     else:
@@ -73,4 +73,4 @@ def touch(fname):
         pass
 
 def list_files(wd):
-    return "|".join([x for x in os.listdir(os.path.join(wd, "store"))])
+    return "|".join(os.path.join(wd, "store"))

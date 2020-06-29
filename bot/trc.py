@@ -2,9 +2,7 @@
 #
 #
 
-import os
-import sys
-import traceback
+import os, sys, traceback
 
 def get_exception(txt="", sep=" "):
     exctype, excvalue, tb = sys.exc_info()
@@ -28,4 +26,3 @@ def get_exception(txt="", sep=" "):
     res = "%s %s: %s %s" % (sep.join(result), exctype, excvalue, str(txt))
     del trace
     return res
-

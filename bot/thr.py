@@ -2,7 +2,7 @@
 #
 #
 
-import queue, threading, time, types
+import queue, threading, types
 
 from .obj import Object
 
@@ -19,7 +19,7 @@ class Thr(threading.Thread):
         self._queue.put((func, args))
         self.sleep = None
         self.state = Object()
-        
+
     def __iter__(self):
         return self
 

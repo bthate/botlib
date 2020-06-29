@@ -2,16 +2,13 @@
 #
 #
 
-import sys, threading
-
 from .krn import k
 from .obj import Cfg, Object
-from .prs import parse
-from .hdl import Event, Handler
+from .hdl import Event
 from .shl import setcompleter
 from .thr import launch
 
-def init(k):
+def init(kernel):
     c = Console()
     c.start()
     return c
@@ -41,7 +38,7 @@ class Console(Object):
     def raw(self, txt):
         print(txt.rstrip())
 
-    def say(self, channel, txt, type="chat"):
+    def say(self, channel, txt):
         self.raw(txt)
 
     def start(self):

@@ -2,7 +2,7 @@
 #
 #
 
-import importlib, inspect, os
+import importlib, inspect, os, pkg_resources
 
 from .obj import Object
 
@@ -27,7 +27,7 @@ def find_allnames(name):
 def find_callbacks(mod):
     cbs = {}
     for key, o in inspect.getmembers(mod, inspect.isfunction):
-       if "event" in o.__code__.co_varnames:
+        if "event" in o.__code__.co_varnames:
             if o.__code__.co_argcount == 2:
                 cbs[key] = o
     return cbs
@@ -42,15 +42,15 @@ def find_cls(mod):
 def find_cmds(mod):
     cmds = {}
     for key, o in inspect.getmembers(mod, inspect.isfunction):
-       if "event" in o.__code__.co_varnames:
+        if "event" in o.__code__.co_varnames:
             if o.__code__.co_argcount == 1:
                 cmds[key] = o
     return cmds
 
-def find_modules(pkgs, filter=None):
+def find_modules(pkgs, skip=None):
     mods = []
     for pkg in pkgs.split(","):
-        if filter and filter not in mn:
+        if skip is not None and skip not in pkg:
             continue
         try:
             p = direct(pkg)
@@ -79,13 +79,13 @@ def find_types(mod):
     return res
 
 def resources(name):
-    resources = {}
+    result = {}
     for x in pkg_resources.resource_listdir(name, ""):
         if x.startswith("_") or not x.endswith(".py"):
             continue
-        mmn = "%s.%s" % (mn, x[:-3])
-        resources[mmn] = direct(mmn)
-    return mmn
+        mn = "%s.%s" % (name, x[:-3])
+        result[mn] = direct(mn)
+    return result
 
 def walk(name):
     mods = {}

@@ -1,20 +1,20 @@
 # BOTLIB - the bot library !
 #
-# 
+#
 
-import os, queue, socket, ssl, sys, textwrap, time, threading, _thread
+import os, queue, socket, textwrap, time, threading, _thread
 
 from .dbs import last
-from .obj import Cfg, Object, format, locked
+from .obj import Cfg, Object, locked
 from .prs import parse
-from .krn import k
+from .krn import k, __version__
 from .hdl import Event, Handler
 from .thr import launch
 from .trc import get_exception
 
 saylock = _thread.allocate_lock()
 
-def init(k):
+def init(kernel):
     i = IRC()
     i.start()
     return i
@@ -77,12 +77,9 @@ class IRC(Handler):
         self.cmds.register("PRIVMSG", self.PRIVMSG)
         self.cmds.register("QUIT", self.QUIT)
         k.fleet.add(self)
-        
+
     def _connect(self, server):
-        try:
-            oldsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        except:
-            oldsock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+        oldsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         oldsock.setblocking(1)
         oldsock.settimeout(5.0)
         try:
@@ -160,7 +157,7 @@ class IRC(Handler):
         return o
 
     @locked(saylock)
-    def _say(self, channel, txt, type="chat"):
+    def _say(self, channel, txt):
         wrapper = TextWrap()
         txt = str(txt).replace("\n", "")
         for t in wrapper.wrap(txt):
@@ -169,12 +166,9 @@ class IRC(Handler):
                 time.sleep(4.0)
             self.state.last = time.time()
 
-    def _some(self, use_ssl=False, encoding="utf-8"):
-        if use_ssl:
-            inbytes = self._sock.read()
-        else:
-            inbytes = self._sock.recv(512)
-        txt = str(inbytes, encoding)
+    def _some(self):
+        inbytes = self._sock.recv(512)
+        txt = str(inbytes, "utf-8")
         if txt == "":
             raise ConnectionResetError
         self.state.lastline += txt
@@ -186,7 +180,7 @@ class IRC(Handler):
     def announce(self, txt):
         for channel in self.channels:
             self.say(channel, txt)
-            
+
     def command(self, cmd, *args):
         if not args:
             self.raw(cmd)
@@ -246,12 +240,12 @@ class IRC(Handler):
     def output(self):
         self._outputed = True
         while 1:
-            channel, txt, type = self._outqueue.get()
-            if channel == None:
+            channel, txt = self._outqueue.get()
+            if channel is None:
                 break
             if txt:
                 time.sleep(0.001)
-                self._say(channel, txt, type)
+                self._say(channel, txt)
 
     def poll(self):
         self._connected.wait()
@@ -293,17 +287,17 @@ class IRC(Handler):
         except (OSError, ConnectionError) as ex:
             e = Event()
             e.command = "ERROR"
-            e.error = str(ex) 
+            e.error = str(ex)
             e.trc = get_exception()
             self.queue.put(e)
         self.state.last = time.time()
         self.state.nrsend += 1
 
-    def say(self, channel, txt, mtype="chat"):
-        self._outqueue.put_nowait((channel, txt, mtype))
+    def say(self, channel, txt):
+        self._outqueue.put_nowait((channel, txt))
 
-    def start(self, cfg={}):
-        if cfg:
+    def start(self, cfg=None):
+        if cfg is not None:
             self.cfg.update(cfg)
         else:
             last(self.cfg)
@@ -332,7 +326,7 @@ class IRC(Handler):
 
     def NOTICE(self, event):
         if event.txt.startswith("VERSION"):
-            txt = "\001VERSION %s %s - %s\001" % (cfg.name or "OKBOT", "1", "the ok bot !")
+            txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "the bot library !")
             self.command("NOTICE", event.channel, txt)
 
     def PRIVMSG(self, event):
@@ -348,14 +342,14 @@ class IRC(Handler):
                 return
         if event.txt and event.txt[0] == self.cc:
             if k.cfg.users and not k.users.allowed(event.origin, "USER"):
-               return
+                return
             parse(event, event.txt[1:])
             k.queue.put(event)
 
     def QUIT(self, event):
         if self.cfg.server in event.orig:
             self.stop()
-        
+
 class DCC(Handler):
 
     def __init__(self):
@@ -366,7 +360,7 @@ class DCC(Handler):
         self.encoding = "utf-8"
         self.origin = ""
         k.fleet.add(self)
-        
+
     def raw(self, txt):
         self._fsock.write(str(txt).rstrip())
         self._fsock.write("\n")
@@ -419,5 +413,5 @@ class DCC(Handler):
         e.orig = repr(self)
         return e
 
-    def say(self, channel, txt, type="chat"):
+    def say(self, channel, txt):
         self.raw(txt)

@@ -29,7 +29,7 @@ class Getter(Object):
             pre = post = ""
         if pre:
             self[pre] = post
-        
+
 class Setter(Object):
 
     def __init__(self, txt):
@@ -40,7 +40,7 @@ class Setter(Object):
             pre = post = ""
         if pre:
             self[pre] = post
-                    
+
 def parse(o, txt):
     args = []
     opts = []

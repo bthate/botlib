@@ -3,7 +3,7 @@
 #
 
 import importlib, importlib.util, importlib.resources
-import os, queue, threading, time
+import os, queue, time
 
 from .isp import find_cmds, direct
 from .obj import Default, Object
@@ -119,4 +119,3 @@ class Handler(Object):
                 module = self.load_mod(mn)
                 mods.append(module)
         return mods
-

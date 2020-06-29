@@ -19,7 +19,7 @@ timestrings = [
     "%Y-%m-%dt%H:%M:%S+00:00",
     "%a, %d %b %Y %H:%M:%S +0000",
     "%d %b %Y %H:%M:%S +0000",
-   "%d, %b %Y %H:%M:%S +0000"
+    "%d, %b %Y %H:%M:%S +0000"
 ]
 
 year_formats = [
@@ -113,7 +113,7 @@ def get_time(daystr):
         try:
             t = time.mktime(time.strptime(daystr, f))
             return t
-        except Exception:
+        except ValueError:
             pass
 
 def now():
@@ -149,8 +149,7 @@ def parse(daystr):
         val = 0
     if neg:
         return 0 - total
-    else:
-        return total 
+    return total
 
 def rtime():
     res = str(datetime.datetime.now()).replace(" ", os.sep)
