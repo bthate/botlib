@@ -10,6 +10,7 @@ from .dbs import Db
 from .hdl import Handler
 from .isp import direct
 from .obj import Cfg, Object, save, spl
+from .thr import launch
 
 starttime = time.time()
 
@@ -38,11 +39,14 @@ class Kernel(Handler):
         self.fleet.add(self)
 
     def init(self, mns):
+        thrs = []
         for mn in spl(mns):
-            mod = direct(mn)
+            ms = "bot.%s" % mn
+            mod = self.load_mod(ms)
             func = getattr(mod, "init", None)
             if func:
-                func(k)
+                thrs.append(launch(func, k))
+        return thrs
 
     def say(self, channel, txt):
         print(txt)

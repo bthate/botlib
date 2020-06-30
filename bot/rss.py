@@ -256,6 +256,7 @@ def fetch(event):
 
 def rss(event):
     db = Db()
+    print(event)
     if not event.args or "http" not in event.args[0]:
         nr = 0
         for o in db.find("bot.rss.Rss", {"rss": ""}):

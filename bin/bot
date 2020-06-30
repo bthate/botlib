@@ -73,34 +73,17 @@ def remove(event):
 
 def main():
     c = parse_cli()
-    if "--help" in c.opts:
-        help()
-    k.load_mod("bot.cmd")
     k.cmds.register("help", help)
-    if root() and "i" not in c.opts:
+    if root():
         k.cmds.register("hup", hup)
         k.cmds.register("install", install)
         k.cmds.register("remove", remove)
     if c.txt:
         return k.cmd(c.origtxt)
-    if not c.opts:
-        return
     if "d" in c.opts:
         daemon()
-    if "r" in c.opts:
-        f = Fetcher()
-        f.start()
-    if "s" in c.opts:
-        k.load_mod("bot.opr")
-        con = Console()
-        con.start()
-    if "i" in c.opts:
-        i = IRC()
-        i.start()
-    if "u" in c.opts:
-        u = UDP
-        u.start()
     k.start()
+    k.init(c.mods)
     k.wait()
 
 execute(main)

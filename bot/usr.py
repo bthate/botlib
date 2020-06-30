@@ -2,7 +2,8 @@
 #
 #
 
-from .obj import Db, Object
+from .dbs import Db
+from .obj import Object
 
 class ENOUSER(Exception):
 

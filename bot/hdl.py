@@ -3,11 +3,12 @@
 #
 
 import importlib, importlib.util, importlib.resources
-import os, queue, time
+import os, queue, time, threading
 
 from .isp import find_cmds, direct
 from .obj import Default, Object
 from .prs import parse
+from .tbl import names
 from .thr import launch
 
 class NOTIMPLEMENTED(Exception):
@@ -22,8 +23,18 @@ class Event(Default):
 
     def __init__(self):
         super().__init__()
+        self.ready = threading.Event()
         self.result = []
         self.thrs = []
+        self.txt = ""
+
+    def parse(self):
+        args = self.txt.split()
+        if args:
+            self.cmd = args[0]
+        if len(args) >= 2:
+            self.args = args[1:]
+            self.rest = " ".join(args[1:])
 
     def reply(self, txt):
         if not self.result:
@@ -35,7 +46,7 @@ class Event(Default):
             print(txt)
 
     def wait(self):
-        time.sleep(0.001)
+        self.ready.wait()
         res = []
         for thr in self.thrs:
             res.append(thr.join())
@@ -46,7 +57,7 @@ class Handler(Object):
     def __init__(self):
         super().__init__()
         self.cmds = Object()
-        self.names = Object()
+        self.names = Object(names)
         self.queue = queue.Queue()
         self.speed = "fast"
         self.stopped = False
@@ -58,11 +69,12 @@ class Handler(Object):
         return e
 
     def dispatch(self, e):
-        p = parse(e, e.txt)
-        func = self.get_cmd(p.cmd)
+        e.parse()
+        func = self.get_cmd(e.cmd)
         if func:
-            func(p)
-        p.show()
+            func(e)
+        e.show()
+        e.ready.set()
 
     def find_mod(self, name):
         spec = importlib.util.find_spec(name)

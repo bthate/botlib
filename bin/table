@@ -6,7 +6,7 @@
 import os, sys ; sys.path.insert(0, os.getcwd())
 
 from bot.obj import Object, tojson
-from bot.itr import find_cls, find_names, find_types, walk
+from bot.isp import find_cls, find_names, find_types, walk
 from bot.krn import k
 from bot.hdl import direct
 from bot.shl import execute

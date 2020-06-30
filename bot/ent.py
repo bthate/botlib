@@ -2,7 +2,7 @@
 #
 #
 
-from .dbs import db
+from .dbs import Db
 from .obj import Object
 
 class Log(Object):
