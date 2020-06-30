@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -u
-# BOTD - the bot library !
+# BOTLIB - the bot library !
 #
 #
 
@@ -13,7 +13,7 @@ from bot.rss import Fetcher
 from bot.udp import UDP
 
 txt="""[Unit]
-Description=BOTLIB - the bot library !
+Description=BOTD - the 24/7 channel daemon !
 After=network-online.target
 Wants=network-online.target
 

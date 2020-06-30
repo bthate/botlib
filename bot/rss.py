@@ -1,4 +1,4 @@
-# BOTD - the 24/7 channel daemon !
+# BOTLIB - the bot library !
 #
 #
 
@@ -8,12 +8,12 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
-from bot.clk import Repeater
-from bot.dbs import Db, last
-from bot.krn import k
-from bot.obj import Cfg, Default, Object, edit, save
-from bot.thr import launch
-from bot.tms import to_time, day
+from .clk import Repeater
+from .dbs import Db, last
+from .krn import k
+from .obj import Cfg, Default, Object, edit, save
+from .thr import launch
+from .tms import to_time, day
 
 try:
     import feedparser
@@ -116,7 +116,7 @@ class Fetcher(Object):
     def run(self):
         thrs = []
         db = Db()
-        for o in db.all("botd.rss.Rss"):
+        for o in db.all("bot.rss.Rss"):
             thrs.append(launch(self.fetch, o))
         return thrs
 
@@ -182,7 +182,7 @@ def unescape(text):
     return html.parser.HTMLParser().unescape(txt)
 
 def useragent():
-    return 'Mozilla/5.0 (X11; Linux x86_64) BOTD +http://git@bitbucket.org/bthate/botd)'
+    return 'Mozilla/5.0 (X11; Linux x86_64) BOTLIB +http://git@bitbucket.org/bthate/botlib)'
 
 def rm(event):
     if not event.args:
@@ -192,7 +192,7 @@ def rm(event):
     nr = 0
     got = []
     db = Db()
-    for o in db.find("botd.rss.Rss", selector):
+    for o in db.find("bot.rss.Rss", selector):
         nr += 1
         o._deleted = True
         got.append(o)
@@ -207,7 +207,7 @@ def display(event):
     nr = 0
     setter = {"display_list": event.args[1]}
     db = Db()
-    for o in db.find("botd.rss.Rss", {"rss": event.args[0]}):
+    for o in db.find("bot.rss.Rss", {"rss": event.args[0]}):
         nr += 1
         edit(o, setter)
         save(o)
@@ -221,19 +221,19 @@ def feed(event):
     nr = 0
     diff = time.time() - to_time(day())
     db = Db()
-    res = list(db.find("botd.rss.Feed", {"link": match}, delta=-diff))
+    res = list(db.find("bot.rss.Feed", {"link": match}, delta=-diff))
     for o in res:
         if match:
             event.reply("%s %s - %s - %s - %s" % (nr, o.title, o.summary, o.updated or o.published or "nodate", o.link))
         nr += 1
     if nr:
         return
-    res = list(db.find("botd.rss.Feed", {"title": match}, delta=-diff))
+    res = list(db.find("bot.rss.Feed", {"title": match}, delta=-diff))
     for o in res:
         if match:
             event.reply("%s %s - %s - %s" % (nr, o.title, o.summary, o.link))
         nr += 1
-    res = list(db.find("botd.rss.Feed", {"summary": match}, delta=-diff))
+    res = list(db.find("bot.rss.Feed", {"summary": match}, delta=-diff))
     for o in res:
         if match:
             event.reply("%s %s - %s - %s" % (nr, o.title, o.summary, o.link))
@@ -258,14 +258,14 @@ def rss(event):
     db = Db()
     if not event.args or "http" not in event.args[0]:
         nr = 0
-        for o in db.find("botd.rss.Rss", {"rss": ""}):
+        for o in db.find("bot.rss.Rss", {"rss": ""}):
             event.reply("%s %s" % (nr, o.rss))
             nr += 1
         if not nr:
             event.reply("rss <url>")
         return
     url = event.args[0]
-    res = list(db.find("botd.rss.Rss", {"rss": url}))
+    res = list(db.find("bot.rss.Rss", {"rss": url}))
     if res:
         event.reply("feed is already known.")
         return
