@@ -334,7 +334,7 @@ def xdir(o, skip=None):
 def edit(o, setter, skip=False):
     try:
         setter = vars(setter)
-    except ValueError:
+    except (TypeError, ValueError):
         pass
     if not setter:
         setter = {}

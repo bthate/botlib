@@ -308,7 +308,7 @@ class IRC(Handler):
 
     def stop(self):
         super().stop()
-        self._outqueue.put((None, None, None))
+        self._outqueue.put((None, None))
         try:
             self._sock.shutdown(2)
         except OSError:

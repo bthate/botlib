@@ -102,7 +102,7 @@ def setwd(wd):
 def getwd():
     if root():
         return "/var/lib/botd"
-    return os.path.expanduser("~/.botd")
+    return os.path.expanduser("~/.bot")
 
 def termreset():
     if "old" in resume:

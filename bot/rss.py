@@ -204,11 +204,9 @@ def display(event):
     if len(event.args) < 2:
         event.reply("display <feed> key1,key2,etc.")
         return
-    nr = 0
     setter = {"display_list": event.args[1]}
     db = Db()
     for o in db.find("bot.rss.Rss", {"rss": event.args[0]}):
-        nr += 1
         edit(o, setter)
         save(o)
     event.reply("ok")
@@ -256,7 +254,6 @@ def fetch(event):
 
 def rss(event):
     db = Db()
-    print(event)
     if not event.args or "http" not in event.args[0]:
         nr = 0
         for o in db.find("bot.rss.Rss", {"rss": ""}):

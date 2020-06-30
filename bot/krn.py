@@ -60,10 +60,6 @@ class Kernel(Handler):
         self.stopped = True
         self.queue.put(None)
 
-    def start(self):
-        self.cfg.update(parse_cli())
-        super().start()
-
     def wait(self):
         while not self.stopped:
             time.sleep(60.0)
