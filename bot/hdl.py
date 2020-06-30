@@ -8,7 +8,6 @@ import os, queue, time, threading
 from .isp import find_cmds, direct
 from .obj import Default, Object
 from .prs import parse
-from .tbl import names
 from .thr import launch
 
 class NOTIMPLEMENTED(Exception):
@@ -57,7 +56,6 @@ class Handler(Object):
     def __init__(self):
         super().__init__()
         self.cmds = Object()
-        self.names = Object(names)
         self.queue = queue.Queue()
         self.speed = "fast"
         self.stopped = False
@@ -85,7 +83,8 @@ class Handler(Object):
     def get_cmd(self, cmd, dft=None):
         func = self.cmds.get(cmd, None)
         if not func:
-            name = self.names.get(cmd, None)
+            from .tbl import names
+            name = names.get(cmd, None)
             if name:
                 self.load_mod(name)
                 func = self.cmds.get(cmd, dft)

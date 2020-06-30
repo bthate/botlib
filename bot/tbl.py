@@ -8,15 +8,17 @@ names = {
     "fetch": "bot.rss",
     "find": "bot.cmd",
     "fl": "bot.cmd",
+    "krn": "bot.cmd",
     "log": "bot.ent",
     "meet": "bot.opr",
+    "mods": "bot.cmd",
     "ps": "bot.opr",
     "rm": "bot.rss",
     "rss": "bot.rss",
     "todo": "bot.ent",
     "udp": "bot.udp",
     "up": "bot.cmd",
-    "v": "bot.version"
+    "v": "bot.cmd"
 }
 classes = {
     "Cfg": "bot.obj",

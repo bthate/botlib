@@ -10,6 +10,7 @@ from .dbs import Db
 from .hdl import Handler
 from .isp import direct
 from .obj import Cfg, Object, save, spl
+from .shl import parse_cli
 from .thr import launch
 
 starttime = time.time()
@@ -39,14 +40,18 @@ class Kernel(Handler):
         self.fleet.add(self)
 
     def init(self, mns):
+        mods = []
         thrs = []
         for mn in spl(mns):
             ms = "bot.%s" % mn
             mod = self.load_mod(ms)
+            mods.append(mod)
             func = getattr(mod, "init", None)
             if func:
                 thrs.append(launch(func, k))
-        return thrs
+        for thr in thrs:
+            thr.join()
+        return mods
 
     def say(self, channel, txt):
         print(txt)
@@ -54,6 +59,10 @@ class Kernel(Handler):
     def stop(self):
         self.stopped = True
         self.queue.put(None)
+
+    def start(self):
+        self.cfg.update(parse_cli())
+        super().start()
 
     def wait(self):
         while not self.stopped:

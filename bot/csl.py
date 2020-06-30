@@ -2,6 +2,8 @@
 #
 #
 
+import threading
+
 from .krn import k
 from .obj import Cfg, Object
 from .hdl import Event
@@ -19,6 +21,10 @@ class Cfg(Cfg):
 
 class Console(Object):
 
+    def __init__(self):
+        super().__init__(self)
+        self.ready = threading.Event()
+
     def announce(self, txt):
         pass
 
@@ -28,6 +34,7 @@ class Console(Object):
             event.orig = repr(self)
             k.queue.put(event)
             event.wait()
+        self.ready.set()
 
     def poll(self):
         e = Event()
@@ -44,3 +51,6 @@ class Console(Object):
     def start(self):
         setcompleter(k.cmds)
         launch(self.input)
+
+    def wait(self):
+        self.ready.wait()

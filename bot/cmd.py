@@ -61,6 +61,13 @@ def fl(event):
         pass
     event.reply([get_type(x) for x in k.fleet])
 
+def krn(event):
+    event.reply(k)
+
+def mods(event):
+    from .tbl import names
+    event.reply("|".join({x.split(".")[-1] for x in names.values()}))
+
 def up(event):
     event.reply(elapsed(time.time() - starttime))
 
