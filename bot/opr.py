@@ -14,17 +14,6 @@ from .isp import find_shorts
 from .krn import k
 from .tms import elapsed
 
-def cfg(event):
-    c = Cfg()
-    last(c)
-    if event.sets:
-        c.update(event.sets)
-        save(c)
-    event.reply(tostr(c))
-
-def cmds(event):
-    event.reply("|".join(sorted(k.cmds)))
-
 def ed(event):
     if not event.args:
         event.reply(list_files(bot.obj.workdir) or "no files yet")
