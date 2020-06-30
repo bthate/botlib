@@ -12,12 +12,8 @@ using and programming BOTLIB till the point you start programming your own bots 
 
 have fun coding ;]
 
-|
-
 I N S T A L L
 =============
-
-|
 
 you can download with pip3 and install globally:
 
@@ -26,12 +22,6 @@ you can download with pip3 and install globally:
  > sudo pip3 install botlib
 
 You can also download the tarball and install from that, see https://pypi.org/project/botlib/#files
-
-if you want to develop on the bot clone the source at bitbucket.org:
-
-::
-
- > git clone https://bitbucket.org/bthate/botlib
 
 if you want to run the bot 24/7 you can install BOTLIB as a service for
 the systemd daemon. You can do this by running the following:
@@ -51,19 +41,16 @@ if you don't want the bot to startup at boot, remove the service file:
 C O N F I G
 ===========
 
-|
-
-to configure the bot use the ed (edit) command, with sudo:
+to configure the bot use the cfg (config) command, use sudo for the system daemon
+and without sudo if you want to run the bot locally:
 
 ::
 
- > bot cfg <server> <channel> <nick>
- > bot hup
+ > sudo bot cfg server=irc.freenode.net channel=\#dunkbots nick=botje
+ > sudo bot hup
 
 U S A G E
 =========
-
-|
 
 BOTLIB detects whether it is run as root or as a user. if it's root it
 will use the /var/lib/botd directory and it it's user it will use ~/.bot
@@ -75,7 +62,6 @@ prompt, it will return with no response:
 
  > bot
  >
-
 
 you can use bot cmd with arguments to run a command directly:
 
@@ -113,6 +99,19 @@ giving the -d option runs bot in the background:
 R S S
 =====
 
+botlib doesn't depend on other libraries so for RSS you need to install
+feedparser yourself:
+
+::
+
+ > sudo apt install feedparser
+
+start the bot with the -r option to have the rss fetcher started:
+
+::
+
+ > bot -r
+
 to add an url use the rss command with an url:
 
 ::
@@ -137,8 +136,9 @@ the fetch command can be used to poll the added feeds:
 U D P
 =====
 
-using udp to relay text into a channel, use the okudp program to send text via the bot 
-to the channel on the irc server:
+using udp to relay text into a channel, use the -u options to start the UDP
+service and use the udp command to send text via the bot  to the channel on 
+the irc server:
 
 ::
 
@@ -156,6 +156,12 @@ to send the tail output to the IRC channel, send a udp packet to the bot:
 
 S O U R C E
 ===========
+
+if you want to develop on the bot clone the source at bitbucket.org:
+
+::
+
+ > git clone https://bitbucket.org/bthate/botlib
 
 BOTLIB has the following modules:
 
@@ -188,4 +194,3 @@ you can contact me on IRC/freenode/#dunkbots or email me at bthate@dds.nl
 
 | Bart Thate (bthate@dds.nl, thatebart@gmail.com)
 | botfather on #dunkbots irc.freenode.net
-

@@ -1,5 +1,5 @@
-B O T L I B
-###########
+BOTLIB
+======
 
 Welcome to BOTLIB, the bot library ! see https://pypi.org/project/botlib/ , it's public domain ;]
 
@@ -10,7 +10,7 @@ in 2000, is here in 2020, has no copyright, no LICENSE and is placed in the Publ
 This makes BOTLIB truely free (pastable) code you can use how you see fit, i hope you enjoy 
 using and programming BOTLIB till the point you start programming your own bots yourself.
 
-have fun coding, source is :ref:`here <source>` ;]
+have fun coding ;]
 
 I N S T A L L
 =============
@@ -23,34 +23,31 @@ you can download with pip3 and install globally:
 
 You can also download the tarball and install from that, see https://pypi.org/project/botlib/#files
 
-if you want to develop on the bot clone the source at bitbucket.org:
-
-::
-
- > git clone https://bitbucket.org/bthate/botlib
-
 if you want to run the bot 24/7 you can install BOTLIB as a service for
 the systemd daemon. You can do this by running the following:
 
 ::
 
- > sudo bcmd install
+ > sudo bot install
 
 if you don't want the bot to startup at boot, remove the service file:
 
 ::
 
- > sudo bcmd remove
+ > sudo bot remove
+
+|
 
 C O N F I G
 ===========
 
-to configure the bot use the ed (edit) command, with sudo:
+to configure the bot use the cfg (config) command, use sudo for the system daemon
+and without sudo if you want to run the bot locally:
 
 ::
 
- > bcmd cfg <server> <channel> <nick>
- > bcmd hup
+ > sudo bot cfg server=irc.freenode.net channel=\#dunkbots nick=botje
+ > sudo bot hup
 
 U S A G E
 =========
@@ -59,63 +56,93 @@ BOTLIB detects whether it is run as root or as a user. if it's root it
 will use the /var/lib/botd directory and it it's user it will use ~/.bot
 
 BOTLIB has it's own CLI, you can run it by giving the bot command on the
-prompt, it will return with its own prompt:
+prompt, it will return with no response:
 
-::
+:: 
 
  > bot
- > cmds
- cfg|cmds|ed|find|fleet|meet|ps|udp
  >
 
 you can use bot cmd with arguments to run a command directly:
 
 ::
 
- > bcmd cmds
+ > bot cmd cmds
  cfg|cmds|ed|find|fleet|meet|ps|udp
 
-if you run with sudo, you will get additional command like install,cfg and hup:
+if you run with sudo, you will get additional command like install,hup and remove:
 
 ::
 
- > sudo bcmd cmds
+ > sudo bot cmd cmds
  cfg|cmds|ed|find|fleet|hup|install|meet|ps|remove|udp
 
 
+running bot with the -s option returns a prompt:
+
+::
+
+ > bot -s
+ > cmds
+ cfg|cmds|ed|find|fleet|meet|ps|udp
+ >
+
+giving the -d option runs bot in the background:
+
+::
+
+ > bot -d
+ > ps xa | grep bot
+ 74452 ?        Sl     0:00 /usr/bin/python3 -u ./bin/bot -d
+ >
+
 R S S
 =====
+
+botlib doesn't depend on other libraries so for RSS you need to install
+feedparser yourself:
+
+::
+
+ > sudo apt install feedparser
+
+start the bot with the -r option to have the rss fetcher started:
+
+::
+
+ > bot -r
 
 to add an url use the rss command with an url:
 
 ::
 
- > bcmd rss https://news.ycombinator.com/rss
+ > bot rss https://news.ycombinator.com/rss
  ok 1
 
 run the rss command to see what urls are registered:
 
 ::
 
- > bcmd rss
+ > bot rss
  0 https://news.ycombinator.com/rss
 
 the fetch command can be used to poll the added feeds:
 
 ::
 
- > bcmd fetch
+ > bot fetch
  fetched 0
 
 U D P
 =====
 
-using udp to relay text into a channel, use the okudp program to send text via the bot 
-to the channel on the irc server:
+using udp to relay text into a channel, use the -u options to start the UDP
+service and use the udp command to send text via the bot  to the channel on 
+the irc server:
 
 ::
 
- > tail -f /var/log/syslog | bcmd udp
+ > tail -f /var/log/syslog | bot udp
 
 to send the tail output to the IRC channel, send a udp packet to the bot:
 
@@ -130,7 +157,13 @@ to send the tail output to the IRC channel, send a udp packet to the bot:
 S O U R C E
 ===========
 
-BOTLIB used the oklib package that has the following modules.
+if you want to develop on the bot clone the source at bitbucket.org:
+
+::
+
+ > git clone https://bitbucket.org/bthate/botlib
+
+BOTLIB has the following modules:
 
 ::
 
@@ -152,13 +185,10 @@ BOTLIB used the oklib package that has the following modules.
     bot.trc             - trace
     bot.udp             - udp to channel
 
-
 You can add you own modules to the bot package, its a namespace package.
 
 C O N T A C T
 =============
-
-|
 
 you can contact me on IRC/freenode/#dunkbots or email me at bthate@dds.nl
 
