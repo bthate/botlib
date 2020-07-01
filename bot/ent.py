@@ -3,7 +3,7 @@
 #
 
 from .dbs import Db
-from .obj import Object
+from .obj import Object, save
 
 class Log(Object):
 

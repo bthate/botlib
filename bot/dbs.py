@@ -2,7 +2,7 @@
 #
 #
 
-from .obj import Object, hook, names, fntime, find, get_type, search
+from .obj import Object, hook, names, fntime, find, get_type, save, search
 
 class Db(Object):
 
@@ -50,8 +50,6 @@ class Db(Object):
 
     def find_value(self, otype, value, index=None, delta=0):
         nr = -1
-        if not selector:
-            selector = {}
         for fn in names(otype, delta):
             o = hook(fn)
             if find(o, value):

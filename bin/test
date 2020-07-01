@@ -13,10 +13,10 @@ from bot.tms import elapsed
 def main():
     if os.path.exists(".data"):
         shutil.rmtree(".data")
-    cfg = parse_cli("test")
+    cfg = parse_cli()
     bot.obj.workdir = ".data"
     k.start()
-    k.walk("mods")
+    k.walk("bot")
     test_path = os.getcwd() + os.sep + "tests"
     suite = unittest.loader.TestLoader().discover(test_path, pattern="test*")
     unittest.TextTestRunner(verbosity=3).run(suite)

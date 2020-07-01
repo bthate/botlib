@@ -47,7 +47,6 @@ class Test_Tinder(unittest.TestCase):
         for x in range(nrtimes):
             launch(tests, k)
         consume(events)
-        print(k.fleet.bots)
         
 def consume(elems):
     fixed = []
