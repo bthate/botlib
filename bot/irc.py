@@ -73,7 +73,10 @@ class IRC(Handler):
         self.state.pongcheck = False
         self.threaded = False
         self.cmds.register("ERROR", self.ERROR)
+        self.cmds.register("LOG", self.LOG)
         self.cmds.register("NOTICE", self.NOTICE)
+        self.cmds.register("PING", self.PING)
+        self.cmds.register("PONG", self.PONG)
         self.cmds.register("PRIVMSG", self.PRIVMSG)
         self.cmds.register("QUIT", self.QUIT)
         k.fleet.add(self)
@@ -105,6 +108,7 @@ class IRC(Handler):
         rawstr = rawstr.replace("\u0001", "")
         rawstr = rawstr.replace("\001", "")
         o = Event()
+        o.rawstr = rawstr
         o.orig = repr(self)
         o.command = ""
         o.arguments = []
@@ -252,7 +256,15 @@ class IRC(Handler):
         if not self._buffer:
             try:
                 self._some()
-            except (OSError, ConnectionError, socket.timeout) as ex:
+            except socket.timeout as ex:
+                if self.state.pongcheck:
+                    self.command("PING", self.cfg.server)
+                e = Event()
+                e.command = "LOG"
+                e.error = str(ex)
+                e.trc = get_exception()
+                return e
+            except (OSError, ConnectionError) as ex:
                 e = Event()
                 e.command = "ERROR"
                 e.error = str(ex)
@@ -265,11 +277,6 @@ class IRC(Handler):
             if "servermodes" in dir(self.cfg):
                 self.raw("MODE %s %s" % (self.cfg.nick, self.cfg.servermodes))
             self.joinall()
-        elif cmd == "PING":
-            self.state.pongcheck = True
-            self.command("PONG", e.txt or "")
-        elif cmd == "PONG":
-            self.state.pongcheck = False
         elif cmd == "433":
             nick = self.cfg.nick + "_"
             self.cfg.nick = nick
@@ -323,6 +330,9 @@ class IRC(Handler):
         if self.state.nrerror > 3:
             time.sleep(60.0)
         init(k)
+
+    def LOG(self, event):
+        print(event.error)
 
     def NOTICE(self, event):
         if event.txt.startswith("VERSION"):
