@@ -92,7 +92,7 @@ class IRC(Handler):
                 self._connected.set()
                 return False
         oldsock.setblocking(1)
-        oldsock.settimeout(360.0)
+        oldsock.settimeout(600.0)
         self._sock = oldsock
         self._fsock = self._sock.makefile("r")
         fileno = self._sock.fileno()
@@ -329,6 +329,13 @@ class IRC(Handler):
             txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "the bot library !")
             self.command("NOTICE", event.channel, txt)
 
+    def PING(self, event):
+        self.state.pongcheck = True
+        self.command("PONG", event.txt or "")
+
+    def PONG(self, event):
+        self.state.pongcheck = False
+
     def PRIVMSG(self, event):
         if event.txt.startswith("DCC CHAT"):
             if k.cfg.users and not k.users.allowed(event.origin, "USER"):
@@ -343,7 +350,7 @@ class IRC(Handler):
         if event.txt and event.txt[0] == self.cc:
             if k.cfg.users and not k.users.allowed(event.origin, "USER"):
                 return
-            parse(event, event.txt[1:])
+            event.txt = event.txt[1:]
             k.queue.put(event)
 
     def QUIT(self, event):
