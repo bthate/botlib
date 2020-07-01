@@ -11,6 +11,7 @@ from .fil import cdir
 from .irc import Cfg
 from .krn import k, starttime, __version__
 from .obj import Object, tostr, get_type, save
+from .prs import parse
 from .tms import elapsed, fntime
 
 def __dir__():
@@ -19,6 +20,7 @@ def __dir__():
 def cfg(event):
     c = Cfg()
     last(c)
+    parse(event, event.txt)
     if event.sets:
         c.update(event.sets)
         save(c)
