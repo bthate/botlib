@@ -4,6 +4,9 @@
 
 import datetime, os, time
 
+def __dir__():
+    return ("day", "days", "elapsed", "fntime", "get_time", "now", "parse", "rtime", "today", "to_day", "to_time")
+
 timestrings = [
     "%a, %d %b %Y %H:%M:%S %z",
     "%d %b %Y %H:%M:%S %z",

@@ -10,6 +10,9 @@ from .obj import Default, Object, save
 from .prs import parse
 from .thr import launch
 
+def __dir__():
+    return ("NOTIMPLEMENTED", "ETYPE", "Event", "Handler")
+
 class NOTIMPLEMENTED(Exception):
 
     pass

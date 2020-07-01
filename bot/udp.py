@@ -9,6 +9,9 @@ from bot.obj import Cfg, Object
 from bot.krn import k
 from bot.thr import launch
 
+def __dir__():
+    return ("Cfg", "UDP", "init", "toudp", "udp")
+
 def init(kernel):
     u = UDP()
     u.start()

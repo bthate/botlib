@@ -7,6 +7,9 @@ import threading, time
 from .obj import Object
 from .thr import launch, get_name
 
+def __dir__():
+    return ("Repeater", "Timer")
+
 class Timer(Object):
 
     def __init__(self, sleep, func, *args, **kwargs):

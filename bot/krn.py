@@ -13,6 +13,9 @@ from .obj import Cfg, Object, save, spl
 from .shl import parse_cli
 from .thr import launch
 
+def __dir__():
+    return ("ENOKERNEL", "ENOUSER", "Cfg", "Kernel", "Fleet", "User", "Users", "k")
+
 starttime = time.time()
 
 class ENOKERNEL(Exception):

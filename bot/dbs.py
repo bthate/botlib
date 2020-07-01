@@ -2,7 +2,10 @@
 #
 #
 
-from .obj import Object, hook, names, fntime, find, get_type, save, search
+from .obj import Object, hook, fntime, find, get_type, save, search
+
+def __init__():
+    return ("Db", "last", "names")
 
 class Db(Object):
 
@@ -101,3 +104,20 @@ def last(o, strip=False):
         else:
             o.update(l)
         o._path = path
+
+def names(name, delta=None):
+    if not name:
+        return []
+    p = os.path.join(workdir, "store", name) + os.sep
+    res = []
+    now = time.time()
+    if delta:
+        past = now + delta
+    for rootdir, dirs, files in os.walk(p, topdown=False):
+        for fn in files:
+            fnn = os.path.join(rootdir, fn).split(os.path.join(workdir, "store"))[-1]
+            if delta:
+                if fntime(fnn) < past:
+                    continue
+            res.append(os.sep.join(fnn.split(os.sep)[1:]))
+    return sorted(res, key=fntime)

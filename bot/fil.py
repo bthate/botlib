@@ -6,6 +6,9 @@ import os, time
 
 import bot.obj
 
+def __init__():
+    retrun ("cdir", "fntime", "names", "root", "setwd", "touch", "list_files")
+
 def cdir(path):
     if os.path.exists(path):
         return
@@ -19,7 +22,6 @@ def cdir(path):
         except (IsADirectoryError, NotADirectoryError, FileExistsError):
             pass
     return True
-
 
 def fntime(daystr):
     daystr = daystr.replace("_", ":")

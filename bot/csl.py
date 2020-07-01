@@ -10,6 +10,9 @@ from .hdl import Event
 from .shl import setcompleter
 from .thr import launch
 
+def __init__():
+    return ("Cfg", "Console", "init")
+
 def init(kernel):
     c = Console()
     c.start()

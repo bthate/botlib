@@ -15,6 +15,9 @@ from .obj import Cfg, Default, Object, edit, save
 from .thr import launch
 from .tms import to_time, day
 
+def __dir__():
+    return ("Cfg", "Rss", "Fetcher", "rm", "display", "feed", "fetch", "rss")
+
 try:
     import feedparser
     gotparser = True

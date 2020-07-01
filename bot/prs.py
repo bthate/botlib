@@ -4,6 +4,9 @@
 
 from .obj import Object, Default
 
+def __init__():
+    return ("parse", "parse_cli")
+
 class Token(Object):
 
     def __init__(self, txt):
@@ -41,6 +44,11 @@ class Setter(Object):
         if pre:
             self[pre] = post
 
+def getwd():
+    if root():
+        return "/var/lib/botd"
+    return os.path.expanduser("~/.bot")
+
 def parse(o, txt):
     args = []
     opts = []
@@ -70,3 +78,14 @@ def parse(o, txt):
     o.txt = " ".join(args)
     o.rest = " ".join(args[1:])
     return o
+
+def parse_cli():
+    if len(sys.argv) <= 1:
+        return Cfg()
+    c = Cfg()
+    parse(c, " ".join(sys.argv[1:]))
+    setwd(c.wd or getwd())
+    return c
+
+def setwd(wd):
+    bot.obj.workdir = wd

@@ -5,6 +5,9 @@
 from .dbs import Db
 from .obj import Object, save
 
+def __init__():
+    return ("Log", "TOdo", "done", "log", "todo") 
+
 class Log(Object):
 
     def __init__(self):

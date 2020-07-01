@@ -14,6 +14,9 @@ from .isp import find_shorts
 from .krn import k
 from .tms import elapsed
 
+def __dir__():
+    return ("ed", "meet", "ps")
+
 def ed(event):
     if not event.args:
         event.reply(list_files(bot.obj.workdir) or "no files yet")

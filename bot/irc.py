@@ -12,6 +12,9 @@ from .hdl import Event, Handler
 from .thr import launch
 from .trc import get_exception
 
+def __dir__():
+    return ("Cfg", "DCC", "Event", "IRC")
+
 saylock = _thread.allocate_lock()
 
 def init(kernel):

@@ -10,6 +10,9 @@ from .obj import Cfg
 from .prs import parse
 from .fil import cdir, touch
 
+def __dir__():
+    return ("bexec", "close_history", "drop", "enable_history", "execute", "get_completer", "termsave", "termreset", "writepid")
+
 cmds = []
 logfile = ""
 resume = {}
@@ -74,14 +77,6 @@ def execute(main):
 def get_completer():
     return readline.get_completer()
 
-def parse_cli():
-    if len(sys.argv) <= 1:
-        return Cfg()
-    c = Cfg()
-    parse(c, " ".join(sys.argv[1:]))
-    setwd(c.wd or getwd())
-    return c
-
 def root():
     if os.geteuid() != 0:
         return False
@@ -95,14 +90,6 @@ def setcompleter(commands):
 
 def setup(fd):
     return termios.tcgetattr(fd)
-
-def setwd(wd):
-    bot.obj.workdir = wd
-
-def getwd():
-    if root():
-        return "/var/lib/botd"
-    return os.path.expanduser("~/.bot")
 
 def termreset():
     if "old" in resume:
