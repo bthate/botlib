@@ -6,10 +6,11 @@
 import os, sys
 
 from bot.krn import k
-from bot.shl import execute, parse_cli, root, termreset
+from bot.prs import parse_cli
+from bot.shl import execute, root, termreset
 
 txt="""[Unit]
-Description=BOTD - the 24/7 channel daemon !
+Description=BOTD - the 24/7 channel daemon
 After=network-online.target
 Wants=network-online.target
 

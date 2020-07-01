@@ -2,9 +2,12 @@
 #
 #
 
-from .obj import Object, Default
+import os, sys
+import bot.obj
 
-def __init__():
+from .obj import Cfg, Default, Object
+
+def __dir__():
     return ("parse", "parse_cli")
 
 class Token(Object):
@@ -86,6 +89,11 @@ def parse_cli():
     parse(c, " ".join(sys.argv[1:]))
     setwd(c.wd or getwd())
     return c
+
+def root():
+    if os.geteuid() != 0:
+        return False
+    return True
 
 def setwd(wd):
     bot.obj.workdir = wd

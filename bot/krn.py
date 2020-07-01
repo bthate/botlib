@@ -10,7 +10,7 @@ from .dbs import Db
 from .hdl import Handler
 from .isp import direct
 from .obj import Cfg, Object, save, spl
-from .shl import parse_cli
+from .prs import parse_cli
 from .thr import launch
 
 def __dir__():
