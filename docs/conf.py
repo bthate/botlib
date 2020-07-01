@@ -11,7 +11,7 @@ sys.path.insert(0, curdir + os.sep)
 sys.path.insert(0, curdir + os.sep + '..' + os.sep)
 sys.path.insert(0, curdir + os.sep + '..' + os.sep + ".." + os.sep)
 
-__version__ = 6
+from bot.krn import __version__
 
 needs_sphinx='1.1'
 nitpick_ignore=[
@@ -56,7 +56,7 @@ keep_warnings = True
 html_theme = "haiku"
 html_theme_path = []
 html_short_title = ""
-#html_favicon = ""
+html_favicon = "smile.png"
 html_static_path = []
 html_extra_path = []
 html_last_updated_fmt = '%Y-%b-%d'
@@ -70,7 +70,13 @@ html_show_copyright = False
 html_copy_source = True
 html_use_opensearch = 'http://botlib.rtfd.io/'
 html_file_suffix = '.html'
-rst_prolog = """ .. title:: NO COPYRIGHT - NO LICENSE - PASTE CODE"""
+rst_prolog = """.. image:: bl.png
+    :height: 3cm
+    :width: 100%
+
+.. title:: no copyright, no LICENSE, placed in the public domain
+
+"""
 htmlhelp_basename = 'pydoc'
 intersphinx_mapping = {
                        'python': ('https://docs.python.org/3', 'objects.inv'),

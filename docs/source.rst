@@ -15,7 +15,7 @@ BOTLIB contains the following modules:
     bot.fil		- file 
     bot.hdl             - handler
     bot.irc             - internet relay chat
-    bot.itr		- introspect
+    bot.isp		- introspect
     bot.krn             - core handler
     bot.obj             - base classes
     bot.opr             - opers
