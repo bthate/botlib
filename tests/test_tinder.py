@@ -42,11 +42,11 @@ class Test_Tinder(unittest.TestCase):
         for x in range(nrtimes):
             tests(k)
 
-    def test_thrs(self):
-        thrs = []
-        for x in range(nrtimes):
-            launch(tests, k)
-        consume(events)
+    #def test_thrs(self):
+    #    thrs = []
+    #    for x in range(nrtimes):
+    #        launch(tests, k)
+    #    consume(events)
         
 def consume(elems):
     fixed = []

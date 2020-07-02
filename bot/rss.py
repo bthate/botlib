@@ -140,6 +140,7 @@ def file_time(timestamp):
 
 def get_feed(url):
     if debug:
+        print("debug enabled")
         return [Object(), Object()]
     try:
         result = get_url(url)
