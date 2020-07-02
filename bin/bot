@@ -6,7 +6,7 @@
 import atexit, os, sys, termios
 
 from bot.csl import execute
-from bot.gnr import register
+from bot.obj import register
 from bot.run import k, parse_cli
 
 def daemon():
