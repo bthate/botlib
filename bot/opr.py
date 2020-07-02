@@ -8,13 +8,12 @@ import bot.obj
 
 from .dbs import Db
 from .err import ENOCLASS
-from .fil import list_files
-from .gnr import edit, get, last, save, tostr, update
-from .obj import Object
+from .gnr import edit, last, tostr
+from .obj import Object, get, get_cls, save, update
 from .irc import Cfg
 from .isp import find_shorts
 from .tms import elapsed
-from .utl import get_cls
+from .utl import list_files
 from .run import k, starttime
 
 def __dir__():
@@ -54,7 +53,7 @@ def meet(event):
         event.reply("meet <userhost>")
         return
     origin = event.args[0]
-    origin = k.users.userhosts.get(origin, origin)
+    origin = get(k.users.userhosts, origin, origin)
     k.users.meet(origin)
     event.reply("ok")
 

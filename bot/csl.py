@@ -6,7 +6,8 @@ import atexit, readline, sys, termios, threading
 
 from .obj import Cfg, Object
 from .hdl import Event
-from .run import k
+from .krn import k
+from .prs import parse_cli
 from .thr import launch
 
 def __init__():

@@ -2,7 +2,7 @@
 #
 #
 
-import os, _thread
+import os, sys, _thread
 
 lock = _thread.allocate_lock()
 
@@ -48,67 +48,6 @@ def locked(l):
             return res
         return lockedfunc
     return lockeddec
-
-def names(name, delta=None):
-    if not name:
-        return []
-    p = os.path.join(workdir, "store", name) + os.sep
-    res = []
-    now = time.time()
-    if delta:
-        past = now + delta
-    for rootdir, dirs, files in os.walk(p, topdown=False):
-        for fn in files:
-            fnn = os.path.join(rootdir, fn).split(os.path.join(workdir, "store"))[-1]
-            if delta:
-                if fntime(fnn) < past:
-                    continue
-            res.append(os.sep.join(fnn.split(os.sep)[1:]))
-    return sorted(res, key=fntime)
-
-def fntime(daystr):
-    daystr = daystr.replace("_", ":")
-    datestr = " ".join(daystr.split(os.sep)[-2:])
-    try:
-        datestr, rest = datestr.rsplit(".", 1)
-    except ValueError:
-        rest = ""
-    try:
-        t = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
-        if rest:
-            t += float("." + rest)
-    except ValueError:
-        t = 0
-    return t
-
-def get_cls(name):
-    try:
-        modname, clsname = name.rsplit(".", 1)
-    except:
-        raise ENOCLASS(name)
-    if modname in sys.modules:
-        mod = sys.modules[modname]
-    else:
-        mod = importlib.import_module(modname)
-    return getattr(mod, clsname)
-
-def hook(fn):
-    t = fn.split(os.sep)[0]
-    if not t:
-        t = fn.split(os.sep)[0][1:]
-    if not t:
-        raise ENOFILE(fn)
-    o = get_cls(t)()
-    load(o, fn)
-    return o
-
-def hooked(d):
-    if "stamp" in d:
-        t = d["stamp"].split(os.sep)[0]
-        o = get_cls(t)()
-        o.update(d)
-        return o
-    return d
 
 def list_files(wd):
     return "|".join(os.path.join(wd, "store"))

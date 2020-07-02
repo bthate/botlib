@@ -5,8 +5,7 @@
 import os, sys
 import bot.obj
 
-from .gnr import update
-from .obj import Cfg, Default, Object
+from .obj import Cfg, Default, Object, update
 
 def __dir__():
     return ("parse", "parse_cli")

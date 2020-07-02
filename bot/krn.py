@@ -7,9 +7,8 @@ __version__ = 87
 import threading, time
 
 from .flt import Fleet
-from .gnr import save
 from .hdl import Handler
-from .obj import Cfg, Object
+from .obj import Cfg, Object, save
 from .thr import launch
 from .usr import Users
 from .utl import spl
@@ -56,3 +55,5 @@ class Kernel(Handler):
     def wait(self):
         while not self.stopped:
             time.sleep(60.0)
+
+k = Kernel()

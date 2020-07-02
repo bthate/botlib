@@ -4,7 +4,7 @@
 
 import select, socket, sys, time
 
-from bot.dbs import last
+from bot.gnr import last
 from bot.obj import Cfg, Object
 from bot.krn import k
 from bot.thr import launch

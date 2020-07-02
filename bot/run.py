@@ -6,8 +6,11 @@ __version__ = 87
 
 import time
 
-from bot.krn import Kernel
+from bot.csl import execute
+from bot.krn import k
 from bot.prs import parse_cli
 
-k = Kernel()
+def __dir__():
+    return ("execute", "k", "starttime", "parse_cli")
+
 starttime = time.time()

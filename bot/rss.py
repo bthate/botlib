@@ -9,9 +9,10 @@ from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
 from .clk import Repeater
-from .dbs import Db, last
+from .dbs import Db
+from .gnr import edit, last
 from .krn import k
-from .obj import Cfg, Default, Object, edit, save
+from .obj import Cfg, Default, Object, get, save, update
 from .thr import launch
 from .tms import to_time, day
 
@@ -74,7 +75,7 @@ class Fetcher(Object):
         for key in dl:
             if not key:
                 continue
-            data = o.get(key, None)
+            data = get(o, key, None)
             if key == "link" and self.cfg.tinyurl:
                 datatmp = get_tinyurl(data)
                 if datatmp:
@@ -96,8 +97,8 @@ class Fetcher(Object):
             if not o:
                 continue
             f = Feed()
-            f.update(obj)
-            f.update(o)
+            update(f, obj)
+            update(f, o)
             u = urllib.parse.urlparse(f.link)
             if u.path and not u.path == "/":
                 url = "%s://%s/%s" % (u.scheme, u.netloc, u.path)

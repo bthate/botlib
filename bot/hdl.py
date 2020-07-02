@@ -5,9 +5,8 @@
 import importlib, importlib.util, importlib.resources
 import os, queue, time, threading
 
-from .gnr import get, save, update
 from .isp import find_cmds, direct
-from .obj import Default, Object
+from .obj import Default, Object, get, save, update
 from .prs import parse
 from .thr import launch
 

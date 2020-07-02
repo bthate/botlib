@@ -6,7 +6,7 @@ import logging, os, random, sys, time, unittest
 
 from bot.krn import k
 from bot.hdl import Event
-from bot.obj import Object
+from bot.obj import Object, get
 from bot.thr import launch
 
 param = Object()
@@ -72,7 +72,7 @@ def tests(b):
         events.extend(do_cmd(cmd))
 
 def do_cmd(cmd):
-    exs = param.get(cmd, [""])
+    exs = get(param, cmd, [""])
     e = list(exs)
     random.shuffle(e)
     events = []

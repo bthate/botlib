@@ -5,10 +5,23 @@
 import logging, os, shutil, time, unittest
 import bot.obj
 
-from bot.obj import cdir
-from bot.krn import k, starttime
-from bot.shl import execute, parse_cli
+from bot.run import execute, k, parse_cli, starttime
 from bot.tms import elapsed
+
+def cdir(path):
+    if os.path.exists(path):
+        return
+    res = ""
+    path2, fn = os.path.split(path)
+    for p in path2.split(os.sep):
+        res += "%s%s" % (p, os.sep)
+        padje = os.path.abspath(os.path.normpath(res))
+        try:
+            os.mkdir(padje)
+        except (IsADirectoryError, NotADirectoryError, FileExistsError):
+            pass
+    return True
+
 
 def main():
     if os.path.exists(".data"):

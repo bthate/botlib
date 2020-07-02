@@ -2,25 +2,10 @@
 #
 #
 
-import datetime, json, os, _thread
-
-from .gnr import get_type, update
+import datetime, json, os, sys, time, _thread
 
 lock = _thread.allocate_lock()
 workdir = ""
-
-def locked(l):
-    def lockeddec(func, *args, **kwargs):
-        def lockedfunc(*args, **kwargs):
-            l.acquire()
-            res = None
-            try:
-                res = func(*args, **kwargs)
-            finally:
-                l.release()
-            return res
-        return lockedfunc
-    return lockeddec
 
 class ObjectEncoder(json.JSONEncoder):
 
@@ -118,3 +103,168 @@ class DoL(Object):
     def update(self, d):
         for k, v in d.items():
             self.append(k, v)
+
+def cdir(path):
+    if os.path.exists(path):
+        return
+    res = ""
+    path2, fn = os.path.split(path)
+    for p in path2.split(os.sep):
+        res += "%s%s" % (p, os.sep)
+        padje = os.path.abspath(os.path.normpath(res))
+        try:
+            os.mkdir(padje)
+        except (IsADirectoryError, NotADirectoryError, FileExistsError):
+            pass
+    return True
+
+def get_cls(name):
+    try:
+        modname, clsname = name.rsplit(".", 1)
+    except:
+        raise ENOCLASS(name)
+    if modname in sys.modules:
+        mod = sys.modules[modname]
+    else:
+        mod = importlib.import_module(modname)
+    return getattr(mod, clsname)
+
+def hook(fn):
+    t = fn.split(os.sep)[0]
+    if not t:
+        t = fn.split(os.sep)[0][1:]
+    if not t:
+        raise ENOFILE(fn)
+    o = get_cls(t)()
+    load(o, fn)
+    return o
+
+def hooked(d):
+    if "stamp" in d:
+        t = d["stamp"].split(os.sep)[0]
+        o = get_cls(t)()
+        update(o, d)
+        return o
+    return d
+
+def locked(l):
+    def lockeddec(func, *args, **kwargs):
+        def lockedfunc(*args, **kwargs):
+            l.acquire()
+            res = None
+            try:
+                res = func(*args, **kwargs)
+            finally:
+                l.release()
+            return res
+        return lockedfunc
+    return lockeddec
+
+def names(name, delta=None):
+    if not name:
+        return []
+    p = os.path.join(workdir, "store", name) + os.sep
+    res = []
+    now = time.time()
+    if delta:
+        past = now + delta
+    for rootdir, dirs, files in os.walk(p, topdown=False):
+        for fn in files:
+            fnn = os.path.join(rootdir, fn).split(os.path.join(workdir, "store"))[-1]
+            if delta:
+                if fntime(fnn) < past:
+                    continue
+            res.append(os.sep.join(fnn.split(os.sep)[1:]))
+    return sorted(res, key=fntime)
+
+def fntime(daystr):
+    daystr = daystr.replace("_", ":")
+    datestr = " ".join(daystr.split(os.sep)[-2:])
+    try:
+        datestr, rest = datestr.rsplit(".", 1)
+    except ValueError:
+        rest = ""
+    try:
+        t = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
+        if rest:
+            t += float("." + rest)
+    except ValueError:
+        t = 0
+    return t
+
+def get(o, k, d=None):
+    return o.__dict__.get(k, d)
+
+def get_type(o):
+    t = type(o)
+    if t == type:
+        try:
+            return "%s.%s" % (o.__module__, o.__name__)
+        except AttributeError:
+            pass
+    return str(type(o)).split()[-1][1:-2]
+
+def items(o):
+    return o.__dict__.items()
+
+def keys(o):
+    return o.__dict__.keys()
+
+@locked(lock)
+def load(o, path, force=False):
+    assert path
+    assert workdir
+    lpath = os.path.join(workdir, "store", path)
+    if not os.path.exists(lpath):
+        cdir(lpath)
+    o._path = path
+    with open(lpath, "r") as ofile:
+        val = json.load(ofile, cls=ObjectDecoder)
+        if val:
+            update(o, val)
+
+def register(o, k, v):
+    os.__dict__[k] = v
+
+@locked(lock)
+def save(o, stime=None):
+    assert workdir
+    if stime:
+        o._path = os.path.join(get_type(o), stime) + "." + str(random.randint(1, 100000))
+    opath = os.path.join(workdir, "store", o._path)
+    cdir(opath)
+    with open(opath, "w") as ofile:
+        json.dump(stamp(o), ofile, cls=ObjectEncoder, indent=4, skipkeys=True, sort_keys=True)
+    return o._path
+
+def set(o, k, v):
+    o.__dict__[k] = v
+
+def stamp(o):
+    for k in xdir(o):
+        oo = getattr(o, k, None)
+        if isinstance(oo, Object):
+            stamp(oo)
+            oo.__dict__["stamp"] = oo._path
+            o[k] = oo
+        else:
+            continue
+    o.__dict__["stamp"] = o._path
+    return o
+
+def update(o, d):
+    try:
+        return o.__dict__.update(vars(d))
+    except (TypeError, ValueError):
+        return o.__dict__.update(d)
+
+def values(o):
+    return o.__dict__.values()
+
+def xdir(o, skip=None):
+    res = []
+    for k in dir(o):
+        if skip is not None and skip in k:
+            continue
+        res.append(k)
+    return res

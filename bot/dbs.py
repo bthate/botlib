@@ -5,8 +5,7 @@
 import os, os.path
 
 from .gnr import search, find
-from .obj import Object
-from .utl import names, hook
+from .obj import Object, hook, names
 
 def __init__():
     return ("Db",)

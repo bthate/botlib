@@ -7,11 +7,10 @@ import os, time
 import bot.obj
 
 from .dbs import Db
-from .fil import cdir
-from .gnr import get_type, last, save, tostr
+from .gnr import last, tostr
 from .irc import Cfg
 from .run import k, starttime, __version__
-from .obj import Object 
+from .obj import Object, cdir, get_type, save
 from .prs import parse
 from .tms import elapsed, fntime
 
