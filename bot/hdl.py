@@ -5,8 +5,9 @@
 import importlib, importlib.util, importlib.resources
 import os, queue, time, threading
 
+from .gnr import get, save, update
 from .isp import find_cmds, direct
-from .obj import Default, Object, save
+from .obj import Default, Object
 from .prs import parse
 from .thr import launch
 
@@ -84,13 +85,13 @@ class Handler(Object):
         return importlib.util.module_from_spec(spec)
 
     def get_cmd(self, cmd, dft=None):
-        func = self.cmds.get(cmd, None)
+        func = get(self.cmds, cmd, None)
         if not func:
             from .tbl import names
             name = names.get(cmd, None)
             if name:
                 self.load_mod(name)
-                func = self.cmds.get(cmd, dft)
+                func = get(self.cmds, cmd, dft)
         return func
 
     def handler(self):
@@ -110,7 +111,7 @@ class Handler(Object):
         return mod
 
     def scan(self, mod):
-        self.cmds.update(find_cmds(mod))
+        update(self.cmds, find_cmds(mod))
 
     def start(self):
         launch(self.handler)

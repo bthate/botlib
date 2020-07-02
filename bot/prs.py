@@ -5,6 +5,7 @@
 import os, sys
 import bot.obj
 
+from .gnr import update
 from .obj import Cfg, Default, Object
 
 def __dir__():
@@ -62,12 +63,12 @@ def parse(o, txt):
     for token in [Token(txt) for txt in txt.split()]:
         g = Getter(token.txt)
         if g:
-            o.gets.update(g)
+            update(o.gets, g)
             continue
         s = Setter(token.txt)
         if s:
-            o.sets.update(s)
-            o.update(s)
+            update(o.sets, s)
+            update(o, s)
             continue
         opt = Option(token.txt)
         if opt.opt:

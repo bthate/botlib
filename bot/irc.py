@@ -4,10 +4,10 @@
 
 import os, queue, socket, textwrap, time, threading, _thread
 
-from .dbs import last
+from .gnr import last
 from .obj import Cfg, Object, locked
 from .prs import parse
-from .krn import k, __version__
+from .run import k, __version__
 from .hdl import Event, Handler
 from .thr import launch
 from .trc import get_exception

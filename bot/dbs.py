@@ -4,10 +4,12 @@
 
 import os, os.path
 
-from .obj import Object, hook, fntime, find, get_type, names, save, search
+from .gnr import search, find
+from .obj import Object
+from .utl import names, hook
 
 def __init__():
-    return ("Db", "last", "names")
+    return ("Db",)
 
 class Db(Object):
 
@@ -95,14 +97,3 @@ class Db(Object):
             if s:
                 return s[-1][-1]
         return None
-
-
-def last(o, strip=False):
-    db = Db()
-    path, l = db.last_fn(str(get_type(o)))
-    if l:
-        if strip:
-            o.update(strip(l))
-        else:
-            o.update(l)
-        o._path = path

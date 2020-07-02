@@ -67,22 +67,22 @@ you can use bot cmd with arguments to run a command directly:
 
 ::
 
- > bot cmd cmds
+ > bot cmds
  cfg|cmds|ed|find|fleet|meet|ps|udp
 
 if you run with sudo, you will get additional command like install,hup and remove:
 
 ::
 
- > sudo bot cmd cmds
+ > sudo bot cmds
  cfg|cmds|ed|find|fleet|hup|install|meet|ps|remove|udp
 
 
-running bot with the -s option returns a prompt:
+running bot with the mods option "csl" will start a console:
 
 ::
 
- > bot -s
+ > bot mods=csl
  > cmds
  cfg|cmds|ed|find|fleet|meet|ps|udp
  >
@@ -110,7 +110,7 @@ start the bot with the -r option to have the rss fetcher started:
 
 ::
 
- > bot -r
+ > bot mods=rss
 
 to add an url use the rss command with an url:
 

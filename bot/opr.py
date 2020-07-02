@@ -6,13 +6,16 @@ import threading, time
 
 import bot.obj
 
-from .dbs import Db, last
+from .dbs import Db
+from .err import ENOCLASS
 from .fil import list_files
-from .obj import ENOCLASS, Object, edit, get_cls, tostr, save, starttime
+from .gnr import edit, get, last, save, tostr, update
+from .obj import Object
 from .irc import Cfg
 from .isp import find_shorts
-from .krn import k
 from .tms import elapsed
+from .utl import get_cls
+from .run import k, starttime
 
 def __dir__():
     return ("ed", "meet", "ps")
@@ -63,8 +66,8 @@ def ps(event):
             continue
         d = vars(thr)
         o = Object()
-        o.update(d)
-        if o.get("sleep", None):
+        update(o, d)
+        if get(o, "sleep", None):
             up = o.sleep - int(time.time() - o.state.latest)
         else:
             up = int(time.time() - starttime)

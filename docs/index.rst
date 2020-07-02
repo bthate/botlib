@@ -67,14 +67,14 @@ you can use bot cmd with arguments to run a command directly:
 
 ::
 
- > bot cmd cmds
+ > bot cmds
  cfg|cmds|ed|find|fleet|meet|ps|udp
 
 if you run with sudo, you will get additional command like install,hup and remove:
 
 ::
 
- > sudo bot cmd cmds
+ > sudo bot cmds
  cfg|cmds|ed|find|fleet|hup|install|meet|ps|remove|udp
 
 

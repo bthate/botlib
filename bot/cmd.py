@@ -6,11 +6,12 @@ import os, time
 
 import bot.obj
 
-from .dbs import Db, last
+from .dbs import Db
 from .fil import cdir
+from .gnr import get_type, last, save, tostr
 from .irc import Cfg
-from .krn import k, starttime, __version__
-from .obj import Object, tostr, get_type, save
+from .run import k, starttime, __version__
+from .obj import Object 
 from .prs import parse
 from .tms import elapsed, fntime
 
@@ -22,7 +23,7 @@ def cfg(event):
     last(c)
     parse(event, event.txt)
     if event.sets:
-        c.update(event.sets)
+        update(c, event.sets)
         save(c)
     event.reply(tostr(c))
 
