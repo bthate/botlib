@@ -4,7 +4,7 @@
 
 import os, queue, socket, textwrap, time, threading, _thread
 
-from .gnr import last
+from .gnr import last, tostr
 from .krn import k, __version__
 from .obj import Cfg, Object, get, locked, register
 from .prs import parse
@@ -34,7 +34,6 @@ class Cfg(Cfg):
         self.username = "botlib"
 
 class Event(Event):
-
 
     def show(self):
         for txt in self.result:
@@ -228,7 +227,14 @@ class IRC(Handler):
 
     def input(self):
         while not self.stopped:
-            e = self.poll()
+            try:
+                e = self.poll()
+            except ConnectionResetError as ex:
+                e = Event()
+                e.error = str(ex)
+                print(e.error)
+                self.ERROR(e)
+                break
             if not e:
                 break
             self.queue.put(e)
@@ -257,22 +263,7 @@ class IRC(Handler):
     def poll(self):
         self._connected.wait()
         if not self._buffer:
-            try:
-                self._some()
-            except socket.timeout as ex:
-                if self.state.pongcheck:
-                    self.command("PING", self.cfg.server)
-                e = Event()
-                e.command = "LOG"
-                e.error = str(ex)
-                e.trc = get_exception()
-                return e
-            except (OSError, ConnectionError) as ex:
-                e = Event()
-                e.command = "ERROR"
-                e.error = str(ex)
-                e.trc = get_exception()
-                return e
+            self._some()
         e = self._parsing(self._buffer.pop(0))
         cmd = e.command
         if cmd == "001":
@@ -292,14 +283,7 @@ class IRC(Handler):
             txt += "\r\n"
         txt = txt[:512]
         txt = bytes(txt, "utf-8")
-        try:
-            self._sock.send(txt)
-        except (OSError, ConnectionError) as ex:
-            e = Event()
-            e.command = "ERROR"
-            e.error = str(ex)
-            e.trc = get_exception()
-            self.queue.put(e)
+        self._sock.send(txt)
         self.state.last = time.time()
         self.state.nrsend += 1
 
@@ -313,6 +297,7 @@ class IRC(Handler):
             last(self.cfg)
         assert self.cfg.channel
         assert self.cfg.server
+        print(tostr(self.cfg))
         self.channels.append(self.cfg.channel)
         launch(self.doconnect)
 
@@ -330,8 +315,6 @@ class IRC(Handler):
         print(event.error)
         self._connected.clear()
         self.stop()
-        if self.state.nrerror > 3:
-            time.sleep(60.0)
         init(k)
 
     def LOG(self, event):

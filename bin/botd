@@ -7,6 +7,7 @@ import os, sys
 
 from bot.csl import execute, termreset
 from bot.krn import k
+from bot.obj import register
 from bot.prs import parse_cli, root
 
 txt="""[Unit]
@@ -80,9 +81,10 @@ def main():
         daemon()
     if root():
         setwd("/var/lib/botd/")
-        k.cmds.register("hup", hup)
-        k.cmds.register("install", install)
-        k.cmds.register("remove", remove)
+        if "irc" not in c.mods:
+            register(k.cmds, "hup", hup)
+            register(k.cmds, "install", install)
+            register(k.cmds, "remove", remove)
     else:
         setwd(os.path.expanduser("~/.bot"))
     if c.txt:

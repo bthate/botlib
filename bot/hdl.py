@@ -9,6 +9,7 @@ from .isp import find_cmds, direct
 from .obj import Default, Object, get, save, update
 from .prs import parse
 from .thr import launch
+from .trc import get_exception
 
 def __dir__():
     return ("Event", "Handler")
@@ -65,7 +66,10 @@ class Handler(Object):
         e.parse()
         func = self.get_cmd(e.cmd)
         if func:
-            func(e)
+            try:
+                func(e)
+            except Exception as ex:
+                print(get_exception())
         e.show()
         e.ready.set()
 
