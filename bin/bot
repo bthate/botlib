@@ -3,34 +3,12 @@
 #
 #
 
-import atexit, os, sys, termios
-
 from bot.csl import execute
-from bot.obj import register
-from bot.run import k, parse_cli
-
-def daemon():
-    pid = os.fork()
-    if pid != 0:
-        termreset()
-        os._exit(0)
-    os.setsid()
-    pid = os.fork()
-    if pid != 0:
-        os._exit(0)
-    os.umask(0)
-    si = open("/dev/null", 'r')
-    so = open("/dev/null", 'a+')
-    se = open("/dev/null", 'a+')
-    os.dup2(si.fileno(), sys.stdin.fileno())
-    os.dup2(so.fileno(), sys.stdout.fileno())
-    os.dup2(se.fileno(), sys.stderr.fileno())
+from bot.krn import k
+from bot.prs import parse_cli
 
 def main():
     c = parse_cli()
-    if "d" in c.opts:
-        daemon()
-    register(k.cmds, "help", help)
     if c.txt:
         return k.cmd(c.origtxt)
     if c.mods:

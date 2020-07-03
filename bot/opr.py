@@ -4,22 +4,21 @@
 
 import threading, time
 
-import bot.obj
-
 from .dbs import Db
 from .err import ENOCLASS
 from .gnr import edit, last, tostr
+from .krn import k, starttime
 from .obj import Object, get, get_cls, save, update
 from .irc import Cfg
 from .isp import find_shorts
 from .tms import elapsed
 from .utl import list_files
-from .run import k, starttime
 
 def __dir__():
     return ("ed", "meet", "ps")
 
 def ed(event):
+    import bot.obj
     if not event.args:
         event.reply(list_files(bot.obj.workdir) or "no files yet")
         return

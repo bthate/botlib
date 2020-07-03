@@ -5,9 +5,9 @@
 import os, queue, socket, textwrap, time, threading, _thread
 
 from .gnr import last
-from .obj import Cfg, Object, locked
+from .krn import k, __version__
+from .obj import Cfg, Object, get, locked, register
 from .prs import parse
-from .run import k, __version__
 from .hdl import Event, Handler
 from .thr import launch
 from .trc import get_exception
@@ -75,13 +75,13 @@ class IRC(Handler):
         self.state.nrsend = 0
         self.state.pongcheck = False
         self.threaded = False
-        self.cmds.register("ERROR", self.ERROR)
-        self.cmds.register("LOG", self.LOG)
-        self.cmds.register("NOTICE", self.NOTICE)
-        self.cmds.register("PING", self.PING)
-        self.cmds.register("PONG", self.PONG)
-        self.cmds.register("PRIVMSG", self.PRIVMSG)
-        self.cmds.register("QUIT", self.QUIT)
+        register(self.cmds, "ERROR", self.ERROR)
+        register(self.cmds, "LOG", self.LOG)
+        register(self.cmds, "NOTICE", self.NOTICE)
+        register(self.cmds, "PING", self.PING)
+        register(self.cmds, "PONG", self.PONG)
+        register(self.cmds, "PRIVMSG", self.PRIVMSG)
+        register(self.cmds, "QUIT", self.QUIT)
         k.fleet.add(self)
 
     def _connect(self, server):
@@ -214,7 +214,7 @@ class IRC(Handler):
         self.logon(server, nick)
 
     def dispatch(self, event):
-        func = self.cmds.get(event.command)
+        func = get(self.cmds, event.command)
         if func:
             func(event)
 

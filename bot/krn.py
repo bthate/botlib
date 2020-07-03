@@ -2,7 +2,7 @@
 #
 #
 
-__version__ = 87
+__version__ = 88
 
 import threading, time
 
@@ -15,6 +15,8 @@ from .utl import spl
 
 def __dir__():
     return ("Cfg", "Kernel", "k")
+
+starttime = time.time()
 
 class Cfg(Cfg):
 

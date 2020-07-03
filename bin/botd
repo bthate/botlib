@@ -3,8 +3,6 @@
 #
 #
 
-from bot.run import k, os, parse_cli, sys, root
-
 import os, sys
 
 from bot.csl import execute, termreset
@@ -17,11 +15,28 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/bot mods=irc,rss
+ExecStart=/usr/local/bin/botd mods=irc,udp
 
 [Install]
 WantedBy=multi-user.target
 """
+
+def daemon():
+    pid = os.fork()
+    if pid != 0:
+        termreset()
+        os._exit(0)
+    os.setsid()
+    pid = os.fork()
+    if pid != 0:
+        os._exit(0)
+    os.umask(0)
+    si = open("/dev/null", 'r')
+    so = open("/dev/null", 'a+')
+    se = open("/dev/null", 'a+')
+    os.dup2(si.fileno(), sys.stdin.fileno())
+    os.dup2(so.fileno(), sys.stdout.fileno())
+    os.dup2(se.fileno(), sys.stderr.fileno())
 
 def hup(event):
     for x in os.popen("service botd stop").readlines():
@@ -50,12 +65,26 @@ def remove(event):
     event.reply("ok")
     os._exit(0)
 
+def root():
+    if os.geteuid() != 0:
+        return False
+    return True
+
+def setwd(path):
+    import bot.obj
+    bot.obj.workdir = path
+
 def main():
     c = parse_cli()
+    if "d" in c.opts:
+        daemon()
     if root():
+        setwd("/var/lib/botd/")
         k.cmds.register("hup", hup)
         k.cmds.register("install", install)
         k.cmds.register("remove", remove)
+    else:
+        setwd(os.path.expanduser("~/.bot"))
     if c.txt:
         return k.cmd(c.origtxt)
     if c.mods:
