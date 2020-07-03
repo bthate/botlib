@@ -224,7 +224,7 @@ def load(o, path, force=False):
             update(o, val)
 
 def register(o, k, v):
-    os.__dict__[k] = v
+    o.__dict__[k] = v
 
 @locked(lock)
 def save(o, stime=None):

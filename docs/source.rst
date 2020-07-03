@@ -23,7 +23,6 @@ BOTLIB contains the following modules:
     bot.opr             - opers
     bot.prs		- parse
     bot.rss             - rich site syndicate
-    bot.run		- runtime
     bot.tbl		- tables
     bot.thr             - threads
     bot.tms		- time
