@@ -4,11 +4,11 @@
 
 __version__ = 87
 
-import time
+import os, sys, time
 
 from bot.csl import execute
 from bot.krn import k
-from bot.prs import parse_cli
+from bot.prs import parse_cli, root
 
 def __dir__():
     return ("execute", "k", "starttime", "parse_cli")

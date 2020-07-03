@@ -28,13 +28,13 @@ the systemd daemon. You can do this by running the following:
 
 ::
 
- > sudo bot install
+ > sudo botcfg install
 
 if you don't want the bot to startup at boot, remove the service file:
 
 ::
 
- > sudo bot remove
+ > sudo botcfg remove
 
 |
 
@@ -47,7 +47,7 @@ and without sudo if you want to run the bot locally:
 ::
 
  > sudo bot cfg server=irc.freenode.net channel=\#dunkbots nick=botje
- > sudo bot hup
+ > sudo botcfg hup
 
 U S A G E
 =========
@@ -170,20 +170,26 @@ BOTLIB has the following modules:
     bot.clk             - clock/repeater
     bot.cmd             - commands
     bot.csl             - console
-    bot.fil             - file 
+    bot.dbs             - database
+    bot.err		- errors
+    bot.flt             - list of bots
+    bot.gnr             - generics
     bot.hdl             - handler
     bot.irc             - internet relay chat
-    bot.itr             - introspect
+    bot.isp             - introspect
     bot.krn             - core handler
     bot.obj             - base classes
     bot.opr             - opers
     bot.prs             - parse
     bot.rss             - rich site syndicate
-    bot.shl             - shell
+    bot.run             - runtime
+    bot.tbl             - tables
     bot.thr             - threads
     bot.tms             - time
     bot.trc             - trace
     bot.udp             - udp to channel
+    bot.usr             - users
+    bot.utl             - utilities
 
 You can add you own modules to the bot package, its a namespace package.
 

@@ -10,7 +10,7 @@ from .dbs import Db
 from .gnr import last, tostr
 from .irc import Cfg
 from .run import k, starttime, __version__
-from .obj import Object, cdir, get_type, save
+from .obj import Object, cdir, get_type, save, update
 from .prs import parse
 from .tms import elapsed, fntime
 

@@ -11,15 +11,7 @@ from .prs import parse
 from .thr import launch
 
 def __dir__():
-    return ("NOTIMPLEMENTED", "ETYPE", "Event", "Handler")
-
-class NOTIMPLEMENTED(Exception):
-
-    pass
-
-class ETYPE(Exception):
-
-    pass
+    return ("Event", "Handler")
 
 class Event(Default):
 
