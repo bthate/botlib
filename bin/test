@@ -6,7 +6,9 @@ import logging, os, shutil, time, unittest
 import bot.obj
 import bot.rss
 
-from bot.run import execute, k, parse_cli, starttime
+from bot.prs import parse_cli
+from bot.csl import execute
+from bot.krn import k, starttime
 from bot.tms import elapsed
 
 def cdir(path):
@@ -35,7 +37,6 @@ def main():
     test_path = os.getcwd() + os.sep + "tests"
     suite = unittest.loader.TestLoader().discover(test_path, pattern="test*")
     unittest.TextTestRunner(verbosity=3).run(suite)
-    k.wait()
    
 execute(main)
 

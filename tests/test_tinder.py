@@ -10,7 +10,7 @@ from bot.obj import Object, get
 from bot.thr import launch
 
 param = Object()
-param.ed = ["bot.irc.Cfg", "bot.rss.Cfg", "bot.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel \#dunkbots", "bot.krn.Cfg modules bot.udp"]
+param.ed = ["bot.irc.Cfg", "bot.rss.Cfg", "bot.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel #dunkbots", "bot.krn.Cfg modules bot.udp"]
 param.delete = ["reddit", ]
 param.display = ["reddit title,summary,link",]
 param.log = ["test1", ""]
@@ -42,11 +42,10 @@ class Test_Tinder(unittest.TestCase):
         for x in range(nrtimes):
             tests(k)
 
-    #def test_thrs(self):
-    #    thrs = []
-    #    for x in range(nrtimes):
-    #        launch(tests, k)
-    #    consume(events)
+    def test_thrs(self):
+        for x in range(nrtimes):
+            launch(tests, k)
+        consume(events)
         
 def consume(elems):
     fixed = []
@@ -55,12 +54,12 @@ def consume(elems):
         r = e.wait()
         res.append(r)
         fixed.append(e)
+        print(e)
     for f in fixed:
         try:
             elems.remove(f)
         except ValueError:
             continue
-    k.stop()
     return res
     
 def tests(b):
@@ -76,14 +75,12 @@ def do_cmd(cmd):
     e = list(exs)
     random.shuffle(e)
     events = []
-    nr = 0
     for ex in e:
-        nr += 1
-        txt = cmd + " " + ex + " (%s)" % nr
+        txt = cmd + " " + ex
         if "-v" in sys.argv:
             print(txt)
         e = Event()
-        e.txt = txt
+        e.txt = txt.strip()
         k.queue.put(e)
         events.append(e)
     return events

@@ -11,7 +11,6 @@ from .hdl import Handler
 from .obj import Cfg, Object, save
 from .thr import launch
 from .usr import Users
-from .utl import spl
 
 def __dir__():
     return ("Cfg", "Kernel", "k")

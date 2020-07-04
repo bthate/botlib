@@ -2,8 +2,11 @@
 #
 #
 
+import time
+
 from .dbs import Db
-from .obj import Object, save
+from .obj import Object, fntime, save
+from .tms import elapsed
 
 def __init__():
     return ("Log", "TOdo", "done", "log", "todo") 

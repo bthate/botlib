@@ -4,8 +4,7 @@
 
 import os, os.path
 
-from .gnr import search, find
-from .obj import Object, hook, names
+from .obj import Object, find, hook, names, search
 
 def __init__():
     return ("Db",)
