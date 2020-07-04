@@ -18,6 +18,9 @@ def __dir__():
 
 starttime = time.time()
 
+def spl(txt):
+    return iter([x for x in txt.split(",") if x])
+
 class Cfg(Cfg):
 
     pass

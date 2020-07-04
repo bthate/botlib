@@ -7,6 +7,19 @@ import datetime, json, os, sys, time, _thread
 lock = _thread.allocate_lock()
 workdir = ""
 
+def locked(l):
+    def lockeddec(func, *args, **kwargs):
+        def lockedfunc(*args, **kwargs):
+            l.acquire()
+            res = None
+            try:
+                res = func(*args, **kwargs)
+            finally:
+                l.release()
+            return res
+        return lockedfunc
+    return lockeddec
+
 class ObjectEncoder(json.JSONEncoder):
 
     def default(self, o):
@@ -118,6 +131,32 @@ def cdir(path):
             pass
     return True
 
+def edit(o, setter, skip=False):
+    try:
+        setter = vars(setter)
+    except (TypeError, ValueError):
+        pass
+    if not setter:
+        setter = {}
+    count = 0
+    for key, value in setter.items():
+        if skip and value == "":
+            continue
+        count += 1
+        if value in ["True", "true"]:
+            o[key] = True
+        elif value in ["False", "false"]:
+            o[key] = False
+        else:
+            o[key] = value
+    return count
+
+def find(o, val):
+    for item in o.values():
+        if val in item:
+            return True
+    return False
+
 def get_cls(name):
     try:
         modname, clsname = name.rsplit(".", 1)
@@ -210,6 +249,17 @@ def items(o):
 def keys(o):
     return o.__dict__.keys()
 
+def last(o, strip=False):
+    from .dbs import Db
+    db = Db()
+    path, l = db.last_fn(str(get_type(o)))
+    if l:
+        if strip:
+            update(o, strip(l))
+        else:
+            update(o, l)
+        o._path = path
+
 @locked(lock)
 def load(o, path, force=False):
     assert path
@@ -222,6 +272,11 @@ def load(o, path, force=False):
         val = json.load(ofile, cls=ObjectDecoder)
         if val:
             update(o, val)
+
+def merge(o, oo, vals=None):
+    if vals is None:
+        vals = ["",]
+    return update(o, strip(oo, vals))
 
 def register(o, k, v):
     o.__dict__[k] = v
@@ -240,6 +295,39 @@ def save(o, stime=None):
 def set(o, k, v):
     o.__dict__[k] = v
 
+def search(o, match=None):
+    res = False
+    if match is None:
+        return res
+    for key, value in match.items():
+        val = get(o, key, None)
+        if val:
+            if not value:
+                res = True
+                continue
+            if value in str(val):
+                res = True
+                continue
+            res = False
+            break
+    return res
+
+def slc(o, keys=None):
+    res = type(o)()
+    for k in o:
+        if keys is not None and k in keys:
+            continue
+        res[k] = o[k]
+    return res
+
+def strip(o, skip=None):
+    for k in o:
+        if skip is not None and k in skip:
+            continue
+        if not k:
+            del o[k]
+    return o
+
 def stamp(o):
     for k in xdir(o):
         oo = getattr(o, k, None)
@@ -251,6 +339,28 @@ def stamp(o):
             continue
     o.__dict__["stamp"] = o._path
     return o
+
+def tojson(o):
+    return json.dumps(o, skipkeys=True, cls=ObjectEncoder, indent=4, sort_keys=True)
+
+def tostr(o, keys=None):
+    if keys is None:
+        keys = vars(o).keys()
+    res = []
+    txt = ""
+    for key in keys:
+        if key == "stamp":
+            continue
+        val = get(o, key, None)
+        if not val:
+            continue
+        val = str(val)
+        if key == "text":
+            val = val.replace("\\n", "\n")
+        res.append((key, val))
+    for key, val in res:
+        txt += "%s=%s%s" % (key, val.strip(), " ")
+    return txt.strip()
 
 def update(o, d):
     try:

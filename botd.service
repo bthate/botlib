@@ -1,0 +1,10 @@
+[Unit]
+Description=BOTD - the 24/7 channel daemon
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/bot mods=irc,rss,cmd
+
+[Install]
+WantedBy=multi-user.target

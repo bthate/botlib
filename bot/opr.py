@@ -17,6 +17,9 @@ from .utl import list_files
 def __dir__():
     return ("ed", "meet", "ps")
 
+def list_files(wd):
+    return "|".join(os.path.join(wd, "store"))
+
 def ed(event):
     import bot.obj
     if not event.args:

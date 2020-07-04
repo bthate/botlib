@@ -5,11 +5,10 @@
 
 import os, sys ; sys.path.insert(0, os.getcwd())
 
-from bot.obj import Object, tojson
-from bot.isp import find_cls, find_names, find_types, walk
+from bot.csl import execute
+from bot.obj import Object, update, tojson
+from bot.isp import direct, find_cls, find_names, find_types, walk
 from bot.krn import k
-from bot.hdl import direct
-from bot.shl import execute
 
 def main():
     mods = walk("bot")
@@ -18,12 +17,19 @@ def main():
     for mod in mods.values():
         nms = find_names(mod)
         if nms:
-            names.update(nms)
+            update(names, nms)
+    print("# BOTLIB - the bot library !")
+    print("#")
+    print("#")
+    print("")
+    print("#:")
     print("names = %s" % tojson(names))
     for mod in mods.values():
         c = find_cls(mod)
         if c:
-            cls.update(c)
+            update(cls, c)
+    print("")
+    print("#:")
     print("classes = %s" % tojson(cls))
  
 execute(main)

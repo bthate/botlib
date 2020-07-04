@@ -28,15 +28,15 @@ the systemd daemon. You can do this by running the following:
 
 ::
 
- > sudo botcmd install
+ > sudo cp botd.service /etc/systemd/system/
+ > systemctl enable botd
+ > systemctl daemon-reload
 
 if you don't want the bot to startup at boot, remove the service file:
 
 ::
 
- > sudo botcmd remove
-
-|
+ > sudo rm /etc/systemd/system/botd.service
 
 C O N F I G
 ===========
@@ -46,8 +46,9 @@ and without sudo if you want to run the bot locally:
 
 ::
 
- > sudo botcmd cfg server=irc.freenode.net channel=\#dunkbots nick=botje
- > sudo botcmd hup
+ > sudo bot cfg server=irc.freenode.net channel=\#dunkbots nick=botje
+ > sudo service botd stop
+ > sudo service botd start
 
 U S A G E
 =========
@@ -78,11 +79,11 @@ if you run with sudo, you will get additional command like install,hup and remov
  cfg|cmds|ed|find|fleet|hup|install|meet|ps|remove|udp
 
 
-running bot with the -s option returns a prompt:
+running bot with the mods option "csl" will start a console:
 
 ::
 
- > bot -s
+ > bot mods=csl
  > cmds
  cfg|cmds|ed|find|fleet|meet|ps|udp
  >
@@ -110,7 +111,7 @@ start the bot with the -r option to have the rss fetcher started:
 
 ::
 
- > bot -r
+ > bot mods=rss
 
 to add an url use the rss command with an url:
 
@@ -170,21 +171,26 @@ BOTLIB has the following modules:
     bot.clk             - clock/repeater
     bot.cmd             - commands
     bot.csl             - console
+    bot.dbs             - database
     bot.err		- errors
-    bot.fil             - file 
+    bot.flt             - list of bots
+    bot.gnr             - generics
     bot.hdl             - handler
     bot.irc             - internet relay chat
-    bot.itr             - introspect
+    bot.isp             - introspect
     bot.krn             - core handler
     bot.obj             - base classes
     bot.opr             - opers
     bot.prs             - parse
     bot.rss             - rich site syndicate
-    bot.shl             - shell
+    bot.run             - runtime
+    bot.tbl             - tables
     bot.thr             - threads
     bot.tms             - time
     bot.trc             - trace
     bot.udp             - udp to channel
+    bot.usr             - users
+    bot.utl             - utilities
 
 You can add you own modules to the bot package, its a namespace package.
 

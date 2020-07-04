@@ -1,3 +1,8 @@
+# BOTLIB - the bot library !
+#
+#
+
+#:
 names = {
     "cfg": "bot.cmd",
     "cmds": "bot.cmd",
@@ -20,6 +25,8 @@ names = {
     "up": "bot.cmd",
     "v": "bot.cmd"
 }
+
+#:
 classes = {
     "Cfg": "bot.obj",
     "Console": "bot.csl",
@@ -28,23 +35,17 @@ classes = {
     "Default": "bot.obj",
     "DoL": "bot.obj",
     "Event": "bot.hdl",
-    "Feed": "bot.rss",
     "Fetcher": "bot.rss",
-    "Fleet": "bot.krn",
-    "Getter": "bot.prs",
+    "Fleet": "bot.flt",
     "Handler": "bot.hdl",
     "IRC": "bot.irc",
     "Kernel": "bot.krn",
     "Log": "bot.ent",
     "Object": "bot.obj",
-    "Option": "bot.prs",
     "Repeater": "bot.clk",
     "Rss": "bot.rss",
-    "Seen": "bot.rss",
-    "Setter": "bot.prs",
     "Timer": "bot.clk",
     "Todo": "bot.ent",
-    "Token": "bot.prs",
     "UDP": "bot.udp",
     "User": "bot.usr",
     "Users": "bot.usr"

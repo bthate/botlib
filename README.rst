@@ -28,15 +28,15 @@ the systemd daemon. You can do this by running the following:
 
 ::
 
- > sudo botcfg install
+ > sudo cp botd.service /etc/systemd/system/
+ > systemctl enable botd
+ > systemctl daemon-reload
 
 if you don't want the bot to startup at boot, remove the service file:
 
 ::
 
- > sudo botcfg remove
-
-|
+ > sudo rm /etc/systemd/system/botd.service
 
 C O N F I G
 ===========
@@ -47,7 +47,8 @@ and without sudo if you want to run the bot locally:
 ::
 
  > sudo bot cfg server=irc.freenode.net channel=\#dunkbots nick=botje
- > sudo botcfg hup
+ > sudo service botd stop
+ > sudo service botd start
 
 U S A G E
 =========

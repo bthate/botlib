@@ -126,3 +126,20 @@ def termsave():
         atexit.register(termreset)
     except termios.error:
         pass
+
+def touch(fname):
+    try:
+        fd = os.open(fname, os.O_RDWR | os.O_CREAT)
+        os.close(fd)
+    except (IsADirectoryError, TypeError):
+        pass
+
+def writepid():
+    assert bot.obj.workdir
+    path = os.path.join(bot.obj.workdir, "pid")
+    if not os.path.exists(path):
+        cdir(path)
+    f = open(path, 'w')
+    f.write(str(os.getpid()))
+    f.flush()
+    f.close()

@@ -96,4 +96,5 @@ def root():
     return True
 
 def setwd(wd):
+    import bot.obj
     bot.obj.workdir = wd
