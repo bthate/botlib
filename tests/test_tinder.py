@@ -46,6 +46,7 @@ class Test_Tinder(unittest.TestCase):
         for x in range(nrtimes):
             launch(tests, k)
         consume(events)
+        print(events)
         
 def consume(elems):
     fixed = []
@@ -54,7 +55,6 @@ def consume(elems):
         r = e.wait()
         res.append(r)
         fixed.append(e)
-        print(e)
     for f in fixed:
         try:
             elems.remove(f)
