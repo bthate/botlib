@@ -11,7 +11,6 @@ from .obj import Object, edit, get, get_cls, last, save, tostr, update
 from .irc import Cfg
 from .isp import find_shorts
 from .tms import elapsed
-from .utl import list_files
 
 def __dir__():
     return ("ed", "meet", "ps")
