@@ -71,6 +71,11 @@ def parse(o, txt):
             continue
         opt = Option(token.txt)
         if opt.opt:
+            try:
+                o.index = int(opt.opt)
+                continue
+            except ValueError:
+                pass
             o.opts[opt.opt] = True
             continue
         args.append(token.txt)

@@ -7,7 +7,7 @@ import os, shutil, time, unittest
 
 from bot.csl import execute
 from bot.krn import k, starttime
-from bot.obj import cdir
+from bot.obj import cdir, update
 from bot.prs import parse_cli, setwd
 from bot.tms import elapsed
 
@@ -21,6 +21,7 @@ def main():
     cfg = parse_cli()
     setwd(".data")
     debug()
+    update(k.cfg, cfg)
     k.start()
     k.walk("bot")
     test_path = os.getcwd() + os.sep + "tests"
