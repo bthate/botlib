@@ -366,9 +366,9 @@ def tostr(o, keys=None):
 
 def update(o, d):
     try:
-        return o.__dict__.update(vars(d))
-    except (TypeError, ValueError):
         return o.__dict__.update(d)
+    except (TypeError, ValueError):
+        return o.__dict__.update(vars(d))
 
 def values(o):
     return o.__dict__.values()
