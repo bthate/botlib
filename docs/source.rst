@@ -14,7 +14,6 @@ BOTLIB contains the following modules:
     bot.csl             - console
     bot.dbs		- database
     bot.flt		- list of bots
-    bot.gnr 		- generics
     bot.hdl             - handler
     bot.irc             - internet relay chat
     bot.isp		- introspect

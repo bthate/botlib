@@ -174,7 +174,6 @@ BOTLIB has the following modules:
     bot.dbs             - database
     bot.err		- errors
     bot.flt             - list of bots
-    bot.gnr             - generics
     bot.hdl             - handler
     bot.irc             - internet relay chat
     bot.isp             - introspect
