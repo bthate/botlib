@@ -10,9 +10,8 @@ from urllib.request import Request, urlopen
 
 from .clk import Repeater
 from .dbs import Db
-from .gnr import edit, last
 from .krn import k
-from .obj import Cfg, Default, Object, get, save, update
+from .obj import Cfg, Default, Object, edit, get, last, save, update
 from .thr import launch
 from .tms import to_time, day
 

@@ -4,9 +4,8 @@
 
 import os, queue, socket, textwrap, time, threading, _thread
 
-from .gnr import last, tostr
 from .krn import k, __version__
-from .obj import Cfg, Object, get, locked, register
+from .obj import Cfg, Object, get, last, locked, register, tostr
 from .prs import parse
 from .hdl import Event, Handler
 from .thr import launch
@@ -297,7 +296,6 @@ class IRC(Handler):
             last(self.cfg)
         assert self.cfg.channel
         assert self.cfg.server
-        print(tostr(self.cfg))
         self.channels.append(self.cfg.channel)
         launch(self.doconnect)
 

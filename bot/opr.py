@@ -6,9 +6,8 @@ import os, threading, time
 
 from .dbs import Db
 from .err import ENOCLASS
-from .gnr import edit, last, tostr
 from .krn import k, starttime
-from .obj import Object, get, get_cls, save, update
+from .obj import Object, edit, get, get_cls, last, save, tostr, update
 from .irc import Cfg
 from .isp import find_shorts
 from .tms import elapsed
