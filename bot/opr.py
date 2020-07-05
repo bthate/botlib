@@ -2,7 +2,7 @@
 #
 #
 
-import threading, time
+import os, threading, time
 
 from .dbs import Db
 from .err import ENOCLASS
@@ -18,7 +18,10 @@ def __dir__():
     return ("ed", "meet", "ps")
 
 def list_files(wd):
-    return "|".join(os.path.join(wd, "store"))
+    path = os.path.join(wd, "store")
+    if not os.path.exists(path):
+        return ""
+    return "|".join(os.listdir(path))
 
 def ed(event):
     import bot.obj

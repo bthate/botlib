@@ -1,41 +1,35 @@
 #!/usr/bin/python3
+# BOTLIB - the bot library
 #
 # run unittests.
 
-import logging, os, shutil, time, unittest
-import bot.obj
-import bot.rss
+import os, shutil, time, unittest
 
-from bot.prs import parse_cli
 from bot.csl import execute
 from bot.krn import k, starttime
+from bot.obj import cdir
+from bot.prs import parse_cli, setwd
 from bot.tms import elapsed
 
-def cdir(path):
-    if os.path.exists(path):
-        return
-    res = ""
-    path2, fn = os.path.split(path)
-    for p in path2.split(os.sep):
-        res += "%s%s" % (p, os.sep)
-        padje = os.path.abspath(os.path.normpath(res))
-        try:
-            os.mkdir(padje)
-        except (IsADirectoryError, NotADirectoryError, FileExistsError):
-            pass
-    return True
-
+def debug():
+    import bot.rss
+    bot.rss.debug = True
 
 def main():
     if os.path.exists(".data"):
         shutil.rmtree(".data")
     cfg = parse_cli()
-    bot.obj.workdir = ".data"
-    bot.rss.debug = True
+    setwd(".data")
+    debug()
     k.start()
     k.walk("bot")
     test_path = os.getcwd() + os.sep + "tests"
-    suite = unittest.loader.TestLoader().discover(test_path, pattern="test*")
+    if cfg.txt:
+        pat = "test_%s*" % cfg.txt
+    else:
+        pat = "test_*"
+    print("using %s" % pat)
+    suite = unittest.loader.TestLoader().discover(test_path, pattern=pat)
     unittest.TextTestRunner(verbosity=3).run(suite)
    
 execute(main)

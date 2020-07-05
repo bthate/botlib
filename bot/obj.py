@@ -4,6 +4,8 @@
 
 import datetime, json, os, sys, time, _thread
 
+from bot.err import ENOCLASS
+
 lock = _thread.allocate_lock()
 workdir = ""
 
