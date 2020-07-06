@@ -76,8 +76,6 @@ class IRC(Handler):
         register(self.cmds, "ERROR", self.ERROR)
         register(self.cmds, "LOG", self.LOG)
         register(self.cmds, "NOTICE", self.NOTICE)
-        register(self.cmds, "PING", self.PING)
-        register(self.cmds, "PONG", self.PONG)
         register(self.cmds, "PRIVMSG", self.PRIVMSG)
         register(self.cmds, "QUIT", self.QUIT)
         k.fleet.add(self)
@@ -96,7 +94,7 @@ class IRC(Handler):
                 self._connected.set()
                 return False
         oldsock.setblocking(1)
-        oldsock.settimeout(600.0)
+        oldsock.settimeout(1200.0)
         self._sock = oldsock
         self._fsock = self._sock.makefile("r")
         fileno = self._sock.fileno()
@@ -228,7 +226,7 @@ class IRC(Handler):
         while not self.stopped:
             try:
                 e = self.poll()
-            except ConnectionResetError as ex:
+            except (OSError, ConnectionResetError, socket.timeout) as ex:
                 e = Event()
                 e.error = str(ex)
                 print(e.error)
@@ -265,6 +263,11 @@ class IRC(Handler):
             self._some()
         e = self._parsing(self._buffer.pop(0))
         cmd = e.command
+        if cmd == "PING":
+            self.state.pongcheck = True
+            self.command("PONG", e.txt or "")
+        elif cmd == "PONG":
+            self.state.pongcheck = False
         if cmd == "001":
             self.state.needconnect = False
             if "servermodes" in dir(self.cfg):
@@ -282,7 +285,15 @@ class IRC(Handler):
             txt += "\r\n"
         txt = txt[:512]
         txt = bytes(txt, "utf-8")
-        self._sock.send(txt)
+        self._connected.wait()
+        try:
+            self._sock.send(txt)
+        except (OSError, ConnectionResetError) as ex:
+            e = Event()
+            e.error = str(ex)
+            print(e.error)
+            self.LOG(e)
+            self._connected.clear()
         self.state.last = time.time()
         self.state.nrsend += 1
 
@@ -312,8 +323,9 @@ class IRC(Handler):
         self.state.error = event.error
         print(event.error)
         self._connected.clear()
-        self.stop()
-        init(k)
+        #self.stop()
+        #init(k)
+        self.connect(self.cfg.server, self.cfg.nick)
 
     def LOG(self, event):
         print(event.error)
@@ -322,13 +334,6 @@ class IRC(Handler):
         if event.txt.startswith("VERSION"):
             txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "the bot library !")
             self.command("NOTICE", event.channel, txt)
-
-    def PING(self, event):
-        self.state.pongcheck = True
-        self.command("PONG", event.txt or "")
-
-    def PONG(self, event):
-        self.state.pongcheck = False
 
     def PRIVMSG(self, event):
         if event.txt.startswith("DCC CHAT"):
