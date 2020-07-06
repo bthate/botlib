@@ -8,8 +8,10 @@ import threading, time
 
 from .flt import Fleet
 from .hdl import Handler
+from .isp import resources
 from .obj import Cfg, Object, save
 from .thr import launch
+from .trc import get_exception
 from .usr import Users
 
 def __dir__():
@@ -40,7 +42,11 @@ class Kernel(Handler):
         thrs = []
         for mn in spl(mns):
             ms = "bot.%s" % mn
-            mod = self.load_mod(ms)
+            try:
+                mod = self.load_mod(ms)
+            except ModuleNotFoundError:
+                print(get_exception())
+                continue
             mods.append(mod)
             func = getattr(mod, "init", None)
             if func:

@@ -73,19 +73,16 @@ class Handler(Object):
         e.show()
         e.ready.set()
 
-    def find_mod(self, name):
-        spec = importlib.util.find_spec(name)
-        if not spec:
-            return
-        return importlib.util.module_from_spec(spec)
-
     def get_cmd(self, cmd, dft=None):
         func = get(self.cmds, cmd, None)
         if not func:
             from .tbl import names
             name = names.get(cmd, None)
             if name:
-                self.load_mod(name)
+                try:
+                    self.load_mod(name)
+                except ModuleNotFoundError:
+                    print(get_exception())
                 func = get(self.cmds, cmd, dft)
         return func
 
@@ -97,8 +94,7 @@ class Handler(Object):
             if not event.orig:
                 event.orig = repr(self)
             event.speed = self.speed
-            thr = launch(self.dispatch, event, name=event.txt)
-            event.thrs.append(thr)
+            self.dispatch(event)
 
     def load_mod(self, name):
         mod = direct(name)

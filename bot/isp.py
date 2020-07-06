@@ -50,6 +50,12 @@ def find_cmds(mod):
                 cmds[key] = o
     return cmds
 
+def find_mod(self, name):
+    spec = importlib.util.find_spec(name)
+    if not spec:
+        return
+    return importlib.util.module_from_spec(spec)
+
 def find_modules(pkgs, skip=None):
     mods = []
     for pkg in pkgs.split(","):
@@ -83,7 +89,11 @@ def find_types(mod):
 
 def resources(name):
     result = {}
-    for x in pkg_resources.resource_listdir(name, ""):
+    try:
+        files =  pkg_resources.resource_listdir(name, "")
+    except KeyError:
+        return result
+    for x in files:
         if x.startswith("_") or not x.endswith(".py"):
             continue
         mn = "%s.%s" % (name, x[:-3])

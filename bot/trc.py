@@ -25,6 +25,8 @@ def get_exception(txt="", sep=" "):
             if "bot" in element:
                 break
         ownname = ".".join(mod[::-1])
+        if "bot" not in ownname:
+            continue
         result.append("%s:%s" % (ownname, linenr))
     res = "%s %s: %s %s" % (sep.join(result), exctype, excvalue, str(txt))
     del trace

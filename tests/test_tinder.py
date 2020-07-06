@@ -20,4 +20,7 @@ def tests(b):
     for cmd in keys:
         if cmd in ignore:
             continue
-        k.cmd(cmd + " " + "arg")
+        c = cmd + " " + "arg" 
+        if "v" in k.cfg.opts:
+            print(c)
+        k.cmd(c)
