@@ -3,7 +3,7 @@ BOTLIB
 
 Welcome to BOTLIB, the bot library ! see https://pypi.org/project/botlib/ , it's public domain ;]
 
-BOTLIB can fetch RSS feeds, lets you program your own commands, can work as a UDP to IRC
+BOTLIB can lets you program your own commands, can work as a UDP to IRC
 relay, has user management to limit access to prefered users and can run as a service to let
 it restart after reboots. BOTLIB is the result of 20 years of programming bots, was there 
 in 2000, is here in 2020, has no copyright, no LICENSE and is placed in the Public Domain. 

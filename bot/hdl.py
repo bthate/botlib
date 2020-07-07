@@ -52,6 +52,7 @@ class Handler(Object):
     def __init__(self):
         super().__init__()
         self.cmds = Object()
+        self.names = Object()
         self.queue = queue.Queue()
         self.speed = "fast"
         self.stopped = False
@@ -76,8 +77,7 @@ class Handler(Object):
     def get_cmd(self, cmd, dft=None):
         func = get(self.cmds, cmd, None)
         if not func:
-            from .tbl import names
-            name = names.get(cmd, None)
+            name = self.names.get(cmd, None)
             if name:
                 try:
                     self.load_mod(name)
