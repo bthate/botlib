@@ -89,47 +89,6 @@ running bot with the mods option "csl" will start a console:
  cfg|cmds|ed|find|fleet|meet|ps|udp
  >
 
-R S S
-=====
-
-botlib doesn't depend on other libraries so for RSS you need to install
-feedparser yourself:
-
-::
-
- > sudo apt install feedparser
-
-
-start the bot with the -r option to have the rss fetcher started:
-
-::
-
- > bot mods=rss
-
-
-to add an url use the rss command with an url:
-
-::
-
- > bot rss https://news.ycombinator.com/rss
- ok 1
-
-
-run the rss command to see what urls are registered:
-
-::
-
- > bot rss
- 0 https://news.ycombinator.com/rss
-
-
-the fetch command can be used to poll the added feeds:
-
-::
-
- > bot fetch
- fetched 0
-
 
 U D P
 =====
@@ -180,7 +139,6 @@ BOTLIB has the following modules:
     bot.obj             - base classes
     bot.opr             - opers
     bot.prs             - parse
-    bot.rss             - rich site syndicate
     bot.tbl             - tables
     bot.thr             - threads
     bot.tms             - time

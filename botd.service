@@ -4,7 +4,7 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/bot mods=irc,rss,cmd
+ExecStart=/usr/local/bin/bot mods=irc,udp,cmd
 
 [Install]
 WantedBy=multi-user.target

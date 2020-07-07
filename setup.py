@@ -9,7 +9,7 @@ def read():
 
 setup(
     name='botlib',
-    version='88',
+    version='89',
     url='https://bitbucket.org/bthate/botlib',
     author='Bart Thate',
     author_email='bthate@dds.nl', 
