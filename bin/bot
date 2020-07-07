@@ -12,8 +12,9 @@ def main():
     if c.txt:
         k.walk("bot")
         return k.cmd(c.origtxt)
-    k.start()
-    k.init(c.mods)
-    k.wait()
+    if c.mods:
+        k.start()
+        k.init(c.mods)
+        k.wait()
 
 execute(main)

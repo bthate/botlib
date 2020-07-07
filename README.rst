@@ -10,7 +10,9 @@ in 2000, is here in 2020, has no copyright, no LICENSE and is placed in the Publ
 This makes BOTLIB truely free (pastable) code you can use how you see fit, i hope you enjoy 
 using and programming BOTLIB till the point you start programming your own bots yourself.
 
-have fun coding ;]
+as of version 89 I ditched RSS as it depends on feedparser, this should make
+this code all own intellectual property, that is completely my creation to put into the public
+domain as a whole.
 
 I N S T A L L
 =============
@@ -80,27 +82,45 @@ you can use bot cmd with arguments to run a command directly:
 
 ::
 
+ > the bot does nothing if you don't provide commands.
+
+ > bot
+ 
+the cmds commands shows a list of available commands:
+
  > bot cmds
- cfg|cmds|ed|find|fleet|meet|ps|udp
+ cfg|cmds|done|ed|find|fl|krn|log|meet|ps|todo|udp|up|v
 
-
-if you run with sudo, you will get additional command like install,hup and remove:
-
-::
-
- > sudo bot mods=cmd cmds
- cfg|cmds|ed|find|fleet|hup|install|meet|ps|remove|udp
-
-
-running bot with the mods option "csl" will start a console:
+you can use the mods= setter to set the modules to load:
 
 ::
 
  > bot mods=csl,cmd
  > cmds
- cfg|cmds|ed|find|fleet|meet|ps|udp
- >
+ cfg|cmds|find|fl|krn|up|v
 
+to configure the bot, use the cfg command with appropriate setters.
+
+ > bot cfg server=irc.freenode.net channel=\#dunkbots nick=botje
+
+to start a irc server with the cmd and opr modules loaded and a console
+running:
+
+ > bot mods=irc,csl,cmd,opr
+ > ps
+ 0 0s       Console.input
+ 1 0s       IRC.handler
+ 2 0s       IRC.input
+ 3 0s       IRC.output
+ 4 0s       Kernel.handler
+ > 
+
+to run a pure UDP to IRC relay, run the bot with irc,udp modules loaded
+
+::
+
+ > bot mods=irc,udp
+ >
 
 U D P
 =====
@@ -151,7 +171,6 @@ BOTLIB has the following modules:
     bot.obj             - base classes
     bot.opr             - opers
     bot.prs             - parse
-    bot.tbl             - tables
     bot.thr             - threads
     bot.tms             - time
     bot.trc             - trace
