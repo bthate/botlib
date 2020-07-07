@@ -187,15 +187,3 @@ you can contact me on IRC/freenode/#dunkbots or email me at bthate@dds.nl
 
 | Bart Thate (bthate@dds.nl, thatebart@gmail.com)
 | botfather on #dunkbots irc.freenode.net
-    
-""",
-    license='Public Domain',
-    packages=["bot"],
-    scripts=["bin/bot"],
-    classifiers=['Development Status :: 3 - Alpha',
-                 'License :: Public Domain',
-                 'Operating System :: Unix',
-                 'Programming Language :: Python',
-                 'Topic :: Utilities'
-                ]
-)

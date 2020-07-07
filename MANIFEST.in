@@ -1,1 +1,2 @@
-include botd.service
+include README
+include MANIFEST.in
