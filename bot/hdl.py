@@ -77,7 +77,7 @@ class Handler(Object):
     def get_cmd(self, cmd, dft=None):
         func = get(self.cmds, cmd, None)
         if not func:
-            name = self.names.get(cmd, None)
+            name = get(self.names, cmd, None)
             if name:
                 try:
                     self.load_mod(name)

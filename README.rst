@@ -24,22 +24,28 @@ you can download with pip3 and install globally:
 You can also download the tarball and install from that, see https://pypi.org/project/botlib/#files
 
 if you want to run the bot 24/7 you can install BOTLIB as a service for
-the systemd daemon. You can do this by running the following:
+the systemd daemon. You can do this by copying the following into
+the /etc/systemd/system/botd.service file:
 
 ::
 
- > sudo cp botd.service /etc/systemd/system/
+ [Unit]
+ Description=BOTD - the 24/7 channel daemon
+ After=network-online.target
+ Wants=network-online.target
+ 
+ [Service]
+ ExecStart=/usr/local/bin/bot mods=irc,udp
+ 
+ [Install]
+ WantedBy=multi-user.target
+
+then add the botd service with:
+
+::
+
  > systemctl enable botd
  > systemctl daemon-reload
-
-if you don't want the bot to startup at boot, remove the service file:
-
-::
-
- > sudo rm /etc/systemd/system/botd.service
-
-C O N F I G
-===========
 
 to configure the bot use the cfg (config) command, use sudo for the system daemon
 and without sudo if you want to run the bot locally:
@@ -49,6 +55,12 @@ and without sudo if you want to run the bot locally:
  > sudo bot cfg server=irc.freenode.net channel=\#dunkbots nick=botje
  > sudo service botd stop
  > sudo service botd start
+
+if you don't want the bot to startup at boot, remove the service file:
+
+::
+
+ > sudo rm /etc/systemd/system/botd.service
 
 U S A G E
 =========
@@ -76,7 +88,7 @@ if you run with sudo, you will get additional command like install,hup and remov
 
 ::
 
- > sudo bot cmds
+ > sudo bot mods=cmd cmds
  cfg|cmds|ed|find|fleet|hup|install|meet|ps|remove|udp
 
 
@@ -84,7 +96,7 @@ running bot with the mods option "csl" will start a console:
 
 ::
 
- > bot mods=csl
+ > bot mods=csl,cmd
  > cmds
  cfg|cmds|ed|find|fleet|meet|ps|udp
  >
