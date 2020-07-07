@@ -71,6 +71,7 @@ you can use bot cmd with arguments to run a command directly:
  > bot cmds
  cfg|cmds|ed|find|fleet|meet|ps|udp
 
+
 if you run with sudo, you will get additional command like install,hup and remove:
 
 ::
@@ -88,15 +89,6 @@ running bot with the mods option "csl" will start a console:
  cfg|cmds|ed|find|fleet|meet|ps|udp
  >
 
-giving the -d option runs bot in the background:
-
-::
-
- > bot -d
- > ps xa | grep bot
- 74452 ?        Sl     0:00 /usr/bin/python3 -u ./bin/bot -d
- >
-
 R S S
 =====
 
@@ -107,11 +99,13 @@ feedparser yourself:
 
  > sudo apt install feedparser
 
+
 start the bot with the -r option to have the rss fetcher started:
 
 ::
 
  > bot mods=rss
+
 
 to add an url use the rss command with an url:
 
@@ -120,6 +114,7 @@ to add an url use the rss command with an url:
  > bot rss https://news.ycombinator.com/rss
  ok 1
 
+
 run the rss command to see what urls are registered:
 
 ::
@@ -127,12 +122,14 @@ run the rss command to see what urls are registered:
  > bot rss
  0 https://news.ycombinator.com/rss
 
+
 the fetch command can be used to poll the added feeds:
 
 ::
 
  > bot fetch
  fetched 0
+
 
 U D P
 =====
@@ -145,6 +142,7 @@ the irc server:
 
  > tail -f /var/log/syslog | bot udp
 
+
 to send the tail output to the IRC channel, send a udp packet to the bot:
 
 ::
@@ -154,6 +152,7 @@ to send the tail output to the IRC channel, send a udp packet to the bot:
  def toudp(host=localhost, port=5500, txt=""):
      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
      sock.sendto(bytes(txt.strip(), "utf-8"), host, port)
+
 
 S O U R C E
 ===========
@@ -182,7 +181,6 @@ BOTLIB has the following modules:
     bot.opr             - opers
     bot.prs             - parse
     bot.rss             - rich site syndicate
-    bot.run             - runtime
     bot.tbl             - tables
     bot.thr             - threads
     bot.tms             - time
