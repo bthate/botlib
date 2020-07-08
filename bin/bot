@@ -10,7 +10,7 @@ from bot.krn import k
 from bot.prs import parse_cli
 
 def main():
-    c = parse_cli()
+    c = parse_cli("bot")
     if c.txt:
         k.walk("bot")
         return k.cmd(c.origtxt)

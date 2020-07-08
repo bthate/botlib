@@ -3,6 +3,7 @@
 #
 
 import os, threading, time
+import bot.obj
 
 from .dbs import Db
 from .err import ENOCLASS
@@ -12,7 +13,7 @@ from .isp import find_shorts
 from .tms import elapsed
 
 def __dir__():
-    return ("ed", "find", "fleet", "kernel", "ps")
+    return ("ed", "find", "fleet", "kernel", "ps", "wd")
 
 def list_files(wd):
     path = os.path.join(wd, "store")
@@ -21,7 +22,6 @@ def list_files(wd):
     return "|".join(os.listdir(path))
 
 def ed(event):
-    import bot.obj
     if not event.args:
         event.reply(list_files(bot.obj.workdir) or "no files yet")
         return
@@ -51,7 +51,6 @@ def ed(event):
     event.reply("ok")
 
 def find(event):
-    import bot.obj
     if not event.args:
         wd = os.path.join(bot.obj.workdir, "store", "")
         cdir(wd)
@@ -111,3 +110,6 @@ def ps(event):
         res = "%s %s" % (nr, psformat % (elapsed(up), thrname[:60]))
         if res:
             event.reply(res.rstrip())
+
+def wd(event):
+    event.reply(bot.obj.workdir)

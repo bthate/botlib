@@ -11,7 +11,7 @@ from .prs import parse
 from .tms import elapsed
 
 def __dir__():
-    return ("cfg", "cmds", "meet", "up", "v")
+    return ("cfg", "cmds", "up", "v")
 
 def cfg(event):
     c = Cfg()
@@ -24,15 +24,6 @@ def cfg(event):
 
 def cmds(event):
     event.reply("|".join(sorted(k.cmds)))
-
-def meet(event):
-    if not event.args:
-        event.reply("meet <userhost>")
-        return
-    origin = event.args[0]
-    origin = get(k.users.userhosts, origin, origin)
-    k.users.meet(origin)
-    event.reply("ok")
 
 def up(event):
     event.reply(elapsed(time.time() - starttime))

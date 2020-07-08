@@ -3,6 +3,7 @@
 #
 
 import os, sys
+import bot.obj
 
 from .obj import Cfg, Default, Object, update
 
@@ -46,11 +47,6 @@ class Setter(Object):
         if pre:
             self[pre] = post
 
-def getwd():
-    if root():
-        return "/var/lib/botd"
-    return os.path.expanduser("~/.bot")
-
 def parse(o, txt):
     args = []
     opts = []
@@ -86,19 +82,19 @@ def parse(o, txt):
     o.rest = " ".join(args[1:])
     return o
 
-def parse_cli():
+def parse_cli(name="bot"):
     if len(sys.argv) <= 1:
         return Cfg()
     c = Cfg()
+    c.name = name
     parse(c, " ".join(sys.argv[1:]))
-    setwd(c.wd or getwd())
+    if root():
+        bot.obj.workdir = "/var/lib/%s" % name
+    else:
+        bot.obj.workdir = c.wd or os.path.expanduser("~/.%s" % name)
     return c
 
 def root():
     if os.geteuid() != 0:
         return False
     return True
-
-def setwd(wd):
-    import bot.obj
-    bot.obj.workdir = wd

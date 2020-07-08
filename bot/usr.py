@@ -4,7 +4,7 @@
 
 from .dbs import Db
 from .err import ENOUSER
-from .obj import Object, save
+from .obj import Object, get, save
 
 class User(Object):
 
@@ -72,3 +72,13 @@ class Users(Db):
             user.perms.append(permission.upper())
             user.save()
         return user
+
+def meet(event):
+    if not event.args:
+        event.reply("meet <userhost>")
+        return
+    from .krn import k
+    origin = event.args[0]
+    origin = get(k.users.userhosts, origin, origin)
+    k.users.meet(origin)
+    event.reply("ok")
