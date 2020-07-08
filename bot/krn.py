@@ -51,7 +51,6 @@ class Kernel(Handler):
             if func:
                 thrs.append(launch(func, self))
         for thr in thrs:
-            print(thr)
             thr.join()
         return mods
 
