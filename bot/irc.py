@@ -260,6 +260,8 @@ class IRC(Handler):
         self._connected.wait()
         if not self._buffer:
             self._some()
+        if not self._buffer:
+            return self_parsing("")
         e = self._parsing(self._buffer.pop(0))
         cmd = e.command
         if cmd == "PING":
