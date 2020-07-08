@@ -1,5 +1,5 @@
-BOTLIB
-######
+B O T L I B
+###########
 
 Welcome to BOTLIB, the bot library ! see https://pypi.org/project/botlib/ , it's public domain ;]
 
@@ -10,10 +10,11 @@ in 2000, is here in 2020, has no copyright, no LICENSE and is placed in the Publ
 This makes BOTLIB truely free (pastable) code you can use how you see fit, i hope you enjoy 
 using and programming BOTLIB till the point you start programming your own bots yourself.
 
-|
+BOTLIB it self does not install a binary as it is a library. The tarball
+however includes a bot program that can run as a test bot for BOTLIB.
 
-I N S T A L L
-=============
+BOTLIB detects whether it is run as root or as a user. if it's root it
+will use the /var/lib/botd directory and it it's user it will use ~/.bot
 
 you can download with pip3 and install globally:
 
@@ -62,13 +63,6 @@ if you don't want the bot to startup at boot, remove the service file:
 
  > sudo rm /etc/systemd/system/botd.service
 
-|
-
-U S A G E
-=========
-
-BOTLIB detects whether it is run as root or as a user. if it's root it
-will use the /var/lib/botd directory and it it's user it will use ~/.bot
 
 BOTLIB has it's own CLI, you can run it by giving the bot command on the
 prompt, it will return with no response:
@@ -78,15 +72,9 @@ prompt, it will return with no response:
  > bot
  >
 
-you can use bot cmd with arguments to run a command directly:
+you can use bot <cmd> to run a command directly:
 
 ::
-
- > the bot does nothing if you don't provide commands.
-
- > bot
- 
-the cmds commands shows a list of available commands:
 
  > bot cmds
  cfg|cmds|done|ed|find|fl|krn|log|meet|ps|todo|udp|up|v
@@ -101,10 +89,14 @@ you can use the mods= setter to set the modules to load:
 
 to configure the bot, use the cfg command with appropriate setters.
 
+::
+
  > bot cfg server=irc.freenode.net channel=\#dunkbots nick=botje
 
 to start a irc server with the cmd and opr modules loaded and a console
 running:
+
+::
 
  > bot mods=irc,csl,cmd,opr
  > ps
@@ -122,21 +114,14 @@ to run a pure UDP to IRC relay, run the bot with irc,udp modules loaded
  > bot mods=irc,udp
  >
 
-|
-
-U D P
-=====
-
-using udp to relay text into a channel, use the -u options to start the UDP
-service and use the udp command to send text via the bot  to the channel on 
-the irc server:
+use the udp command to send text via the bot to the channel on the irc server:
 
 ::
 
  > tail -f /var/log/syslog | bot udp
 
 
-to send the tail output to the IRC channel, send a udp packet to the bot:
+to send a udp packet to the bot:
 
 ::
 
@@ -145,11 +130,6 @@ to send the tail output to the IRC channel, send a udp packet to the bot:
  def toudp(host=localhost, port=5500, txt=""):
      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
      sock.sendto(bytes(txt.strip(), "utf-8"), host, port)
-
-|
-
-S O U R C E
-===========
 
 if you want to develop on the bot clone the source at bitbucket.org:
 
@@ -180,13 +160,6 @@ BOTLIB has the following modules:
     bot.udp             - udp to channel
     bot.usr             - users
     bot.utl             - utilities
-
-You can add you own modules to the bot package, its a namespace package.
-
-|
-
-C O N T A C T
-=============
 
 you can contact me on IRC/freenode/#dunkbots or email me at bthate@dds.nl
 
