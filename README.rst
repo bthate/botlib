@@ -1,5 +1,11 @@
-B O T L I B
-###########
+ #####            ####            #####          #               #            #####
+ #    #          #    #             #            #               #            #    #
+ #####           #    #             #            #               #            #####
+ #    #          #    #             #            #               #            #    #
+ #    #          #    #             #            #               #            #    #
+ #####            ####              #            ######          #            #####
+
+
 
 Welcome to BOTLIB, the bot library ! see https://pypi.org/project/botlib/ , it's public domain ;]
 
@@ -10,17 +16,14 @@ in 2000, is here in 2020, has no copyright, no LICENSE and is placed in the Publ
 This makes BOTLIB truely free (pastable) code you can use how you see fit, i hope you enjoy 
 using and programming BOTLIB till the point you start programming your own bots yourself.
 
-BOTLIB it self does not install a binary as it is a library. The tarball
-however includes a bot program that can run as a test bot for BOTLIB.
-
-BOTLIB detects whether it is run as root or as a user. if it's root it
-will use the /var/lib/botd directory and it it's user it will use ~/.bot
-
 you can download with pip3 and install globally:
 
 ::
 
  > sudo pip3 install botlib
+
+BOTLIB it self does not install a binary as it is a library. The tarball
+however includes a bot program that can run as a test bot for BOTLIB.
 
 You can also download the tarball and install from that, see https://pypi.org/project/botlib/#files
 
@@ -41,12 +44,13 @@ the /etc/systemd/system/botd.service file:
  [Install]
  WantedBy=multi-user.target
 
-then add the botd service with:
+then copy the bin/bot to /usr/local/bin and add the botd service with:
 
 ::
 
- > systemctl enable botd
- > systemctl daemon-reload
+ > sudo cp bin/bot /usr/local/bin
+ > sudo systemctl enable botd
+ > sudo systemctl daemon-reload
 
 to configure the bot use the cfg (config) command, use sudo for the system daemon
 and without sudo if you want to run the bot locally:
@@ -63,6 +67,8 @@ if you don't want the bot to startup at boot, remove the service file:
 
  > sudo rm /etc/systemd/system/botd.service
 
+BOTLIB detects whether it is run as root or as a user. if it's root it
+will use the /var/lib/botd/ directory and it it's user it will use ~/.bot
 
 BOTLIB has it's own CLI, you can run it by giving the bot command on the
 prompt, it will return with no response:
