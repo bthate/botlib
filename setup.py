@@ -6,7 +6,7 @@
 from distutils.core import setup
 
 def read():
-    return open("README", "r").read()
+    return open("README.rst", "r").read()
 
 setup(
     name='botlib',
@@ -18,7 +18,6 @@ setup(
     long_description=read(),
     license='Public Domain',
     packages=["bot"],
-    scripts=["bin/bot"],
     classifiers=['Development Status :: 4 - Beta',
                  'License :: Public Domain',
                  'Operating System :: Unix',
