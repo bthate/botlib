@@ -23,10 +23,10 @@ you can download with pip3 and install globally:
 
  > sudo pip3 install botlib
 
-BOTLIB it self does not install a binary as it is a library. The tarball
+BOTLIB itself does not install a binary as it is a library. The tarball
 however includes a bot program that can run as a test bot for BOTLIB.
 
-You can also download the tarball and install from that, see https://pypi.org/project/botlib/#files
+You can download the tarball from https://pypi.org/project/botlib/#files
 
 if you want to run the bot 24/7 you can install BOTLIB as a service for
 the systemd daemon. You can do this by copying the following into
