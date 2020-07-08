@@ -2,17 +2,17 @@
 #
 #
 
-import atexit, readline, sys, termios, threading
+import atexit, os, readline, sys, termios, threading
 
 from .obj import Cfg, Object
 from .hdl import Event
 from .krn import k
-from .prs import parse_cli
 from .thr import launch
 
 def __init__():
     return ("Cfg", "Console", "init")
 
+cmds = []
 resume = {}
 
 def init(kernel):
@@ -60,16 +60,6 @@ class Console(Object):
     def wait(self):
         self.ready.wait()
 
-def close_history():
-    global HISTFILE
-    if bot.obj.workdir:
-        if not HISTFILE:
-            HISTFILE = os.path.join(bot.obj.workdir, "history")
-        if not os.path.isfile(HISTFILE):
-            cdir(HISTFILE)
-            touch(HISTFILE)
-        readline.write_history_file(HISTFILE)
-
 def complete(text, state):
     matches = []
     if text:
@@ -80,17 +70,6 @@ def complete(text, state):
         return matches[state]
     except IndexError:
         return None
-
-def enable_history():
-    assert bot.obj.workdir
-    global HISTFILE
-    HISTFILE = os.path.abspath(os.path.join(bot.obj.workdir, "history"))
-    if not os.path.exists(HISTFILE):
-        cdir(HISTFILE)
-        touch(HISTFILE)
-    else:
-        readline.read_history_file(HISTFILE)
-    atexit.register(close_history)
 
 def execute(main):
     termsave()
@@ -133,13 +112,3 @@ def touch(fname):
         os.close(fd)
     except (IsADirectoryError, TypeError):
         pass
-
-def writepid():
-    assert bot.obj.workdir
-    path = os.path.join(bot.obj.workdir, "pid")
-    if not os.path.exists(path):
-        cdir(path)
-    f = open(path, 'w')
-    f.write(str(os.getpid()))
-    f.flush()
-    f.close()

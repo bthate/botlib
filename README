@@ -10,9 +10,6 @@ in 2000, is here in 2020, has no copyright, no LICENSE and is placed in the Publ
 This makes BOTLIB truely free (pastable) code you can use how you see fit, i hope you enjoy 
 using and programming BOTLIB till the point you start programming your own bots yourself.
 
-as of version 89 I ditched RSS as it depends on feedparser, this should make
-this code all own intellectual property, that is completely my creation to put into the public
-domain as a whole.
 
 I N S T A L L
 =============
@@ -37,7 +34,7 @@ the /etc/systemd/system/botd.service file:
  Wants=network-online.target
  
  [Service]
- ExecStart=/usr/local/bin/bot mods=irc,udp
+ ExecStart=/usr/local/bin/bot mods=irc,udp,cmd
  
  [Install]
  WantedBy=multi-user.target

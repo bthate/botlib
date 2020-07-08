@@ -5,11 +5,10 @@
 import os, queue, socket, textwrap, time, threading, _thread
 
 from .krn import k, __version__
-from .obj import Cfg, Object, get, last, locked, register, tostr
+from .obj import Cfg, Object, get, last, locked, register
 from .prs import parse
 from .hdl import Event, Handler
 from .thr import launch
-from .trc import get_exception
 
 def __dir__():
     return ("Cfg", "DCC", "Event", "IRC")

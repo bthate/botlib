@@ -90,7 +90,7 @@ def find_types(mod):
 def resources(name):
     result = {}
     try:
-        files =  pkg_resources.resource_listdir(name, "")
+        files = pkg_resources.resource_listdir(name, "")
     except KeyError:
         return result
     for x in files:

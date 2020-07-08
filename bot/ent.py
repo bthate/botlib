@@ -9,7 +9,7 @@ from .obj import Object, fntime, save
 from .tms import elapsed
 
 def __init__():
-    return ("Log", "TOdo", "done", "log", "todo") 
+    return ("Log", "TOdo", "done", "log", "todo")
 
 class Log(Object):
 

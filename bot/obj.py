@@ -2,9 +2,9 @@
 #
 #
 
-import datetime, json, os, sys, time, _thread
+import datetime, importlib, json, os, random, sys, time, _thread
 
-from bot.err import ENOCLASS
+from bot.err import ENOCLASS, ENOFILE
 
 lock = _thread.allocate_lock()
 workdir = ""

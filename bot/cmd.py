@@ -2,19 +2,16 @@
 #
 #
 
-import os, time
+import time
 
-import bot.obj
-
-from .dbs import Db
 from .irc import Cfg
 from .krn import k, starttime, __version__
-from .obj import Object, cdir, get_type, last, save, tostr, update
+from .obj import get, last, save, tostr, update
 from .prs import parse
-from .tms import elapsed, fntime
+from .tms import elapsed
 
 def __dir__():
-    return ("cfg", "cmds", "find", "fl", "krn", "mods", "up", "v")
+    return ("cfg", "cmds", "meet", "up", "v")
 
 def cfg(event):
     c = Cfg()
@@ -28,45 +25,14 @@ def cfg(event):
 def cmds(event):
     event.reply("|".join(sorted(k.cmds)))
 
-def find(event):
+def meet(event):
     if not event.args:
-        wd = os.path.join(bot.obj.workdir, "store", "")
-        cdir(wd)
-        fns = os.listdir(wd)
-        fns = sorted({x.split(os.sep)[0] for x in fns})
-        if fns:
-            event.reply("|".join(fns))
+        event.reply("meet <userhost>")
         return
-    db = Db()
-    target = db.all
-    otype = event.args[0]
-    try:
-        match = event.args[1]
-        target = db.find_value
-    except IndexError:
-        match = None
-    try:
-        args = event.args[2:]
-    except ValueError:
-        args = None
-    nr = -1
-    for o in target(otype, match):
-        nr += 1
-        event.display(o, str(nr), args or o.keys())
-    if nr == -1:
-        event.reply("no %s found." % otype)
-
-def fl(event):
-    try:
-        index = int(event.args[0])
-        event.reply(str(k.fleet.bots[index]))
-        return
-    except (TypeError, ValueError, IndexError):
-        pass
-    event.reply([get_type(x) for x in k.fleet])
-
-def krn(event):
-    event.reply(k)
+    origin = event.args[0]
+    origin = get(k.users.userhosts, origin, origin)
+    k.users.meet(origin)
+    event.reply("ok")
 
 def up(event):
     event.reply(elapsed(time.time() - starttime))

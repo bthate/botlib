@@ -2,12 +2,10 @@
 #
 #
 
-import importlib, importlib.util, importlib.resources
-import os, queue, time, threading
+import importlib, importlib.util, importlib.resources, os, queue, threading
 
 from .isp import find_cmds, direct
-from .obj import Default, Object, get, save, update
-from .prs import parse
+from .obj import Default, Object, get, update
 from .thr import launch
 from .trc import get_exception
 

@@ -3,7 +3,6 @@
 #
 
 import os, sys
-import bot.obj
 
 from .obj import Cfg, Default, Object, update
 

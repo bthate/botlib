@@ -7,13 +7,12 @@ import os, threading, time
 from .dbs import Db
 from .err import ENOCLASS
 from .krn import k, starttime
-from .obj import Object, edit, get, get_cls, last, save, tostr, update
-from .irc import Cfg
+from .obj import Object, cdir, edit, get, get_type, get_cls, save, update
 from .isp import find_shorts
 from .tms import elapsed
 
 def __dir__():
-    return ("ed", "meet", "ps")
+    return ("ed", "find", "fleet", "kernel", "ps")
 
 def list_files(wd):
     path = os.path.join(wd, "store")
@@ -51,14 +50,46 @@ def ed(event):
     save(l)
     event.reply("ok")
 
-def meet(event):
+def find(event):
+    import bot.obj
     if not event.args:
-        event.reply("meet <userhost>")
+        wd = os.path.join(bot.obj.workdir, "store", "")
+        cdir(wd)
+        fns = os.listdir(wd)
+        fns = sorted({x.split(os.sep)[0] for x in fns})
+        if fns:
+            event.reply("|".join(fns))
         return
-    origin = event.args[0]
-    origin = get(k.users.userhosts, origin, origin)
-    k.users.meet(origin)
-    event.reply("ok")
+    db = Db()
+    target = db.all
+    otype = event.args[0]
+    try:
+        match = event.args[1]
+        target = db.find_value
+    except IndexError:
+        match = None
+    try:
+        args = event.args[2:]
+    except ValueError:
+        args = None
+    nr = -1
+    for o in target(otype, match):
+        nr += 1
+        event.display(o, str(nr), args or o.keys())
+    if nr == -1:
+        event.reply("no %s found." % otype)
+
+def fleet(event):
+    try:
+        index = int(event.args[0])
+        event.reply(str(k.fleet.bots[index]))
+        return
+    except (TypeError, ValueError, IndexError):
+        pass
+    event.reply([get_type(x) for x in k.fleet])
+
+def kernel(event):
+    event.reply(k)
 
 def ps(event):
     psformat = "%-8s %-50s"

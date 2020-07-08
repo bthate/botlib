@@ -2,9 +2,7 @@
 #
 #
 
-import os, os.path
-
-from .obj import Object, find, hook, names, search
+from .obj import Object, fntime, find, hook, names, search
 
 def __init__():
     return ("Db",)

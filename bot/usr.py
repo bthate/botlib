@@ -3,6 +3,7 @@
 #
 
 from .dbs import Db
+from .err import ENOUSER
 from .obj import Object, save
 
 class User(Object):
