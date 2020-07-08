@@ -3,6 +3,8 @@
 #
 #
 
+import sys, os ; sys.path.insert(0, os.getcwd())
+
 from bot.csl import execute
 from bot.krn import k
 from bot.prs import parse_cli
