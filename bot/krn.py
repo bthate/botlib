@@ -4,7 +4,7 @@
 
 __version__ = 90
 
-import threading, time
+import os, threading, time
 
 from .flt import Fleet
 from .hdl import Handler
@@ -14,7 +14,7 @@ from .trc import get_exception
 from .usr import Users
 
 def __dir__():
-    return ("Cfg", "Kernel", "k")
+    return ("Cfg", "Kernel", "k", "os")
 
 starttime = time.time()
 
@@ -51,6 +51,7 @@ class Kernel(Handler):
             if func:
                 thrs.append(launch(func, self))
         for thr in thrs:
+            print(thr)
             thr.join()
         return mods
 

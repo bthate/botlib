@@ -91,9 +91,7 @@ def parse_cli(name="bot"):
     if len(sys.argv) <= 1:
         return Cfg()
     c = Cfg()
-    c.name = name
     parse(c, " ".join(sys.argv[1:]))
-    print(p)
     return c
 
 def root():

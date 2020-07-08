@@ -252,7 +252,6 @@ def items(o):
 def keys(o):
     return o.__dict__.keys()
 
-@locked(lock)
 def last(o, strip=False):
     from .dbs import Db
     db = Db()
