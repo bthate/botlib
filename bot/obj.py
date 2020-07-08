@@ -7,7 +7,7 @@ import datetime, importlib, json, os, random, sys, time, _thread
 from bot.err import ENOCLASS, ENOFILE
 
 lock = _thread.allocate_lock()
-workdir = ""
+workdir = None
 
 def locked(l):
     def lockeddec(func, *args, **kwargs):
@@ -204,6 +204,7 @@ def locked(l):
 def names(name, delta=None):
     if not name:
         return []
+    assert workdir
     p = os.path.join(workdir, "store", name) + os.sep
     res = []
     now = time.time()
@@ -251,6 +252,7 @@ def items(o):
 def keys(o):
     return o.__dict__.keys()
 
+@locked(lock)
 def last(o, strip=False):
     from .dbs import Db
     db = Db()
@@ -366,9 +368,9 @@ def tostr(o, keys=None):
 
 def update(o, d):
     try:
-        return o.__dict__.update(d)
-    except (TypeError, ValueError):
         return o.__dict__.update(vars(d))
+    except (TypeError, ValueError):
+        return o.__dict__.update(d)
 
 def values(o):
     return o.__dict__.values()

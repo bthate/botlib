@@ -83,15 +83,17 @@ def parse(o, txt):
     return o
 
 def parse_cli(name="bot"):
+    if root():
+        p = "/var/lib/%s" % name
+    else:
+        p = os.path.expanduser("~/.%s" % name)
+    bot.obj.workdir = p
     if len(sys.argv) <= 1:
         return Cfg()
     c = Cfg()
     c.name = name
     parse(c, " ".join(sys.argv[1:]))
-    if root():
-        bot.obj.workdir = "/var/lib/%s" % name
-    else:
-        bot.obj.workdir = c.wd or os.path.expanduser("~/.%s" % name)
+    print(p)
     return c
 
 def root():
