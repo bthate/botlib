@@ -10,6 +10,7 @@ in 2000, is here in 2020, has no copyright, no LICENSE and is placed in the Publ
 This makes BOTLIB truely free (pastable) code you can use how you see fit, i hope you enjoy 
 using and programming BOTLIB till the point you start programming your own bots yourself.
 
+|
 
 I N S T A L L
 =============
@@ -60,6 +61,8 @@ if you don't want the bot to startup at boot, remove the service file:
 ::
 
  > sudo rm /etc/systemd/system/botd.service
+
+|
 
 U S A G E
 =========
@@ -119,6 +122,8 @@ to run a pure UDP to IRC relay, run the bot with irc,udp modules loaded
  > bot mods=irc,udp
  >
 
+|
+
 U D P
 =====
 
@@ -141,6 +146,7 @@ to send the tail output to the IRC channel, send a udp packet to the bot:
      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
      sock.sendto(bytes(txt.strip(), "utf-8"), host, port)
 
+|
 
 S O U R C E
 ===========
@@ -176,6 +182,8 @@ BOTLIB has the following modules:
     bot.utl             - utilities
 
 You can add you own modules to the bot package, its a namespace package.
+
+|
 
 C O N T A C T
 =============
