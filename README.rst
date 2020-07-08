@@ -1,13 +1,3 @@
-.. parsed-literal::
-
- #####            ####            #####          #               #            #####
- #    #          #    #             #            #               #            #    #
- #####           #    #             #            #               #            #####
- #    #          #    #             #            #               #            #    #
- #    #          #    #             #            #               #            #    #
- #####            ####              #            ######          #            #####
-
-
 Welcome to BOTLIB, the bot library ! see https://pypi.org/project/botlib/ , it's public domain ;]
 
 BOTLIB can lets you program your own commands, can work as a UDP to IRC
