@@ -1,5 +1,5 @@
 BOTLIB
-======
+######
 
 Welcome to BOTLIB, the bot library ! see https://pypi.org/project/botlib/ , it's public domain ;]
 
