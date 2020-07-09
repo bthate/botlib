@@ -5,7 +5,7 @@
 import time
 
 from .dbs import Db
-from .obj import Object, fntime, save
+from .obj import Object, fntime
 from .tms import elapsed
 
 def __init__():
@@ -31,7 +31,7 @@ def done(event):
     db = Db()
     for o in db.find("bot.ent.Todo", selector):
         o._deleted = True
-        save(o)
+        o.save()
         event.reply("ok")
         break
 
@@ -48,7 +48,7 @@ def log(event):
         return
     l = Log()
     l.txt = event.rest
-    save(l)
+    l.save()
     event.reply("ok")
 
 def todo(event):
@@ -66,5 +66,5 @@ def todo(event):
         return
     o = Todo()
     o.txt = event.rest
-    save(o)
+    o.save()
     event.reply("ok")

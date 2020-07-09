@@ -4,6 +4,7 @@
 
 import datetime, importlib, json, os, random, sys, time, _thread
 
+from typing import final
 from bot.err import ENOCLASS, ENOFILE
 
 lock = _thread.allocate_lock()
@@ -48,13 +49,13 @@ class Object:
         super().__init__()
         if args:
             try:
-                update(self, args[0])
+                self.update(args[0])
             except TypeError:
-                update(self, vars(args[0]))
+                self.update(vars(args[0]))
         if kwargs:
-            update(self, kwargs)
+            self.update(kwargs)
         stime = str(datetime.datetime.now()).replace(" ", os.sep)
-        self._path = os.path.join(get_type(self), stime)
+        self._path = os.path.join(self.type(), stime)
 
     def __delitem__(self, k):
         del self.__dict__[k]
@@ -78,12 +79,74 @@ class Object:
     def __str__(self):
         return json.dumps(self, skipkeys=True, cls=ObjectEncoder, indent=4, sort_keys=True)
 
+    @final
+    def find(self, txt):
+        for k in self:
+            v = self[k]
+            if txt in str(v):
+                return True
+        return False
+
+    @final
+    def get(self, k, d):
+        return self.__dict__.get(k, d)
+
+    @final
+    def last(self):
+        from .dbs import Db
+        db = Db()
+        path, l = db.last_fn(str(self.type()))
+        if  l:
+            self.update(l)
+            self._path = path
+
+    @locked(lock)
+    def load(self, path, force=False):
+        assert path
+        assert workdir
+        lpath = os.path.join(workdir, "store", path)
+        if not os.path.exists(lpath):
+            cdir(lpath)
+        self._path = path
+        with open(lpath, "r") as ofile:
+            val = json.load(ofile, cls=ObjectDecoder)
+            if val:
+                self.update(val)
+
+    @locked(lock)
+    def save(self, stime=None):
+        assert workdir
+        if stime:
+            self._path = os.path.join(self.type(), stime) + "." + str(random.randint(1, 100000))
+        opath = os.path.join(workdir, "store", self._path)
+        cdir(opath)
+        with open(opath, "w") as ofile:
+            json.dump(stamp(self), ofile, cls=ObjectEncoder, indent=4, skipkeys=True, sort_keys=True)
+        return self._path
+
+    @final
+    def type(self):
+        t = type(self)
+        if t == type:
+            try:
+                return "%s.%s" % (self.__module__, self.__name__)
+            except AttributeError:
+                pass
+        return str(type(self)).split()[-1][1:-2]
+
+    @final
+    def update(self, d):
+        if isinstance(d, Object):
+            return self.__dict__.update(vars(d))
+        else:
+            return self.__dict__.update(d)
+
 class Obj(dict):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         stime = str(datetime.datetime.now()).replace(" ", os.sep)
-        self["_path"] = os.path.join(get_type(self), stime)
+        self["_path"] = os.path.join(self.type(), stime)
 
     def __getattr__(self, k):
         try:
@@ -133,32 +196,6 @@ def cdir(path):
             pass
     return True
 
-def edit(o, setter, skip=False):
-    try:
-        setter = vars(setter)
-    except (TypeError, ValueError):
-        pass
-    if not setter:
-        setter = {}
-    count = 0
-    for key, value in setter.items():
-        if skip and value == "":
-            continue
-        count += 1
-        if value in ["True", "true"]:
-            o[key] = True
-        elif value in ["False", "false"]:
-            o[key] = False
-        else:
-            o[key] = value
-    return count
-
-def find(o, val):
-    for item in o.values():
-        if val in item:
-            return True
-    return False
-
 def get_cls(name):
     try:
         modname, clsname = name.rsplit(".", 1)
@@ -177,14 +214,14 @@ def hook(fn):
     if not t:
         raise ENOFILE(fn)
     o = get_cls(t)()
-    load(o, fn)
+    o.load(fn)
     return o
 
 def hooked(d):
     if "stamp" in d:
         t = d["stamp"].split(os.sep)[0]
         o = get_cls(t)()
-        update(o, d)
+        o.update(d)
         return o
     return d
 
@@ -234,103 +271,6 @@ def fntime(daystr):
         t = 0
     return t
 
-def get(o, k, d=None):
-    return o.__dict__.get(k, d)
-
-def get_type(o):
-    t = type(o)
-    if t == type:
-        try:
-            return "%s.%s" % (o.__module__, o.__name__)
-        except AttributeError:
-            pass
-    return str(type(o)).split()[-1][1:-2]
-
-def items(o):
-    return o.__dict__.items()
-
-def keys(o):
-    return o.__dict__.keys()
-
-def last(o, strip=False):
-    from .dbs import Db
-    db = Db()
-    path, l = db.last_fn(str(get_type(o)))
-    if l:
-        if strip:
-            update(o, strip(l))
-        else:
-            update(o, l)
-        o._path = path
-
-@locked(lock)
-def load(o, path, force=False):
-    assert path
-    assert workdir
-    lpath = os.path.join(workdir, "store", path)
-    if not os.path.exists(lpath):
-        cdir(lpath)
-    o._path = path
-    with open(lpath, "r") as ofile:
-        val = json.load(ofile, cls=ObjectDecoder)
-        if val:
-            update(o, val)
-
-def merge(o, oo, vals=None):
-    if vals is None:
-        vals = ["",]
-    return update(o, strip(oo, vals))
-
-def register(o, k, v):
-    o.__dict__[k] = v
-
-@locked(lock)
-def save(o, stime=None):
-    assert workdir
-    if stime:
-        o._path = os.path.join(get_type(o), stime) + "." + str(random.randint(1, 100000))
-    opath = os.path.join(workdir, "store", o._path)
-    cdir(opath)
-    with open(opath, "w") as ofile:
-        json.dump(stamp(o), ofile, cls=ObjectEncoder, indent=4, skipkeys=True, sort_keys=True)
-    return o._path
-
-def set(o, k, v):
-    o.__dict__[k] = v
-
-def search(o, match=None):
-    res = False
-    if match is None:
-        return res
-    for key, value in match.items():
-        val = get(o, key, None)
-        if val:
-            if not value:
-                res = True
-                continue
-            if value in str(val):
-                res = True
-                continue
-            res = False
-            break
-    return res
-
-def slc(o, keys=None):
-    res = type(o)()
-    for k in o:
-        if keys is not None and k in keys:
-            continue
-        res[k] = o[k]
-    return res
-
-def strip(o, skip=None):
-    for k in o:
-        if skip is not None and k in skip:
-            continue
-        if not k:
-            del o[k]
-    return o
-
 def stamp(o):
     for k in xdir(o):
         oo = getattr(o, k, None)
@@ -343,9 +283,6 @@ def stamp(o):
     o.__dict__["stamp"] = o._path
     return o
 
-def tojson(o):
-    return json.dumps(o, skipkeys=True, cls=ObjectEncoder, indent=4, sort_keys=True)
-
 def tostr(o, keys=None):
     if keys is None:
         keys = vars(o).keys()
@@ -354,7 +291,7 @@ def tostr(o, keys=None):
     for key in keys:
         if key == "stamp":
             continue
-        val = get(o, key, None)
+        val = o.get(key, None)
         if not val:
             continue
         val = str(val)
@@ -364,15 +301,6 @@ def tostr(o, keys=None):
     for key, val in res:
         txt += "%s=%s%s" % (key, val.strip(), " ")
     return txt.strip()
-
-def update(o, d):
-    if isinstance(d, Object):
-        return o.__dict__.update(vars(d))
-    else:
-        return o.__dict__.update(d)
-
-def values(o):
-    return o.__dict__.values()
 
 def xdir(o, skip=None):
     res = []

@@ -5,7 +5,7 @@
 import importlib, importlib.util, importlib.resources, os, queue, threading
 
 from .isp import find_cmds, direct
-from .obj import Default, Object, get, update
+from .obj import Default, Object
 from .thr import launch
 from .trc import get_exception
 
@@ -63,7 +63,7 @@ class Handler(Object):
 
     def dispatch(self, e):
         e.parse()
-        func = self.get_cmd(e.cmd)
+        func = self.cmds.get(e.cmd, None)
         if func:
             try:
                 func(e)
@@ -71,18 +71,6 @@ class Handler(Object):
                 print(get_exception())
         e.show()
         e.ready.set()
-
-    def get_cmd(self, cmd, dft=None):
-        func = get(self.cmds, cmd, None)
-        if not func:
-            name = get(self.names, cmd, None)
-            if name:
-                try:
-                    self.load_mod(name)
-                except ModuleNotFoundError:
-                    print(get_exception())
-                func = get(self.cmds, cmd, dft)
-        return func
 
     def handler(self):
         while not self.stopped:
@@ -100,7 +88,7 @@ class Handler(Object):
         return mod
 
     def scan(self, mod):
-        update(self.cmds, find_cmds(mod))
+        self.cmds.update(find_cmds(mod))
 
     def start(self):
         launch(self.handler)

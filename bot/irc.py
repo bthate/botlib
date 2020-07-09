@@ -5,7 +5,7 @@
 import os, queue, socket, textwrap, time, threading, _thread
 
 from .krn import k, __version__
-from .obj import Cfg, Object, get, last, locked, register
+from .obj import Cfg, Object, locked
 from .prs import parse
 from .hdl import Event, Handler
 from .thr import launch
@@ -72,11 +72,11 @@ class IRC(Handler):
         self.state.nrsend = 0
         self.state.pongcheck = False
         self.threaded = False
-        register(self.cmds, "ERROR", self.ERROR)
-        register(self.cmds, "LOG", self.LOG)
-        register(self.cmds, "NOTICE", self.NOTICE)
-        register(self.cmds, "PRIVMSG", self.PRIVMSG)
-        register(self.cmds, "QUIT", self.QUIT)
+        self.register("ERROR", self.ERROR)
+        self.register("LOG", self.LOG)
+        self.register("NOTICE", self.NOTICE)
+        self.register("PRIVMSG", self.PRIVMSG)
+        self.register("QUIT", self.QUIT)
         k.fleet.add(self)
 
     def _connect(self, server):
@@ -209,7 +209,7 @@ class IRC(Handler):
         self.logon(server, nick)
 
     def dispatch(self, event):
-        func = get(self.cmds, event.command)
+        func = self.cmds.get(event.command)
         if func:
             func(event)
 
@@ -298,6 +298,9 @@ class IRC(Handler):
         self.state.last = time.time()
         self.state.nrsend += 1
 
+    def register(self, cmd, cb): 
+        self.cmds[cmd] = cb
+
     def say(self, channel, txt):
         self._outqueue.put_nowait((channel, txt))
 
@@ -305,7 +308,7 @@ class IRC(Handler):
         if cfg is not None:
             self.cfg.update(cfg)
         else:
-            last(self.cfg)
+            self.cfg.last()
         assert self.cfg.channel
         assert self.cfg.server
         self.channels.append(self.cfg.channel)

@@ -6,7 +6,7 @@ import time
 
 from .irc import Cfg
 from .krn import k, starttime, __version__
-from .obj import get, last, save, tostr, update
+from .obj import tostr
 from .prs import parse
 from .tms import elapsed
 
@@ -15,11 +15,11 @@ def __dir__():
 
 def cfg(event):
     c = Cfg()
-    last(c)
+    c.last()
     parse(event, event.txt)
     if event.sets:
-        update(c, event.sets)
-        save(c)
+        c.update(event.sets)
+        c.save()
     event.reply(tostr(c))
 
 def cmds(event):

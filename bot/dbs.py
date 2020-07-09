@@ -2,7 +2,7 @@
 #
 #
 
-from .obj import Object, fntime, find, hook, names, search
+from .obj import Object, fntime, hook, names
 
 def __init__():
     return ("Db",)
@@ -55,7 +55,7 @@ class Db(Object):
         nr = -1
         for fn in names(otype, delta):
             o = hook(fn)
-            if find(o, value):
+            if o.find(value):
                 nr += 1
                 if index is not None and nr != index:
                     continue
@@ -93,3 +93,20 @@ class Db(Object):
             if s:
                 return s[-1][-1]
         return None
+
+def search(o, match=None):
+    res = False
+    if match is None:
+        return res
+    for key, value in match.items():
+        val = get(o, key, None)
+        if val:
+            if not value:
+                res = True
+                continue
+            if value in str(val):
+                res = True
+                continue
+            res = False
+            break
+    return res

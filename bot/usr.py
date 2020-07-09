@@ -4,7 +4,7 @@
 
 from .dbs import Db
 from .err import ENOUSER
-from .obj import Object, get, save
+from .obj import Object
 
 class User(Object):
 
@@ -79,6 +79,6 @@ def meet(event):
         return
     from .krn import k
     origin = event.args[0]
-    origin = get(k.users.userhosts, origin, origin)
+    origin = k.users.userhosts.get(origin, origin)
     k.users.meet(origin)
     event.reply("ok")

@@ -8,12 +8,33 @@ import bot.obj
 from .dbs import Db
 from .err import ENOCLASS
 from .krn import k, starttime
-from .obj import Object, cdir, edit, get, get_type, get_cls, save, update
+from .obj import Object, cdir, get_cls
 from .isp import find_shorts
 from .tms import elapsed
 
 def __dir__():
     return ("ed", "find", "fleet", "kernel", "ps", "wd")
+
+def edit(o, setter, skip=False):
+    try:
+        setter = vars(setter)
+    except (TypeError, ValueError):
+        pass
+    if not setter:
+        setter = {}
+    count = 0
+    for key, value in setter.items():
+        if skip and value == "":
+            continue
+        count += 1
+        if value in ["True", "true"]:
+            o[key] = True
+        elif value in ["False", "false"]:
+            o[key] = False
+        else:
+            o[key] = value
+    return count
+
 
 def list_files(wd):
     path = os.path.join(wd, "store")
@@ -85,7 +106,7 @@ def fleet(event):
         return
     except (TypeError, ValueError, IndexError):
         pass
-    event.reply([get_type(x) for x in k.fleet])
+    event.reply([x.type() for x in k.fleet])
 
 def kernel(event):
     event.reply(k)
@@ -98,8 +119,8 @@ def ps(event):
             continue
         d = vars(thr)
         o = Object()
-        update(o, d)
-        if get(o, "sleep", None):
+        o.update(d)
+        if o.get("sleep", None):
             up = o.sleep - int(time.time() - o.state.latest)
         else:
             up = int(time.time() - starttime)
