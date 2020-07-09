@@ -88,7 +88,7 @@ class Object:
         return False
 
     @final
-    def get(self, k, d):
+    def get(self, k, d=None):
         return self.__dict__.get(k, d)
 
     @final
