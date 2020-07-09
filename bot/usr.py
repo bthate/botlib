@@ -30,7 +30,7 @@ class Users(Db):
         for user in self.get_users(origin):
             try:
                 user.perms.remove(perm)
-                save(user)
+                user.save()
                 return True
             except ValueError:
                 pass
@@ -51,7 +51,7 @@ class Users(Db):
         user = User()
         user.user = origin
         user.perms = ["USER", ]
-        save(user)
+        user.save()
         return user
 
     def oper(self, origin):
@@ -61,7 +61,7 @@ class Users(Db):
         user = User()
         user.user = origin
         user.perms = ["OPER", "USER"]
-        save(user)
+        user.save()
         return user
 
     def perm(self, origin, permission):

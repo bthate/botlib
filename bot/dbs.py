@@ -99,7 +99,7 @@ def search(o, match=None):
     if match is None:
         return res
     for key, value in match.items():
-        val = get(o, key, None)
+        val = o.get(key, None)
         if val:
             if not value:
                 res = True

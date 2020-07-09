@@ -1,0 +1,33 @@
+#!/usr/bin/python3
+# BOTLIB - the bot library
+#
+#
+
+import logging, os, shutil, sys, time, unittest
+
+sys.path.insert(0, os.getcwd())
+
+import bot.obj
+
+from bot.csl import execute
+from bot.obj import cdir
+from bot.prs import parse_cli
+from bot.krn import k, starttime
+from bot.tms import elapsed
+
+def main():
+    if os.path.exists(".data"):
+        shutil.rmtree(".data")
+    cfg = parse_cli()
+    bot.obj.workdir = ".data"
+    k.start()
+    k.walk("bot")
+    test_path = os.getcwd() + os.sep + "tests"
+    suite = unittest.loader.TestLoader().discover(test_path, pattern="test*")
+    unittest.TextTestRunner(verbosity=3).run(suite)
+    k.wait()
+   
+execute(main)
+
+print(elapsed(time.time() - starttime))
+os._exit(0)

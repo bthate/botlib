@@ -68,7 +68,7 @@ def ed(event):
     else:
         setter = {event.args[1]: event.args[2]}
     edit(l, setter)
-    save(l)
+    l.save()
     event.reply("ok")
 
 def find(event):

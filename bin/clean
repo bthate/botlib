@@ -1,1 +1,1 @@
-rm -fR build dist MANIFEST botlib.egg-info bot/*~ bot/__pycache__ bin/*~ *~
+rm -fR build dist MANIFEST botlib.egg-info bot/*~ bot/__pycache__ bin/*~ *~ tests/*~ tests/__pycache__
