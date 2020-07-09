@@ -2,14 +2,17 @@
 #
 #
 
-from distutils.core import setup
+try:
+    from setuptools import setup
+except:
+    from distutils.core import setup
 
 def read():
     return open("README.rst", "r").read()
 
 setup(
     name='botlib',
-    version='91',
+    version='92',
     url='https://bitbucket.org/bthate/botlib',
     author='Bart Thate',
     author_email='bthate@dds.nl', 

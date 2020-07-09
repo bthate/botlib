@@ -366,9 +366,9 @@ def tostr(o, keys=None):
     return txt.strip()
 
 def update(o, d):
-    try:
+    if isinstance(d, Object):
         return o.__dict__.update(vars(d))
-    except (TypeError, ValueError):
+    else:
         return o.__dict__.update(d)
 
 def values(o):
