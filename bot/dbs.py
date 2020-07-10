@@ -3,7 +3,7 @@
 #
 
 from .obj import Object, names
-from .utl import fntime, get_type, hook
+from .utl import fntime, get_type, hook, update
 
 def __init__():
     return ("Db",)
@@ -99,15 +99,18 @@ def last(o):
     db = Db()
     path, l = db.last_fn(str(get_type(o)))
     if  l:
-        self.update(l)
-        self._path = path
+        update(o, l)
+        o._path = path
 
 def search(o, match=None):
     res = False
     if match is None:
         return res
     for key, value in match.items():
-        val = o.get(key, None)
+        try:
+            val = o[key]
+        except KeyError:
+            continue
         if val:
             if not value:
                 res = True

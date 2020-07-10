@@ -2,6 +2,7 @@
 #
 #
 
+from .cls import Dict
 from .dbs import Db
 from .err import ENOUSER
 from .obj import Object
@@ -13,9 +14,9 @@ class User(Object):
         self.user = ""
         self.perms = []
 
-class Users(Db):
+class Users(Dict, Db):
 
-    userhosts = Object()
+    userhosts = Dict()
 
     def allowed(self, origin, perm):
         perm = perm.upper()
@@ -30,7 +31,7 @@ class Users(Db):
         for user in self.get_users(origin):
             try:
                 user.perms.remove(perm)
-                user.save()
+                user.__save__()
                 return True
             except ValueError:
                 pass
@@ -51,7 +52,7 @@ class Users(Db):
         user = User()
         user.user = origin
         user.perms = ["USER", ]
-        user.save()
+        user.__save__()
         return user
 
     def oper(self, origin):
@@ -61,7 +62,7 @@ class Users(Db):
         user = User()
         user.user = origin
         user.perms = ["OPER", "USER"]
-        user.save()
+        user.__save__()
         return user
 
     def perm(self, origin, permission):
@@ -70,7 +71,7 @@ class Users(Db):
             raise ENOUSER(origin)
         if permission.upper() not in user.perms:
             user.perms.append(permission.upper())
-            user.save()
+            user.__save__()
         return user
 
 def meet(event):

@@ -49,7 +49,7 @@ def log(event):
         return
     l = Log()
     l.txt = event.rest
-    l.save()
+    l.__save__()
     event.reply("ok")
 
 def todo(event):
@@ -67,5 +67,5 @@ def todo(event):
         return
     o = Todo()
     o.txt = event.rest
-    o.save()
+    o.__save__()
     event.reply("ok")

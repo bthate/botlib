@@ -4,10 +4,11 @@
 
 import select, socket, sys, time
 
-from bot.cfg import Cfg
-from bot.obj import Object
-from bot.krn import k
-from bot.thr import launch
+from .cfg import Cfg
+from .dbs import last
+from .obj import Object
+from .krn import k
+from .thr import launch
 
 def __dir__():
     return ("Cfg", "UDP", "init", "toudp", "udp")
@@ -60,7 +61,7 @@ class UDP(Object):
         self._sock.sendto(bytes("exit", "utf-8"), (self.cfg.host, self.cfg.port))
 
     def start(self):
-        self.cfg.last()
+        last(self.cfg)
         launch(self.server)
 
 def toudp(host, port, txt):
@@ -69,7 +70,7 @@ def toudp(host, port, txt):
 
 def udp(event):
     cfg = Cfg()
-    cfg.last()
+    last(cfg)
     if len(sys.argv) > 2:
         txt = " ".join(sys.argv[2:])
         toudp(cfg.host, cfg.port, txt)

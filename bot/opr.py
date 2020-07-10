@@ -11,7 +11,7 @@ from .krn import k, starttime, __version__
 from .obj import Object
 from .isp import find_shorts
 from .tms import elapsed
-from .utl import cdir, get_cls
+from .utl import cdir, get_cls, get_type
 
 def __dir__():
     return ("ed", "find", "fleet", "kernel", "ps", "up", "v", "wd")
@@ -69,7 +69,7 @@ def ed(event):
     else:
         setter = {event.args[1]: event.args[2]}
     edit(l, setter)
-    l.save()
+    l.__save__()
     event.reply("ok")
 
 def find(event):
@@ -107,7 +107,7 @@ def fleet(event):
         return
     except (TypeError, ValueError, IndexError):
         pass
-    event.reply([x.get_type() for x in k.fleet])
+    event.reply([get_type(x) for x in k.fleet])
 
 def kernel(event):
     event.reply(k)
