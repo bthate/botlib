@@ -63,8 +63,8 @@ def parse(o, txt):
             continue
         s = Setter(token.txt)
         if s:
-            o.sets.update(s)
-            o.update(s)
+            o.sets.__update__(s)
+            o.__update__(s)
             continue
         opt = Option(token.txt)
         if opt.opt:

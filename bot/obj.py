@@ -73,20 +73,17 @@ class Object:
         self.__dict__[k] = v
         return self.__dict__[k]
 
+
     def __str__(self):
         return json.dumps(self, skipkeys=True, cls=ObjectEncoder, indent=4, sort_keys=True)
 
-def stamp(o):
-    for k in xdir(o):
-        oo = getattr(o, k, None)
-        if isinstance(oo, Object):
-            stamp(oo)
-            oo.__dict__["stamp"] = oo._path
-            o[k] = oo
+    def __update__(o, d):
+        if isinstance(d, Object):
+            return o.__dict__.update(vars(d))
         else:
-            continue
-    o.__dict__["stamp"] = o._path
-    return o
+            return o.__dict__.update(d)
+
+
 
 def names(name, delta=None):
     from .utl import fntime
@@ -106,6 +103,18 @@ def names(name, delta=None):
                     continue
             res.append(os.sep.join(fnn.split(os.sep)[1:]))
     return sorted(res, key=fntime)
+
+def stamp(o):
+    for k in xdir(o):
+        oo = getattr(o, k, None)
+        if isinstance(oo, Object):
+            selstamp(oo)
+            oo.__dict__["stamp"] = oo._path
+            o[k] = oo
+        else:
+            continue
+    o.__dict__["stamp"] = o._path
+    return o
 
 def xdir(o, skip=None):
     res = []
