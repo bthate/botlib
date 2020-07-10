@@ -32,7 +32,7 @@ def done(event):
     db = Db()
     for o in db.find("bot.ent.Todo", selector):
         o._deleted = True
-        o.save()
+        o.__save__()
         event.reply("ok")
         break
 

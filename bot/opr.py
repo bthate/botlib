@@ -5,6 +5,7 @@
 import os, threading, time
 import bot.obj
 
+from .cls import Dict
 from .dbs import Db
 from .err import ENOCLASS
 from .krn import k, starttime, __version__
@@ -119,8 +120,8 @@ def ps(event):
         if str(thr).startswith("<_"):
             continue
         d = vars(thr)
-        o = Object()
-        o.update(d)
+        o = Dict()
+        o.__update__(d)
         if o.get("sleep", None):
             up = o.sleep - int(time.time() - o.state.latest)
         else:

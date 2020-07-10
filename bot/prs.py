@@ -59,7 +59,7 @@ def parse(o, txt):
     for token in [Token(txt) for txt in txt.split()]:
         g = Getter(token.txt)
         if g:
-            o.gets.update(g)
+            o.gets.__update__(g)
             continue
         s = Setter(token.txt)
         if s:

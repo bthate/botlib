@@ -54,7 +54,7 @@ class Object:
         with open(lpath, "r") as ofile:
             val = json.load(ofile, cls=ObjectDecoder)
             if val:
-                update(self, val)
+                self.__update__(val)
 
     def __save__(self, stime=None):
         assert workdir
@@ -83,10 +83,7 @@ class Object:
         else:
             return o.__dict__.update(d)
 
-
-
 def names(name, delta=None):
-    from .utl import fntime
     if not name:
         return []
     assert workdir
@@ -108,7 +105,7 @@ def stamp(o):
     for k in xdir(o):
         oo = getattr(o, k, None)
         if isinstance(oo, Object):
-            selstamp(oo)
+            stamp(oo)
             oo.__dict__["stamp"] = oo._path
             o[k] = oo
         else:

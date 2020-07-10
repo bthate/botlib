@@ -17,11 +17,11 @@ class Dict(Object):
         super().__init__()
         if args:
             try:
-                self.update(args[0])
+                self.__update__(args[0])
             except TypeError:
-                self.update(vars(args[0]))
+                self.___update__(vars(args[0]))
         if kwargs:
-            self.update(kwargs)
+            self.__update__(kwargs)
 
     def get(self, k, d=None):
         return self.__dict__.get(k, d)

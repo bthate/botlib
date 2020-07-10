@@ -5,6 +5,7 @@
 import os, queue, socket, textwrap, time, threading, _thread
 
 from .cfg import Cfg
+from .dbs import last
 from .krn import k, __version__
 from .obj import Object
 from .prs import parse
@@ -211,9 +212,8 @@ class IRC(Handler):
         self.logon(server, nick)
 
     def dispatch(self, event):
-        func = self.cmds.get(event.command)
-        if func:
-            func(event)
+        if event.command in self.cmds:
+           self.cmds[event.command](event)
 
     def doconnect(self):
         assert self.cfg.server
@@ -308,9 +308,9 @@ class IRC(Handler):
 
     def start(self, cfg=None):
         if cfg is not None:
-            self.cfg.update(cfg)
+            self.cfg.__update__(cfg)
         else:
-            self.cfg.last()
+            last(self.cfg)
         assert self.cfg.channel
         assert self.cfg.server
         self.channels.append(self.cfg.channel)

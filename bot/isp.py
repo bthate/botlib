@@ -24,7 +24,7 @@ def find_allnames(name):
     mns = Object()
     pkg = direct(name)
     for mod in find_modules(pkg):
-        mns.update(find_names(mod))
+        mns.__update__(find_names(mod))
     return mns
 
 def find_callbacks(mod):
