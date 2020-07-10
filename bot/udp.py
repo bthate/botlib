@@ -4,7 +4,8 @@
 
 import select, socket, sys, time
 
-from bot.obj import Cfg, Object
+from bot.cfg import Cfg
+from bot.obj import Object
 from bot.krn import k
 from bot.thr import launch
 

@@ -4,7 +4,8 @@
 
 import atexit, os, readline, sys, termios, threading
 
-from .obj import Cfg, Object
+from .cfg import Cfg
+from .obj import Object
 from .hdl import Event
 from .krn import k
 from .thr import launch

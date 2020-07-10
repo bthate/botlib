@@ -6,9 +6,9 @@ __version__ = 92
 
 import os, threading, time
 
+from .cfg import Cfg
 from .flt import Fleet
 from .hdl import Handler
-from .obj import Cfg
 from .thr import launch
 from .trc import get_exception
 from .usr import Users

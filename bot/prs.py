@@ -5,7 +5,9 @@
 import os, sys
 import bot.obj
 
-from .obj import Cfg, Default, Object
+from .cfg import Cfg
+from .cls import Default
+from .obj import Object
 
 def __dir__():
     return ("parse", "parse_cli")

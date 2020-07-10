@@ -1,4 +1,4 @@
-# BOTLIB - the bot library !
+# BOTLIB - the bot library
 #
 #
 
@@ -10,7 +10,7 @@ from bot.obj import Object
 from bot.thr import launch
 
 param = Object()
-param.ed = ["bot.irc.Cfg", "bot.rss.Cfg", "bot.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel \#dunkbots", "bot.krn.Cfg modules bot.udp"]
+param.ed = ["bot.irc.Cfg", "bot.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel \#dunkbots", "bot.krn.Cfg modules bot.udp"]
 param.delete = ["reddit", ]
 param.display = ["reddit title,summary,link",]
 param.log = ["test1", ""]
@@ -79,7 +79,7 @@ def do_cmd(cmd):
     nr = 0
     for ex in e:
         nr += 1
-        txt = cmd + " " + ex + " (%s)" % nr
+        txt = cmd + " " + ex 
         if "-v" in sys.argv:
             print(txt)
         e = Event()

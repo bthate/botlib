@@ -4,10 +4,12 @@
 
 import importlib, importlib.util, importlib.resources, os, queue, threading
 
+from .cls import Default
 from .isp import find_cmds, direct
-from .obj import Default, Object
+from .obj import Object
 from .thr import launch
 from .trc import get_exception
+from .utl import update
 
 def __dir__():
     return ("Event", "Handler")
@@ -63,12 +65,8 @@ class Handler(Object):
 
     def dispatch(self, e):
         e.parse()
-        func = self.cmds.get(e.cmd, None)
-        if func:
-            try:
-                func(e)
-            except Exception as ex:
-                print(get_exception())
+        if e.cmd in self.cmds:
+            self.cmds[e.cmd](e)
         e.show()
         e.ready.set()
 
@@ -88,7 +86,7 @@ class Handler(Object):
         return mod
 
     def scan(self, mod):
-        self.cmds.update(find_cmds(mod))
+        update(self.cmds, find_cmds(mod))
 
     def start(self):
         launch(self.handler)

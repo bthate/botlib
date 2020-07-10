@@ -18,6 +18,6 @@ class ENOCLASS(Exception):
 
     pass
 
-class ENOFILE(Exception):
+class ENOFILENAME(Exception):
 
     pass

@@ -4,11 +4,13 @@
 
 import os, queue, socket, textwrap, time, threading, _thread
 
+from .cfg import Cfg
 from .krn import k, __version__
-from .obj import Cfg, Object, locked
+from .obj import Object
 from .prs import parse
 from .hdl import Event, Handler
 from .thr import launch
+from .utl import locked
 
 def __dir__():
     return ("Cfg", "DCC", "Event", "IRC")

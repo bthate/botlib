@@ -2,7 +2,8 @@
 #
 #
 
-from .obj import Object, fntime, hook, names
+from .obj import Object, names
+from .utl import fntime, get_type, hook
 
 def __init__():
     return ("Db",)
@@ -93,6 +94,13 @@ class Db(Object):
             if s:
                 return s[-1][-1]
         return None
+
+def last(o):
+    db = Db()
+    path, l = db.last_fn(str(get_type(o)))
+    if  l:
+        self.update(l)
+        self._path = path
 
 def search(o, match=None):
     res = False

@@ -7,13 +7,14 @@ import bot.obj
 
 from .dbs import Db
 from .err import ENOCLASS
-from .krn import k, starttime
-from .obj import Object, cdir, get_cls
+from .krn import k, starttime, __version__
+from .obj import Object
 from .isp import find_shorts
 from .tms import elapsed
+from .utl import cdir, get_cls
 
 def __dir__():
-    return ("ed", "find", "fleet", "kernel", "ps", "wd")
+    return ("ed", "find", "fleet", "kernel", "ps", "up", "v", "wd")
 
 def edit(o, setter, skip=False):
     try:
@@ -106,7 +107,7 @@ def fleet(event):
         return
     except (TypeError, ValueError, IndexError):
         pass
-    event.reply([x.type() for x in k.fleet])
+    event.reply([x.get_type() for x in k.fleet])
 
 def kernel(event):
     event.reply(k)
@@ -131,6 +132,12 @@ def ps(event):
         res = "%s %s" % (nr, psformat % (elapsed(up), thrname[:60]))
         if res:
             event.reply(res.rstrip())
+
+def up(event):
+    event.reply(elapsed(time.time() - starttime))
+
+def v(event):
+    event.reply("%s %s" % (k.cfg.name or "BOTLIB", __version__))
 
 def wd(event):
     event.reply(bot.obj.workdir)
