@@ -2,7 +2,9 @@
 #
 #
 
-import os, sys, time
+import importlib, os, sys, time
+
+from .err import ENOCLASS, ENOFILENAME
 
 def cdir(path):
     if os.path.exists(path):
@@ -60,9 +62,7 @@ def update(o, d):
     from .obj import Object
     if isinstance(d, Object):
         return o.__dict__.update(vars(d))
-    else:
-        return o.__dict__.update(d)
-
+    return o.__dict__.update(d)
 
 def hook(fn):
     t = fn.split(os.sep)[0]
@@ -71,7 +71,7 @@ def hook(fn):
     if not t:
         raise ENOFILENAME(fn)
     o = get_cls(t)()
-    o.__load__(fn)
+    o.load(fn)
     return o
 
 def hooked(d):
@@ -92,6 +92,7 @@ def locked(l):
             finally:
                 l.release()
             return res
+        lockedfunc.__doc__ = func.__doc__
         return lockedfunc
     return lockeddec
 
@@ -162,4 +163,3 @@ def get_type(o):
         except AttributeError:
             pass
     return str(type(o)).split()[-1][1:-2]
-

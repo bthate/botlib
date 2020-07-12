@@ -31,7 +31,7 @@ class Users(Dict, Db):
         for user in self.get_users(origin):
             try:
                 user.perms.remove(perm)
-                user.__save__()
+                user.save()
                 return True
             except ValueError:
                 pass
@@ -52,7 +52,7 @@ class Users(Dict, Db):
         user = User()
         user.user = origin
         user.perms = ["USER", ]
-        user.__save__()
+        user.save()
         return user
 
     def oper(self, origin):
@@ -62,7 +62,7 @@ class Users(Dict, Db):
         user = User()
         user.user = origin
         user.perms = ["OPER", "USER"]
-        user.__save__()
+        user.save()
         return user
 
     def perm(self, origin, permission):
@@ -71,7 +71,7 @@ class Users(Dict, Db):
             raise ENOUSER(origin)
         if permission.upper() not in user.perms:
             user.perms.append(permission.upper())
-            user.__save__()
+            user.save()
         return user
 
 def meet(event):

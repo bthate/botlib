@@ -2,29 +2,14 @@
 #
 #
 
-import datetime, importlib, json, os, random, sys, time, types, _thread
+import datetime, json, os, random, time
 
-from .utl import *
+from .utl import cdir, fntime, get_type, hooked
+
+def __dir__():
+    return ("Object", "ObjectEncoder", "ObjectDecoder", "names", "stamp", "workdir", "xdir")
 
 workdir = None
-
-class ObjectEncoder(json.JSONEncoder):
-
-    def default(self, o):
-        if isinstance(o, Object):
-            return vars(o)
-        if isinstance(o, dict):
-            return o.items()
-        if isinstance(o, list):
-            return iter(o)
-        if isinstance(o, (type(str), type(True), type(False), type(int), type(float))):
-            return o
-        return repr(o)
-
-class ObjectDecoder(json.JSONDecoder):
-
-    def decode(self, o):
-        return json.loads(o, object_hook=hooked)
 
 class Object:
 
@@ -45,7 +30,18 @@ class Object:
     def __len__(self):
         return len(self.__dict__)
 
-    def __load__(self, path, force=False):
+    def __lt__(self, o):
+        return len(self) < len(o)
+
+    def __setitem__(self, k, v):
+        self.__dict__[k] = v
+        return self.__dict__[k]
+
+    def __str__(self):
+        return json.dumps(self, skipkeys=True, cls=ObjectEncoder, indent=4, sort_keys=True)
+
+    def load(self, path, force=False):
+        """ load an object from json file at the provided path. """
         assert path
         assert workdir
         self._path = path
@@ -54,36 +50,44 @@ class Object:
         with open(lpath, "r") as ofile:
             val = json.load(ofile, cls=ObjectDecoder)
             if val:
-                self.__update__(val)
+                if isinstance(val, Object):
+                    self.__dict__.update(vars(val))
+                else:
+                    self.__dict__.update(val)
 
-    def __save__(self, stime=None):
+    def save(self, stime=None):
+        """ save this object to a json file, uses the hidden attribute _path. """
         assert workdir
         if stime:
-            self._path = os.path.join(self.get_type(), stime) + "." + str(random.randint(1, 100000))
+            self._path = os.path.join(get_type(self), stime) + "." + str(random.randint(1, 100000))
         opath = os.path.join(workdir, "store", self._path)
         cdir(opath)
         with open(opath, "w") as ofile:
             json.dump(stamp(self), ofile, cls=ObjectEncoder, indent=4, skipkeys=True, sort_keys=True)
         return self._path
 
-    def __lt__(self, o):
-        return len(self) < len(o)
+class ObjectEncoder(json.JSONEncoder):
 
-    def __setitem__(self, k, v):
-        self.__dict__[k] = v
-        return self.__dict__[k]
+    def default(self, o):
+        """ return string for object. """
+        if isinstance(o, Object):
+            return vars(o)
+        if isinstance(o, dict):
+            return o.items()
+        if isinstance(o, list):
+            return iter(o)
+        if isinstance(o, (type(str), type(True), type(False), type(int), type(float))):
+            return o
+        return repr(o)
 
+class ObjectDecoder(json.JSONDecoder):
 
-    def __str__(self):
-        return json.dumps(self, skipkeys=True, cls=ObjectEncoder, indent=4, sort_keys=True)
-
-    def __update__(o, d):
-        if isinstance(d, Object):
-            return o.__dict__.update(vars(d))
-        else:
-            return o.__dict__.update(d)
+    def decode(self, o):
+        """ return object from string. """
+        return json.loads(o, object_hook=hooked)
 
 def names(name, delta=None):
+    """ return filenames in the working directory. """
     if not name:
         return []
     assert workdir
@@ -102,6 +106,7 @@ def names(name, delta=None):
     return sorted(res, key=fntime)
 
 def stamp(o):
+    """ recursively add filename fields to a dict. """
     for k in xdir(o):
         oo = getattr(o, k, None)
         if isinstance(oo, Object):
@@ -114,6 +119,7 @@ def stamp(o):
     return o
 
 def xdir(o, skip=None):
+    """ return dir() but skipping unwanted keys. """
     res = []
     for k in dir(o):
         if skip is not None and skip in k:

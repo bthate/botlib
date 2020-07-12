@@ -59,12 +59,12 @@ def parse(o, txt):
     for token in [Token(txt) for txt in txt.split()]:
         g = Getter(token.txt)
         if g:
-            o.gets.__update__(g)
+            o.gets.update(g)
             continue
         s = Setter(token.txt)
         if s:
-            o.sets.__update__(s)
-            o.__update__(s)
+            o.sets.update(s)
+            o.update(s)
             continue
         opt = Option(token.txt)
         if opt.opt:

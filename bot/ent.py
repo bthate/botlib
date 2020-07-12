@@ -32,7 +32,7 @@ def done(event):
     db = Db()
     for o in db.find("bot.ent.Todo", selector):
         o._deleted = True
-        o.__save__()
+        o.save()
         event.reply("ok")
         break
 
@@ -49,7 +49,7 @@ def log(event):
         return
     l = Log()
     l.txt = event.rest
-    l.__save__()
+    l.save()
     event.reply("ok")
 
 def todo(event):
@@ -67,5 +67,5 @@ def todo(event):
         return
     o = Todo()
     o.txt = event.rest
-    o.__save__()
+    o.save()
     event.reply("ok")

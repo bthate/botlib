@@ -6,16 +6,26 @@ import os, threading, time
 import bot.obj
 
 from .cls import Dict
-from .dbs import Db
+from .dbs import Db, last
 from .err import ENOCLASS
+from .irc import Cfg
 from .krn import k, starttime, __version__
-from .obj import Object
+from .prs import parse
 from .isp import find_shorts
 from .tms import elapsed
-from .utl import cdir, get_cls, get_type
+from .utl import cdir, get_cls, get_type, tostr
 
 def __dir__():
-    return ("ed", "find", "fleet", "kernel", "ps", "up", "v", "wd")
+    return ("cfg", "ed", "find", "fleet", "kernel", "ps", "up", "v")
+
+def cfg(event):
+    c = Cfg()
+    last(c)
+    parse(event, event.txt)
+    if event.sets:
+        c.update(event.sets)
+        c.save()
+    event.reply(tostr(c))
 
 def edit(o, setter, skip=False):
     try:
@@ -36,7 +46,6 @@ def edit(o, setter, skip=False):
         else:
             o[key] = value
     return count
-
 
 def list_files(wd):
     path = os.path.join(wd, "store")
@@ -70,7 +79,7 @@ def ed(event):
     else:
         setter = {event.args[1]: event.args[2]}
     edit(l, setter)
-    l.__save__()
+    l.save()
     event.reply("ok")
 
 def find(event):
@@ -121,7 +130,7 @@ def ps(event):
             continue
         d = vars(thr)
         o = Dict()
-        o.__update__(d)
+        o.update(d)
         if o.get("sleep", None):
             up = o.sleep - int(time.time() - o.state.latest)
         else:
@@ -139,6 +148,3 @@ def up(event):
 
 def v(event):
     event.reply("%s %s" % (k.cfg.name or "BOTLIB", __version__))
-
-def wd(event):
-    event.reply(bot.obj.workdir)

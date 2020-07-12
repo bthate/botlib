@@ -308,7 +308,7 @@ class IRC(Handler):
 
     def start(self, cfg=None):
         if cfg is not None:
-            self.cfg.__update__(cfg)
+            self.cfg.update(cfg)
         else:
             last(self.cfg)
         assert self.cfg.channel
