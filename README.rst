@@ -17,7 +17,7 @@ you can download with pip3 and install globally:
 
 ::
 
- > sudo pip3 install botlib
+ > sudo pip3 install botlib --upgrade --force-reinstall
 
 BOTLIB itself does not install a binary as it is a library. The tarball
 however includes a bot program that can run as a test bot for BOTLIB.
