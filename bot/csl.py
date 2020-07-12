@@ -28,7 +28,7 @@ class Cfg(Cfg):
 class Console(Object):
 
     def __init__(self):
-        super().__init__(self)
+        super().__init__()
         self.ready = threading.Event()
 
     def announce(self, txt):
