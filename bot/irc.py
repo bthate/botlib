@@ -213,7 +213,7 @@ class IRC(Handler):
 
     def dispatch(self, event):
         if event.command in self.cmds:
-           self.cmds[event.command](event)
+            self.cmds[event.command](event)
 
     def doconnect(self):
         assert self.cfg.server
@@ -300,7 +300,7 @@ class IRC(Handler):
         self.state.last = time.time()
         self.state.nrsend += 1
 
-    def register(self, cmd, cb): 
+    def register(self, cmd, cb):
         self.cmds[cmd] = cb
 
     def say(self, channel, txt):

@@ -8,7 +8,6 @@ from .cls import Default
 from .isp import find_cmds, direct
 from .obj import Object
 from .thr import launch
-from .trc import get_exception
 from .utl import update
 
 def __dir__():

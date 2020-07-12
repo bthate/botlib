@@ -29,8 +29,7 @@ class Dict(Object):
     def update(self, d):
         if isinstance(d, Object):
             return self.__dict__.update(vars(d))
-        else:
-            return self.__dict__.update(d)
+        return self.__dict__.update(d)
 
 
 class DoL(Object):
@@ -46,4 +45,3 @@ class DoL(Object):
     def update(self, d):
         for k, v in d.items():
             self.append(k, v)
-

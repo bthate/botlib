@@ -4,7 +4,7 @@
 
 __version__ = 92
 
-import os, threading, time
+import threading, time
 
 from .cfg import Cfg
 from .flt import Fleet
