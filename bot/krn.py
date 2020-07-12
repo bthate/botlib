@@ -14,7 +14,7 @@ from .trc import get_exception
 from .usr import Users
 
 def __dir__():
-    return ("Cfg", "Kernel", "k", "os")
+    return ("Cfg", "Kernel", "k")
 
 starttime = time.time()
 
