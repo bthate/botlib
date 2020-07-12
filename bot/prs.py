@@ -5,7 +5,7 @@
 import os, sys
 import bot.obj
 
-from .cfg import Cfg
+from .cfg import Cfg, cfg
 from .cls import Default
 from .obj import Object
 
@@ -77,11 +77,13 @@ def parse(o, txt):
             continue
         args.append(token.txt)
     if not args:
+        cfg.update(o)
         return o
     o.cmd = args[0]
     o.args = args[1:]
     o.txt = " ".join(args)
     o.rest = " ".join(args[1:])
+    cfg.update(o)
     return o
 
 def parse_cli(name="bot"):

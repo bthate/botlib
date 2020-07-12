@@ -4,13 +4,6 @@
 
 from .obj import Object
 
-class Default(Object):
-
-    def __getattr__(self, k):
-        if k not in self:
-            return ""
-        return self.__dict__[k]
-
 class Dict(Object):
 
     def __init__(self, *args, **kwargs):
@@ -31,6 +24,12 @@ class Dict(Object):
             return self.__dict__.update(vars(d))
         return self.__dict__.update(d)
 
+class Default(Dict):
+
+    def __getattr__(self, k):
+        if k not in self:
+            return ""
+        return self.__dict__[k]
 
 class DoL(Object):
 

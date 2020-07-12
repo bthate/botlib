@@ -15,7 +15,7 @@ class Object:
 
     __slots__ = ("__dict__", "_path")
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         self._path = os.path.join(get_type(self), str(datetime.datetime.now()).replace(" ", os.sep))
 
     def __delitem__(self, k):

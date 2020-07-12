@@ -8,4 +8,5 @@ class Cfg(Default):
 
     pass
 
+#:
 cfg = Cfg()
