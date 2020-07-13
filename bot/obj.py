@@ -64,7 +64,7 @@ class Object:
 
     def __str__(self):
         """ return a 4 space indented json string. """
-        return json.dumps(self, skipkeys=True, cls=ObjectEncoder, indent=4, sort_keys=True)
+        return json.dumps(self, cls=ObjectEncoder)
 
     def load(self, path, force=False):
         """ load an object from json file at the provided path. """
@@ -89,7 +89,7 @@ class Object:
         opath = os.path.join(workdir, "store", self.__stamp__)
         cdir(opath)
         with open(opath, "w") as ofile:
-            json.dump(stamp(self), ofile, cls=ObjectEncoder, indent=4, skipkeys=True, sort_keys=True)
+            json.dump(stamp(self), ofile, cls=ObjectEncoder)
         return self.__stamp__
 
 class Db(Object):
