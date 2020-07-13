@@ -2,7 +2,7 @@
 #
 #
 
-from .obj import Object
+from .obj import Db, Object, get_type
 
 class Dict(Object):
 
@@ -16,8 +16,43 @@ class Dict(Object):
         if kwargs:
             self.update(kwargs)
 
+    def find(self, txt):
+        for k, v in self.items():
+            if txt in str(v):
+                return True
+        return False
+
+    def format(self, keys=None):
+        if keys is None:
+            keys = vars(self).keys()
+        res = []
+        txt = ""
+        for key in keys:
+            if key == "stamp":
+                continue
+            try:
+                val = self[key]
+            except KeyError:
+                continue
+            if not val:
+                continue
+            val = str(val)
+            if key == "text":
+                val = val.replace("\\n", "\n")
+            res.append((key, val))
+        for key, val in res:
+            txt += "%s=%s%s" % (key, val.strip(), " ")
+        return txt.strip()
+
     def get(self, k, d=None):
         return self.__dict__.get(k, d)
+
+    def last(self):
+        db = Db()
+        path, l = db.last_fn(str(get_type(self)))
+        if l:
+            self.update(l)
+            self._path = path
 
     def update(self, d):
         if isinstance(d, Object):

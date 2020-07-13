@@ -5,8 +5,7 @@
 import select, socket, sys, time
 
 from .cfg import Cfg
-from .dbs import last
-from .obj import Object
+from .obj import Object, last
 from .krn import k
 from .thr import launch
 

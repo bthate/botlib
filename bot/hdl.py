@@ -6,9 +6,8 @@ import importlib, importlib.util, importlib.resources, os, queue, threading
 
 from .cls import Default
 from .isp import find_cmds, direct
-from .obj import Object
+from .obj import Object, update
 from .thr import launch
-from .utl import update
 
 def __dir__():
     return ("Event", "Handler")

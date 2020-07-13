@@ -6,14 +6,14 @@ import os, threading, time
 import bot.obj
 
 from .cls import Dict
-from .dbs import Db, last
 from .err import ENOCLASS
 from .irc import Cfg
 from .krn import k, starttime, __version__
+from .obj import Db, last
 from .prs import parse
 from .isp import find_shorts
 from .tms import elapsed
-from .utl import cdir, get_cls, get_type, tostr
+from .obj import cdir, get_cls, get_type
 
 def __dir__():
     return ("cfg", "ed", "find", "fleet", "kernel", "ps", "up", "v")
@@ -25,7 +25,7 @@ def cfg(event):
     if event.sets:
         c.update(event.sets)
         c.save()
-    event.reply(tostr(c))
+    event.reply(c.format())
 
 def edit(o, setter, skip=False):
     try:

@@ -3,9 +3,8 @@
 #
 
 from .cls import Dict
-from .dbs import Db
 from .err import ENOUSER
-from .obj import Object
+from .obj import Db, Object
 
 class User(Object):
 

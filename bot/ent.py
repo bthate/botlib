@@ -4,10 +4,8 @@
 
 import time
 
-from .dbs import Db
-from .obj import Object
+from .obj import Db, Object, fntime
 from .tms import elapsed
-from .utl import fntime
 
 def __init__():
     return ("Log", "TOdo", "done", "log", "todo")
