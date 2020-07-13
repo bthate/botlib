@@ -3,7 +3,6 @@
 #
 
 import importlib, inspect, os, pkg_resources
-
 from .obj import Object
 
 def __dir__():
