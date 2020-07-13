@@ -22,7 +22,7 @@ class Dict(Object):
                 return True
         return False
 
-    def format(self, keys=None):
+    def format(self, keys=None, pure=False):
         if keys is None:
             keys = vars(self).keys()
         res = []
@@ -41,11 +41,20 @@ class Dict(Object):
                 val = val.replace("\\n", "\n")
             res.append((key, val))
         for key, val in res:
-            txt += "%s=%s%s" % (key, val.strip(), " ")
+            if pure:
+                txt += "%s%s" % (val.strip(), " ")
+            else:
+                txt += "%s=%s%s" % (key, val.strip(), " ")
         return txt.strip()
 
     def get(self, k, d=None):
         return self.__dict__.get(k, d)
+
+    def items(self):
+        return self.__dict__.items()
+
+    def keys(self):
+        return self.__dict__.keys()
 
     def last(self):
         db = Db()
@@ -58,6 +67,9 @@ class Dict(Object):
         if isinstance(d, Object):
             return self.__dict__.update(vars(d))
         return self.__dict__.update(d)
+
+    def values(self):
+        return self.__dict__.values()
 
 class Default(Dict):
 

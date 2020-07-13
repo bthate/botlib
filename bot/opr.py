@@ -91,12 +91,13 @@ def find(event):
         if fns:
             event.reply("|".join(fns))
         return
+    parse(event, event.txt)
     db = Db()
     target = db.all
     otype = event.args[0]
     try:
         match = event.args[1]
-        target = db.find_value
+        target = db.find
     except IndexError:
         match = None
     try:
@@ -104,11 +105,11 @@ def find(event):
     except ValueError:
         args = None
     nr = -1
-    for o in target(otype, match):
+    for o in target(otype, event.gets):
         nr += 1
-        event.display(o, str(nr), args or o.keys())
+        event.reply("%s %s" % (str(nr), o.format(event.args, True)))
     if nr == -1:
-        event.reply("no %s found." % otype)
+        event.reply("no matching objects found.")
 
 def fleet(event):
     try:

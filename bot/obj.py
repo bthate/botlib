@@ -4,7 +4,7 @@
 
 """ objects to save to disk. """
 
-import datetime, json, os, random, time
+import datetime, json, os, sys, random, time
 
 ## defines
 
@@ -29,13 +29,13 @@ def locked(l):
 
 class Object:
 
-    """ base Object to inherit from, provides a __path__ hidden attribute to load/save from. """
+    """ base Object to inherit from, provides a __stamp__ hidden attribute to load/save from. """
 
-    __slots__ = ("__dict__", "__path__")
+    __slots__ = ("__dict__", "__stamp__")
 
     def __init__(self):
-        """ create object and set __path__. """
-        self.__path__ = os.path.join(get_type(self), str(datetime.datetime.now()).replace(" ", os.sep))
+        """ create object and set __stamp__. """
+        self.__stamp__ = os.path.join(get_type(self), str(datetime.datetime.now()).replace(" ", os.sep))
 
     def __delitem__(self, k):
         """ remove item. """
@@ -70,7 +70,7 @@ class Object:
         """ load an object from json file at the provided path. """
         assert path
         assert workdir
-        self.__path__ = path
+        self.__stamp__ = path
         lpath = os.path.join(workdir, "store", path)
         cdir(lpath)
         with open(lpath, "r") as ofile:
@@ -82,15 +82,15 @@ class Object:
                     self.__dict__.update(val)
 
     def save(self, stime=None):
-        """ save this object to a json file, uses the hidden attribute __path__. """
+        """ save this object to a json file, uses the hidden attribute __stamp__. """
         assert workdir
         if stime:
-            self.__path__ = os.path.join(get_type(self), stime) + "." + str(random.randint(1, 100000))
-        opath = os.path.join(workdir, "store", self.__path__)
+            self.__stamp__ = os.path.join(get_type(self), stime) + "." + str(random.randint(1, 100000))
+        opath = os.path.join(workdir, "store", self.__stamp__)
         cdir(opath)
         with open(opath, "w") as ofile:
             json.dump(stamp(self), ofile, cls=ObjectEncoder, indent=4, skipkeys=True, sort_keys=True)
-        return self.__path__
+        return self.__stamp__
 
 class Db(Object):
 
@@ -339,11 +339,11 @@ def stamp(o):
         oo = getattr(o, k, None)
         if isinstance(oo, Object):
             stamp(oo)
-            oo.__dict__["stamp"] = oo.__path__
+            oo.__dict__["stamp"] = oo.__stamp__
             o[k] = oo
         else:
             continue
-    o.__dict__["stamp"] = o.__path__
+    o.__dict__["stamp"] = o.__stamp__
     return o
 
 def update(o, d):
@@ -351,7 +351,6 @@ def update(o, d):
     if isinstance(d, Object):
         return o.__dict__.update(vars(d))
     return o.__dict__.update(d)
-
 
 def xdir(o, skip=None):
     """ return dir() but skipping unwanted keys. """
