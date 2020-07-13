@@ -4,7 +4,7 @@
 
 from .cls import Dict
 from .err import ENOUSER
-from .obj import Db, Object
+from .obj import Db, Object, get, update
 
 class User(Object):
 
@@ -13,13 +13,13 @@ class User(Object):
         self.user = ""
         self.perms = []
 
-class Users(Dict, Db):
+class Users(Db):
 
     userhosts = Dict()
 
     def allowed(self, origin, perm):
         perm = perm.upper()
-        origin = self.userhosts.get(origin, origin)
+        origin = get(self.userhosts, origin, origin)
         user = self.get_user(origin)
         if user:
             if perm in user.perms:
@@ -37,7 +37,7 @@ class Users(Dict, Db):
 
     def get_users(self, origin=""):
         s = {"user": origin}
-        return self.all("bot.usr.User", s)
+        return self.find("bot.usr.User", s)
 
     def get_user(self, origin):
         u = list(self.get_users(origin))

@@ -152,14 +152,14 @@ class Db(Object):
 
     def last(self, otype):
         """ return last saved object of a type. """
-        fns = names(otype, delta)
+        fns = names(otype)
         if fns:
             fn = fns[-1]
             return hook(fn)
 
     def last_fn(self, otype):
         """ return filename of last saved object of a type. """
-        fns = names(otype, delta)
+        fns = names(otype)
         if fns:
             fn = fns[-1]
             return (fn, hook(fn))
@@ -243,6 +243,9 @@ def fntime(daystr):
         t = 0
     return t
 
+def get(o, k, d=None):
+    return o.__dict__.get(k, d)
+
 def get_cls(name):
     """ return class by full qualified name. """
     try:
@@ -281,7 +284,7 @@ def hooked(d):
     if "stamp" in d:
         t = d["stamp"].split(os.sep)[0]
         o = get_cls(t)()
-        o.update(d)
+        update(o, d)
         return o
     return d
 

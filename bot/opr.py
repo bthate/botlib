@@ -107,7 +107,10 @@ def find(event):
     nr = -1
     for o in target(otype, event.gets):
         nr += 1
-        event.reply("%s %s" % (str(nr), o.format(event.args, True)))
+        txt = "%s %s" % (str(nr), o.format(event.args, True))
+        if "t" in event.opts:
+            txt += " %s" % (elapsed(time.time() - fntime(o.__stamp__)))
+        event.reply(txt)
     if nr == -1:
         event.reply("no matching objects found.")
 

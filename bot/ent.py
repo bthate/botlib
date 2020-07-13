@@ -40,7 +40,7 @@ def log(event):
         res = db.find("bot.ent.Log", {"txt": ""})
         nr = 0
         for o in res:
-            event.reply("%s %s %s" % (str(nr), o.txt, elapsed(time.time() - fntime(o._path))))
+            event.reply("%s %s %s" % (str(nr), o.txt, elapsed(time.time() - fntime(o.__stamp__))))
             nr += 1
         if not nr:
             event.reply("log what ?")
@@ -58,7 +58,7 @@ def todo(event):
             return
         nr = 0
         for o in res:
-            event.reply("%s %s %s" % (str(nr), o.txt, elapsed(time.time() - fntime(o._path))))
+            event.reply("%s %s %s" % (str(nr), o.txt, elapsed(time.time() - fntime(o.__stamp__))))
             nr += 1
         if not nr:
             event.reply("do what ?")
