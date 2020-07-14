@@ -3,6 +3,8 @@
 #
 
 import importlib, inspect, os, pkg_resources
+
+from .cls import DoL
 from .obj import Object
 
 def __dir__():
@@ -70,12 +72,12 @@ def find_modules(pkgs, skip=None):
     return mods
 
 def find_shorts(mn):
-    shorts = {}
+    shorts = DoL()
     for mod in find_modules(mn):
         for key, o in inspect.getmembers(mod, inspect.isclass):
-            if issubclass(o, Object) and key == o.__name__.lower():
+            if issubclass(o, Object):
                 t = "%s.%s" % (o.__module__, o.__name__)
-                shorts[o.__name__.lower()] = t.lower()
+                shorts.append(o.__name__.lower(), t)
     return shorts
 
 def find_types(mod):

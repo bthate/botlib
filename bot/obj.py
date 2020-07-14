@@ -4,7 +4,7 @@
 
 """ objects to save to disk. """
 
-import datetime, json, os, sys, random, time
+import datetime, importlib, json, os, sys, random, time
 
 ## defines
 
@@ -96,7 +96,7 @@ class Db(Object):
 
     """ database interface to Objects stored on disk. """
 
-    def all(self, otype):
+    def all(self, otype, selector=None, index=None, delta=None):
         """ return all objects of a type. """
         nr = -1
         if selector is None:
@@ -304,8 +304,9 @@ def names(name, delta=None):
     p = os.path.join(workdir, "store", name) + os.sep
     res = []
     now = time.time()
-    if delta:
-        past = now + delta
+    if not delta:
+        delta = 0
+    past = now + delta
     for rootdir, dirs, files in os.walk(p, topdown=False):
         for fn in files:
             fnn = os.path.join(rootdir, fn).split(os.path.join(workdir, "store"))[-1]

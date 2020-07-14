@@ -8,6 +8,7 @@ import bot.obj
 from .cls import Dict
 from .err import ENOCLASS
 from .irc import Cfg
+from .isp import find_shorts
 from .krn import k, starttime, __version__
 from .obj import Db, last
 from .prs import parse
@@ -95,6 +96,8 @@ def find(event):
     db = Db()
     target = db.all
     otype = event.args[0]
+    shorts = find_shorts("bot")
+    otypes = shorts.get(otype, [otype,])
     try:
         match = event.args[1]
         target = db.find
@@ -105,12 +108,17 @@ def find(event):
     except ValueError:
         args = None
     nr = -1
-    for o in target(otype, event.gets):
-        nr += 1
-        txt = "%s %s" % (str(nr), o.format(event.args, True))
-        if "t" in event.opts:
-            txt += " %s" % (elapsed(time.time() - fntime(o.__stamp__)))
-        event.reply(txt)
+    for otype in otypes:
+        for o in target(otype, event.gets or {}):
+            nr += 1
+            if "f" in event.opts:
+                pure = False
+            else:
+                pure = True
+            txt = "%s %s" % (str(nr), o.format(args, pure))
+            if "t" in event.opts:
+                txt += " %s" % (elapsed(time.time() - fntime(o.__stamp__)))
+            event.reply(txt)
     if nr == -1:
         event.reply("no matching objects found.")
 

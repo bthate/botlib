@@ -23,7 +23,7 @@ class Dict(Object):
         return False
 
     def format(self, keys=None, pure=False):
-        if keys is None:
+        if not keys:
             keys = vars(self).keys()
         res = []
         txt = ""
@@ -61,7 +61,7 @@ class Dict(Object):
         path, l = db.last_fn(str(get_type(self)))
         if l:
             self.update(l)
-            self._path = path
+            self.__stamp__ = path
 
     def update(self, d):
         if isinstance(d, Object):
@@ -78,7 +78,7 @@ class Default(Dict):
             return ""
         return self.__dict__[k]
 
-class DoL(Object):
+class DoL(Dict):
 
     def append(self, key, value):
         if key not in self:
@@ -86,7 +86,8 @@ class DoL(Object):
         if isinstance(value, type(list)):
             self[key].extend(value)
         else:
-            self[key].append(value)
+            if value not in self[key]:
+                self[key].append(value)
 
     def update(self, d):
         for k, v in d.items():

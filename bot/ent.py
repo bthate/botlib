@@ -4,19 +4,20 @@
 
 import time
 
+from .cls import Dict
 from .obj import Db, Object, fntime
 from .tms import elapsed
 
 def __init__():
     return ("Log", "TOdo", "done", "log", "todo")
 
-class Log(Object):
+class Log(Dict):
 
     def __init__(self):
         super().__init__()
         self.txt = ""
 
-class Todo(Object):
+class Todo(Dict):
 
     def __init__(self):
         super().__init__()
