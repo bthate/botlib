@@ -44,8 +44,11 @@ class Kernel(Handler):
             try:
                 mod = self.load_mod(ms)
             except ModuleNotFoundError:
-                print(get_exception())
-                continue
+                try:
+                    mod = self.load_mod(mn)
+                except ModuleNotFoundError:
+                    print(get_exception())
+                    continue
             mods.append(mod)
             func = getattr(mod, "init", None)
             if func:
