@@ -14,6 +14,8 @@ def main():
     if c.txt:
         k.walk("bot")
         return k.cmd(c.origtxt)
+    if "s" in c.opts:
+        c.mods += ",csl,cmd,opr,ent"
     if c.mods:
         k.start()
         k.init(c.mods)

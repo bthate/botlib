@@ -294,7 +294,7 @@ def last(o):
     path, l = db.last_fn(str(get_type(o)))
     if  l:
         o.update(l)
-        o._path = path
+        o.__stamp__ = path
 
 def names(name, delta=None):
     """ return filenames in the working directory. """
