@@ -32,10 +32,8 @@ class Db(Object):
 
     def deleted(self, otype):
         """ show all deleted records of a type. """
-        nr = -1
         for fn in names(otype):
             o = hook(fn)
-            nr += 1
             if "_deleted" not in o or not o._deleted:
                 continue
             yield o
@@ -47,11 +45,11 @@ class Db(Object):
             selector = {}
         for fn in names(otype, delta):
             o = hook(fn)
+            if "_deleted" in o and o._deleted:
+                continue
             if search(o, selector):
                 nr += 1
                 if index is not None and nr != index:
-                    continue
-                if "_deleted" in o and o._deleted:
                     continue
                 yield o
 
