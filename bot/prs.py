@@ -4,10 +4,9 @@
 
 import os, sys
 
-from .cfg import Cfg
 from .dct import Dict
 from .dft import Default
-from .krn import k
+from .krn import Cfg, k
 from .obj import Object
 from .utl import update
 
@@ -98,7 +97,9 @@ def parse_cli(name="bot"):
     import bot.pst
     bot.pst.workdir = p
     if len(sys.argv) <= 1:
-        return Cfg()
+        c = Cfg()
+        parse(c, "")
+        return c
     c = Cfg()
     parse(c, " ".join(sys.argv[1:]))
     k.cfg.update(c)

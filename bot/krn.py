@@ -22,7 +22,7 @@ starttime = time.time()
 def spl(txt):
     return iter([x for x in txt.split(",") if x])
 
-class Cfg(Cfg, Dict):
+class Cfg(Cfg):
 
     def __init__(self):
         super().__init__()

@@ -3,10 +3,11 @@
 #
 
 from .obj import Object, get_type
+from .dft import Default
 from .dbs import Db
 from .pst import Persist
 
-class Dict(Persist):
+class Dict(Default, Persist):
 
     def __init__(self, *args, **kwargs):
         super().__init__()
