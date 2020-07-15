@@ -6,7 +6,7 @@
 
 from .obj import Object
 from .pst import names
-from .utl import hook
+from .utl import hook, search
 
 ## classes
 
@@ -21,12 +21,12 @@ class Db(Object):
             selector = {}
         for fn in names(otype, delta):
             o = hook(fn)
-            nr += 1
-            if index is not None and nr != index:
-                continue
             if selector and not search(o, selector):
                 continue
             if "_deleted" in o and o._deleted:
+                continue
+            nr += 1
+            if index is not None and nr != index:
                 continue
             yield o
 

@@ -4,6 +4,7 @@
 
 import mailbox, os, random, time
 
+from .prs import parse
 from .spc import Db, Dict, Object, k
 from .tms import elapsed
 from .utl import fntime
@@ -75,10 +76,9 @@ def cor(event):
     nr = -1
     db = Db()
     args = ["From",] + event.rest.split()
-    for email in db.all("bot.mbx.Email", s):
+    parse(event, event.txt)
+    for email in db.all("bot.mbx.Email", s, event.index):
         nr += 1
-        if event.index and nr != event.index:
-            continue
         event.reply("%s %s %s" % (nr, email.format(args, True), elapsed(time.time() - fntime(email.__stamp__))))
 
 def eml(event):
