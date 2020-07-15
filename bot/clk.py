@@ -5,7 +5,7 @@
 import threading, time
 
 from .obj import Object
-from .thr import launch, get_name
+from .tsk import launch, get_name
 
 def __dir__():
     return ("Repeater", "Timer")

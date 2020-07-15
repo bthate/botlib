@@ -8,7 +8,7 @@ from bot.cls import Dict
 from bot.krn import k
 from bot.hdl import Event
 from bot.obj import Object
-from bot.thr import launch
+from bot.tsk import launch
 
 param = Dict()
 param.ed = ["bot.irc.Cfg", "bot.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel #dunkbots", "bot.krn.Cfg modules bot.udp"]

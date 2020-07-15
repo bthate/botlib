@@ -73,9 +73,9 @@ class Users(Db):
             user.save()
         return user
 
-def meet(event):
+def add(event):
     if not event.args:
-        event.reply("meet <userhost>")
+        event.reply("add <userhost>")
         return
     from .krn import k
     origin = event.args[0]

@@ -9,7 +9,7 @@ import threading, time
 from .cfg import Cfg
 from .flt import Fleet
 from .hdl import Handler
-from .thr import launch
+from .tsk import launch
 from .trc import get_exception
 from .usr import Users
 

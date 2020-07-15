@@ -9,7 +9,7 @@ from .obj import Object
 def __dir__():
     return ("Launcher", "Thr", "get_name", "launch")
 
-class Thr(threading.Thread):
+class Task(threading.Thread):
 
     def __init__(self, func, *args, name="noname", daemon=True):
         super().__init__(None, self.run, name, (), {}, daemon=daemon)
@@ -44,7 +44,7 @@ class Launcher:
 
     def launch(self, func, *args, **kwargs):
         name = kwargs.get("name", get_name(func))
-        t = Thr(func, *args, name=name, daemon=True)
+        t = Task(func, *args, name=name, daemon=True)
         t.start()
         return t
 

@@ -49,7 +49,7 @@ you can use bot <cmd> to run a command directly:
 ::
 
  $ bot cmds
- cfg|cmds|done|ed|find|fl|krn|log|meet|ps|todo|udp|up|v
+ cfg|cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
 
 configuration is done with the cfg command:
 
@@ -111,8 +111,8 @@ you can use the mods= setter to set the modules to load:
 ::
 
  $ bot mods=csl,cmd,opr
- > cmds
- cfg|cmds|ed|find|fleet|kernel|ps|up|v
+ > cmd
+ cfg|cmd|flt|fnd|krn|tsk|upt|ver
 
 BOTLIB has the following modules:
 
@@ -130,7 +130,9 @@ BOTLIB has the following modules:
     krn             - core handler
     obj             - base classes
     opr             - opers
+    mbx		    - email
     prs             - parse
+    spc		    - specifications
     thr             - threads
     tms             - time
     trc             - trace

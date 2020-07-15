@@ -7,7 +7,7 @@ import select, socket, sys, time
 from .cfg import Cfg
 from .obj import Object, last
 from .krn import k
-from .thr import launch
+from .tsk import launch
 
 def __dir__():
     return ("Cfg", "UDP", "init", "toudp", "udp")

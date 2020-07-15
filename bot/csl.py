@@ -8,7 +8,7 @@ from .cfg import Cfg
 from .obj import Object
 from .hdl import Event
 from .krn import k
-from .thr import launch
+from .tsk import launch
 
 def __init__():
     return ("Cfg", "Console", "init")
