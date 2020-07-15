@@ -5,7 +5,7 @@
 from .krn import k
 
 def __dir__():
-    return ("cmds",)
+    return ("cmd",)
 
-def cmds(event):
+def cmd(event):
     event.reply("|".join(sorted(k.cmds)))

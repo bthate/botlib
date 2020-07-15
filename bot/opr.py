@@ -17,7 +17,7 @@ from .tms import elapsed
 from .obj import cdir, get_cls, get_type
 
 def __dir__():
-    return ("cfg", "ed", "find", "fleet", "kernel", "ps", "up", "v")
+    return ("cfg", "ed", "fnd", "flt", "krn", "tsk", "upt", "ver")
 
 def cfg(event):
     c = Cfg()
@@ -54,7 +54,7 @@ def list_files(wd):
         return ""
     return "|".join(os.listdir(path))
 
-def ed(event):
+def edt(event):
     if not event.args:
         event.reply(list_files(bot.obj.workdir) or "no files yet")
         return
@@ -83,7 +83,7 @@ def ed(event):
     l.save()
     event.reply("ok")
 
-def find(event):
+def fnd(event):
     if not event.args:
         wd = os.path.join(bot.obj.workdir, "store", "")
         cdir(wd)
@@ -122,7 +122,7 @@ def find(event):
     if nr == -1:
         event.reply("no matching objects found.")
 
-def fleet(event):
+def flt(event):
     try:
         index = int(event.args[0])
         event.reply(str(k.fleet.bots[index]))
@@ -131,10 +131,10 @@ def fleet(event):
         pass
     event.reply([get_type(x) for x in k.fleet])
 
-def kernel(event):
+def krn(event):
     event.reply(k)
 
-def ps(event):
+def tsk(event):
     psformat = "%-8s %-50s"
     result = []
     for thr in sorted(threading.enumerate(), key=lambda x: x.getName()):
@@ -155,8 +155,8 @@ def ps(event):
         if res:
             event.reply(res.rstrip())
 
-def up(event):
+def upt(event):
     event.reply(elapsed(time.time() - starttime))
 
-def v(event):
+def ver(event):
     event.reply("%s %s" % (k.cfg.name or "BOTLIB", __version__))

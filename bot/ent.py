@@ -23,7 +23,7 @@ class Todo(Dict):
         super().__init__()
         self.txt = ""
 
-def done(event):
+def dne(event):
     if not event.args:
         event.reply("done <match>")
         return
@@ -51,7 +51,7 @@ def log(event):
     l.save()
     event.reply("ok")
 
-def todo(event):
+def tdo(event):
     db = Db()
     if not event.rest:
         res = db.find("bot.ent.Todo", {"txt": ""})
