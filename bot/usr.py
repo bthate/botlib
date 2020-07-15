@@ -2,9 +2,11 @@
 #
 #
 
-from .cls import Dict
+from .dbs import Db
+from .dct import Dict
 from .err import ENOUSER
-from .obj import Db, Object, get, update
+from .obj import Object
+from .utl import get, update
 
 class User(Object):
 

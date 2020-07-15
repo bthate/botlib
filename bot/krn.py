@@ -7,6 +7,7 @@ __version__ = 94
 import threading, time
 
 from .cfg import Cfg
+from .dct import Dict
 from .flt import Fleet
 from .hdl import Handler
 from .tsk import launch
@@ -21,9 +22,11 @@ starttime = time.time()
 def spl(txt):
     return iter([x for x in txt.split(",") if x])
 
-class Cfg(Cfg):
+class Cfg(Cfg, Dict):
 
-    pass
+    def __init__(self):
+        super().__init__()
+        self.users = False
 
 class Kernel(Handler):
 

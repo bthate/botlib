@@ -6,10 +6,12 @@ import os, queue, socket, textwrap, time, threading, _thread
 
 from .cfg import Cfg
 from .krn import k, __version__
-from .obj import Object, last, locked
+from .obj import Object
 from .prs import parse
+from .pst import Persist
 from .hdl import Event, Handler
 from .tsk import launch
+from .utl import locked
 
 def __dir__():
     return ("Cfg", "DCC", "Event", "IRC")
@@ -308,7 +310,7 @@ class IRC(Handler):
         if cfg is not None:
             self.cfg.update(cfg)
         else:
-            last(self.cfg)
+            self.cfg.last()
         assert self.cfg.channel
         assert self.cfg.server
         self.channels.append(self.cfg.channel)
@@ -341,7 +343,7 @@ class IRC(Handler):
 
     def PRIVMSG(self, event):
         if event.txt.startswith("DCC CHAT"):
-            if k.cfg.users and not k.users.allowed(event.origin, "USER"):
+            if k.cfg.users and k.users.allowed(event.origin, "USER"):
                 return
             try:
                 dcc = DCC()

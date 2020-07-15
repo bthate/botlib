@@ -4,7 +4,7 @@
 
 import importlib, inspect, os, pkg_resources
 
-from .cls import DoL
+from .dct import DoL
 from .obj import Object
 
 def __dir__():

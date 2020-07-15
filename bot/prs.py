@@ -3,11 +3,13 @@
 #
 
 import os, sys
-import bot.obj
 
-from .cfg import Cfg, cfg
-from .cls import Default
+from .cfg import Cfg
+from .dct import Dict
+from .dft import Default
+from .krn import k
 from .obj import Object
+from .utl import update
 
 def __dir__():
     return ("parse", "parse_cli")
@@ -53,9 +55,9 @@ def parse(o, txt):
     args = []
     opts = []
     o.origtxt = txt
-    o.gets = Default()
-    o.opts = Default()
-    o.sets = Default()
+    o.gets = Dict()
+    o.opts = Dict()
+    o.sets = Dict()
     for token in [Token(txt) for txt in txt.split()]:
         g = Getter(token.txt)
         if g:
@@ -77,13 +79,15 @@ def parse(o, txt):
             continue
         args.append(token.txt)
     if not args:
-        cfg.update(o)
+        o.args = []
+        o.cmd = ""
+        o.rest = ""
+        o.txt = ""
         return o
     o.cmd = args[0]
     o.args = args[1:]
     o.txt = " ".join(args)
     o.rest = " ".join(args[1:])
-    cfg.update(o)
     return o
 
 def parse_cli(name="bot"):
@@ -91,11 +95,13 @@ def parse_cli(name="bot"):
         p = "/var/lib/%s" % name
     else:
         p = os.path.expanduser("~/.%s" % name)
-    bot.obj.workdir = p
+    import bot.pst
+    bot.pst.workdir = p
     if len(sys.argv) <= 1:
         return Cfg()
     c = Cfg()
     parse(c, " ".join(sys.argv[1:]))
+    k.cfg.update(c)
     return c
 
 def root():

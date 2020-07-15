@@ -4,9 +4,9 @@
 
 import mailbox, os, random, time
 
-from .obj import fntime
 from .spc import Db, Dict, Object, k
 from .tms import elapsed
+from .utl import fntime
 
 bdmonths = ['Bo', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
             'Sep', 'Oct', 'Nov', 'Dec']

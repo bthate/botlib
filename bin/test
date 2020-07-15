@@ -7,20 +7,14 @@ import logging, os, shutil, sys, time, unittest
 
 sys.path.insert(0, os.getcwd())
 
-import bot.obj
-
 from bot.csl import execute
 from bot.prs import parse_cli
 from bot.krn import k, starttime
-from bot.obj import cdir
 from bot.tms import elapsed
+from bot.utl import cdir
 
 def main():
-    if os.path.exists(".data"):
-        shutil.rmtree(".data")
-    cfg = parse_cli()
-    bot.obj.workdir = ".data"
-    #bot.rss.test = True
+    parse_cli("test")
     k.start()
     k.walk("bot")
     test_path = os.getcwd() + os.sep + "tests"

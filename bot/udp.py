@@ -5,8 +5,10 @@
 import select, socket, sys, time
 
 from .cfg import Cfg
-from .obj import Object, last
+from .dct import Dict
 from .krn import k
+from .obj import Object
+from .pst import Persist
 from .tsk import launch
 
 def __dir__():
@@ -17,14 +19,14 @@ def init(kernel):
     u.start()
     return u
 
-class Cfg(Cfg):
+class Cfg(Cfg, Dict, Persist):
 
     def __init__(self):
         super().__init__()
         self.host = "localhost"
         self.port = 5500
 
-class UDP(Object):
+class UDP(Dict):
 
     def __init__(self):
         super().__init__()
@@ -60,7 +62,7 @@ class UDP(Object):
         self._sock.sendto(bytes("exit", "utf-8"), (self.cfg.host, self.cfg.port))
 
     def start(self):
-        last(self.cfg)
+        self.cfg.last()
         launch(self.server)
 
 def toudp(host, port, txt):
@@ -69,7 +71,8 @@ def toudp(host, port, txt):
 
 def udp(event):
     cfg = Cfg()
-    last(cfg)
+    print(dir(cfg))
+    cfg.last()
     if len(sys.argv) > 2:
         txt = " ".join(sys.argv[2:])
         toudp(cfg.host, cfg.port, txt)

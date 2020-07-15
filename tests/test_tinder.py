@@ -4,7 +4,7 @@
 
 import logging, os, random, sys, time, unittest
 
-from bot.cls import Dict
+from bot.dct import Dict
 from bot.krn import k
 from bot.hdl import Event
 from bot.obj import Object
