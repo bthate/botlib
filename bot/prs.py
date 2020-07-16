@@ -2,12 +2,13 @@
 #
 #
 
-import os, sys
+import os, sys, time
 
 from .dct import Dict
 from .dft import Default
 from .krn import Cfg, k
 from .obj import Object
+from .tms import parse_time
 from .utl import update
 
 def __dir__():
@@ -50,14 +51,43 @@ class Setter(Object):
         if pre:
             self[pre] = post
 
+class Timed(Object):
+
+    def __init__(self, txt):
+        super().__init__()
+        v = 0
+        vv = 0
+        try:
+            pre, post = txt.split("-")
+            v = parse_time(pre)
+            vv = parse_time(post)
+        except ValueError:
+            pass
+        if not v or not vv:
+            try:
+                vv = parse_time(txt)
+            except ValueError:
+                vv = 0
+            v = 0
+        if v:
+            self["from"] = time.time() - v
+        if vv:
+            self["to"] = time.time() - vv
+
 def parse(o, txt):
     args = []
     opts = []
+    o.delta = None
     o.origtxt = txt
     o.gets = Dict()
     o.opts = Dict()
     o.sets = Dict()
+    o.timed = Dict()
     for token in [Token(txt) for txt in txt.split()]:
+        t = Timed(token.txt)
+        if t:
+            o.timed.update(t)
+            continue
         g = Getter(token.txt)
         if g:
             o.gets.update(g)

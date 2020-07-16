@@ -11,25 +11,21 @@ from .utl import cdir, fntime, stamp
 
 workdir = None
 
-## defines
-
-def names(name, delta=None):
+def names(name, timed=None):
     """ return filenames in the working directory. """
     if not name:
         return []
     assert workdir
     p = os.path.join(workdir, "store", name) + os.sep
     res = []
-    now = time.time()
-    if not delta:
-        delta = 0
-    past = now + delta
     for rootdir, dirs, files in os.walk(p, topdown=False):
         for fn in files:
             fnn = os.path.join(rootdir, fn).split(os.path.join(workdir, "store"))[-1]
-            if delta:
-                if fntime(fnn) < past:
-                    continue
+            ftime = fntime(fnn)
+            if "from" in timed and timed["from"] and ftime < timed["from"]:
+                continue
+            if timed.to and ftime > timed.to:
+                continue
             res.append(os.sep.join(fnn.split(os.sep)[1:]))
     return sorted(res, key=fntime)
 

@@ -75,9 +75,9 @@ def cor(event):
     s["From"]= event.args[0]
     nr = -1
     db = Db()
-    args = ["From",] + event.rest.split()
     parse(event, event.txt)
-    for email in db.all("bot.mbx.Email", s, event.index):
+    args = ["From",] + event.rest.split()
+    for email in db.all("bot.mbx.Email", s, event.index, event.timed):
         nr += 1
         event.reply("%s %s %s" % (nr, email.format(args, True), elapsed(time.time() - fntime(email.__stamp__))))
 

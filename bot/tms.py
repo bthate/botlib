@@ -122,36 +122,31 @@ def get_time(daystr):
 def now():
     return str(datetime.datetime.now()).split()[0]
 
-def parse(daystr):
-    if daystr.startswith("-"):
-        neg = True
-        daystr = daystr[1:]
-    else:
-        neg = False
+def parse_time(daystr):
+    if not any([c.isdigit() for c in daystr]): 
+        return 0
+    valstr = ""
     val = 0
     total = 0
+    nr = 0
     for c in daystr:
-        if c not in ["s", "m", "h", "d", "w", "y"]:
-            try:
-                val = int(c)
-            except ValueError:
-                pass
-            continue
+        try:
+            vv = int(valstr)
+        except ValueError:
+            vv = 0
         if c == "y":
-            total += val * 3600*24*365
+            val = vv * 3600*24*365
         if c == "w":
-            total += val * 3600*24*7
+            val = vv * 3600*24*7
         elif c == "d":
-            total += val * 3600*24
+            val = vv * 3600*24
         elif c == "h":
-            total += val * 3600
+            val = vv * 3600
         elif c == "m":
-            total += val * 60
+            val = vv * 60
         else:
-            total += val
-        val = 0
-    if neg:
-        return 0 - total
+            valstr += c
+        total += val
     return total
 
 def rtime():

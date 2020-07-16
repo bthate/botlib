@@ -14,19 +14,19 @@ class Db(Object):
 
     """ database interface to Objects stored on disk. """
 
-    def all(self, otype, selector=None, index=None, delta=None):
+    def all(self, otype, selector=None, index=None, timed=None):
         """ return all objects of a type. """
         nr = -1
         if selector is None:
             selector = {}
-        for fn in names(otype, delta):
+        for fn in names(otype, timed):
             o = hook(fn)
             if selector and not search(o, selector):
                 continue
             if "_deleted" in o and o._deleted:
                 continue
             nr += 1
-            if index is not None and nr != index:
+            if index and nr != index:
                 continue
             yield o
 
