@@ -93,23 +93,20 @@ def fnd(event):
             event.reply("|".join(fns))
         return
     parse(event, event.txt)
+    print(event)
     db = Db()
-    target = db.all
     otype = event.args[0]
     shorts = find_shorts("bot")
     otypes = shorts.get(otype, [otype,])
+    args = list(event.gets.keys())
     try:
-        match = event.args[1]
-        target = db.find
-    except IndexError:
-        match = None
-    try:
-        args = event.args[2:]
+        arg = event.args[1:]
     except ValueError:
-        args = None
+        arg = []
+    args.extend(arg)
     nr = -1
     for otype in otypes:
-        for o in target(otype, event.gets or {}):
+        for o in db.find(otype, event.gets, event.index, event.timed):
             nr += 1
             if "f" in event.opts:
                 pure = False
@@ -119,6 +116,7 @@ def fnd(event):
             if "t" in event.opts:
                 txt += " %s" % (elapsed(time.time() - fntime(o.__stamp__)))
             event.reply(txt)
+    print(args)
     if nr == -1:
         event.reply("no matching objects found.")
 

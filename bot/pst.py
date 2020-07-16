@@ -22,9 +22,9 @@ def names(name, timed=None):
         for fn in files:
             fnn = os.path.join(rootdir, fn).split(os.path.join(workdir, "store"))[-1]
             ftime = fntime(fnn)
-            if "from" in timed and timed["from"] and ftime < timed["from"]:
+            if timed and "from" in timed and timed["from"] and ftime < timed["from"]:
                 continue
-            if timed.to and ftime > timed.to:
+            if timed and timed.to and ftime > timed.to:
                 continue
             res.append(os.sep.join(fnn.split(os.sep)[1:]))
     return sorted(res, key=fntime)

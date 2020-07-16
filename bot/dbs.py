@@ -38,25 +38,25 @@ class Db(Object):
                 continue
             yield o
 
-    def find(self, otype, selector=None, index=None, delta=0):
+    def find(self, otype, selector=None, index=None, timed=None):
         """ find all objects of a type matching fields in the provided selector. """
         nr = -1
         if selector is None:
             selector = {}
-        for fn in names(otype, delta):
+        for fn in names(otype, timed):
             o = hook(fn)
             if "_deleted" in o and o._deleted:
                 continue
             if search(o, selector):
                 nr += 1
-                if index is not None and nr != index:
+                if index and nr != index:
                     continue
                 yield o
 
-    def find_value(self, otype, value, index=None, delta=0):
+    def find_value(self, otype, value, index=None, timed=None):
         """ find object that have values that matches provided string. """
         nr = -1
-        for fn in names(otype, delta):
+        for fn in names(otype, timed):
             o = hook(fn)
             if o.find(value):
                 nr += 1
