@@ -2,10 +2,10 @@
 #
 #
 
-from .dct import Dict
+from .dft import Default
 
 ## classes
 
-class Cfg(Dict):
+class Cfg(Default):
 
     pass

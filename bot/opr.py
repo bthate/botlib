@@ -3,16 +3,15 @@
 #
 
 import os, threading, time
-import bot.pst
+import bot.obj
 
-from .dbs import Db
-from .dct import Dict
+from .dbs import Db, last
 from .err import ENOCLASS
 from .irc import Cfg
 from .isp import find_shorts
 from .krn import k, starttime, __version__
+from .obj import update
 from .prs import parse
-from .isp import find_shorts
 from .tms import elapsed
 from .utl import cdir, get_cls, get_type
 
@@ -21,7 +20,7 @@ def __dir__():
 
 def cfg(event):
     c = Cfg()
-    c.last()
+    last(c)
     parse(event, event.txt)
     if event.sets:
         c.update(event.sets)
@@ -56,7 +55,7 @@ def list_files(wd):
 
 def edt(event):
     if not event.args:
-        event.reply(list_files(bot.pst.workdir) or "no files yet")
+        event.reply(list_files(bot.obj.workdir) or "no files yet")
         return
     cn = event.args[0]
     shorts = find_shorts("bot")
@@ -70,7 +69,7 @@ def edt(event):
             l = c()
             event.reply("created %s" % cn)
         except ENOCLASS:
-            event.reply(list_files(bot.pst.workdir) or "no files yet")
+            event.reply(list_files(bot.obj.workdir) or "no files yet")
             return
     if len(event.args) == 1:
         event.reply(l)
@@ -85,7 +84,7 @@ def edt(event):
 
 def fnd(event):
     if not event.args:
-        wd = os.path.join(bot.pst.workdir, "store", "")
+        wd = os.path.join(bot.obj.workdir, "store", "")
         cdir(wd)
         fns = os.listdir(wd)
         fns = sorted({x.split(os.sep)[0] for x in fns})
@@ -139,8 +138,8 @@ def tsk(event):
         if str(thr).startswith("<_"):
             continue
         d = vars(thr)
-        o = Dict()
-        o.update(d)
+        o = Object()
+        update(o, d)
         if o.get("sleep", None):
             up = o.sleep - int(time.time() - o.state.latest)
         else:

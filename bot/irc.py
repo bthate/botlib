@@ -5,10 +5,10 @@
 import os, queue, socket, textwrap, time, threading, _thread
 
 from .cfg import Cfg
+from .dbs import last
 from .krn import k, __version__
 from .obj import Object
 from .prs import parse
-from .pst import Persist
 from .hdl import Event, Handler
 from .tsk import launch
 from .utl import locked
@@ -310,7 +310,7 @@ class IRC(Handler):
         if cfg is not None:
             self.cfg.update(cfg)
         else:
-            self.cfg.last()
+            last(self.cfg)
         assert self.cfg.channel
         assert self.cfg.server
         self.channels.append(self.cfg.channel)

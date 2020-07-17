@@ -66,13 +66,14 @@ def get_type(o):
 
 def hook(fn):
     """ return object from filename. """
+    from bot.obj import load
     t = fn.split(os.sep)[0]
     if not t:
         t = fn.split(os.sep)[0][1:]
     if not t:
         raise ENOFILENAME(fn)
     o = get_cls(t)()
-    o.load(fn)
+    load(o, fn)
     return o
 
 def hooked(d):
@@ -98,15 +99,6 @@ def locked(l):
         lockedfunc.__doc__ = func.__doc__
         return lockedfunc
     return lockeddec
-
-def last(o):
-    """ update object in place with the last saved version. """
-    from .dbs import Db
-    db = Db()
-    path, l = db.last_fn(str(get_type(o)))
-    if  l:
-        update(o, l)
-        o.__stamp__ = path
 
 def search(o, s):
     """ see if object matches a selector, strict case. """

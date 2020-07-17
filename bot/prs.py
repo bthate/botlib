@@ -4,12 +4,10 @@
 
 import os, sys, time
 
-from .dct import Dict
 from .dft import Default
 from .krn import Cfg, k
-from .obj import Object
+from .obj import Object, update
 from .tms import parse_time
-from .utl import update
 
 def __dir__():
     return ("parse", "parse_cli")
@@ -96,28 +94,28 @@ def parse(o, txt):
     opts = []
     o.delta = None
     o.origtxt = txt
-    o.gets = Dict()
-    o.opts = Dict()
-    o.sets = Dict()
-    o.skip = Dict()
-    o.timed = Dict()
+    o.gets = Object()
+    o.opts = Object()
+    o.sets = Object()
+    o.skip = Object()
+    o.timed = Object()
     o.index = None
     for token in [Token(txt) for txt in txt.split()]:
         s = Skip(token.txt)
         if s:
-            o.skip.update(s)
+            update(o.skip, s)
             token.txt = token.txt[:-1]
         t = Timed(token.txt)
         if t:
-            o.timed.update(t)
+            update(o.timed, t)
             continue
         g = Getter(token.txt)
         if g:
-            o.gets.update(g)
+            update(o.gets, g)
             continue
         s = Setter(token.txt)
         if s:
-            o.sets.update(s)
+            update(o.sets, s)
             update(o, s)
             continue
         opt = Option(token.txt)
@@ -147,15 +145,15 @@ def parse_cli(name="bot"):
         p = "/var/lib/%s" % name
     else:
         p = os.path.expanduser("~/.%s" % name)
-    import bot.pst
-    bot.pst.workdir = p
+    import bot.obj
+    bot.obj.workdir = p
     if len(sys.argv) <= 1:
         c = Cfg()
         parse(c, "")
         return c
     c = Cfg()
     parse(c, " ".join(sys.argv[1:]))
-    k.cfg.update(c)
+    update(k.cfg, c)
     return c
 
 def root():

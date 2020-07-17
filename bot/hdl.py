@@ -4,7 +4,6 @@
 
 import importlib, importlib.util, importlib.resources, os, queue, threading
 
-from .dct import Dict
 from .dft import Default
 from .isp import find_cmds, direct
 from .obj import Object
@@ -14,7 +13,7 @@ from .utl import update
 def __dir__():
     return ("Event", "Handler")
 
-class Event(Dict):
+class Event(Object):
 
     def __init__(self):
         super().__init__()
@@ -22,6 +21,39 @@ class Event(Dict):
         self.result = []
         self.thrs = []
         self.txt = ""
+
+    def find(self, txt):
+        for k, v in self.items():
+            if txt in str(v):
+                return True
+        return False
+
+    def format(self, keys=None, pure=False, skip=[]):
+        if not keys:
+            keys = vars(self).keys()
+        res = []
+        txt = ""
+        for key in keys:
+            if skip and key in skip:
+                continue
+            if key == "stamp":
+                continue
+            try:
+                val = self[key]
+            except KeyError:
+                continue
+            if not val:
+                continue
+            val = str(val)
+            if key == "text":
+                val = val.replace("\\n", "\n")
+            res.append((key, val))
+        for key, val in res:
+            if pure:
+                txt += "%s%s" % (val.strip(), " ")
+            else:
+                txt += "%s=%s%s" % (key, val.strip(), " ")
+        return txt.strip()
 
     def parse(self):
         args = self.txt.split()

@@ -4,8 +4,7 @@
 
 import mailbox, os, random, time
 
-from .prs import parse
-from .spc import Db, Dict, Object, k
+from .spc import Db, Object, k, parse
 from .tms import elapsed
 from .utl import fntime
 
@@ -26,7 +25,7 @@ monthint = {
     'Dec': 12
 }
 
-class Email(Dict):
+class Email(Object):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

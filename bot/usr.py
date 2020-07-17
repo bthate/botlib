@@ -3,7 +3,6 @@
 #
 
 from .dbs import Db
-from .dct import Dict
 from .err import ENOUSER
 from .obj import Object
 from .utl import get, update
@@ -17,7 +16,7 @@ class User(Object):
 
 class Users(Db):
 
-    userhosts = Dict()
+    userhosts = Object()
 
     def allowed(self, origin, perm):
         perm = perm.upper()
@@ -81,6 +80,6 @@ def add(event):
         return
     from .krn import k
     origin = event.args[0]
-    origin = k.users.userhosts.get(origin, origin)
+    origin = get(k.users.userhosts, origin, origin)
     k.users.meet(origin)
     event.reply("ok")

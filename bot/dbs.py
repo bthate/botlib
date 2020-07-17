@@ -4,9 +4,8 @@
 
 """ objects to save to disk. """
 
-from .obj import Object
-from .pst import names
-from .utl import hook, search
+from .obj import Object, names, update
+from .utl import get_type, hook, search
 
 ## classes
 
@@ -115,3 +114,11 @@ class Db(Object):
             if s:
                 return s[-1][-1]
         return None
+
+def last(o):
+    """ update object in place with the last saved version. """
+    db = Db()
+    path, l = db.last_fn(str(get_type(o)))
+    if  l:
+        update(o, l)
+        o.__stamp__ = path

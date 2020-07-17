@@ -4,8 +4,7 @@
 
 import importlib, inspect, os, pkg_resources
 
-from .dct import DoL
-from .obj import Object
+from .obj import Object, Ol
 
 def __dir__():
     return ("direct", "find_all", "find_callbacks", "find_cls", "find_cmds", "find_modules", "find_types", "resources", "walk")
@@ -72,7 +71,7 @@ def find_modules(pkgs, skip=None):
     return mods
 
 def find_shorts(mn):
-    shorts = DoL()
+    shorts = Ol()
     for mod in find_modules(mn):
         for key, o in inspect.getmembers(mod, inspect.isclass):
             if issubclass(o, Object):
