@@ -77,28 +77,19 @@ def cor(event):
     db = Db()
     parse(event, event.txt)
     args = ["From",] + event.rest.split()
-    for email in db.all("bot.mbx.Email", s, event.index, event.timed):
+    for email in db.all("bot.mbx.Email", event):
         nr += 1
         event.reply("%s %s %s" % (nr, email.format(args, True), elapsed(time.time() - fntime(email.__stamp__))))
 
 def eml(event):
-    if not event.args:
-        event.reply("email <match>")
-        return
-    event.parse()
-    match = event.args[0]
-    try:
-        match, *args = event.args
-    except ValueError:
-        match = event.args[0]
-        args = []
+    parse(event, event.txt)
+    event.args = ["From"] + list(event.gets.keys()) + event.rest.split()
+    event.otype = "bot.mbx.Email"
     nr = -1
     db = Db()
-    for o in db.find_value("bot.mbx.Email", match):
+    for o in db.find_event(event):
         nr += 1
-        if nr != event.index:
-            continue            
-        event.reply("%s %s" % (str(nr), o.format(event.args, True)))
+        event.reply("%s %s %s" % (nr, o.format(event.args, True, event.skip), elapsed(time.time() - fntime(o.__stamp__))))
 
 def mbx(event):
     if not event.args:

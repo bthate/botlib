@@ -25,12 +25,14 @@ class Dict(Default, Persist):
                 return True
         return False
 
-    def format(self, keys=None, pure=False):
+    def format(self, keys=None, pure=False, skip=[]):
         if not keys:
             keys = vars(self).keys()
         res = []
         txt = ""
         for key in keys:
+            if skip and key in skip:
+                continue
             if key == "stamp":
                 continue
             try:

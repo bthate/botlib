@@ -51,6 +51,23 @@ class Setter(Object):
         if pre:
             self[pre] = post
 
+
+class Skip(Object):
+
+    def __init__(self, txt):
+        super().__init__()
+        pre = post = ""
+        if txt.endswith("-"):
+            try:
+                pre, post = txt.split("=")
+            except ValueError:
+                try:
+                   pre, post = txt.split("==")
+                except ValueError:
+                   pre = txt
+        if pre:
+            self[pre] = True
+
 class Timed(Object):
 
     def __init__(self, txt):
@@ -82,8 +99,14 @@ def parse(o, txt):
     o.gets = Dict()
     o.opts = Dict()
     o.sets = Dict()
+    o.skip = Dict()
     o.timed = Dict()
+    o.index = None
     for token in [Token(txt) for txt in txt.split()]:
+        s = Skip(token.txt)
+        if s:
+            o.skip.update(s)
+            token.txt = token.txt[:-1]
         t = Timed(token.txt)
         if t:
             o.timed.update(t)
@@ -95,7 +118,7 @@ def parse(o, txt):
         s = Setter(token.txt)
         if s:
             o.sets.update(s)
-            o.update(s)
+            update(o, s)
             continue
         opt = Option(token.txt)
         if opt.opt:

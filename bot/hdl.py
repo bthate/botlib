@@ -4,6 +4,7 @@
 
 import importlib, importlib.util, importlib.resources, os, queue, threading
 
+from .dct import Dict
 from .dft import Default
 from .isp import find_cmds, direct
 from .obj import Object
@@ -13,7 +14,7 @@ from .utl import update
 def __dir__():
     return ("Event", "Handler")
 
-class Event(Default):
+class Event(Dict):
 
     def __init__(self):
         super().__init__()

@@ -26,7 +26,7 @@ class Db(Object):
             if "_deleted" in o and o._deleted:
                 continue
             nr += 1
-            if index and nr != index:
+            if index is not None and nr != index:
                 continue
             yield o
 
@@ -45,13 +45,27 @@ class Db(Object):
             selector = {}
         for fn in names(otype, timed):
             o = hook(fn)
+            if selector and not search(o, selector):
+                continue
             if "_deleted" in o and o._deleted:
                 continue
-            if search(o, selector):
-                nr += 1
-                if index and nr != index:
-                    continue
-                yield o
+            nr += 1
+            if index is not None and nr != index:
+                continue
+            yield o
+
+    def find_event(self, e):
+        nr = -1
+        for fn in names(e.otype, e.timed):
+            o = hook(fn)
+            if e.gets and not search(o, e.gets):
+                continue
+            if "_deleted" in o and o._deleted:
+                continue
+            nr += 1
+            if e.index is not None and nr != e.index:
+                continue
+            yield o
 
     def find_value(self, otype, value, index=None, timed=None):
         """ find object that have values that matches provided string. """

@@ -108,26 +108,16 @@ def last(o):
         update(o, l)
         o.__stamp__ = path
 
-def search(o, selector=None):
-    """ search objects that match provided selector. """
-    res = False
-    if selector is None:
-        selector = {}
-    for key, value in selector.items():
-        try:
-            val = o[key]
-        except KeyError:
-            continue
-        if val:
-            if not value:
-                res = True
-                continue
-            if value in str(val):
-                res = True
-                continue
-            res = False
+def search(o, s):
+    """ see if object matches a selector, strict case. """
+    ok = False
+    for k, v in s.items():
+        vv = o.get(k)
+        if v not in str(vv):
+            ok = False
             break
-    return res
+        ok = True
+    return ok
 
 def stamp(o):
     """ recursively add filename fields to a dict. """
