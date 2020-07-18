@@ -5,6 +5,7 @@
 """ objects to save to disk. """
 
 from .obj import Object, names, search, update
+from .tms import fntime
 from .utl import get_type, hook
 
 ## classes
@@ -94,13 +95,13 @@ class Db(Object):
             return (fn, hook(fn))
         return (None, None)
 
-    def last_all(self, otype, selector=None):
+    def last_all(self, otype, selector=None, index=0, timed=None):
         """ return the last object of a type matching the selector. """
         nr = -1
         res = []
         if not selector:
             selector = {}
-        for fn in names(otype, delta):
+        for fn in names(otype, timed):
             o = hook(fn)
             if selector is not None and search(o, selector):
                 nr += 1

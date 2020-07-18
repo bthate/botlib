@@ -5,7 +5,7 @@
 import time
 
 from .dbs import Db
-from .obj import Object, get, save
+from .obj import Object, save
 from .tms import elapsed
 from .utl import fntime
 

@@ -60,9 +60,9 @@ class Skip(Object):
                 pre, post = txt.split("=")
             except ValueError:
                 try:
-                   pre, post = txt.split("==")
+                    pre, post = txt.split("==")
                 except ValueError:
-                   pre = txt
+                    pre = txt
         if pre:
             self[pre] = True
 

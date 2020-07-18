@@ -4,7 +4,7 @@
 
 """ objects to save to disk. """
 
-import datetime, json, os, time
+import datetime, json, os, random
 
 from .tms import fntime
 from .utl import cdir, get_type, hooked, xdir
@@ -121,7 +121,7 @@ def find(o, txt):
             return True
     return False
 
-def format(o, keys=None, pure=False, skip=[]):
+def format(o, keys=None, pure=False, skip=None):
     """ format to displayable string. """
     if not keys:
         keys = vars(o).keys()
@@ -138,7 +138,7 @@ def format(o, keys=None, pure=False, skip=[]):
             continue
         if not val:
             continue
-            val = str(val)
+        val = str(val)
         if key == "text":
             val = val.replace("\\n", "\n")
         res.append((key, val))

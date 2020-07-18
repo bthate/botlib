@@ -4,7 +4,7 @@
 
 from .dbs import Db
 from .err import ENOUSER
-from .obj import Object, get, save, update
+from .obj import Object, get, save
 
 class User(Object):
 

@@ -2,10 +2,10 @@
 #
 #
 
-import mailbox, os, random, time
+import mailbox, os, time
 
 from .obj import format, keys
-from .spc import Db, Object, k, parse
+from .spc import Db, Object, parse
 from .tms import elapsed
 from .utl import fntime
 
@@ -71,8 +71,8 @@ def cor(event):
     if not event.args:
         event.reply("cor <email>")
         return
-    s = Dict()
-    s["From"]= event.args[0]
+    s = Object()
+    s["From"] = event.args[0]
     nr = -1
     db = Db()
     parse(event, event.txt)

@@ -7,7 +7,7 @@ __version__ = 94
 import threading, time
 
 from .cfg import Cfg
-from .dft import Default 
+from .dft import Default
 from .flt import Fleet
 from .hdl import Handler
 from .tsk import launch

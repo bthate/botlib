@@ -123,7 +123,7 @@ def now():
     return str(datetime.datetime.now()).split()[0]
 
 def parse_time(daystr):
-    if not any([c.isdigit() for c in daystr]): 
+    if not any([c.isdigit() for c in daystr]):
         return 0
     valstr = ""
     val = 0

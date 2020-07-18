@@ -4,7 +4,9 @@
 
 """ objects to save to disk. """
 
-import os, sys, time
+import importlib, os, sys, time
+
+from .err import ENOFILENAME
 
 ## utilities
 
