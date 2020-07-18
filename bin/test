@@ -3,7 +3,7 @@
 #
 #
 
-import logging, os, shutil, sys, time, unittest
+import os, sys, time, unittest
 
 sys.path.insert(0, os.getcwd())
 

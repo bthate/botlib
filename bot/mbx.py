@@ -4,6 +4,7 @@
 
 import mailbox, os, random, time
 
+from .obj import keys
 from .spc import Db, Object, k, parse
 from .tms import elapsed
 from .utl import fntime
@@ -82,7 +83,7 @@ def cor(event):
 
 def eml(event):
     parse(event, event.txt)
-    event.args = ["From"] + list(event.gets.keys()) + event.rest.split()
+    event.args = ["From"] + list(keys(event.gets)) + event.rest.split()
     event.otype = "bot.mbx.Email"
     nr = -1
     db = Db()

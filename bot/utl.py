@@ -44,6 +44,7 @@ def get(o, k, d=None):
 
 def get_cls(name):
     """ return class by full qualified name. """
+    from .err import ENOCLASS
     try:
         modname, clsname = name.rsplit(".", 1)
     except:
@@ -104,7 +105,7 @@ def search(o, s):
     """ see if object matches a selector, strict case. """
     ok = False
     for k, v in s.items():
-        vv = o.get(k)
+        vv = get(o, k)
         if v not in str(vv):
             ok = False
             break

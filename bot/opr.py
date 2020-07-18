@@ -10,7 +10,7 @@ from .err import ENOCLASS
 from .irc import Cfg
 from .isp import find_shorts
 from .krn import k, starttime, __version__
-from .obj import update
+from .obj import Object, format, get, keys, update
 from .prs import parse
 from .tms import elapsed
 from .utl import cdir, get_cls, get_type
@@ -25,7 +25,7 @@ def cfg(event):
     if event.sets:
         c.update(event.sets)
         c.save()
-    event.reply(c.format())
+    event.reply(format(c))
 
 def edit(o, setter, skip=False):
     try:
@@ -96,8 +96,8 @@ def fnd(event):
     db = Db()
     otype = event.args[0]
     shorts = find_shorts("bot")
-    otypes = shorts.get(otype, [otype,])
-    args = list(event.gets.keys())
+    otypes = get(shorts, otype, [otype,])
+    args = list(keys(event.gets))
     try:
         arg = event.args[1:]
     except ValueError:
@@ -111,7 +111,7 @@ def fnd(event):
                 pure = False
             else:
                 pure = True
-            txt = "%s %s" % (str(nr), o.format(args, pure))
+            txt = "%s %s" % (str(nr), format(o, args, pure))
             if "t" in event.opts:
                 txt += " %s" % (elapsed(time.time() - fntime(o.__stamp__)))
             event.reply(txt)
@@ -140,7 +140,7 @@ def tsk(event):
         d = vars(thr)
         o = Object()
         update(o, d)
-        if o.get("sleep", None):
+        if get(o, "sleep", None):
             up = o.sleep - int(time.time() - o.state.latest)
         else:
             up = int(time.time() - starttime)

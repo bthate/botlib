@@ -2,24 +2,24 @@
 #
 #
 
-import logging, os, random, sys, time, unittest
+import os, random, sys, time, unittest
 
-from bot.dct import Dict
 from bot.krn import k
 from bot.hdl import Event
-from bot.obj import Object
+from bot.obj import Object, get
 from bot.tsk import launch
 
-param = Dict()
-param.ed = ["bot.irc.Cfg", "bot.krn.Cfg", "bot.irc.Cfg server localhost", "bot.irc.Cfg channel #dunkbots", "bot.krn.Cfg modules bot.udp"]
-param.delete = ["reddit", ]
+param = Object()
+param.add = ["test@shell", "bart"]
+param.dne = ["test4", ""]
+param.edt = ["bot.irc.Cfg", "bot.krn.Cfg", "bot.irc.Cfg server=localhost", "bot.irc.Cfg channel=#dunkbots", "bot.krn.Cfg mods=ent,udp"]
+param.rm = ["reddit", ]
 param.display = ["reddit title,summary,link",]
 param.log = ["test1", ""]
-param.fleet = ["0", "1", ""]
-param.find = ["log test2", "todo test3", "rss reddit"]
-param.meet = ["test@shell", "bart"]
+param.flt = ["0", "1", ""]
+param.fnd = ["log test2", "todo test3", "rss reddit"]
 param.rss = ["https://www.reddit.com/r/python/.rss", ""]
-param.todo = ["test4!", ""]
+param.tdo = ["test4", ""]
 
 events = []
 ignore = ["ps"]
@@ -73,7 +73,7 @@ def tests(b):
         events.extend(do_cmd(cmd))
 
 def do_cmd(cmd):
-    exs = param.get(cmd, [""])
+    exs = get(param, cmd, [""])
     e = list(exs)
     random.shuffle(e)
     events = []

@@ -13,7 +13,7 @@ from .utl import update
 def __dir__():
     return ("Event", "Handler")
 
-class Event(Object):
+class Event(Default):
 
     def __init__(self):
         super().__init__()

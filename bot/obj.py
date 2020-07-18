@@ -6,9 +6,30 @@
 
 import datetime, json, os, time
 
-from .utl import get_type, hooked
+from .tms import fntime
+from .utl import cdir, get_type, hooked, xdir
+
+## defines
 
 workdir = ""
+
+def names(name, timed=None):
+    """ return filenames in the working directory. """
+    if not name:
+        return []
+    assert workdir
+    p = os.path.join(workdir, "store", name) + os.sep
+    res = []
+    for rootdir, dirs, files in os.walk(p, topdown=False):
+        for fn in files:
+            fnn = os.path.join(rootdir, fn).split(os.path.join(workdir, "store"))[-1]
+            ftime = fntime(fnn)
+            if timed and "from" in timed and timed["from"] and ftime < timed["from"]:
+                continue
+            if timed and timed.to and ftime > timed.to:
+                continue
+            res.append(os.sep.join(fnn.split(os.sep)[1:]))
+    return sorted(res, key=fntime)
 
 ## classes
 
@@ -18,16 +39,9 @@ class Object:
 
     __slots__ = ("__dict__", "__stamp__")
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         """ create object and set __stamp__. """
         super().__init__()
-        if args:
-            try:
-                update(self, args[0])
-            except TypeError:
-                update(self, vars(args[0]))
-        if kwargs:
-            update(self, kwargs)
         self.__stamp__ = os.path.join(get_type(self), str(datetime.datetime.now()).replace(" ", os.sep))
 
     def __delitem__(self, k):
@@ -57,7 +71,7 @@ class Object:
 
     def __str__(self):
         """ return a 4 space indented json string. """
-        return json.dumps(self, cls=ObjectEncoder)
+        return json.dumps(self, cls=ObjectEncoder, indent=4, sort_keys=True)
 
 class ObjectEncoder(json.JSONEncoder):
 
@@ -100,63 +114,15 @@ class Ol(Object):
         for k, v in d.items():
             self.append(k, v)
 
-def load(o, path, force=False):
-    """ load an object from json file at the provided path. """
-    assert path
-    assert workdir
-    o.__stamp__ = path
-    lpath = os.path.join(workdir, "store", path)
-    cdir(lpath)
-    with open(lpath, "r") as ofile:
-        val = json.load(ofile, cls=ObjectDecoder)
-        if val:
-            if isinstance(val, Object):
-                self.__dict__.update(vars(val))
-            else:
-                self.__dict__.update(val)
-
-def names(name, timed=None):
-    """ return filenames in the working directory. """
-    if not name:
-        return []
-    assert workdir
-    p = os.path.join(workdir, "store", name) + os.sep
-    res = []
-    for rootdir, dirs, files in os.walk(p, topdown=False):
-        for fn in files:
-            fnn = os.path.join(rootdir, fn).split(os.path.join(workdir, "store"))[-1]
-            ftime = fntime(fnn)
-            if timed and "from" in timed and timed["from"] and ftime < timed["from"]:
-                continue
-            if timed and timed.to and ftime > timed.to:
-                continue
-            res.append(os.sep.join(fnn.split(os.sep)[1:]))
-    return sorted(res, key=fntime)
-
-def save(o, stime=None):
-    """ save this object to a json file, uses the hidden attribute __stamp__. """
-    assert workdir
-    if stime:
-        o.__stamp__ = os.path.join(get_type(o), stime) + "." + str(random.randint(1, 100000))
-    opath = os.path.join(workdir, "store", o.__stamp__)
-    cdir(opath)
-    with open(opath, "w") as ofile:
-        json.dump(stamp(o), ofile, cls=ObjectEncoder)
-    return o.__stamp__
-
-def update(o, d):
-    """ update an object with provided dict. """
-    if isinstance(d, Object):
-        return o.__dict__.update(vars(d))
-    return o.__dict__.update(d)
-
-def find(self, txt):
-    for k, v in self.items():
+def find(o, txt):
+    """ check if text in object fields. """
+    for k, v in items(o):
         if txt in str(v):
             return True
     return False
 
 def format(o, keys=None, pure=False, skip=[]):
+    """ format to displayable string. """
     if not keys:
         keys = vars(o).keys()
     res = []
@@ -176,59 +142,85 @@ def format(o, keys=None, pure=False, skip=[]):
         if key == "text":
             val = val.replace("\\n", "\n")
         res.append((key, val))
-    for key, val in res:
+    for k, v in res:
         if pure:
-            txt += "%s%s" % (val.strip(), " ")
+            txt += "%s%s" % (str(v).strip(), " ")
         else:
-            txt += "%s=%s%s" % (key, val.strip(), " ")
+            txt += "%s=%s%s" % (k, str(v).strip(), " ")
     return txt.strip()
 
 def get(o, k, d=None):
+    """ return value. """
     return o.__dict__.get(k, d)
 
 def items(o):
+    """ return items. """
     return o.__dict__.items()
 
 def keys(o):
+    """ return keys. """
     return o.__dict__.keys()
 
+def load(o, path, force=False):
+    """ load an object from json file at the provided path. """
+    assert path
+    assert workdir
+    o.__stamp__ = path
+    lpath = os.path.join(workdir, "store", path)
+    cdir(lpath)
+    with open(lpath, "r") as ofile:
+        try:
+            v = json.load(ofile, cls=ObjectDecoder)
+        except json.decoder.JSONDecodeError as ex:
+            print(path, ex)
+            return
+        if v:
+            if isinstance(v, Object):
+                o.__dict__.update(vars(v))
+            else:
+                o.__dict__.update(v)
+
+def save(o, stime=None):
+    """ save this object to a json file, uses the hidden attribute __stamp__. """
+    assert workdir
+    if stime:
+        o.__stamp__ = os.path.join(get_type(o), stime) + "." + str(random.randint(1, 100000))
+    opath = os.path.join(workdir, "store", o.__stamp__)
+    cdir(opath)
+    with open(opath, "w") as ofile:
+        json.dump(stamp(o), ofile, cls=ObjectEncoder)
+    return o.__stamp__
+
+def search(o, s):
+    """ see if object matches a selector, strict case. """
+    ok = False
+    for k, v in s.items():
+        vv = get(o, k)
+        if v not in str(vv):
+            ok = False
+            break
+        ok = True
+    return ok
+
+def stamp(o):
+    """ recursively add filename fields to a dict. """
+    for k in xdir(o):
+        oo = getattr(o, k, None)
+        if isinstance(oo, Object):
+            stamp(oo)
+            oo.__dict__["stamp"] = oo.__stamp__
+            o[k] = oo
+        else:
+            continue
+    o.__dict__["stamp"] = o.__stamp__
+    return o
+
 def update(o, d):
+    """ update an object with provided dict. """
     if isinstance(d, Object):
         return o.__dict__.update(vars(d))
     return o.__dict__.update(d)
 
 def values(o):
+    """ show values. """
     return o.__dict__.values()
-
-def find(o, txt):
-    for k, v in o.items():
-        if txt in str(v):
-            return True
-    return False
-
-def format(o, keys=None, pure=False, skip=[]):
-    if not keys:
-        keys = vars(o).keys()
-    res = []
-    txt = ""
-    for key in keys:
-        if skip and key in skip:
-            continue
-        if key == "stamp":
-            continue
-        try:
-            val = o[key]
-        except KeyError:
-            continue
-        if not val:
-            continue
-        val = str(val)
-        if key == "text":
-            val = val.replace("\\n", "\n")
-        res.append((key, val))
-    for key, val in res:
-        if pure:
-            txt += "%s%s" % (val.strip(), " ")
-        else:
-            txt += "%s=%s%s" % (key, val.strip(), " ")
-    return txt.strip()

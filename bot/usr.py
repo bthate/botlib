@@ -4,7 +4,7 @@
 
 from .dbs import Db
 from .err import ENOUSER
-from .obj import Object
+from .obj import Object, save
 from .utl import get, update
 
 class User(Object):
@@ -52,7 +52,7 @@ class Users(Db):
         user = User()
         user.user = origin
         user.perms = ["USER", ]
-        user.save()
+        save(user)
         return user
 
     def oper(self, origin):
