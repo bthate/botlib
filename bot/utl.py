@@ -39,9 +39,6 @@ def fntime(daystr):
         t = 0
     return t
 
-def get(o, k, d=None):
-    return o.__dict__.get(k, d)
-
 def get_cls(name):
     """ return class by full qualified name. """
     from .err import ENOCLASS
@@ -79,6 +76,7 @@ def hook(fn):
 
 def hooked(d):
     """ convert to object depending on filename stamp. """
+    from .obj import update
     if "stamp" in d:
         t = d["stamp"].split(os.sep)[0]
         o = get_cls(t)()
@@ -100,38 +98,6 @@ def locked(l):
         lockedfunc.__doc__ = func.__doc__
         return lockedfunc
     return lockeddec
-
-def search(o, s):
-    """ see if object matches a selector, strict case. """
-    ok = False
-    for k, v in s.items():
-        vv = get(o, k)
-        if v not in str(vv):
-            ok = False
-            break
-        ok = True
-    return ok
-
-def stamp(o):
-    """ recursively add filename fields to a dict. """
-    from  .obj import Object
-    for k in xdir(o):
-        oo = getattr(o, k, None)
-        if isinstance(oo, Object):
-            stamp(oo)
-            oo.__dict__["stamp"] = oo.__stamp__
-            o[k] = oo
-        else:
-            continue
-    o.__dict__["stamp"] = o.__stamp__
-    return o
-
-def update(o, d):
-    """ update o with d. """
-    from .spc import Object
-    if isinstance(d, Object):
-        return o.__dict__.update(vars(d))
-    return o.__dict__.update(d)
 
 def xdir(o, skip=None):
     """ return dir() but skipping unwanted keys. """

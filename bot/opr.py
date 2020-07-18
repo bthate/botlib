@@ -92,7 +92,6 @@ def fnd(event):
             event.reply("|".join(fns))
         return
     parse(event, event.txt)
-    print(event)
     db = Db()
     otype = event.args[0]
     shorts = find_shorts("bot")
@@ -115,7 +114,6 @@ def fnd(event):
             if "t" in event.opts:
                 txt += " %s" % (elapsed(time.time() - fntime(o.__stamp__)))
             event.reply(txt)
-    print(args)
     if nr == -1:
         event.reply("no matching objects found.")
 

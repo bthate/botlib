@@ -4,7 +4,7 @@
 
 import mailbox, os, random, time
 
-from .obj import keys
+from .obj import format, keys
 from .spc import Db, Object, k, parse
 from .tms import elapsed
 from .utl import fntime
@@ -79,7 +79,7 @@ def cor(event):
     args = ["From",] + event.rest.split()
     for email in db.all("bot.mbx.Email", event):
         nr += 1
-        event.reply("%s %s %s" % (nr, email.format(args, True), elapsed(time.time() - fntime(email.__stamp__))))
+        event.reply("%s %s %s" % (nr, format(email, args, True), elapsed(time.time() - fntime(email.__stamp__))))
 
 def eml(event):
     parse(event, event.txt)
@@ -89,7 +89,7 @@ def eml(event):
     db = Db()
     for o in db.find_event(event):
         nr += 1
-        event.reply("%s %s %s" % (nr, o.format(event.args, True, event.skip), elapsed(time.time() - fntime(o.__stamp__))))
+        event.reply("%s %s %s" % (nr, format(o, event.args, True, event.skip), elapsed(time.time() - fntime(o.__stamp__))))
 
 def mbx(event):
     if not event.args:

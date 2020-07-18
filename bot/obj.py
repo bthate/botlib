@@ -194,7 +194,7 @@ def save(o, stime=None):
 def search(o, s):
     """ see if object matches a selector, strict case. """
     ok = False
-    for k, v in s.items():
+    for k, v in items(s):
         vv = get(o, k)
         if v not in str(vv):
             ok = False

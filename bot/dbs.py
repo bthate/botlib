@@ -4,8 +4,8 @@
 
 """ objects to save to disk. """
 
-from .obj import Object, names, update
-from .utl import get_type, hook, search
+from .obj import Object, names, search, update
+from .utl import get_type, hook
 
 ## classes
 
