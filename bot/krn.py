@@ -2,7 +2,7 @@
 #
 #
 
-__version__ = 94
+__version__ = 95
 
 import threading, time
 
@@ -38,6 +38,9 @@ class Kernel(Handler):
         self.fleet = Fleet()
         self.users = Users()
         self.fleet.add(self)
+
+    def announce(self, txt):
+        print(txt)
 
     def init(self, mns):
         mods = []

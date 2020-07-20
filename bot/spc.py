@@ -14,7 +14,7 @@ from .flt import Fleet
 from .hdl import Event, Handler
 from .irc import DCC, IRC
 from .krn import Kernel, k
-from .obj import Object, Ol
+from .obj import Object,Ol,find,format,get,items,keys,load,save,search,update,values
 from .prs import parse_cli, parse
 from .tsk import Task
 from .udp import UDP
