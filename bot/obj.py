@@ -151,15 +151,24 @@ def format(o, keys=None, pure=False, skip=None):
 
 def get(o, k, d=None):
     """ return value. """
-    return o.__dict__.get(k, d)
+    try:
+        return o.get(k, d)
+    except (TypeError, AttributeError):
+        return o.__dict__.get(k, d)
 
 def items(o):
     """ return items. """
-    return o.__dict__.items()
+    try:
+        return o.items()
+    except (TypeError, AttributeError):
+        return o.__dict__.items()
 
 def keys(o):
     """ return keys. """
-    return o.__dict__.keys()
+    try:
+        return o.keys()
+    except (TypeError, AttributeError):
+        return o.__dict__.keys()
 
 def load(o, path, force=False):
     """ load an object from json file at the provided path. """
@@ -223,4 +232,7 @@ def update(o, d):
 
 def values(o):
     """ show values. """
-    return o.__dict__.values()
+    try:
+        return o.values()
+    except (TypeError, AttributeError):
+        return o.__dict__.values()
