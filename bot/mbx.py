@@ -71,15 +71,15 @@ def cor(event):
     if not event.args:
         event.reply("cor <email>")
         return
-    s = Object()
-    s["From"] = event.args[0]
+    parse(event, event.txt)
+    event.gets["From"] = event.args[0]
+    event.args = list(keys(event.gets)) + event.rest.split()
+    event.otype = "bot.mbx.Email"
     nr = -1
     db = Db()
-    parse(event, event.txt)
-    args = ["From",] + event.rest.split()
-    for email in db.all("bot.mbx.Email", event):
+    for email in db.find_event(event):
         nr += 1
-        event.reply("%s %s %s" % (nr, format(email, args, True), elapsed(time.time() - fntime(email.__stamp__))))
+        event.reply("%s %s %s" % (nr, format(email, event.args, True, event.skip), elapsed(time.time() - fntime(email.__stamp__))))
 
 def eml(event):
     parse(event, event.txt)
