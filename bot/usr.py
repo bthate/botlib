@@ -30,7 +30,7 @@ class Users(Db):
         for user in self.get_users(origin):
             try:
                 user.perms.remove(perm)
-                user.save()
+                save(user)
                 return True
             except ValueError:
                 pass
@@ -61,7 +61,7 @@ class Users(Db):
         user = User()
         user.user = origin
         user.perms = ["OPER", "USER"]
-        user.save()
+        save(user)
         return user
 
     def perm(self, origin, permission):
@@ -70,7 +70,7 @@ class Users(Db):
             raise ENOUSER(origin)
         if permission.upper() not in user.perms:
             user.perms.append(permission.upper())
-            user.save()
+            save(user)
         return user
 
 def add(event):

@@ -10,7 +10,7 @@ from .err import ENOCLASS
 from .irc import Cfg
 from .isp import find_shorts
 from .krn import k, starttime, __version__
-from .obj import Object, format, get, keys, update
+from .obj import Object, format, get, keys, save, update
 from .prs import parse
 from .tms import elapsed, fntime
 from .utl import cdir, get_cls, get_type
@@ -23,8 +23,8 @@ def cfg(event):
     last(c)
     parse(event, event.txt)
     if event.sets:
-        c.update(event.sets)
-        c.save()
+        update(c, event.sets)
+        save(c)
     event.reply(format(c))
 
 def edit(o, setter, skip=False):
@@ -79,7 +79,7 @@ def edt(event):
     else:
         setter = {event.args[1]: event.args[2]}
     edit(l, setter)
-    l.save()
+    save(l)
     event.reply("ok")
 
 def fnd(event):

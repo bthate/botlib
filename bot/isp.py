@@ -4,7 +4,7 @@
 
 import importlib, inspect, os, pkg_resources
 
-from .obj import Object, Ol
+from .obj import Object, Ol, update
 
 def __dir__():
     return ("direct", "find_all", "find_callbacks", "find_cls", "find_cmds", "find_modules", "find_types", "resources", "walk")
@@ -24,7 +24,7 @@ def find_allnames(name):
     mns = Object()
     pkg = direct(name)
     for mod in find_modules(pkg):
-        mns.update(find_names(mod))
+        update(mns, find_names(mod))
     return mns
 
 def find_callbacks(mod):

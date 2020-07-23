@@ -4,7 +4,7 @@
 
 import mailbox, os, time
 
-from .obj import format, keys
+from .obj import format, keys, save, update
 from .spc import Db, Object, parse
 from .tms import elapsed
 from .utl import fntime
@@ -111,7 +111,7 @@ def mbx(event):
         pass
     for m in thing:
         o = Email()
-        o.update(m)
+        update(o, m)
         try:
             sdate = os.sep.join(to_date(o.Date).split())
         except AttributeError:
@@ -121,7 +121,7 @@ def mbx(event):
             if payload.get_content_type() == 'text/plain':
                 o.text += payload.get_payload()
         o.text = o.text.replace("\\n", "\n")
-        o.save(stime=sdate)
+        save(o, stime=sdate)
         nr += 1
     if nr:
         event.reply("ok %s" % nr)
