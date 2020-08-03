@@ -1,15 +1,15 @@
 # cfg.txt
 
 """
-    >>> import bot.obj
-    >>> cfg = bot.obj.Cfg()
+    >>> from bot.cfg import Cfg 
+    >>> cfg = Cfg()
     >>> cfg.server = "localhost"
-    >>> cfg.channel = "#botd"
-    >>> cfg.nick = "botddd"
+    >>> cfg.channel = "#botlib"
+    >>> cfg.nick = "botlib"
     >>> print(cfg)
     {
-        "channel": "#botd",
-        "nick": "botddd",
+        "channel": "#botlib",
+        "nick": "botlib",
         "server": "localhost"
     }
 

@@ -3,11 +3,7 @@
 #
 #
 
-import sys, os ; sys.path.insert(0, os.getcwd())
-
-from bot.csl import execute
-from bot.krn import k
-from bot.prs import parse_cli
+from bot.spc import execute, k, parse_cli
 
 def main():
     c = parse_cli("bot")
