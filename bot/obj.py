@@ -144,6 +144,8 @@ def format(o, keys=None, pure=False, skip=None):
             txt += "%s=%s%s" % (k, str(v).strip(), " ")
     return txt.strip()
 
+## functions
+
 def get(o, k, d=None):
     """ return value. """
     try:
@@ -184,10 +186,13 @@ def load(o, path, force=False):
             else:
                 o.__dict__.update(v)
 
-def save(o):
+def save(o, stime=None):
     """ save this object to a json file, uses the hidden attribute __stamp__. """
     assert workdir
-    o.__stamp__ = os.path.join(get_type(o), str(uuid.uuid4()), str(datetime.datetime.now()).replace(" ", os.sep))
+    if stime:
+        o.__stamp__ = os.path.join(get_type(o), str(uuid.uuid4()), stime + "." + str(random.randint(0,100000)))
+    else:
+        o.__stamp__ = os.path.join(get_type(o), str(uuid.uuid4()), str(datetime.datetime.now()).replace(" ", os.sep))
     opath = os.path.join(workdir, "store", o.__stamp__)
     cdir(opath)
     with open(opath, "w") as ofile:
