@@ -16,7 +16,7 @@ from .tms import elapsed, fntime
 from .utl import cdir, get_cls, get_type
 
 def __dir__():
-    return ("cfg", "edt", "fnd", "flt", "krn", "tsk", "upt", "ver")
+    return ("cfg", "edt", "fnd", "flt", "krn", "tsk", "upt", "ver", "wd")
 
 def cfg(event):
     c = Cfg()
@@ -155,3 +155,6 @@ def upt(event):
 
 def ver(event):
     event.reply("%s %s" % (k.cfg.name or "BOTLIB", __version__))
+
+def wd(event):
+    event.reply(bot.obj.workdir)

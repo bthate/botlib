@@ -21,6 +21,7 @@ def cdir(path):
         padje = os.path.abspath(os.path.normpath(res))
         try:
             os.mkdir(padje)
+            os.chmod(padje, 0o700)
         except (IsADirectoryError, NotADirectoryError, FileExistsError):
             pass
     return True

@@ -4,7 +4,7 @@
 
 """ objects to save to disk. """
 
-import datetime, json, os, random
+import datetime, json, os, random, uuid
 
 from .tms import fntime
 from .utl import cdir, get_type, hooked, xdir
@@ -38,11 +38,6 @@ class Object:
     """ base Object to inherit from, provides a __stamp__ hidden attribute to load/save from. """
 
     __slots__ = ("__dict__", "__stamp__")
-
-    def __init__(self):
-        """ create object and set __stamp__. """
-        super().__init__()
-        self.__stamp__ = os.path.join(get_type(self), str(datetime.datetime.now()).replace(" ", os.sep))
 
     def __delitem__(self, k):
         """ remove item. """
@@ -189,15 +184,15 @@ def load(o, path, force=False):
             else:
                 o.__dict__.update(v)
 
-def save(o, stime=None):
+def save(o):
     """ save this object to a json file, uses the hidden attribute __stamp__. """
     assert workdir
-    if stime:
-        o.__stamp__ = os.path.join(get_type(o), stime) + "." + str(random.randint(1, 100000))
+    o.__stamp__ = os.path.join(get_type(o), str(uuid.uuid4()), str(datetime.datetime.now()).replace(" ", os.sep))
     opath = os.path.join(workdir, "store", o.__stamp__)
     cdir(opath)
     with open(opath, "w") as ofile:
         json.dump(stamp(o), ofile, cls=ObjectEncoder)
+    os.chmod(opath, 0o444)
     return o.__stamp__
 
 def search(o, s):
