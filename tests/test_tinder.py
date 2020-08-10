@@ -1,82 +1,91 @@
-# BOTLIB - Framework to program bots (a botlib).
+# BOTLIB - the bot library
 #
-# tinder tests.
+#
 
-import logging
-import os
-import random
-import sys
-import time
-import unittest
+import os, random, sys, time, unittest
 
-from bl.bot import Bot
-from bl.obj import Object
-from bl.hdl import Event
-from bl.krn import Kernel, kernels
-from bl.utl import consume
-from bl.thr import launch
-from bl.usr import Users
+from bot.krn import k
+from bot.hdl import Event
+from bot.obj import Object, get
+from bot.tsk import launch
 
-class Param(Object):
+param = Object()
+param.add = ["test@shell", "bart"]
+param.dne = ["test4", ""]
+param.edt = ["bot.irc.Cfg", "bot.krn.Cfg", "bot.irc.Cfg server=localhost", "bot.irc.Cfg channel=#dunkbots", "bot.krn.Cfg mods=ent,udp"]
+param.rm = ["reddit", ]
+param.display = ["reddit title,summary,link",]
+param.log = ["test1", ""]
+param.flt = ["0", "1", ""]
+param.fnd = ["log test2", "todo test3", "rss reddit"]
+param.rss = ["https://www.reddit.com/r/python/.rss", ""]
+param.tdo = ["test4", ""]
 
-    pass
+events = []
+ignore = ["ps"]
+nrtimes = 1
 
-k = kernels.get(0)
-users = Users()
-users.oper("test@shell")
+class Event(Event):
 
-try:
-    index = int(k.cfg.args[1])
-except:
-    index = 1
+    def reply(self, txt):
+        if "-v" in sys.argv:
+            print(txt)
 
-bot = Bot()
-
-names = list(k.names)
-param = Param()
-param.cfg = [random.choice(["irc", "rss"]),]
-param.find = names
-param.log = ["yo!",]
-param.rm = ["%s txt==yo" % random.choice(names)]
-param.meet = ["test@shell",]
-#param.mbox = ["~/evidence/25-1-2013",]
+for x in sys.argv:
+    try:
+        nrtimes = int(x)
+    except ValueError:
+        continue
 
 class Test_Tinder(unittest.TestCase):
 
-    def test_tinder(self):
-        thrs = []
-        for x in range(index):
-            thrs.append(launch(tests, k))
-        for thr in thrs:
-            thr.join()
-
-    def test_tinder2(self):
-        for x in range(index):
+    def test_all(self):
+        for x in range(nrtimes):
             tests(k)
+
+    def test_thrs(self):
+        thrs = []
+        for x in range(nrtimes):
+            launch(tests, k)
+        consume(events)
         
+def consume(elems):
+    fixed = []
+    res = []
+    for e in elems:
+        r = e.wait()
+        res.append(r)
+        fixed.append(e)
+    for f in fixed:
+        try:
+            elems.remove(f)
+        except ValueError:
+            continue
+    k.stop()
+    return res
+    
 def tests(b):
-    events = []
-    keys = list(b.cmds)
+    keys = list(k.cmds)
     random.shuffle(keys)
     for cmd in keys:
-        if cmd in ["fetch", "exit", "reboot", "reconnect", "test"]:
+        if cmd in ignore:
             continue
-        events.extend(do_cmd(k, cmd))
-    consume(events)
+        events.extend(do_cmd(cmd))
 
-def do_cmd(b, cmd):
-    exs = param.get(cmd, [])
-    if not exs:
-        exs = ["bla",]
+def do_cmd(cmd):
+    exs = get(param, cmd, [""])
     e = list(exs)
     random.shuffle(e)
     events = []
+    nr = 0
     for ex in e:
+        nr += 1
+        txt = cmd + " " + ex 
+        if "-v" in sys.argv:
+            print(txt)
         e = Event()
-        e.orig = repr(bot)
-        e.origin = "test@shell"
-        e.txt = cmd + " " + ex
-        e.verbose = k.cfg.verbose
-        k.dispatch(e)
+        e.txt = txt
+        k.queue.put(e)
+>>>>>>> 74736cc1a8d6356226a241667692e9453c7c4802
         events.append(e)
     return events

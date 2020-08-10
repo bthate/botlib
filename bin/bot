@@ -1,36 +1,23 @@
 #!/usr/bin/python3 -u
-# BOTLIB - Framework to program bots (a botlib).
+# BOTLIB - the bot library !
 #
-# bin/bot 
-
-__version__ = 1
+#
 
 import os, sys ; sys.path.insert(0, os.getcwd())
 
-import logging
-
-from bl.err import EINIT
-from bl.krn import Kernel, kernels
-from bl.shl import execute, parse_cli
-
-opts = [
-    ('-d', '--datadir', 'store', str, "", 'set working directory.', 'workdir'),
-    ('-k', '--kernel', "store_true", False, "read kernel config from file", 'kernel'),
-    ('-m', '--modules', 'store', str, "", 'modules to load.', 'modules'),
-    ('-o', '--options', "store", str, "", "options to use.", 'options'),
-    ('-p', '--prompting', "store_false", True, "prompt for initial values.", 'prompting'),
-    ('-s', '--save', "store", str, "", "save cli options to kernel config", 'dosave'),
-    ('-l', '--loglevel', 'store', str, "", 'set loglevel.', 'level'),
-    ('-a', '--logdir', "store", str, "", "directory to find the logfiles.", 'logdir'),
-    ('-z', '--shell', "store_false", True, "disable shell", 'shell')
-]
+from bot.spc import execute, k, parse_cli
 
 def main():
-    cfg = parse_cli("bot", __version__, opts)
-    k = Kernel(cfg)
-    k.init("cmd,irc")
-    k.start()
-    k.wait()
+    c = parse_cli("bot")
+    if c.txt:
+        k.walk("bot")
+        return k.cmd(c.origtxt)
+    if "s" in c.opts:
+        c.mods += ",csl,cmd,opr,ent,mbx"
+    if c.mods:
+        k.start()
+        k.init(c.mods)
+        k.wait()
 
 execute(main)
-os._exit(0)
+>>>>>>> 74736cc1a8d6356226a241667692e9453c7c4802

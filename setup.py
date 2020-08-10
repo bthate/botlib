@@ -1,21 +1,27 @@
-from setuptools import setup
+# setup.py
+#
+#
 
-def readme():
-    with open('README') as file:
-        return file.read()
+try:
+    from setuptools import setup
+except:
+    from distutils.core import setup
+
+def read():
+    return open("README.rst", "r").read()
 
 setup(
     name='botlib',
-    version='72',
+    version='98',
     url='https://bitbucket.org/bthate/botlib',
     author='Bart Thate',
-    author_email='bthate@dds.nl',
-    description="Framework to program bots.",
-    long_description=readme(),
+    author_email='bthate@dds.nl', 
+    description=""" BOTLIB is a library you can use to program bots. """,
+    long_description=read(),
     license='Public Domain',
-    zip_safe=True,
-    packages=["bl"],
-    classifiers=['Development Status :: 3 - Alpha',
+    packages=["bot"],
+    namespace_packages=["bot"],
+    classifiers=['Development Status :: 4 - Beta',
                  'License :: Public Domain',
                  'Operating System :: Unix',
                  'Programming Language :: Python',

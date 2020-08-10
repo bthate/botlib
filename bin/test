@@ -1,73 +1,28 @@
 #!/usr/bin/python3
-# BOTLIB - Framework to program bots (a botlib).
+# BOTLIB - the bot library
 #
-# run unittests.
+#
 
-__version__ = 1
+import os, sys, time, unittest
 
-import os, sys ; sys.path.insert(0, os.getcwd())
+sys.path.insert(0, os.getcwd())
 
-import bl
-import logging
-import shutil
-import time
-import unittest
-
-from bl.obj import Object, starttime
-from bl.krn import Kernel
-from bl.log import level
-from bl.shl import execute, parse_cli
-from bl.tms import elapsed
-from bl.trc import get_exception
-from bl.trm import termsave, termreset
-from bl.typ import get_cls
-from bl.usr import Users
-from bl.utl import cdir
-
-opts = [
-    ('-d', '--datadir', 'store', str, "", 'set working directory.', 'workdir'),
-    ('-m', '--modules', 'store', str, "", 'modules to load.', 'modules'),
-    ('-o', '--options', "store", str, "", "options to use.", 'options'),
-    ('-l', '--loglevel', 'store', str, "", 'set loglevel.', 'level'),
-    ('-v', '--verbose', 'store_true', False, 'enable verbose mode.', 'verbose')
-]
-
-
-def initialize(k, cfg):
-    cdir("testdata")
-    k.users.oper("test@shell")
-    k.cfg.prompt = False
-    k.walk("bl")
-    k.start()
-    for c in k.names.values():
-        try:
-            o = get_cls(c)()
-            o.txt = "yo!"
-            o.save()
-        except (AttributeError, TypeError) as ex:
-            pass
+from bot.csl import execute
+from bot.prs import parse_cli
+from bot.krn import k, starttime
+from bot.tms import elapsed
+from bot.utl import cdir
 
 def main():
-    try:
-        shutil.rmtree("testdata")
-    except:
-        pass
-    cfg = parse_cli("test", __version__, opts)
-    bl.obj.workdir = "testdata"
-    k = Kernel(cfg)
-    level("error")
-    initialize(k, cfg)
-    k.cfg.debug = True
-    level(k.cfg.level)
+    parse_cli("test")
+    k.start()
+    k.walk("bot")
     test_path = os.getcwd() + os.sep + "tests"
-    p = ""
-    if k.cfg.args:
-        p = "test_%s*" % k.cfg.args[0]
-    if not p:
-        p = "test_*"
-    suite = unittest.loader.TestLoader().discover(test_path, pattern=p)
+    suite = unittest.loader.TestLoader().discover(test_path, pattern="test*")
     unittest.TextTestRunner(verbosity=3).run(suite)
+    k.wait()
    
 execute(main)
+
 print(elapsed(time.time() - starttime))
 os._exit(0)
