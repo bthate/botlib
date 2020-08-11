@@ -6,7 +6,7 @@ import os, queue, socket, textwrap, time, threading, _thread
 
 from .cfg import Cfg
 from .dbs import last
-from .krn import k, __version__
+from .krn import k
 from .obj import Object
 from .prs import parse
 from .hdl import Event, Handler
@@ -337,6 +337,7 @@ class IRC(Handler):
         print(event.error)
 
     def NOTICE(self, event):
+        from bot.krn import __version__
         if event.txt.startswith("VERSION"):
             txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "the bot library !")
             self.command("NOTICE", event.channel, txt)

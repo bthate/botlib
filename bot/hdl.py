@@ -99,11 +99,11 @@ class Handler(Object):
         if not spec:
             return mods
         pkg = importlib.util.module_from_spec(spec)
-        for pn in pkg.__path__:
-            for fn in os.listdir(pn):
-                if fn.startswith("_") or not fn.endswith(".py"):
-                    continue
-                mn = "%s.%s" % (name, fn[:-3])
-                module = self.load_mod(mn)
-                mods.append(module)
+        pn = pkg.__path__[0]
+        for fn in os.listdir(pn):
+            if fn.startswith("_") or not fn.endswith(".py"):
+                continue
+            mn = "%s.%s" % (name, fn[:-3])
+            module = self.load_mod(mn)
+            mods.append(module)
         return mods
