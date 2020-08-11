@@ -9,7 +9,7 @@ from .dbs import Db, last
 from .err import ENOCLASS
 from .irc import Cfg
 from .isp import find_shorts
-from .krn import k, starttime, __version__
+from .krn import k, starttime
 from .obj import Object, format, get, keys, save, update
 from .prs import parse
 from .tms import elapsed, fntime
@@ -82,41 +82,6 @@ def edt(event):
     save(l)
     event.reply("ok")
 
-def fnd(event):
-    if not event.args:
-        wd = os.path.join(bot.obj.workdir, "store", "")
-        cdir(wd)
-        fns = os.listdir(wd)
-        fns = sorted({x.split(os.sep)[0] for x in fns})
-        if fns:
-            event.reply("|".join(fns))
-        return
-    parse(event, event.txt)
-    db = Db()
-    otype = event.args[0]
-    shorts = find_shorts("bot")
-    otypes = get(shorts, otype, [otype,])
-    args = list(keys(event.gets))
-    try:
-        arg = event.args[1:]
-    except ValueError:
-        arg = []
-    args.extend(arg)
-    nr = -1
-    for otype in otypes:
-        for o in db.find(otype, event.gets, event.index, event.timed):
-            nr += 1
-            if "f" in event.opts:
-                pure = False
-            else:
-                pure = True
-            txt = "%s %s" % (str(nr), format(o, args, pure))
-            if "t" in event.opts:
-                txt += " %s" % (elapsed(time.time() - fntime(o.__stamp__)))
-            event.reply(txt)
-    if nr == -1:
-        event.reply("no matching objects found.")
-
 def flt(event):
     try:
         index = int(event.args[0])
@@ -154,7 +119,13 @@ def upt(event):
     event.reply(elapsed(time.time() - starttime))
 
 def ver(event):
-    event.reply("%s %s" % (k.cfg.name or "BOTLIB", __version__))
+    from bot.krn import __version__
+    event.reply("BOTLIB %s" % __version__)
+    for mod in k.walk("bot"):
+        try:
+            event.reply("%s %s" % (mod.__name__, mod.__version__))
+        except AttributeError:
+            continue
 
 def wd(event):
     event.reply(bot.obj.workdir)
