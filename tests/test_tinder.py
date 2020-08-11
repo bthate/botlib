@@ -86,6 +86,5 @@ def do_cmd(cmd):
         e = Event()
         e.txt = txt
         k.queue.put(e)
->>>>>>> 74736cc1a8d6356226a241667692e9453c7c4802
         events.append(e)
     return events
