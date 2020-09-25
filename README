@@ -1,183 +1,257 @@
-R E A D M E
+OBJR
+####
+
+| Welcome to OBJR, the objector ! see https://pypi.org/project/objr/ 
 
 
-BOTLIB is a library to program bots and contains no copyright or LICENSE. 
+| OBJR is a bot based on the OLIB and OMOD packages.
+| OLIB is a object library and uses timestamped, type in filename, JSON stringified, files on filesystem backend.
+| OMOD is a package of modules for the OLIB library and provides RSS feed fetching, UDP to IRC gateway and is self programmable.
 
+| OLIB,OMOD and OBJR have been placed in the Public Domain and contain no copyright or LICENSE, this makes OBJR truely free (pastable) code you can use how you see fit, 
 
-I N S T A L L
+OBJR can serve as a 24/7 background daaemon in an IRC channel, it can work as a UDP to IRC relay, has user management to limit access to prefered users and 
+can run as a service to let it restart after reboots. 
 
+installation is through pypi:
 
-download the tarball from pypi, https://pypi.org/project/botlib/#files
+ > sudo pip3 install objr --upgrade --force-reinstall
 
-untar, cd into the directory and run:
+you can also run directly from the tarball, see https://pypi.org/project/objr/#files
 
-::
+USAGE
+=====
 
- > ./bin/bot -m rss,entry,show localhost \#dunkbots bot
+OBJR has it's own CLI, you can run it by giving the objr command on the
+prompt, it will return with no response:
 
-to have it connect to irc, join the channel and do nothing, users have to be !meet <nick> before they can give commands.
-BOTLIB does it self not depend, you might need to install feedparser yourself to have rss working.
+:: 
 
-you can also download with pip3 and install globally.
+ $ objr
+ $ 
 
-::
-
- > sudo pip3 install botlib --upgrade
-
-if you want to develop on the bot clone the source at github.:
-
-::
-
- > git clone https://github.com/bthate/botlib
- > cd botlib
- > sudo python3 setup.py install
-
-
-I R C
-
-
-for IRC use <server> <channel> <nick> and the bot will connect and join the channel:
+you can use objr <cmd> to run a command directly:
 
 ::
 
- > bot -m rss,entry,show irc.freenode.net \#dunkbots bot
+ $ objr cmds
+ cfg|cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
 
-you can use the -b option to start the bot in the background and logfiles can be found in ~/.bot/logs.
-
-
-B O O T
-
-
-if you want to have the daemon started at boot, run:
+configuration is done with the cfg command:
 
 ::
 
- > sudo init.d/install
+ $ objr cfg
+ channel=#botlib nick=objr port=6667 realname=objr server=localhost username=objr
 
-this will install an botlib service and starts BOTLIB on boot.
-
-
-R S S
-
-
-add url:
+you can use setters to edit fields in a configuration:
 
 ::
 
- > bot -x rss https://news.ycombinator.com/rss
+ $ objr cfg server=irc.freenode.net channel=\#dunkbots nick=objr
+ channel=#dunkbots nick=botje port=6667 realname=botlib server=irc.freenode.net
+ username=botlib
+
+to start a irc server with the cmd and opr modules loaded and a console
+running:
+
+::
+
+ $ objr mods=irc,csl,cmd,opr
+ > ps
+ 0 0s       Console.input
+ 1 0s       IRC.handler
+ 2 0s       IRC.input
+ 3 0s       IRC.output
+ 4 0s       Kernel.handler
+ > 
+
+RSS
+===
+
+OBJR provides with the use of feedparser the possibility to server rss
+feeds in your channel. adding rss to mods= will load the rss modules and
+start it's poller.
+
+::
+
+ $ objr mods=rss
+
+to add an url use the rss command with an url:
+
+::
+
+ $ objr rss https://github.com/bthate/objr/commits/master.atom
  ok 1
 
-you can use the find command to see what urls are registered:
+run the rss command to see what urls are registered:
 
 ::
 
- > bot -x rss
- 0 https://news.ycombinator.com/rss
+ $ objr fnd rss
+ 0 https://github.com/bthate/objr/commits/master.atom
 
-
-
-U D P
-
-
-using udp to relay text into a channel, start the bot with -m udp and use
-the obudp program to send text to the UDP to channel server:
+the fetch command can be used to poll the added feeds:
 
 ::
 
- > tail -f ~/.bot/logs/bot.log | obudp 
+ $ objr fetch
+ fetched 0
 
+UDP
+===
 
-U S E R S
+OBJR also has the possibility to serve as a UDP to IRC relay where you
+can send UDP packages to the bot and have txt displayed on the channel.
 
-
-the default shell user is root@shell and gives access to all the commands that are available.
-if you want to use users to control access to commands use the --users option.
-
-::
-
- > meet bart
- ~bart@localhost added.
-
-you can also use the full userhost as a argument to meet:
+use the objr program to send text via the bot to the channel on the irc server:
 
 ::
 
- > meet user@server
- user user@server created
+ $ tail -f /var/log/syslog | objr udp
+
+to send the tail output to the IRC channel
+
+you can use python3 code to send a UDP packet to objr, it's unencrypted
+txt send to the bot and display on the joined channels.
+
+to send a udp packet to okbot in python3:
+
+::
+
+ import socket
+
+ def toudp(host=localhost, port=5500, txt=""):
+     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+     sock.sendto(bytes(txt.strip(), "utf-8"), host, port)
+
+MODULES
+=======
+
+The OLIB package has the following modules:
+
+::
+
+    ol	 	- object library
+    ol.bus	- announce
+    ol.csl	- console
+    ol.dbs	- databases
+    ol.hdl	- handler
+    ol.krn	- kernel
+    ol.prs 	- parser
+    ol.tms	- times
+    ol.trm	- terminal
+    ol.tsk	- tasks
+    ol.utl	- utilities
+
+OMOD has the following modules available:
+
+::
+
+   omod.cmd	- command
+   omod.edt	- edit
+   omod.ent	- enter log and todo items
+   omod.fnd	- find typed objects
+   omod.mbx	- mailbox
+   omod.rss	- rich site syndicate
+   omod.udp	- UDP to IRC gateway
+
+OBJR has 1 module, the omod.irc module:
+
+::
+
+   omod.irc
+
+this package add omod.irc to the omod namespace.
+
+you can add you own modules to the omod package, its a namespace package.
 
 
-M O D U L E S
+SERVICE
+=======
 
-
-BOTLIB contains the following modules:
+if you want to run the bot 24/7 you can install OBJR as a service for
+the systemd daemon. You can do this by copying the following into
+the /etc/systemd/system/objr.service file:
 
 ::
 
 
- bl.all			- contains all sub modules
- bl.bot			- base bot.
- bl.clk			- clock functions.
- bl.cfg			- config related stuff.
- bl.csl			- console.
- bl.dbs			- database.
- bl.dft			- defaults.			
- bl.dpt			- dispatch
- bl.err			- errors.
- bl.flt			- list of bots.
- bl.ent			- entry.
- bl.evt			- event.
- bl.hdl			- handler.
- bl.irc			- IRC.
- bl.ldr			- module loader.
- bl.log			- logging.
- bl.obj			- objects.
- bl.pst			- persitence.
- bl.rgt		        - register.
- bl.rss			- RSS feeds to channel.
- bl.shl			- shell.
- bl.shw			- show runtime status.
- bl.tms			- time related.
- bl.trm			- terminal code.
- bl.thr			- threads.
- bl.trc			- trace.
- bl.typ			- typing.
- bl.udp			- incoming udp to channel.
- bl.usr			- users.
- bl.utl			- utilities.
+ [Unit]
+ Description=OBJR - the objector
+ After=network-online.target
+ Wants=network-online.target
 
+ [Service]
+ User=objr
+ Group=objr
+ ExecStart=/usr/local/bin/objr -n
 
-C O D E
+ [Install]
+ WantedBy=multi-user.target
 
-
-if you want to add your own modules to the bot, you can put your .py files in a "mods" directory and use the -m option to point to that directory.
+create a homedir for objr:
 
 ::
 
- > wtfbot -m mods -p
+ $ mkdir /home/objr
+ $ mkdir /home/objr/.objr
+ $ mkdir /home/objr/.objr/omod
 
-basic code is a function that gets an event as a argument:
-
-::
-
- def command(event):
-     << your code here >>
-
-to give feedback to the user use the event.reply(txt) method:
+add the objr user to the system:
 
 ::
 
- def command(event):
-     event.reply("yooo %s" % event.origin)
+ $ groupadd objr
+ $ chown -R objr:objr /home/objr
+ $ useradd objr -d /home/objr
+ $ passwd objr
 
+configure objr to connect to irc:
 
-have fun coding ;]
+::
 
+ $ sudo -u objr objr cfg server=irc.freenode.net channel=#objr nick=objr
 
-I N F O
+copy modules over to objr's work directory:
 
+::
 
-you can contact me on IRC/freenode/#dunkbots.
+ $ cp -Ra mods/*.py /home/objr/.objr/omod
+
+make sure permissions are set properly:
+
+::
+
+ $ chown -R objr:objr /home/objr
+ $ chown -R objr:objr /home/objr/.objr
+ $ chmod -R 700 /home/objr/.objr/omod/
+ $ chmod -R 400 /home/objr/.objr/omod/*.py
+
+add the objr service with:
+
+::
+
+ $ sudo systemctl enable objr
+ $ sudo systemctl daemon-reload
+
+then restart the objr service.
+
+::
+
+ $ sudo service objr stop
+ $ sudo service objr start
+
+if you don't want objr to startup at boot, remove the service file:
+
+::
+
+ $ sudo rm /etc/systemd/system/objr.service
+
+CONTACT
+=======
+
+contact me on IRC/freenode/#dunkbots or email me at bthate@dds.nl
 
 | Bart Thate (bthate@dds.nl, thatebart@gmail.com)
 | botfather on #dunkbots irc.freenode.net
-    

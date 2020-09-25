@@ -1,5 +1,5 @@
-# BOTLIB - Framework to program bots.
+# BOTLIB - framework to program bots.
 #
 # cleanup all non distro files
 
-rm -fR .data build dist MANIFEST botlib.egg-info bot/*~ bot/__pycache__ bin/*~ *~ tests/*~ tests/__pycache__
+rm -fR bmod/*~ bmod/__pycache__ ol/*~ ol/__pycache__ .data build dist MANIFEST botlib.egg-info bot/*~ bot/__pycache__ bin/*~ *~ tests/*~ tests/__pycache__

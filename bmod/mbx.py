@@ -1,16 +1,15 @@
-# BOTLIB - the bot library
+# OLIB - object library
 #
 #
 
-import mailbox, os, time
-
-from .obj import format, keys, save, update
-from .spc import Db, Object, parse
-from .tms import elapsed
-from .utl import fntime
+import mailbox
+import ol
+import os
+import time
 
 bdmonths = ['Bo', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
             'Sep', 'Oct', 'Nov', 'Dec']
+
 monthint = {
     'Jan': 1,
     'Feb': 2,
@@ -26,7 +25,7 @@ monthint = {
     'Dec': 12
 }
 
-class Email(Object):
+class Email(ol.Object):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -69,31 +68,28 @@ def to_date(date):
 
 def cor(event):
     if not event.args:
-        event.reply("cor <email>")
         return
     parse(event, event.txt)
     event.gets["From"] = event.args[0]
     event.args = list(keys(event.gets)) + event.rest.split()
-    event.otype = "bot.mbx.Email"
+    event.otype = "omod.mbx.Email"
     nr = -1
-    db = Db()
-    for email in db.find_event(event):
+    for email in ol.dbs.find_event(event):
         nr += 1
-        event.reply("%s %s %s" % (nr, format(email, event.args, True, event.skip), elapsed(time.time() - fntime(email.__stamp__))))
+        event.reply("%s %s %s" % (nr, ol.format(email, event.args, True, event.skip), ol.tms.elapsed(time.time() - ol.tms.fntime(email.__stamp__))))
 
 def eml(event):
+    if not event.args:
+        return
     parse(event, event.txt)
-    event.args = ["From"] + list(keys(event.gets)) + event.rest.split()
-    event.otype = "bot.mbx.Email"
     nr = -1
-    db = Db()
-    for o in db.find_event(event):
-        nr += 1
-        event.reply("%s %s %s" % (nr, format(o, event.args, True, event.skip), elapsed(time.time() - fntime(o.__stamp__))))
+    for o in all("omod.mbx.Email"):
+        if event.rest in o.text:
+            nr += 1
+            event.reply("%s %s %s" % (nr, ol.format(o, ["From", "Subject"], False, event.skip), ol.tms.elapsed(time.time() - ol.tms.fntime(o.__stamp__))))
 
 def mbx(event):
     if not event.args:
-        event.reply("mbx <path>")
         return
     fn = os.path.expanduser(event.args[0])
     event.reply("reading from %s" % fn)
@@ -103,7 +99,6 @@ def mbx(event):
     elif os.path.isfile(fn):
         thing = mailbox.mbox(fn, create=False)
     else:
-        event.reply("need a mbox or maildir.")
         return
     try:
         thing.lock()
@@ -113,7 +108,7 @@ def mbx(event):
         o = Email()
         update(o, m)
         try:
-            sdate = os.sep.join(to_date(o.Date).split())
+            sdate = os.sep.join(ol.tms.to_date(o.Date).split())
         except AttributeError:
             sdate = None
         o.text = ""
@@ -121,7 +116,7 @@ def mbx(event):
             if payload.get_content_type() == 'text/plain':
                 o.text += payload.get_payload()
         o.text = o.text.replace("\\n", "\n")
-        save(o, stime=sdate)
+        ol.save(o, stime=sdate)
         nr += 1
     if nr:
         event.reply("ok %s" % nr)

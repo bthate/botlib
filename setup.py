@@ -8,7 +8,7 @@ except:
     from distutils.core import setup
 
 def read():
-    return open("README.rst", "r").read()
+    return open("README", "r").read()
 
 setup(
     name='botlib',
@@ -19,8 +19,10 @@ setup(
     description=""" BOTLIB is a library you can use to program bots. """,
     long_description=read(),
     license='Public Domain',
+    install_requires=["olib"],
     packages=["bot"],
     namespace_packages=["bot"],
+    scripts=["bcmd", "bsh", "birc"],
     classifiers=['Development Status :: 4 - Beta',
                  'License :: Public Domain',
                  'Operating System :: Unix',

@@ -1,24 +1,17 @@
-# BOTLIB - the bot library
+# OLIB - object library
 #
 #
 
-import os, sys, time
+import ol
+import sys
 
-from .dft import Default
-from .krn import Cfg, k
-from .obj import Object, update
-from .tms import parse_time
-
-def __dir__():
-    return ("parse", "parse_cli")
-
-class Token(Object):
+class Token(ol.Object):
 
     def __init__(self, txt):
         super().__init__()
         self.txt = txt
 
-class Option(Default):
+class Option(ol.Default):
 
     def __init__(self, txt):
         super().__init__()
@@ -27,7 +20,7 @@ class Option(Default):
         if txt.startswith("-"):
             self.opt = txt[1:]
 
-class Getter(Object):
+class Getter(ol.Object):
 
     def __init__(self, txt):
         super().__init__()
@@ -38,7 +31,7 @@ class Getter(Object):
         if pre:
             self[pre] = post
 
-class Setter(Object):
+class Setter(ol.Object):
 
     def __init__(self, txt):
         super().__init__()
@@ -49,24 +42,23 @@ class Setter(Object):
         if pre:
             self[pre] = post
 
-
-class Skip(Object):
+class Skip(ol.Object):
 
     def __init__(self, txt):
         super().__init__()
-        pre = post = ""
+        pre = ""
         if txt.endswith("-"):
             try:
-                pre, post = txt.split("=")
+                pre, _post = txt.split("=")
             except ValueError:
                 try:
-                    pre, post = txt.split("==")
+                    pre, _post = txt.split("==")
                 except ValueError:
                     pre = txt
         if pre:
             self[pre] = True
 
-class Timed(Object):
+class Timed(ol.Object):
 
     def __init__(self, txt):
         super().__init__()
@@ -74,13 +66,13 @@ class Timed(Object):
         vv = 0
         try:
             pre, post = txt.split("-")
-            v = parse_time(pre)
-            vv = parse_time(post)
+            v = ol.tms.parse_time(pre)
+            vv = ol.tms.parse_time(post)
         except ValueError:
             pass
         if not v or not vv:
             try:
-                vv = parse_time(txt)
+                vv = ol.tms.parse_time(txt)
             except ValueError:
                 vv = 0
             v = 0
@@ -89,34 +81,37 @@ class Timed(Object):
         if vv:
             self["to"] = time.time() - vv
 
+def parse_cli():
+    parsed = ol.Default()
+    parse(parsed, " ".join(sys.argv[1:]))
+    return parsed
+
 def parse(o, txt):
     args = []
-    opts = []
-    o.delta = None
     o.origtxt = txt
-    o.gets = Object()
-    o.opts = Object()
-    o.sets = Object()
-    o.skip = Object()
-    o.timed = Object()
+    o.gets = ol.Object()
+    o.opts = ol.Object()
+    o.sets = ol.Object()
+    o.skip = ol.Object()
+    o.timed = ol.Object()
     o.index = None
     for token in [Token(txt) for txt in txt.split()]:
         s = Skip(token.txt)
         if s:
-            update(o.skip, s)
+            ol.update(o.skip, s)
             token.txt = token.txt[:-1]
         t = Timed(token.txt)
         if t:
-            update(o.timed, t)
+            ol.update(o.timed, t)
             continue
         g = Getter(token.txt)
         if g:
-            update(o.gets, g)
+            ol.update(o.gets, g)
             continue
         s = Setter(token.txt)
         if s:
-            update(o.sets, s)
-            update(o, s)
+            ol.update(o.sets, s)
+            ol.update(o, s)
             continue
         opt = Option(token.txt)
         if opt.opt:
@@ -139,24 +134,3 @@ def parse(o, txt):
     o.txt = " ".join(args)
     o.rest = " ".join(args[1:])
     return o
-
-def parse_cli(name="bot"):
-    if root():
-        p = "/var/lib/%s" % name
-    else:
-        p = os.path.expanduser("~/.%s" % name)
-    import bot.obj
-    bot.obj.workdir = p
-    if len(sys.argv) <= 1:
-        c = Cfg()
-        parse(c, "")
-        return c
-    c = Cfg()
-    parse(c, " ".join(sys.argv[1:]))
-    update(k.cfg, c)
-    return c
-
-def root():
-    if os.geteuid() != 0:
-        return False
-    return True

@@ -1,20 +1,18 @@
-# BOTLIB - the bot library !
+#!/usr/bin/python3
+# BOTLIB - framework to program bots
 #
 #
 
-import os, queue, socket, textwrap, time, threading, _thread
+__version__ = 100
 
-from .cfg import Cfg
-from .dbs import last
-from .krn import k
-from .obj import Object
-from .prs import parse
-from .hdl import Event, Handler
-from .tsk import launch
-from .utl import locked
-
-def __dir__():
-    return ("Cfg", "DCC", "Event", "IRC")
+import ol
+import os
+import queue
+import socket
+import textwrap
+import time
+import threading
+import _thread
 
 saylock = _thread.allocate_lock()
 
@@ -23,7 +21,25 @@ def init(kernel):
     i.start()
     return i
 
-class Cfg(Cfg):
+def locked(l):
+    def lockeddec(func, *args, **kwargs):
+        def lockedfunc(*args, **kwargs):
+            l.acquire()
+            res = None
+            try:
+                res = func(*args, **kwargs)
+            finally:
+                l.release()
+            return res
+        lockedfunc.__doc__ = func.__doc__
+        return lockedfunc
+    return lockeddec
+
+class ENOUSER(Exception):
+
+    pass
+
+class Cfg(ol.Cfg):
 
     def __init__(self):
         super().__init__()
@@ -34,12 +50,12 @@ class Cfg(Cfg):
         self.server = "localhost"
         self.username = "botlib"
 
-class Event(Event):
+class Event(ol.hdl.Event):
 
     def show(self):
         for txt in self.result:
-            k.fleet.say(self.orig, self.channel, txt)
-
+            ol.bus.bus.say(self.orig, self.channel, txt)
+    
 class TextWrap(textwrap.TextWrapper):
 
     def __init__(self):
@@ -51,7 +67,7 @@ class TextWrap(textwrap.TextWrapper):
         self.tabsize = 4
         self.width = 450
 
-class IRC(Handler):
+class IRC(ol.hdl.Handler):
 
     def __init__(self):
         super().__init__()
@@ -65,7 +81,7 @@ class IRC(Handler):
         self.cfg = Cfg()
         self.channels = []
         self.speed = "slow"
-        self.state = Object()
+        self.state = ol.Object()
         self.state.needconnect = False
         self.state.error = ""
         self.state.last = 0
@@ -80,7 +96,7 @@ class IRC(Handler):
         self.register("NOTICE", self.NOTICE)
         self.register("PRIVMSG", self.PRIVMSG)
         self.register("QUIT", self.QUIT)
-        k.fleet.add(self)
+        ol.bus.bus.add(self)
 
     def _connect(self, server):
         oldsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -220,8 +236,8 @@ class IRC(Handler):
         assert self.cfg.nick
         super().start()
         self.connect(self.cfg.server, self.cfg.nick)
-        launch(self.input)
-        launch(self.output)
+        ol.tsk.launch(self.input)
+        ol.tsk.launch(self.output)
 
     def input(self):
         while not self.stopped:
@@ -230,12 +246,13 @@ class IRC(Handler):
             except (OSError, ConnectionResetError, socket.timeout) as ex:
                 e = Event()
                 e.error = str(ex)
-                print(e.error)
                 self.ERROR(e)
                 break
             if not e:
                 break
-            self.queue.put(e)
+            if not e.orig:
+                e.orig = repr(self)
+            self.dispatch(e)
 
     def joinall(self):
         for channel in self.channels:
@@ -249,7 +266,6 @@ class IRC(Handler):
         self.raw("USER %s %s %s :%s" % (self.cfg.username, server, server, self.cfg.realname))
 
     def output(self):
-        self._outputed = True
         while 1:
             channel, txt = self._outqueue.get()
             if channel is None:
@@ -279,7 +295,7 @@ class IRC(Handler):
         elif cmd == "433":
             nick = self.cfg.nick + "_"
             self.cfg.nick = nick
-            self.raw("NICK %s" % self.cfg.nick or "bot")
+            self.raw("NICK %s" % self.cfg.nick or "obot_next-")
         return e
 
     def raw(self, txt):
@@ -294,7 +310,6 @@ class IRC(Handler):
         except (OSError, ConnectionResetError) as ex:
             e = Event()
             e.error = str(ex)
-            print(e.error)
             self.LOG(e)
             self._connected.clear()
         self.state.last = time.time()
@@ -310,11 +325,11 @@ class IRC(Handler):
         if cfg is not None:
             self.cfg.update(cfg)
         else:
-            last(self.cfg)
+            ol.dbs.last(self.cfg)
         assert self.cfg.channel
         assert self.cfg.server
         self.channels.append(self.cfg.channel)
-        launch(self.doconnect)
+        ol.tsk.launch(self.doconnect)
 
     def stop(self):
         super().stop()
@@ -329,32 +344,31 @@ class IRC(Handler):
         self.state.error = event.error
         print(event.error)
         self._connected.clear()
-        #self.stop()
-        #init(k)
-        self.connect(self.cfg.server, self.cfg.nick)
+        self.stop()
+        self.start()
 
     def LOG(self, event):
         print(event.error)
 
     def NOTICE(self, event):
-        from bot.krn import __version__
         if event.txt.startswith("VERSION"):
-            txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "the bot library !")
+            txt = "\001VERSION %s %s - %s\001" % ("GENOCLAIM", __version__, "using the law to administer poison, the king commits genocide")
             self.command("NOTICE", event.channel, txt)
 
     def PRIVMSG(self, event):
+        k = ol.krn.get_kernel()
         if event.txt.startswith("DCC CHAT"):
-            if k.cfg.users and k.users.allowed(event.origin, "USER"):
+            if self.cfg.users and users.allowed(event.origin, "USER"):
                 return
             try:
                 dcc = DCC()
                 dcc.encoding = "utf-8"
-                launch(dcc.connect, event)
+                ol.tsk.launch(dcc.connect, event)
                 return
             except ConnectionError:
                 return
         if event.txt and event.txt[0] == self.cc:
-            if k.cfg.users and not k.users.allowed(event.origin, "USER"):
+            if self.cfg.users and not users.allowed(event.origin, "USER"):
                 return
             event.txt = event.txt[1:]
             k.queue.put(event)
@@ -363,7 +377,7 @@ class IRC(Handler):
         if self.cfg.server in event.orig:
             self.stop()
 
-class DCC(Handler):
+class DCC(ol.hdl.Handler):
 
     def __init__(self):
         super().__init__()
@@ -372,7 +386,7 @@ class DCC(Handler):
         self._fsock = None
         self.encoding = "utf-8"
         self.origin = ""
-        k.fleet.add(self)
+        ol.bus.bus.add(self)
 
     def raw(self, txt):
         self._fsock.write(str(txt).rstrip())
@@ -395,17 +409,18 @@ class DCC(Handler):
             s.connect((addr, port))
         except ConnectionError:
             return
-        s.send(bytes('Welcome to BOTLIB %s !!\n' % event.nick, "utf-8"))
+        s.send(bytes('Welcome to GENOCLAIM %s !!\n' % event.nick, "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s
         self._fsock = self._sock.makefile("rw")
         self.origin = event.origin
-        launch(self.input)
+        ol.tsk.launch(self.input)
         super().start()
         self._connected.set()
 
     def input(self):
+        k = ol.krn.get_kernel()
         while 1:
             try:
                 e = self.poll()
@@ -418,7 +433,7 @@ class DCC(Handler):
         e = Event()
         txt = self._fsock.readline()
         txt = txt.rstrip()
-        parse(e, txt)
+        ol.prs.parse(e, txt)
         e._sock = self._sock
         e._fsock = self._fsock
         e.channel = self.origin
@@ -428,3 +443,82 @@ class DCC(Handler):
 
     def say(self, channel, txt):
         self.raw(txt)
+
+class User(ol.Object):
+
+    def __init__(self):
+        super().__init__()
+        self.user = ""
+        self.perms = []
+
+class Users(ol.Object):
+
+    userhosts = ol.Object()
+
+    def allowed(self, origin, perm):
+        perm = perm.upper()
+        origin = get(self.userhosts, origin, origin)
+        user = self.get_user(origin)
+        if user:
+            if perm in user.perms:
+                return True
+        return False
+
+    def delete(self, origin, perm):
+        for user in self.get_users(origin):
+            try:
+                user.perms.remove(perm)
+                save(user)
+                return True
+            except ValueError:
+                pass
+
+    def get_users(self, origin=""):
+        s = {"user": origin}
+        return ol.dbs.find("genoclaim.irc.User", s)
+
+    def get_user(self, origin):
+        u = list(self.get_users(origin))
+        if u:
+            return u[-1]
+
+    def meet(self, origin, perms=None):
+        user = self.get_user(origin)
+        if user:
+            return user
+        user = User()
+        user.user = origin
+        user.perms = ["USER", ]
+        ol.save(user)
+        return user
+
+    def oper(self, origin):
+        user = self.get_user(origin)
+        if user:
+            return user
+        user = User()
+        user.user = origin
+        user.perms = ["OPER", "USER"]
+        ol.save(user)
+        return user
+
+    def perm(self, origin, permission):
+        user = self.get_user(origin)
+        if not user:
+            raise ENOUSER(origin)
+        if permission.upper() not in user.perms:
+            user.perms.append(permission.upper())
+            ol.save(user)
+        return user
+
+users = Users()
+
+def cfg(event):
+    c = Cfg()
+    ol.dbs.last(c)
+    o = ol.Default()
+    ol.prs.parse(o, event.origtxt)
+    if o.sets:
+        ol.update(c, o.sets)
+        ol.save(c)
+    event.reply(ol.format(c))

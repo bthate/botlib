@@ -1,31 +1,26 @@
-# BOTLIB - the bot linrary !
+# OLIB - object library
 #
 #
 
-import select, socket, sys, time
-
-from .cfg import Cfg
-from .dbs import last
-from .krn import k
-from .obj import Object
-from .tsk import launch
-
-def __dir__():
-    return ("Cfg", "UDP", "init", "toudp", "udp")
+import ol
+import select
+import socket
+import sys
+import time
 
 def init(kernel):
     u = UDP()
     u.start()
     return u
 
-class Cfg(Cfg):
+class Cfg(ol.Cfg):
 
     def __init__(self):
         super().__init__()
         self.host = "localhost"
         self.port = 5500
 
-class UDP(Object):
+class UDP(ol.Object):
 
     def __init__(self):
         super().__init__()
@@ -38,6 +33,7 @@ class UDP(Object):
         self.cfg = Cfg()
 
     def output(self, txt, addr):
+        k = get_fleet()
         for bot in k.fleet.bots:
             bot.announce(txt.replace("\00", ""))
 
@@ -61,8 +57,8 @@ class UDP(Object):
         self._sock.sendto(bytes("exit", "utf-8"), (self.cfg.host, self.cfg.port))
 
     def start(self):
-        last(self.cfg)
-        launch(self.server)
+        ol.last(self.cfg)
+        ol.tsk.launch(self.server)
 
 def toudp(host, port, txt):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -70,7 +66,7 @@ def toudp(host, port, txt):
 
 def udp(event):
     cfg = Cfg()
-    last(cfg)
+    ol.dbs.last(cfg)
     if len(sys.argv) > 2:
         txt = " ".join(sys.argv[2:])
         toudp(cfg.host, cfg.port, txt)

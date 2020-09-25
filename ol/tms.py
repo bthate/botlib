@@ -1,29 +1,55 @@
-# BOTLIB - the bot library !
+# OLIB - object library
 #
 #
 
-import datetime, os, time
+import datetime
+import ol
+import os
+import threading
+import time
 
-def __dir__():
-    return ("day", "days", "elapsed", "fntime", "get_time", "now", "parse", "rtime", "today", "to_day", "to_time")
+class Timer(ol.Object):
 
-timestrings = [
-    "%a, %d %b %Y %H:%M:%S %z",
-    "%d %b %Y %H:%M:%S %z",
-    "%d %b %Y %H:%M:%S",
-    "%a, %d %b %Y %H:%M:%S",
-    "%d %b %a %H:%M:%S %Y %Z",
-    "%d %b %a %H:%M:%S %Y %z",
-    "%a %d %b %H:%M:%S %Y %z",
-    "%a %b %d %H:%M:%S %Y",
-    "%d %b %Y %H:%M:%S",
-    "%a %b %d %H:%M:%S %Y",
-    "%Y-%m-%d %H:%M:%S",
-    "%Y-%m-%dt%H:%M:%S+00:00",
-    "%a, %d %b %Y %H:%M:%S +0000",
-    "%d %b %Y %H:%M:%S +0000",
-    "%d, %b %Y %H:%M:%S +0000"
-]
+    def __init__(self, sleep, func, *args, **kwargs):
+        super().__init__()
+        self.func = func
+        self.sleep = sleep
+        self.args = args
+        self.name = kwargs.get("name", "")
+        self.kwargs = kwargs
+        self.state = ol.Object()
+        self.timer = None
+
+    def run(self, *args, **kwargs):
+        self.state.latest = time.time()
+        ol.tsk.launch(self.func, *self.args, **self.kwargs)
+
+    def start(self):
+        if not self.name:
+            self.name = ol.get_name(self.func)
+        timer = threading.Timer(self.sleep, self.run, self.args, self.kwargs)
+        timer.setName(self.name)
+        timer.setDaemon(True)
+        timer.sleep = self.sleep
+        timer.state = self.state
+        timer.state.starttime = time.time()
+        timer.state.latest = time.time()
+        timer.func = self.func
+        timer.start()
+        self.timer = timer
+        return timer
+
+    def stop(self):
+        if self.timer:
+            self.timer.cancel()
+
+class Repeater(Timer):
+
+    def run(self, *args, **kwargs):
+        thr = ol.tsk.launch(self.start, **kwargs)
+        super().run(*args, **kwargs)
+        return thr
+
 
 year_formats = [
     "%b %H:%M",
@@ -119,16 +145,12 @@ def get_time(daystr):
         except ValueError:
             pass
 
-def now():
-    return str(datetime.datetime.now()).split()[0]
-
 def parse_time(daystr):
     if not any([c.isdigit() for c in daystr]):
         return 0
     valstr = ""
     val = 0
     total = 0
-    nr = 0
     for c in daystr:
         try:
             vv = int(valstr)
@@ -149,10 +171,6 @@ def parse_time(daystr):
         total += val
     return total
 
-def rtime():
-    res = str(datetime.datetime.now()).replace(" ", os.sep)
-    return res
-
 def today():
     return datetime.datetime.today().timestamp()
 
@@ -170,30 +188,3 @@ def to_day(daystring):
         return get_time(line.strip())
     except ValueError:
         pass
-
-def to_time(daystr):
-    daystr = daystr.strip()
-    if "," in daystr:
-        daystr = " ".join(daystr.split(None)[1:7])
-    elif "(" in daystr:
-        daystr = " ".join(daystr.split(None)[:-1])
-    else:
-        try:
-            d, h = daystr.split("T")
-            h = h[:7]
-            daystr = " ".join([d, h])
-        except (ValueError, IndexError):
-            pass
-    res = 0
-    for tstring in timestrings:
-        try:
-            res = time.mktime(time.strptime(daystr, tstring))
-            break
-        except ValueError:
-            try:
-                res = time.mktime(time.strptime(" ".join(daystr.split()[:-1]), tstring))
-            except ValueError:
-                pass
-        if res:
-            break
-    return res
