@@ -118,7 +118,12 @@ MODULES
 =======
 
 BOTLIB use the OLIB library for the new functional object library, it provides
-a "move all methods to functions and to method(obj, *args) instead of obj.method(*arg)" 
+a move all methods to functions and to 
+
+::
+
+ method(obj, *args) instead of obj.method(*arg)
+
 way of programming with objects. If you are use to functional programming you'll like it (or not) ;]
 
 OLIB has the following modules:

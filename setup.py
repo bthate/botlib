@@ -8,7 +8,7 @@ except:
     from distutils.core import setup
 
 def read():
-    return open("README", "r").read()
+    return open("README.rst", "r").read()
 
 setup(
     name='botlib',
@@ -22,7 +22,7 @@ setup(
     install_requires=["olib"],
     packages=["bot", "bmod", "ol"],
     namespace_packages=["bot", "bmod"],
-    scripts=["bcmd", "bsh", "birc"],
+    scripts=["bin/bcmd", "bin/botd", "bin/bsh", "bin/birc"],
     classifiers=['Development Status :: 4 - Beta',
                  'License :: Public Domain',
                  'Operating System :: Unix',
