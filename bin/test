@@ -1,28 +1,33 @@
 #!/usr/bin/python3
-# BOTLIB - the bot library
+# OLIB - object library
 #
 #
 
-import os, sys, time, unittest
+import os, sys ; sys.path.insert(0, os.getcwd())
 
-sys.path.insert(0, os.getcwd())
-
-from bot.csl import execute
-from bot.prs import parse_cli
-from bot.krn import k, starttime
-from bot.tms import elapsed
-from bot.utl import cdir
+import ol
+import bmod.rss
+import os
+import sys
+import time
+import unittest
 
 def main():
-    parse_cli("test")
+    bmod.rss.debug = True
+    for line in os.popen("rm -fR ~/.test").readlines():
+        print(line)
+    k = ol.krn.boot("test", os.path.expanduser("~/.test"))
+    ol.update(k.cfg, ol.prs.parse_cli())
+    k.walk("bmod")
     k.start()
-    k.walk("bot")
     test_path = os.getcwd() + os.sep + "tests"
-    suite = unittest.loader.TestLoader().discover(test_path, pattern="test*")
+    if k.cfg.txt:
+        pat = "test_%s*" % k.cfg.txt
+    else:
+        pat = "test*"
+    suite = unittest.loader.TestLoader().discover(test_path, pattern=pat)
     unittest.TextTestRunner(verbosity=3).run(suite)
-    k.wait()
+    #k.wait()
    
-execute(main)
-
-print(elapsed(time.time() - starttime))
+ol.trm.execute(main)
 os._exit(0)

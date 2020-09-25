@@ -12,7 +12,7 @@ def edt(event):
         return
     cn = event.args[0]
     if "." not in cn:
-        shorts = ol.utl.find_shorts("omod")
+        shorts = ol.utl.find_shorts("bmod")
         if shorts:
             cn = ol.get(shorts, cn, cn)
     try:
@@ -24,7 +24,7 @@ def edt(event):
             c = ol.get_cls(cn)
             l = c()
             event.reply("created %s" % cn)
-        except ENOCLASS:
+        except ol.ENOCLASS:
             event.reply(ol.utl.list_files(ol.wd))
             return
     if len(event.args) == 1:

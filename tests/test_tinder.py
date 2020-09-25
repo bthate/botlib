@@ -1,20 +1,20 @@
-# BOTLIB - the bot library
+# OLIB - object library
 #
 #
 
-import os, random, sys, time, unittest
+import ol
+import os
+import random
+import sys
+import time
+import unittest
 
-from bot.krn import k
-from bot.hdl import Event
-from bot.obj import Object, get
-from bot.tsk import launch
-
-param = Object()
+param = ol.Object()
 param.add = ["test@shell", "bart"]
 param.dne = ["test4", ""]
-param.edt = ["bot.irc.Cfg", "bot.krn.Cfg", "bot.irc.Cfg server=localhost", "bot.irc.Cfg channel=#dunkbots", "bot.krn.Cfg mods=ent,udp"]
+param.edt = ["bmod.rss.Cfg", "bmod.rss.Cfg server=localhost", "bmod.rss.Cfg channel=#dunkbots"]
 param.rm = ["reddit", ]
-param.display = ["reddit title,summary,link",]
+param.dpl = ["reddit title,summary,link",]
 param.log = ["test1", ""]
 param.flt = ["0", "1", ""]
 param.fnd = ["log test2", "todo test3", "rss reddit"]
@@ -22,31 +22,27 @@ param.rss = ["https://www.reddit.com/r/python/.rss", ""]
 param.tdo = ["test4", ""]
 
 events = []
-ignore = ["ps"]
+ignore = ["ps", "rm"]
 nrtimes = 1
 
-class Event(Event):
+k = ol.krn.get_kernel()
+
+class Event(ol.hdl.Event):
 
     def reply(self, txt):
-        if "-v" in sys.argv:
+        if "v" in k.cfg.opts:
             print(txt)
-
-for x in sys.argv:
-    try:
-        nrtimes = int(x)
-    except ValueError:
-        continue
 
 class Test_Tinder(unittest.TestCase):
 
     def test_all(self):
-        for x in range(nrtimes):
+        for x in range(k.cfg.index or 1):
             tests(k)
 
     def test_thrs(self):
         thrs = []
-        for x in range(nrtimes):
-            launch(tests, k)
+        for x in range(k.cfg.index or 1):
+            ol.tsk.launch(tests, k)
         consume(events)
         
 def consume(elems):
@@ -73,7 +69,7 @@ def tests(b):
         events.extend(do_cmd(cmd))
 
 def do_cmd(cmd):
-    exs = get(param, cmd, [""])
+    exs = ol.get(param, cmd, [""])
     e = list(exs)
     random.shuffle(e)
     events = []
