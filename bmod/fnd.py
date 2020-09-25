@@ -17,7 +17,7 @@ def fnd(event):
         return
     ol.prs.parse(event, event.txt)
     otype = event.args[0]
-    shorts = ol.utl.find_shorts("ol,omod")
+    shorts = ol.utl.find_shorts("bmod")
     otypes = ol.get(shorts, otype, [otype,])
     args = list(ol.keys(event.gets))
     try:

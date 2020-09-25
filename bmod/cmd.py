@@ -13,7 +13,7 @@ def cmd(event):
         event.reply(",".join(c))
 
 def mds(event):
-    mm = ol.utl.find_modules("omod")
+    mm = ol.utl.find_modules("bmod")
     if mm:
         event.reply(",".join([m.__name__.split(".")[-1] for m in mm]))
 
@@ -39,5 +39,5 @@ def tsk(event):
 
 def ver(event):
     k = ol.krn.get_kernel()
-    mods = k.walk("ol,omod")
+    mods = k.walk("bmod")
     event.reply(",".join(["%s %s" % (mod.__name__, mod.__version__) for mod in mods if ol.get(mod, "__version__")]))

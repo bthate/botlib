@@ -20,7 +20,7 @@ def dne(event):
     if not event.args:
         return
     selector = {"txt": event.args[0]}
-    for o in ol.dbs.find("omod.ent.Todo", selector):
+    for o in ol.dbs.find("bmod.ent.Todo", selector):
         o._deleted = True
         ol.save(o)
         event.reply("ok")

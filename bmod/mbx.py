@@ -72,7 +72,7 @@ def cor(event):
     parse(event, event.txt)
     event.gets["From"] = event.args[0]
     event.args = list(keys(event.gets)) + event.rest.split()
-    event.otype = "omod.mbx.Email"
+    event.otype = "bmod.mbx.Email"
     nr = -1
     for email in ol.dbs.find_event(event):
         nr += 1
@@ -83,7 +83,7 @@ def eml(event):
         return
     parse(event, event.txt)
     nr = -1
-    for o in all("omod.mbx.Email"):
+    for o in all("bmod.mbx.Email"):
         if event.rest in o.text:
             nr += 1
             event.reply("%s %s %s" % (nr, ol.format(o, ["From", "Subject"], False, event.skip), ol.tms.elapsed(time.time() - ol.tms.fntime(o.__stamp__))))

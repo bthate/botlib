@@ -102,7 +102,7 @@ def boot(name, wd="", md=""):
     k = get_kernel()
     ol.update(k.cfg, cfg)
     ol.wd = k.cfg.wd = wd or os.path.expanduser("~/.%s" % name)
-    k.cfg.md = md or os.path.expanduser("~/.omod/mods")
+    k.cfg.md = md or os.path.expanduser("~/.%s/bmod" % name)
     return k
 
 def get_kernel():
