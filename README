@@ -1,121 +1,110 @@
-OBJR
-####
+BOTLIB
+######
 
-| Welcome to OBJR, the objector ! see https://pypi.org/project/objr/ 
+| Welcome to BOTLIB, framework to program bots ! see https://pypi.org/project/botlib/ 
 
 
-| OBJR is a bot based on the OLIB and OMOD packages.
-| OLIB is a object library and uses timestamped, type in filename, JSON stringified, files on filesystem backend.
-| OMOD is a package of modules for the OLIB library and provides RSS feed fetching, UDP to IRC gateway and is self programmable.
-
-| OLIB,OMOD and OBJR have been placed in the Public Domain and contain no copyright or LICENSE, this makes OBJR truely free (pastable) code you can use how you see fit, 
-
-OBJR can serve as a 24/7 background daaemon in an IRC channel, it can work as a UDP to IRC relay, has user management to limit access to prefered users and 
-can run as a service to let it restart after reboots. 
+| BOTLIB is placed in the public domain and contain no copyright or LICENSE, this makes BOTLIB truely free (pastable) code you can use how you see fit, 
 
 installation is through pypi:
 
- > sudo pip3 install objr --upgrade --force-reinstall
+ > sudo pip3 install botlib --upgrade --force-reinstall
 
-you can also run directly from the tarball, see https://pypi.org/project/objr/#files
+you can also run directly from the tarball, see https://pypi.org/project/botlib/#files
 
 USAGE
 =====
 
-OBJR has it's own CLI, you can run it by giving the objr command on the
+BOTLIB has it's own CLI, you can run it by giving the bcmd command on the
 prompt, it will return with no response:
 
 :: 
 
- $ objr
+ $ bcmd
  $ 
 
 you can use objr <cmd> to run a command directly:
 
 ::
 
- $ objr cmds
- cfg|cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
+ $ bcmd cmds
+ cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
 
-configuration is done with the cfg command:
+
+BOTLIB also has it's own shell, bsh:
 
 ::
 
- $ objr cfg
- channel=#botlib nick=objr port=6667 realname=objr server=localhost username=objr
+  $ bsh
+  > cmd
+
+ cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
+
+IRC
+===
+
+BOTLIB provides the birc as IRC client, configuration is done with the cfg command:
+
+::
+
+ $ bcmd cfg
+ channel=#botlib nick=birc port=6667 realname=botlib server=localhost username=botlib
 
 you can use setters to edit fields in a configuration:
 
 ::
 
- $ objr cfg server=irc.freenode.net channel=\#dunkbots nick=objr
- channel=#dunkbots nick=botje port=6667 realname=botlib server=irc.freenode.net
- username=botlib
-
-to start a irc server with the cmd and opr modules loaded and a console
-running:
-
-::
-
- $ objr mods=irc,csl,cmd,opr
- > ps
- 0 0s       Console.input
- 1 0s       IRC.handler
- 2 0s       IRC.input
- 3 0s       IRC.output
- 4 0s       Kernel.handler
- > 
+ $ bcmd cfg server=irc.freenode.net channel=\#botlib nick=birc
+ channel=#botib nick=birc port=6667 realname=botlib server=irc.freenode.net username=botlib
 
 RSS
 ===
 
-OBJR provides with the use of feedparser the possibility to server rss
+BOTLIB provides with the use of feedparser the possibility to server rss
 feeds in your channel. adding rss to mods= will load the rss modules and
 start it's poller.
 
 ::
 
- $ objr mods=rss
+ $ birc mods=rss
 
 to add an url use the rss command with an url:
 
 ::
 
- $ objr rss https://github.com/bthate/objr/commits/master.atom
+ $ bcmd rss https://github.com/bthate/objr/commits/master.atom
  ok 1
 
 run the rss command to see what urls are registered:
 
 ::
 
- $ objr fnd rss
+ $ bcmd fnd rss
  0 https://github.com/bthate/objr/commits/master.atom
 
-the fetch command can be used to poll the added feeds:
+the ftc (fetch) command can be used to poll the added feeds:
 
 ::
 
- $ objr fetch
+ $ bcmd ftc
  fetched 0
 
 UDP
 ===
 
-OBJR also has the possibility to serve as a UDP to IRC relay where you
+BOTLIB also has the possibility to serve as a UDP to IRC relay where you
 can send UDP packages to the bot and have txt displayed on the channel.
 
-use the objr program to send text via the bot to the channel on the irc server:
+use the 'budp' command to send text via the bot to the channel on the irc server:
 
 ::
 
- $ tail -f /var/log/syslog | objr udp
+ $ tail -f /var/log/syslog | budp
 
-to send the tail output to the IRC channel
+to send the tail output to the IRC channel you can use python3 code to send a UDP packet 
+to botlib, it's unencrypted txt send to the bot and display on the joined channels.
 
-you can use python3 code to send a UDP packet to objr, it's unencrypted
-txt send to the bot and display on the joined channels.
-
-to send a udp packet to okbot in python3:
+to send a udp packet to botlib in python3:
 
 ::
 
@@ -128,7 +117,11 @@ to send a udp packet to okbot in python3:
 MODULES
 =======
 
-The OLIB package has the following modules:
+BOTLIB use the OLIB library for the new functional object library, it provides
+a "move all methods to functions and to method(obj, *args) instead of obj.method(*arg)" 
+way of programming with objects. If you are use to functional programming you'll like it (or not) ;]
+
+OLIB has the following modules:
 
 ::
 
@@ -144,48 +137,48 @@ The OLIB package has the following modules:
     ol.tsk	- tasks
     ol.utl	- utilities
 
-OMOD has the following modules available:
+BOTLIB uses bmod as the namespace to distribute modules for BOTLIB:
 
 ::
 
-   omod.cmd	- command
-   omod.edt	- edit
-   omod.ent	- enter log and todo items
-   omod.fnd	- find typed objects
-   omod.mbx	- mailbox
-   omod.rss	- rich site syndicate
-   omod.udp	- UDP to IRC gateway
+   bmod.cmd	- command
+   bmod.edt	- edit
+   bmod.ent	- enter log and todo items
+   bmod.fnd	- find typed objects
+   bmod.mbx	- mailbox
+   bmod.rss	- rich site syndicate
+   bmod.udp	- UDP to IRC gateway
 
-OBJR has 1 module, the omod.irc module:
+BOTLIB has 1 module, the bot.irc module:
 
 ::
 
-   omod.irc
+   bot.irc
 
-this package add omod.irc to the omod namespace.
+this package adds bot.irc to the bot namespace.
 
-you can add you own modules to the omod package, its a namespace package.
+you can add you own modules to the bot and bmod packages, they are namespace packages.
 
 
 SERVICE
 =======
 
-if you want to run the bot 24/7 you can install OBJR as a service for
+if you want to run the BOTLIB 24/7 you can install botd as a service for
 the systemd daemon. You can do this by copying the following into
-the /etc/systemd/system/objr.service file:
+the /etc/systemd/system/botd.service file:
 
 ::
 
 
  [Unit]
- Description=OBJR - the objector
+ Description=BOTD - 24/7 channel daemon
  After=network-online.target
  Wants=network-online.target
 
  [Service]
- User=objr
- Group=objr
- ExecStart=/usr/local/bin/objr -n
+ User=botlib
+ Group=botlib
+ ExecStart=/usr/local/bin/botd 
 
  [Install]
  WantedBy=multi-user.target
@@ -194,59 +187,59 @@ create a homedir for objr:
 
 ::
 
- $ mkdir /home/objr
- $ mkdir /home/objr/.objr
- $ mkdir /home/objr/.objr/omod
+ $ mkdir /home/botlib
+ $ mkdir /home/botlib/.bot
+ $ mkdir /home/botlib/.bot/bmod
 
-add the objr user to the system:
-
-::
-
- $ groupadd objr
- $ chown -R objr:objr /home/objr
- $ useradd objr -d /home/objr
- $ passwd objr
-
-configure objr to connect to irc:
+add the botlib user to the system:
 
 ::
 
- $ sudo -u objr objr cfg server=irc.freenode.net channel=#objr nick=objr
+ $ groupadd botlib
+ $ chown -R botlib:botlib /home/botlib
+ $ useradd botlib -d /home/botlib
+ $ passwd botlib
 
-copy modules over to objr's work directory:
+configure botd to connect to irc:
 
 ::
 
- $ cp -Ra mods/*.py /home/objr/.objr/omod
+ $ sudo -u botlib bcmd cfg server=irc.freenode.net channel=#botlib nick=birc
+
+copy modules over to botlib's work directory:
+
+::
+
+ $ cp -Ra bmod/*.py /home/botlib.bot/bmod
 
 make sure permissions are set properly:
 
 ::
 
- $ chown -R objr:objr /home/objr
- $ chown -R objr:objr /home/objr/.objr
- $ chmod -R 700 /home/objr/.objr/omod/
- $ chmod -R 400 /home/objr/.objr/omod/*.py
+ $ chown -R botlib:botlib /home/botlib
+ $ chown -R botlib:botlib /home/botlib/.bot
+ $ chmod -R 700 /home/botlib/.bot/bmod/
+ $ chmod -R 400 /home/botlib/.bot/bmod/*.py
 
-add the objr service with:
+add the botd service with:
 
 ::
 
- $ sudo systemctl enable objr
+ $ sudo systemctl enable botd
  $ sudo systemctl daemon-reload
 
-then restart the objr service.
+then restart the botd service.
 
 ::
 
- $ sudo service objr stop
- $ sudo service objr start
+ $ sudo service botd stop
+ $ sudo service botd start
 
-if you don't want objr to startup at boot, remove the service file:
+if you don't want botd to startup at boot, remove the service file:
 
 ::
 
- $ sudo rm /etc/systemd/system/objr.service
+ $ sudo rm /etc/systemd/system/botd.service
 
 CONTACT
 =======
