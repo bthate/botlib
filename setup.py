@@ -22,7 +22,7 @@ setup(
     install_requires=["olib"],
     packages=["bot", "bmod", "ol"],
     namespace_packages=["bot", "bmod"],
-    scripts=["bin/bcmd", "bin/botd", "bin/bsh", "bin/birc"],
+    scripts=["bin/bcmd", "bin/bctl", "bin/bdmn", "bin/bsrv", "bin/bsh", "bin/birc"],
     classifiers=['Development Status :: 4 - Beta',
                  'License :: Public Domain',
                  'Operating System :: Unix',
