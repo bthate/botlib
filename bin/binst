@@ -1,0 +1,40 @@
+#!/usr/bin/python3
+# BOTLIB - framework to program bots
+#
+#
+
+import ol
+import os
+
+def open(txt):
+    try:
+        for line in os.popen(txt).readlines():
+            print(line.rstrip())
+    except:
+        pass
+
+def nopen(txt):
+    txt += " 2>&1"
+    try:
+        for line in os.popen(txt).readlines():
+            pass
+    except:
+        pass
+
+if not ol.utl.root():
+    print("you need root permissions.")
+    os._exit(0)
+if not os.path.exists("/var/lib/botd"):
+    ol.utl.cdir("/var/lib/botd/")
+if not os.path.exists("/var/lib/botd/store/"):
+    ol.utl.cdir("/var/lib/botd/store/")
+if not os.path.exists("/var/lib/botd/bmod"):
+    ol.utl.cdir("/var/lib/botd/")
+open("cp bmod/*.py /var/lib/botd/bmod/")
+nopen("groupadd botd")
+nopen("useradd botd -d /var/lib/botd/")
+open("chown -R botd:botd /var/lib/botd/")
+open("chmod -R 700 /var/lib/botd/bmod/")
+open("chmod -R 400 /var/lib/botd/bmod/*.py")
+open("cp botd.service /etc/systemd/system/")
+open("systemctl daemon-reload")

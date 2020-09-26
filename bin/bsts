@@ -1,0 +1,4 @@
+systemctl daemon-reload
+service botd stop
+service botd start
+systemctl status botd
