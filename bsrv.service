@@ -1,0 +1,12 @@
+[Unit]
+Description=BSRV - 24/7 channel service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=bsrv
+Group=bsrv
+ExecStart=/usr/local/bin/bsrv
+
+[Install]
+WantedBy=multi-user.target
