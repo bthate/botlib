@@ -1,6 +1,6 @@
 # GENOCLAIM - using the law to administer poison, the king commits genocide
 #
-#
+# OTP-CR-117/19/001 (otp.informationdesk@icc-cpi.int)
 
 import random
 import time
