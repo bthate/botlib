@@ -44,6 +44,7 @@ class Kernel(ol.hdl.Handler):
                 if spec:
                     ms = n
                     break
+            print(ms)
             if not ms:
                 continue
             try:
@@ -70,7 +71,7 @@ class Kernel(ol.hdl.Handler):
         for fn in os.listdir(path):
             if fn.startswith("_") or not fn.endswith(".py"):
                 continue
-            mn = "mods.%s" % fn[:-3]
+            mn = "kmod.%s" % fn[:-3]
             try:
                 module = self.load_mod(mn)
             except Exception as ex:
@@ -84,7 +85,6 @@ class Kernel(ol.hdl.Handler):
 
     def start(self):
         assert ol.wd
-        self.init(self.cfg.mods)
         super().start()
 
     def stop(self):
