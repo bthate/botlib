@@ -1,4 +1,4 @@
 include README.rst
 include RELEASE.rst
+include bsrc.service
 include MANIFEST.in
-include bin/bot
