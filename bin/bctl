@@ -3,10 +3,8 @@
 #
 #
 
-import os, sys ; sys.path.insert(0, os.getcwd())
 import ol
-
-from bot.irc import IRC
+import os
 
 def root():
     if os.geteuid() != 0:
