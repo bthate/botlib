@@ -1,0 +1,26 @@
+#!/usr/bin/python3
+# BOTLIB = framework to program bots
+#
+#
+
+import os, sys ; sys.path.insert(0, os.getcwd())
+import ol
+
+from bot.irc import IRC
+
+def root():
+    if os.geteuid() != 0:
+        return False
+    return True
+
+def main():
+    if not root():
+         print("you need root privileges")
+         return
+    k = ol.krn.boot("bctl", "/var/lib/bot/")
+    k.scandir(k.cfg.md)
+    k.walk("bmod")
+    k.cmd(k.cfg.origtxt)
+
+ol.trm.execute(main)
+os._exit(0)
