@@ -9,7 +9,7 @@ import ol
 from bot.irc import IRC
 
 def main():
-    k = ol.krn.boot("birc")
+    k = ol.krn.boot("birc", os.path.expanduser("~/.bot/"))
     k.scandir(k.cfg.md)
     k.walk("bmod")
     k.load_mod("bot.irc")
