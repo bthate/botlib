@@ -24,7 +24,7 @@ def daemon():
 
 def main():
     daemon()
-    k = ol.krn.boot("bbdm")
+    k = ol.krn.boot("bbdm", os.path.expanduser("~/.bot"))
     k.scandir(k.cfg.md)
     k.walk("bmod")
     k.load_mod("bot.irc")
