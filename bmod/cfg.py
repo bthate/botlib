@@ -12,7 +12,7 @@ def cfg(event):
     c = Cfg()
     ol.dbs.last(c)
     o = ol.Default()
-    ol.prs.parse(o, event.origtxt)
+    ol.prs.parse(o, event.otxt)
     if o.sets:
         ol.update(c, o.sets)
         ol.save(c)

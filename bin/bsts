@@ -1,4 +1,29 @@
-systemctl daemon-reload
-service botd stop
-service botd start
-systemctl status botd
+#!/usr/bin/python3
+# BOTLIB - framework to program bots
+#
+#
+
+import ol
+import os
+
+def open(txt):
+    try:
+        for line in os.popen(txt).readlines():
+            print(line.rstrip())
+    except:
+        pass
+
+def nopen(txt):
+    txt += " 2>&1"
+    try:
+        for line in os.popen(txt).readlines():
+            pass
+    except:
+        pass
+
+def main():
+    open("service botd stop")
+    open("service botd start")
+    open("systemctl status botd")
+
+ol.trm.execute(main)

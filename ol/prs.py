@@ -88,7 +88,7 @@ def parse_cli():
 
 def parse(o, txt):
     args = []
-    o.origtxt = txt
+    o.otxt = txt
     o.gets = ol.Object()
     o.opts = ol.Object()
     o.sets = ol.Object()

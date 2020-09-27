@@ -9,10 +9,7 @@ import ol
 from bot.irc import IRC
 
 def main():
-    if not root():
-         print("you need root privileges")
-         return
-    k = ol.krn.boot("bsrv", "/var/lib/bot/")
+    k = ol.krn.boot("bsrv", "/var/lib/bot/", needroot=True)
     k.scandir(k.cfg.md)
     k.walk("bmod")
     k.load_mod("bot.irc")

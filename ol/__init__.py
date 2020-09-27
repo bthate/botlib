@@ -65,7 +65,7 @@ class Object:
         return self.__dict__[k]
 
     def __str__(self):
-        return json.dumps(self, default=default, indent=4, sort_keys=True)
+        return json.dumps(self, default=default, sort_keys=True)
 
 class Ol(Object):
 

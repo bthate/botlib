@@ -28,7 +28,7 @@ class Kernel(ol.hdl.Handler):
         if not txt:
             return None
         e = ol.hdl.Event()
-        e.txt = self.cfg.origtxt
+        e.txt = txt
         ol.prs.parse(e, e.txt)
         self.dispatch(e)
         return e
@@ -71,7 +71,7 @@ class Kernel(ol.hdl.Handler):
         for fn in os.listdir(path):
             if fn.startswith("_") or not fn.endswith(".py"):
                 continue
-            mn = "kmod.%s" % fn[:-3]
+            mn = "bmod.%s" % fn[:-3]
             try:
                 module = self.load_mod(mn)
             except Exception as ex:
@@ -97,12 +97,12 @@ class Kernel(ol.hdl.Handler):
 
 kernels = []
 
-def boot(name, wd="", md=""):
+def boot(name, wd, md=""):
     cfg = ol.prs.parse_cli()
     k = get_kernel()
     ol.update(k.cfg, cfg)
-    ol.wd = k.cfg.wd = wd or os.path.expanduser("~/.%s" % name)
-    k.cfg.md = md or os.path.expanduser("~/.%s/bmod" % name)
+    ol.wd = k.cfg.wd = wd
+    k.cfg.md = md or os.path.join(ol.wd, "bmod", "")
     return k
 
 def get_kernel():

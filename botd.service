@@ -1,13 +1,12 @@
 [Unit]
-Description=BOTD - 24/7 channel daemon
+Description=24/7 channel daemon
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-Type=oneshot
 User=botd
 Group=botd
-ExecStart=/usr/local/bin/botd
+ExecStart=/usr/local/bin/botd -v
 
 [Install]
 WantedBy=multi-user.target

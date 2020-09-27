@@ -15,7 +15,7 @@ def execute(main):
     except KeyboardInterrupt:
         print("")
     except PermissionError:
-        print("you need root permissions.")
+        print("you need root permission.")
     finally:
         termreset()
 

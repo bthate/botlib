@@ -14,6 +14,7 @@ import time
 import threading
 import _thread
 
+k = ol.krn.get_kernel()
 saylock = _thread.allocate_lock()
 
 def init(kernel):
@@ -182,6 +183,8 @@ class IRC(ol.hdl.Handler):
         wrapper = TextWrap()
         txt = str(txt).replace("\n", "")
         for t in wrapper.wrap(txt):
+            if "v" in k.cfg.opts:
+                print(t)
             self.command("PRIVMSG", channel, t)
             if (time.time() - self.state.last) < 4.0:
                 time.sleep(4.0)
@@ -192,6 +195,8 @@ class IRC(ol.hdl.Handler):
         txt = str(inbytes, "utf-8")
         if txt == "":
             raise ConnectionResetError
+        if "v" in k.cfg.opts:
+            print(txt)
         self.state.lastline += txt
         splitted = self.state.lastline.split("\r\n")
         for s in splitted[:-1]:
@@ -352,7 +357,7 @@ class IRC(ol.hdl.Handler):
 
     def NOTICE(self, event):
         if event.txt.startswith("VERSION"):
-            txt = "\001VERSION %s %s - %s\001" % ("GENOCLAIM", __version__, "using the law to administer poison, the king commits genocide")
+            txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "framework to program bots.")
             self.command("NOTICE", event.channel, txt)
 
     def PRIVMSG(self, event):
@@ -409,7 +414,7 @@ class DCC(ol.hdl.Handler):
             s.connect((addr, port))
         except ConnectionError:
             return
-        s.send(bytes('Welcome to GENOCLAIM %s !!\n' % event.nick, "utf-8"))
+        s.send(bytes('Welcome to BOTLIB %s !!\n' % event.nick, "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s
@@ -517,7 +522,7 @@ def cfg(event):
     c = Cfg()
     ol.dbs.last(c)
     o = ol.Default()
-    ol.prs.parse(o, event.origtxt)
+    ol.prs.parse(o, event.otxt)
     if o.sets:
         ol.update(c, o.sets)
         ol.save(c)
