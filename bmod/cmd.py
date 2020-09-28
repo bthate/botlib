@@ -37,6 +37,9 @@ def tsk(event):
         res.append(txt)
     event.reply(" | ".join(res))
 
+def upt(event):
+    event.reply(ol.tms.elapsed(time.time() - ol.krn.starttime))
+
 def ver(event):
     k = ol.krn.get_kernel()
     mods = k.walk("bmod")

@@ -23,7 +23,7 @@ setup(
     packages=["bot", "bmod"],
     namespace_packages=["bot", "bmod"],
     zip_safe=False,
-    scripts=["bin/bcmd", "bin/bctl", "bin/bot", "bin/botd","bin/bsh"],
+    scripts=["bin/bcmd", "bin/bctl", "bin/bot", "bin/botd","bin/bsh", "bin/budp"],
     classifiers=['Development Status :: 4 - Beta',
                  'License :: Public Domain',
                  'Operating System :: Unix',
