@@ -103,6 +103,8 @@ def boot(name, wd, md=""):
     ol.update(k.cfg, cfg)
     ol.wd = k.cfg.wd = wd
     k.cfg.md = md or os.path.join(ol.wd, "bmod", "")
+    if "v" in k.cfg.opts:
+        print("%s started at %s" % (name.upper(), time.ctime(time.time()))) 
     return k
 
 def get_kernel():

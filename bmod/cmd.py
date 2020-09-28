@@ -1,6 +1,8 @@
-# OLIB - object library
+# BOTLIB - framework to program bots
 #
 #
+
+__version__ = 101
 
 import ol
 import threading
@@ -43,4 +45,4 @@ def upt(event):
 def ver(event):
     k = ol.krn.get_kernel()
     mods = k.walk("bmod")
-    event.reply(",".join(["%s %s" % (mod.__name__, mod.__version__) for mod in mods if ol.get(mod, "__version__")]))
+    event.reply(",".join(["%s %s" % (mod.__name__.upper(), mod.__version__) for mod in mods if ol.get(mod, "__version__")]))

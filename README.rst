@@ -122,7 +122,7 @@ a move all methods to functions and to
 
 ::
 
- method(obj, *args) instead of obj.method(*arg)
+ method(obj, *args) instead of obj.method(*args)
 
 way of programming with objects. If you are use to functional programming you'll like it (or not) ;]
 
@@ -181,50 +181,34 @@ the /etc/systemd/system/botd.service file:
  Wants=network-online.target
 
  [Service]
- User=botlib
- Group=botlib
+ User=botd
+ Group=botd
  ExecStart=/usr/local/bin/botd 
 
  [Install]
  WantedBy=multi-user.target
 
-create a homedir for objr:
+add the botd user to the system:
 
 ::
 
- $ mkdir /home/botlib
- $ mkdir /home/botlib/.bot
- $ mkdir /home/botlib/.bot/bmod
+ $ groupadd botd
+ $ useradd botd -d /var/lib/botd/
+ $ passwd botd
+ $ chown -R botd:botd /var/lib/botd/
 
-add the botlib user to the system:
-
-::
-
- $ groupadd botlib
- $ chown -R botlib:botlib /home/botlib
- $ useradd botlib -d /home/botlib
- $ passwd botlib
-
-configure botd to connect to irc:
+copy modules over to botd's work directory:
 
 ::
 
- $ sudo -u botlib bcmd cfg server=irc.freenode.net channel=#botlib nick=birc
-
-copy modules over to botlib's work directory:
-
-::
-
- $ cp -Ra bmod/*.py /home/botlib.bot/bmod
+ $ cp -Ra bmod/*.py /var/lib/botd/bmod
 
 make sure permissions are set properly:
 
 ::
 
- $ chown -R botlib:botlib /home/botlib
- $ chown -R botlib:botlib /home/botlib/.bot
- $ chmod -R 700 /home/botlib/.bot/bmod/
- $ chmod -R 400 /home/botlib/.bot/bmod/*.py
+ $ chmod -R 700 /var/lib/botd/bmod/
+ $ chmod -R 400 /var/lib/botd/bmod/*.py
 
 add the botd service with:
 
@@ -233,12 +217,21 @@ add the botd service with:
  $ sudo systemctl enable botd
  $ sudo systemctl daemon-reload
 
+configure botd to connect to irc:
+
+::
+
+ $ sudo -u botd bcmd cfg server=irc.freenode.net channel=#botlib nick=botd
+
 then restart the botd service.
 
 ::
 
  $ sudo service botd stop
  $ sudo service botd start
+
+the bot should join your configured channel, if it doesn't look at the
+/var/log/syslog for any debug messages. 
 
 if you don't want botd to startup at boot, remove the service file:
 

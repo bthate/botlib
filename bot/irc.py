@@ -74,6 +74,7 @@ class IRC(ol.hdl.Handler):
         super().__init__()
         self._buffer = []
         self._connected = threading.Event()
+        self._joined = threading.Event()
         self._outqueue = queue.Queue()
         self._sock = None
         self._fsock = None
@@ -97,6 +98,7 @@ class IRC(ol.hdl.Handler):
         self.register("NOTICE", self.NOTICE)
         self.register("PRIVMSG", self.PRIVMSG)
         self.register("QUIT", self.QUIT)
+        self.register("366", self.JOINED)
         ol.bus.bus.add(self)
 
     def _connect(self, server):
@@ -337,6 +339,7 @@ class IRC(ol.hdl.Handler):
         assert self.cfg.server
         self.channels.append(self.cfg.channel)
         ol.tsk.launch(self.doconnect)
+        self._joined.wait()
 
     def stop(self):
         super().stop()
@@ -353,6 +356,9 @@ class IRC(ol.hdl.Handler):
         self._connected.clear()
         self.stop()
         self.start()
+
+    def JOINED(self, event):
+        self._joined.set()
 
     def LOG(self, event):
         print(event.error)

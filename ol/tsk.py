@@ -34,7 +34,7 @@ class Task(threading.Thread):
         except Exception as _ex:
             print(ol.utl.get_exception())
 
-    def join(self, timeout=None):
+    def wait(self, timeout=None):
         super().join(timeout)
         return self._result
 
