@@ -1,4 +1,4 @@
 include README.rst
-include RELEASE.rst
-include bsrc.service
 include MANIFEST.in
+recursive-include files *
+recursive-include ol *.py
