@@ -34,7 +34,7 @@ def main():
     open("chown -R botd:botd /var/lib/botd/")
     open("chmod -R 700 /var/lib/botd/bmod/")
     open("chmod -R 400 /var/lib/botd/bmod/*.py")
-    open("cp botd.service /etc/systemd/system/")
+    open("cp files/botd.service /etc/systemd/system/")
     open("systemctl daemon-reload")
 
 ol.trm.execute(main)
