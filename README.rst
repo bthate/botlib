@@ -146,6 +146,7 @@ BOTLIB uses bmod as the namespace to distribute modules for BOTLIB:
 
 ::
 
+   bmod.cfg	= config
    bmod.cmd	- command
    bmod.edt	- edit
    bmod.ent	- enter log and todo items
@@ -176,7 +177,7 @@ the /etc/systemd/system/botd.service file:
 
 
  [Unit]
- Description=BOTD - 24/7 channel daemon
+ Description=24/7 channel daemon
  After=network-online.target
  Wants=network-online.target
 
