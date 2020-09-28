@@ -3,7 +3,7 @@
 #
 #
 
-__version__ = 100
+__version__ = 101
 
 import ol
 import os
@@ -183,8 +183,10 @@ class IRC(ol.hdl.Handler):
         wrapper = TextWrap()
         txt = str(txt).replace("\n", "")
         for t in wrapper.wrap(txt):
+            if not t:
+                continue
             if "v" in k.cfg.opts:
-                print(t)
+                print(t.strip())
             self.command("PRIVMSG", channel, t)
             if (time.time() - self.state.last) < 4.0:
                 time.sleep(4.0)
@@ -195,11 +197,11 @@ class IRC(ol.hdl.Handler):
         txt = str(inbytes, "utf-8")
         if txt == "":
             raise ConnectionResetError
-        if "v" in k.cfg.opts:
-            print(txt)
         self.state.lastline += txt
         splitted = self.state.lastline.split("\r\n")
         for s in splitted[:-1]:
+            if "v" in k.cfg.opts:
+                print(s.strip())
             self._buffer.append(s)
         self.state.lastline = splitted[-1]
 

@@ -4,7 +4,7 @@ BOTLIB
 | Welcome to BOTLIB, framework to program bots ! see https://pypi.org/project/botlib/ 
 
 
-| BOTLIB is placed in the public domain and contain no copyright or LICENSE, this makes BOTLIB truely free (pastable) code you can use how you see fit, 
+| BOTLIB is placed in the public domain and contains no copyright or LICENSE, this makes BOTLIB truely free (pastable) code you can use how you see fit, 
 
 installation is through pypi:
 
@@ -23,11 +23,12 @@ prompt, it will return with no response:
  $ bcmd
  $ 
 
-you can use objr <cmd> to run a command directly:
+you can use bcmd <cmd> to run a command directly, use the !cmd command to
+see a list of commands:
 
 ::
 
- $ bcmd cmds
+ $ bcmd cmd
  cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
 
 
@@ -37,13 +38,12 @@ BOTLIB also has it's own shell, bsh:
 
   $ bsh
   > cmd
-
- cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
+  cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
 
 IRC
 ===
 
-BOTLIB provides the birc as IRC client, configuration is done with the cfg command:
+BOTLIB provides the bot as IRC client, configuration is done with the cfg command:
 
 ::
 
@@ -66,7 +66,7 @@ start it's poller.
 
 ::
 
- $ birc mods=rss
+ $ bot mods=rss
 
 to add an url use the rss command with an url:
 
