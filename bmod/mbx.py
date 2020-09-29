@@ -1,4 +1,4 @@
-# OLIB - object library
+# BOTLIB - framework to program bots
 #
 #
 
@@ -69,9 +69,8 @@ def to_date(date):
 def cor(event):
     if not event.args:
         return
-    parse(event, event.txt)
     event.gets["From"] = event.args[0]
-    event.args = list(keys(event.gets)) + event.rest.split()
+    event.args = list(ol.keys(event.gets)) + event.rest.split()
     event.otype = "bmod.mbx.Email"
     nr = -1
     for email in ol.dbs.find_event(event):
@@ -81,9 +80,8 @@ def cor(event):
 def eml(event):
     if not event.args:
         return
-    parse(event, event.txt)
     nr = -1
-    for o in all("bmod.mbx.Email"):
+    for o in ol.dbs.all("bmod.mbx.Email"):
         if event.rest in o.text:
             nr += 1
             event.reply("%s %s %s" % (nr, ol.format(o, ["From", "Subject"], False, event.skip), ol.tms.elapsed(time.time() - ol.tms.fntime(o.__stamp__))))
@@ -92,7 +90,7 @@ def mbx(event):
     if not event.args:
         return
     fn = os.path.expanduser(event.args[0])
-    event.reply("reading from %s" % fn)
+    event.direct("reading from %s" % fn)
     nr = 0
     if os.path.isdir(fn):
         thing = mailbox.Maildir(fn, create=False)
@@ -106,9 +104,10 @@ def mbx(event):
         pass
     for m in thing:
         o = Email()
-        update(o, m)
+        ol.update(o, m)
         try:
-            sdate = os.sep.join(ol.tms.to_date(o.Date).split())
+            sdate = os.sep.join(to_date(o.Date).split())
+            print(sdate)
         except AttributeError:
             sdate = None
         o.text = ""

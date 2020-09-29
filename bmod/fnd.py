@@ -15,7 +15,6 @@ def fnd(event):
         if fns:
             event.reply(",".join(fns))
         return
-    ol.prs.parse(event, event.txt)
     otype = event.args[0]
     shorts = ol.utl.find_shorts("bmod")
     otypes = ol.get(shorts, otype, [otype,])
@@ -33,7 +32,7 @@ def fnd(event):
                 pure = False
             else:
                 pure = True
-            txt = "%s %s" % (str(nr), ol.format(o, args, pure))
+            txt = "%s %s" % (str(nr), ol.format(o, args, pure, event.skip))
             if "t" in event.opts:
                 txt += " %s" % (ol.tms.elapsed(time.time() - ol.tms.fntime(o.__stamp__)))
             event.reply(txt)

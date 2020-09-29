@@ -23,6 +23,9 @@ class Event(ol.Default):
         self.thrs = []
         self.txt = ""
 
+    def direct(self, txt):
+        ol.bus.bus.say(self.orig, self.channel, txt)
+
     def parse(self):
         args = self.txt.split()
         if args:
@@ -61,6 +64,7 @@ class Handler(ol.Object):
 
     @ol.locked(dispatchlock)
     def dispatch(self, e):
+        ol.prs.parse(e, e.otxt)
         e.parse()
         if e.cmd in self.cmds:
             try:

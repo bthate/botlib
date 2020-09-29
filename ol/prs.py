@@ -98,6 +98,7 @@ def parse(o, txt):
     for token in [Token(txt) for txt in txt.split()]:
         s = Skip(token.txt)
         if s:
+            print("skip")
             ol.update(o.skip, s)
             token.txt = token.txt[:-1]
         t = Timed(token.txt)

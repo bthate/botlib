@@ -57,7 +57,7 @@ class UDP(ol.Object):
         self._sock.sendto(bytes("exit", "utf-8"), (self.cfg.host, self.cfg.port))
 
     def start(self):
-        ol.last(self.cfg)
+        ol.dbs.last(self.cfg)
         ol.tsk.launch(self.server)
 
 def toudp(host, port, txt):
