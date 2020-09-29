@@ -44,12 +44,12 @@ class Cfg(ol.Cfg):
 
     def __init__(self):
         super().__init__()
-        self.channel = "#botlib"
-        self.nick = "botlib"
+        self.channel = "#botd"
+        self.nick = "botd"
         self.port = 6667
-        self.realname = "botlib"
+        self.realname = "bot daemon"
         self.server = "localhost"
-        self.username = "botlib"
+        self.username = "botd"
 
 class Event(ol.hdl.Event):
 
@@ -301,6 +301,8 @@ class IRC(ol.hdl.Handler):
             if "servermodes" in dir(self.cfg):
                 self.raw("MODE %s %s" % (self.cfg.nick, self.cfg.servermodes))
             self.joinall()
+        elif cmd == "366":
+            self._joined.set()
         elif cmd == "433":
             nick = self.cfg.nick + "_"
             self.cfg.nick = nick
@@ -338,6 +340,7 @@ class IRC(ol.hdl.Handler):
         assert self.cfg.channel
         assert self.cfg.server
         self.channels.append(self.cfg.channel)
+        self._joined.clear()
         ol.tsk.launch(self.doconnect)
         self._joined.wait()
 
@@ -488,7 +491,7 @@ class Users(ol.Object):
 
     def get_users(self, origin=""):
         s = {"user": origin}
-        return ol.dbs.find("genoclaim.irc.User", s)
+        return ol.dbs.find("bot.irc.User", s)
 
     def get_user(self, origin):
         u = list(self.get_users(origin))
