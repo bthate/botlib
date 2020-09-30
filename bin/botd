@@ -5,6 +5,7 @@
 
 import ol
 import os
+import pwd
 import sys
 
 def daemon():
@@ -29,15 +30,17 @@ def privileges(name):
     old_umask = os.umask(0o22)
 
 def main():
+    if not ol.utl.root():
+         print("you need root permission.")
+         return
+    k = ol.krn.boot("botd", "/var/lib/botd/")
     daemon()
     privileges("botd")
-    k = ol.krn.boot("botd", "/var/lib/botd/")
     k.scandir(k.cfg.md, "bmod")
-    k.walk("bmod")
+    k.walk("bot,bmod")
     k.start()
     k.init(k.cfg.mods)
-    if "s" in k.cfg.opts:
-        k.wait()
+    k.wait()
 
 ol.trm.execute(main)
 os._exit(0)

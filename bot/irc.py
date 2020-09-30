@@ -3,7 +3,7 @@
 #
 #
 
-__version__ = 101
+__version__ = 102
 
 import ol
 import os
@@ -368,7 +368,6 @@ class IRC(ol.hdl.Handler):
             self.command("NOTICE", event.channel, txt)
 
     def PRIVMSG(self, event):
-        k = ol.krn.get_kernel()
         if event.txt.startswith("DCC CHAT"):
             if self.cfg.users and users.allowed(event.origin, "USER"):
                 return
@@ -383,6 +382,7 @@ class IRC(ol.hdl.Handler):
             if self.cfg.users and not users.allowed(event.origin, "USER"):
                 return
             event.txt = event.txt[1:]
+            ol.prs.parse(event, event.txt)
             k.queue.put(event)
 
     def QUIT(self, event):
