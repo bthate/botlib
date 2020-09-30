@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# BOTLIB = framework to program bots
+# BOTLIB - framework to program bots
 #
 #
 
@@ -7,13 +7,11 @@ import ol
 import os
 
 def main():
-    k = ol.krn.boot("bsh", os.path.expanduser("~/.bot/"))
-    k.scandir(k.cfg.md)
+    k = ol.krn.boot("bot", os.path.expanduser("~/.bot"))
     k.walk("bmod")
-    k.start()
-    k.init(k.cfg.mods)
     c = ol.csl.Console()
     c.start()
+    k.start()
     k.wait()
 
 ol.trm.execute(main)

@@ -8,7 +8,7 @@ import os
 
 def main():
     k = ol.krn.boot("bctl", "/var/lib/botd/")
-    k.scandir(k.cfg.md)
+    k.scandir(k.cfg.md, "bmod")
     k.walk("bmod")
     k.cmd(k.cfg.otxt)
 

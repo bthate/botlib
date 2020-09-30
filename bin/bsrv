@@ -3,18 +3,16 @@
 #
 #
 
-import os, sys ; sys.path.insert(0, os.getcwd())
 import ol
-
-from bot.irc import IRC
+import os
 
 def main():
-    k = ol.krn.boot("bsrv", "/var/lib/bot/", needroot=True)
-    k.scandir(k.cfg.md)
+    k = ol.krn.boot("botd", "/var/lib/botd/")
+    k.scandir(k.cfg.md, "bmod")
     k.walk("bmod")
-    k.load_mod("bot.irc")
     k.start()
     k.init(k.cfg.mods)
+    from bot.irc import IRC
     i = IRC()
     i.start()
     k.wait()

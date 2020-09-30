@@ -3,51 +3,17 @@
 #
 #
 
-import getpass
 import ol
 import os
-import pwd
-import sys
-
-def daemon():
-    pid = os.fork()
-    if pid != 0:
-        ol.trm.termreset()
-        os._exit(0)
-    os.setsid()
-    os.umask(0)
-    si = open("/dev/null", 'r')
-    so = open("/dev/null", 'a+')
-    se = open("/dev/null", 'a+')
-    os.dup2(si.fileno(), sys.stdin.fileno())
-    os.dup2(so.fileno(), sys.stdout.fileno())
-    os.dup2(se.fileno(), sys.stderr.fileno())
-
-def privileges(name):
-    pwnam = pwd.getpwnam(name)
-    os.setgroups([])
-    os.setgid(pwnam.pw_gid)
-    os.setuid(pwnam.pw_uid)
-    old_umask = os.umask(0o22)
 
 def main():
-    k = ol.krn.boot("bot", os.path.expanduser("~/.bot"))
-    if "v" in k.cfg.opts:
-        print(ol.format(k.cfg))
-    if "d" in k.cfg.opts:
-        print("starting daemon")
-        daemon()
-        privileges(getpass.getuser())
-    k.scandir(k.cfg.md)
-    k.walk("bmod")
+    k = ol.krn.boot("bot", "~/.bot")
+    c = ol.csl.Console()
+    c.start()
+    k.scandir(k.cfg.md, "bmod")
+    k.walk("bot,bmod")
     k.start()
     k.init(k.cfg.mods)
-    from bot.irc import IRC
-    i = IRC()
-    i.start()
-    if "d" not in k.cfg.opts:
-        c = ol.csl.Console()
-        c.start()
     k.wait()
 
 ol.trm.execute(main)

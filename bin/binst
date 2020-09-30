@@ -36,5 +36,8 @@ def main():
     open("chmod -R 400 /var/lib/botd/bmod/*.py")
     open("cp files/botd.service /etc/systemd/system/")
     open("systemctl daemon-reload")
+    open("service botd stop")
+    open("service botd start")
+    open("systemctl status botd")
 
 ol.trm.execute(main)

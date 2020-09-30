@@ -22,8 +22,6 @@ def nopen(txt):
         pass
 
 def main():
-    open("service botd stop")
-    open("service botd start")
     open("systemctl status botd")
 
 ol.trm.execute(main)
