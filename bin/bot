@@ -3,17 +3,17 @@
 #
 #
 
+import os, sys ; sys.path.insert(0, os.getcwd())
 import ol
-import os
 
 def main():
-    k = ol.krn.boot("bot", "~/.bot")
-    c = ol.csl.Console()
-    c.start()
+    k = ol.krn.boot("bot", os.path.expanduser("~/.bot"))
     k.scandir(k.cfg.md, "bmod")
     k.walk("bot,bmod")
     k.start()
     k.init(k.cfg.mods)
+    c = ol.csl.Console()
+    c.start()
     k.wait()
 
 ol.trm.execute(main)
