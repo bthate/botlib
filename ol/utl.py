@@ -64,15 +64,15 @@ def find_modules(pkgs, skip=None):
                 modules.append(m)
     return modules
 
-def find_shorts(mn):
+def find_types(mn):
     import ol
-    shorts = ol.Ol()
+    tps = ol.Ol()
     for mod in ol.utl.find_modules(mn):
         for _key, o in inspect.getmembers(mod, inspect.isclass):
             if issubclass(o, ol.Object):
                 t = "%s.%s" % (o.__module__, o.__name__)
-                shorts.append(o.__name__.lower(), t)
-    return shorts
+                tps.append(o.__name__.lower(), t)
+    return tps
 
 def get_exception(txt="", sep=" "):
     exctype, excvalue, tb = sys.exc_info()

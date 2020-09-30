@@ -7,6 +7,7 @@ __version__ = 11
 import importlib
 import ol
 import os
+import sys
 import time
 import threading
 
@@ -19,6 +20,7 @@ class Kernel(ol.hdl.Handler):
         self.ready = threading.Event()
         self.stopped = False
         self.cfg = ol.Cfg()
+        self.types = ol.utl.find_types("ol")
         kernels.append(self)
 
     def announce(self, txt):
@@ -40,13 +42,16 @@ class Kernel(ol.hdl.Handler):
             ms = ""
             for pn in self.packages:
                 n = "%s.%s" % (pn, mn)
-                spec = importlib.util.find_spec(n)
+                try:
+                    spec = importlib.util.find_spec(n)
+                except ModuleNotFoundError:
+                    continue
                 if spec:
                     ms = n
                     break
-            print(ms)
             if not ms:
                 continue
+            print(ms)
             try:
                 mod = self.load_mod(ms)
             except (ModuleNotFoundError, ValueError):
@@ -65,13 +70,14 @@ class Kernel(ol.hdl.Handler):
             thr.join()
         return mods
 
-    def scandir(self, path):
+    def scandir(self, path, modname="ol"):
         mods = []
         ol.utl.cdir(path + os.sep + "")
+        sys.path.insert(0, path)
         for fn in os.listdir(path):
             if fn.startswith("_") or not fn.endswith(".py"):
                 continue
-            mn = "bmod.%s" % fn[:-3]
+            mn = "%s.%s" % (modname, fn[:-3])
             try:
                 module = self.load_mod(mn)
             except Exception as ex:
@@ -103,8 +109,9 @@ def boot(name, wd, md=""):
     ol.update(k.cfg, cfg)
     ol.wd = k.cfg.wd = wd
     k.cfg.md = md or os.path.join(ol.wd, "bmod", "")
-    if "v" in k.cfg.opts:
+    if "b" in k.cfg.opts:
         print("%s started at %s" % (name.upper(), time.ctime(time.time()))) 
+        print(ol.format(k.cfg))
     return k
 
 def get_kernel():

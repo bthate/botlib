@@ -12,7 +12,7 @@ def edt(event):
         return
     cn = event.args[0]
     if "." not in cn:
-        shorts = ol.utl.find_shorts("bmod")
+        shorts = ol.utl.find_types("ol,bmod")
         if shorts:
             cn = ol.get(shorts, cn, cn)
     try:

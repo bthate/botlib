@@ -15,9 +15,9 @@ def fnd(event):
         if fns:
             event.reply(",".join(fns))
         return
+    k = ol.krn.get_kernel()
     otype = event.args[0]
-    shorts = ol.utl.find_shorts("bmod")
-    otypes = ol.get(shorts, otype, [otype,])
+    otypes = ol.get(k.types, otype, [otype,])
     args = list(ol.keys(event.gets))
     try:
         arg = event.args[1:]

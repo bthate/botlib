@@ -187,8 +187,6 @@ class IRC(ol.hdl.Handler):
         for t in wrapper.wrap(txt):
             if not t:
                 continue
-            if "v" in k.cfg.opts:
-                print(t.strip())
             self.command("PRIVMSG", channel, t)
             if (time.time() - self.state.last) < 4.0:
                 time.sleep(4.0)
@@ -202,8 +200,6 @@ class IRC(ol.hdl.Handler):
         self.state.lastline += txt
         splitted = self.state.lastline.split("\r\n")
         for s in splitted[:-1]:
-            if "v" in k.cfg.opts:
-                print(s.strip())
             self._buffer.append(s)
         self.state.lastline = splitted[-1]
 
@@ -306,7 +302,7 @@ class IRC(ol.hdl.Handler):
         elif cmd == "433":
             nick = self.cfg.nick + "_"
             self.cfg.nick = nick
-            self.raw("NICK %s" % self.cfg.nick or "obot_next-")
+            self.raw("NICK %s" % self.cfg.nick or "botd")
         return e
 
     def raw(self, txt):
@@ -368,7 +364,7 @@ class IRC(ol.hdl.Handler):
 
     def NOTICE(self, event):
         if event.txt.startswith("VERSION"):
-            txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "framework to program bots.")
+            txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "framework to program bots")
             self.command("NOTICE", event.channel, txt)
 
     def PRIVMSG(self, event):
@@ -528,13 +524,3 @@ class Users(ol.Object):
         return user
 
 users = Users()
-
-def cfg(event):
-    c = Cfg()
-    ol.dbs.last(c)
-    o = ol.Default()
-    ol.prs.parse(o, event.otxt)
-    if o.sets:
-        ol.update(c, o.sets)
-        ol.save(c)
-    event.reply(ol.format(c))
