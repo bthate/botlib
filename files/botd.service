@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 User=botd
 Group=botd
-ExecStart=/usr/local/bin/botd 
+ExecStart=/usr/local/bin/botd -n
 
 [Install]
 WantedBy=multi-user.target
