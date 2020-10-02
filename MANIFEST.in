@@ -1,5 +1,8 @@
 include README.rst
 include MANIFEST.in
 include bin/install
+include bin/env
+include bin/rtfd
+recursive-include docs
 recursive-include files *
 recursive-include ol *.py

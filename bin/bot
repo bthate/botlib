@@ -14,6 +14,7 @@ def main():
         return k.cmd(k.cfg.otxt)
     #k.scandir(k.cfg.md, "bmod")
     k.start()
+    print(k.cfg)
     k.init(k.cfg.mods)
     c = ol.csl.Console()
     c.start()
