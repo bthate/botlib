@@ -1,0 +1,31 @@
+#!/usr/bin/python3
+# BOTLIB - framework to program bots
+#
+#
+
+import bot
+import ol
+import os
+import pwd
+
+def privileges(name):
+    pwnam = pwd.getpwnam(name)
+    os.setgroups([])
+    os.setgid(pwnam.pw_gid)
+    os.setuid(pwnam.pw_uid)
+    old_umask = os.umask(0o22)
+
+def main():
+    #privileges("botd")
+    k = ol.krn.boot("bsrv", "/var/lib/botd")
+    k.scandir(k.cfg.md, "bmod")
+    k.walk("bot")
+    k.walk("bmod")
+    k.start()
+    k.init(k.cfg.mods)
+    i = bot.irc.IRC()
+    i.start()
+    k.wait()
+
+ol.trm.execute(main)
+os._exit(0)
