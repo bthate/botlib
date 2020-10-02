@@ -30,7 +30,6 @@ class Kernel(ol.hdl.Handler):
             return None
         e = ol.hdl.Event()
         e.txt = txt
-        ol.prs.parse(e, e.txt)
         self.dispatch(e)
         return e
 

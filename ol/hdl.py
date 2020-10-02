@@ -11,7 +11,7 @@ import _thread
 
 dispatchlock = _thread.allocate_lock()
 
-class Event(ol.Default):
+class Event(ol.Object):
 
     def __init__(self):
         super().__init__()
@@ -33,7 +33,7 @@ class Event(ol.Default):
         if len(args) >= 2:
             self.args = args[1:]
             self.rest = " ".join(args[1:])
-
+        
     def reply(self, txt):
         if not self.result:
             self.result = []
@@ -63,7 +63,7 @@ class Handler(ol.ldr.Loader):
 
     @ol.locked(dispatchlock)
     def dispatch(self, e):
-        ol.prs.parse(e, e.otxt)
+        ol.prs.parse(e, e.txt)
         e.parse()
         if e.cmd in self.cmds:
             try:
@@ -78,7 +78,7 @@ class Handler(ol.ldr.Loader):
             event = self.queue.get()
             if not event:
                 break
-            if not event.orig:
+            if "orig" not in event:
                 event.orig = repr(self)
             if event.txt:
                 ol.tsk.launch(self.dispatch, event, name=event.txt.split()[0])

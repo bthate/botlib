@@ -15,6 +15,14 @@ def cmd(event):
     if c:
         event.reply(",".join(c))
 
+def kcfg(event):
+    o = ol.Default()
+    ol.prs.parse(o, event.otxt)
+    if o.sets:
+        ol.update(k.cfg, o.sets)
+        ol.save(k.cfg)
+    event.reply(ol.format(k.cfg, skip=["otxt", "sets"]))
+
 def mds(event):
     mods = ol.utl.find_modules("bmod")
     event.reply(",".join([m.__name__ for m in mods]))

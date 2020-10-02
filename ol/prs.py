@@ -82,9 +82,8 @@ class Timed(ol.Object):
             self["to"] = time.time() - vv
 
 def parse_cli():
-    parsed = ol.Default()
-    parse(parsed, " ".join(sys.argv[1:]))
-    return parsed
+    cfg = ol.Default()
+    return ol.prs.parse(cfg, " ".join(sys.argv[1:]))
 
 def parse(o, txt):
     args = []
@@ -93,12 +92,11 @@ def parse(o, txt):
     o.opts = ol.Object()
     o.sets = ol.Object()
     o.skip = ol.Object()
-    o.timed = ol.Object()
+    o.timed = ()
     o.index = None
     for token in [Token(txt) for txt in txt.split()]:
         s = Skip(token.txt)
         if s:
-            print("skip")
             ol.update(o.skip, s)
             token.txt = token.txt[:-1]
         t = Timed(token.txt)

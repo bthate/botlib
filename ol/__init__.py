@@ -39,7 +39,7 @@ class ENOFILENAME(Exception):
 
 class Object:
 
-    __slots__ = ("__dict__", "__stamp__")
+    __slots__ = ("__dict__", "__stamp__", "__parsed__")
 
     def __init__(self):
         timestamp = str(datetime.datetime.now()).split()
@@ -131,14 +131,12 @@ def hook(fn):
     return o
 
 def hooked(d):
-    if "stamp" in dir(d):
-        t = d["stamp"].split(os.sep)[0]
+    if "__stamp__" in d:
+        t = d.__stamp__.split(os.sep)[0]
         if not t:
             return d
         o = get_cls(t)()
         update(o, d)
-        del o["stamp"]
-        return o
     return d
 
 def default(o):
@@ -178,8 +176,6 @@ def format(o, keylist=None, pure=False, skip=None, txt=""):
     res = []
     for key in keylist:
         if skip and key in skip:
-            continue
-        if key == "stamp":
             continue
         try:
             val = o[key]
@@ -260,7 +256,7 @@ def load(o, path):
                 o.__dict__.update(vars(v))
             else:
                 o.__dict__.update(v)
-    unstamp(o)
+    #unstamp(o)
 
 def register(o, k, v):
     o[k] = v
@@ -286,7 +282,7 @@ def save(o, stime=None):
     opath = os.path.join(wd, "store", o.__stamp__)
     cdir(opath)
     with open(opath, "w") as ofile:
-        json.dump(stamp(o), ofile, default=default)
+        json.dump(o, ofile, default=default)
     os.chmod(opath, 0o444)
     return o.__stamp__
 
@@ -307,22 +303,24 @@ def search(o, s):
     return ok
 
 def stamp(o):
+    t = o.__stamp__.split(os.sep)[0]
+    oo = get_cls(t)()
     for k in xdir(o):
         oo = getattr(o, k, None)
         if isinstance(oo, Object):
             stamp(oo)
-            oo.__dict__["stamp"] = oo.__stamp__
-            o[k] = oo
+            oo.__dict__["__stamp__"] = oo.__stamp__
+            ooo[k] = oo
         else:
             continue
-    o.__dict__["stamp"] = o.__stamp__
-    return o
+    oo.__dict__["__stamp__"] = o.__stamp__
+    return oo
 
 def unstamp(o):
     for k in xdir(o):
         oo = getattr(o, k, None)
         if isinstance(oo, Object):
-            del oo.__dict__["stamp"]
+            del oo.__dict__["__stamp__"]
         else:
             continue
     try:
