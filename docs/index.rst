@@ -199,7 +199,7 @@ the /etc/systemd/system/botd.service file:
  [Service]
  User=botd
  Group=botd
- ExecStart=/usr/local/bin/botd -s mods=rss,udp
+ ExecStart=/usr/local/bin/botd -s 
 
  [Install]
  WantedBy=multi-user.target
