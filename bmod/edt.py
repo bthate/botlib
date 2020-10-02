@@ -4,6 +4,8 @@
 
 import ol
 
+k = ol.krn.get_kernel()
+
 def edt(event):
     if not event.args:
         f = ol.utl.list_files(ol.wd)
@@ -12,9 +14,7 @@ def edt(event):
         return
     cn = event.args[0]
     if "." not in cn:
-        shorts = ol.utl.find_types("ol,bmod")
-        if shorts:
-            cn = ol.get(shorts, cn, cn)
+        cn = ol.get(k.names, cn, cn)
     try:
         l = ol.dbs.lasttype(cn)
     except IndexError:

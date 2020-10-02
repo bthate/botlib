@@ -17,7 +17,7 @@ def fnd(event):
         return
     k = ol.krn.get_kernel()
     otype = event.args[0]
-    otypes = ol.get(k.types, otype, [otype,])
+    otypes = ol.get(k.names, otype, [otype,])
     args = list(ol.keys(event.gets))
     try:
         arg = event.args[1:]

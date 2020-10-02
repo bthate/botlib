@@ -2,7 +2,7 @@
 #
 #
 
-__version__ = 101
+__version__ = 102
 
 import ol
 import threading
@@ -16,7 +16,7 @@ def cmd(event):
         event.reply(",".join(c))
 
 def mds(event):
-    event.reply(",".join([m.__name__.split(".")[-1] for m in k.types]))
+    event.reply(",".join([m.__name__ for m in ol.values(k.table)]))
 
 def tsk(event):
     psformat = "%s %s"

@@ -12,8 +12,8 @@ class Loader(ol.Object):
     def __init__(self):
         super().__init__()
         self.cmds = ol.Object()
+        self.names = ol.Ol()
         self.table = ol.Object()
-        self.types = ol.Ol()
 
     def load(self, name):
         if name not in self.table:
@@ -21,7 +21,7 @@ class Loader(ol.Object):
 
     def scan(self, mod):
         ol.update(self.cmds, find_cmds(mod))
-        ol.update(self.types, find_types(mod))
+        ol.update(self.names, find_names(mod))
 
     def walk(self, names):
         for name in names.split(","):
@@ -45,7 +45,7 @@ def find_cmds(mod):
                 cmds[key] = o
     return cmds
 
-def find_types(mod):
+def find_names(mod):
     tps = ol.Ol()
     for _key, o in inspect.getmembers(mod, inspect.isclass):
         if issubclass(o, ol.Object):
