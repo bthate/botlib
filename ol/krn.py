@@ -20,7 +20,6 @@ class Kernel(ol.hdl.Handler):
         self.ready = threading.Event()
         self.stopped = False
         self.cfg = ol.Cfg()
-        self.types = ol.utl.find_types("ol")
         kernels.append(self)
 
     def announce(self, txt):
@@ -36,39 +35,13 @@ class Kernel(ol.hdl.Handler):
         return e
 
     def init(self, mns):
-        mods = []
-        thrs = []
+        if not mns:
+            return
         for mn in ol.utl.spl(mns):
-            ms = ""
-            for pn in self.packages:
-                n = "%s.%s" % (pn, mn)
-                try:
-                    spec = importlib.util.find_spec(n)
-                except ModuleNotFoundError:
-                    continue
-                if spec:
-                    ms = n
-                    break
-            if not ms:
-                continue
-            print(ms)
-            try:
-                mod = self.load_mod(ms)
-            except (ModuleNotFoundError, ValueError):
-                try:
-                    mod = self.load_mod(mn)
-                except (ModuleNotFoundError, ValueError) as ex:
-                    if mn in str(ex):
-                        continue
-                    print(ol.utl.get_exception())
-                    continue
-            mods.append(mod)
-            func = getattr(mod, "init", None)
-            if func:
-                thrs.append(ol.tsk.launch(func, self, name=ol.get_name(func)))
-        for thr in thrs:
-            thr.join()
-        return mods
+            if mn in self.table:
+                func = getattr(self.table[mn], "init", None)
+                if func:
+                    ol.tsk.launch(func, self, name=ol.get_name(func))
 
     def scandir(self, path, modname="ol"):
         mods = []
@@ -79,7 +52,7 @@ class Kernel(ol.hdl.Handler):
                 continue
             mn = "%s.%s" % (modname, fn[:-3])
             try:
-                module = self.load_mod(mn)
+                module = self.load(mn)
             except Exception as ex:
                 print(ol.utl.get_exception())
                 continue

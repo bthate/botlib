@@ -53,11 +53,10 @@ class Event(ol.Default):
             res.append(thr.join())
         return res
 
-class Handler(ol.Object):
+class Handler(ol.ldr.Loader):
 
     def __init__(self):
         super().__init__()
-        self.cmds = ol.Object()
         self.packages = []
         self.queue = queue.Queue()
         self.stopped = False
@@ -86,17 +85,8 @@ class Handler(ol.Object):
             else:
                 event.ready.set()
 
-    def load_mod(self, name):
-        mod = ol.utl.direct(name)
-        self.scan(mod)
-        return mod
-
     def put(self, e):
         self.queue.put_nowait(e)
-
-    def scan(self, mod):
-        cmds = ol.utl.find_cmds(mod)
-        ol.update(self.cmds, cmds)
 
     def start(self):
         ol.tsk.launch(self.handler)
@@ -105,21 +95,3 @@ class Handler(ol.Object):
         self.stopped = True
         self.queue.put(None)
 
-    def walk(self, names, ignore=""):
-        modules = []
-        for name in names.split(","):
-            if name in ignore.split(","):
-                continue
-            self.packages.append(name)
-            spec = importlib.util.find_spec(name)
-            if not spec:
-                continue
-            pkg = importlib.util.module_from_spec(spec)
-            pn = getattr(pkg, "__path__", None)
-            if not pn:
-                continue
-            for mi in pkgutil.iter_modules(pn):
-                mn = "%s.%s" % (name, mi.name)
-                module = self.load_mod(mn)
-                modules.append(module)
-        return modules

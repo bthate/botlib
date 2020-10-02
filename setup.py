@@ -12,7 +12,7 @@ def read():
 
 setup(
     name='botlib',
-    version='101',
+    version='102',
     url='https://bitbucket.org/bthate/botlib',
     author='Bart Thate',
     author_email='bthate@dds.nl', 
@@ -20,7 +20,7 @@ setup(
     long_description=read(),
     license='Public Domain',
     install_requires=["olib"],
-    packages=["bot", "bmod"],
+    packages=["bot", "bmod", "ol"],
     namespace_packages=["bot", "bmod"],
     zip_safe=False,
     scripts=["bin/bcmd", "bin/bctl", "bin/bot", "bin/botd", "bin/budp"],

@@ -8,16 +8,15 @@ import ol
 import threading
 import time
 
+k = ol.krn.get_kernel()
+
 def cmd(event):
-    k = ol.krn.get_kernel()
     c = sorted(k.cmds)
     if c:
         event.reply(",".join(c))
 
 def mds(event):
-    mm = ol.utl.find_modules("bmod")
-    if mm:
-        event.reply(",".join([m.__name__.split(".")[-1] for m in mm]))
+    event.reply(",".join([m.__name__.split(".")[-1] for m in k.types]))
 
 def tsk(event):
     psformat = "%s %s"
@@ -43,6 +42,4 @@ def upt(event):
     event.reply(ol.tms.elapsed(time.time() - ol.krn.starttime))
 
 def ver(event):
-    k = ol.krn.get_kernel()
-    mods = k.walk("bmod")
-    event.reply(",".join(["%s %s" % (mod.__name__.upper(), mod.__version__) for mod in mods if ol.get(mod, "__version__")]))
+    event.reply(" | ".join(["%s %s" % (mod.__name__.upper(), mod.__version__) for mod in ol.values(k.table) if ol.get(mod, "__version__")]))

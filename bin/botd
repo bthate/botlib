@@ -3,6 +3,7 @@
 #
 #
 
+import bot
 import ol
 import os
 import pwd
@@ -34,12 +35,15 @@ def main():
          print("you need root permission.")
          return
     k = ol.krn.boot("botd", "/var/lib/botd/")
-    daemon()
-    privileges("botd")
+    if "s" not in k.cfg.opts:
+        daemon()
+        privileges("botd")
     k.scandir(k.cfg.md, "bmod")
     k.walk("bot,bmod")
     k.start()
     k.init(k.cfg.mods)
+    i = bot.irc.IRC()
+    i.start()
     k.wait()
 
 ol.trm.execute(main)

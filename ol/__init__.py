@@ -353,6 +353,7 @@ def xdir(o, skip=None):
 
 import ol
 
+from ol import ldr
 from ol import csl
 from ol import dbs
 from ol import hdl
