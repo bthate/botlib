@@ -39,15 +39,16 @@ see a list of commands:
 
  $ bcmd cmd
  cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
-
+ $
 
 BOTLIB also has it's own shell, bsh:
 
 ::
 
-  $ bsh
-  > cmd
-  cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
+ $ bsh
+ > cmd
+ cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
+ >
 
 IRC
 ===
@@ -57,14 +58,14 @@ BOTLIB provides the bot as IRC client, configuration is done with the cfg comman
 ::
 
  $ bcmd cfg
- channel=#botlib nick=birc port=6667 realname=botlib server=localhost username=botlib
+ channel=#botlib nick=birc port=6667 server=localhost
 
 you can use setters to edit fields in a configuration:
 
 ::
 
  $ bcmd cfg server=irc.freenode.net channel=\#botlib nick=birc
- channel=#botib nick=birc port=6667 realname=botlib server=irc.freenode.net username=botlib
+ channel=#botib nick=botlib port=6669 server=irc.freenode.net
 
 RSS
 ===
@@ -76,6 +77,7 @@ start it's poller.
 ::
 
  $ bot mods=rss
+ >
 
 to add an url use the rss command with an url:
 
@@ -83,6 +85,7 @@ to add an url use the rss command with an url:
 
  $ bcmd rss https://github.com/bthate/objr/commits/master.atom
  ok 1
+ $
 
 run the rss command to see what urls are registered:
 
@@ -90,6 +93,7 @@ run the rss command to see what urls are registered:
 
  $ bcmd fnd rss
  0 https://github.com/bthate/objr/commits/master.atom
+ $
 
 the ftc (fetch) command can be used to poll the added feeds:
 
@@ -97,6 +101,7 @@ the ftc (fetch) command can be used to poll the added feeds:
 
  $ bcmd ftc
  fetched 0
+ $
 
 UDP
 ===
@@ -109,6 +114,7 @@ use the 'budp' command to send text via the bot to the channel on the irc server
 ::
 
  $ tail -f /var/log/syslog | budp
+ $
 
 to send the tail output to the IRC channel you can use python3 code to send a UDP packet 
 to botlib, it's unencrypted txt send to the bot and display on the joined channels.
@@ -145,6 +151,7 @@ OLIB has the following modules:
     ol.dbs	- databases
     ol.hdl	- handler
     ol.krn	- kernel
+    ol.ldr	- loader
     ol.prs 	- parser
     ol.tms	- times
     ol.trm	- terminal
@@ -168,7 +175,7 @@ BOTLIB has 1 module, the bot.irc module:
 
 ::
 
-    bot.irc
+    bot.irc	- irc relay chat
 
 this package adds bot.irc to the bot namespace.
 
@@ -192,7 +199,7 @@ the /etc/systemd/system/botd.service file:
  [Service]
  User=botd
  Group=botd
- ExecStart=/usr/local/bin/botd -n
+ ExecStart=/usr/local/bin/botd -s mods=rss,udp
 
  [Install]
  WantedBy=multi-user.target

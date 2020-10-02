@@ -16,7 +16,8 @@ def cmd(event):
         event.reply(",".join(c))
 
 def mds(event):
-    event.reply(",".join([m.__name__ for m in ol.values(k.table)]))
+    mods = ol.utl.find_modules("bmod")
+    event.reply(",".join([m.__name__ for m in mods]))
 
 def tsk(event):
     psformat = "%s %s"
