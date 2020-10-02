@@ -84,7 +84,7 @@ def bmain():
     nopen("rm build")
     nopen("rm -fR %s.egg-info" % fname)
     nopen("python3 setup.py sdist")
-    rss = rs + " -f dist olib botlib"
+    rss = rs + " -f dist botlib feedparser"
     print("easy_install %s" % rss)
     main(rss.split())
     nopen("rm %s/pip" % installdir)
@@ -93,6 +93,8 @@ def bmain():
     nopen('rm -fR %s/wheel-0.33.4.dist-info' % installdir)
     nopen("rm -fR %s/__pycache__" % installdir)
     nopen("rm %s/get-pip.py" % installdir)
+    nopen("mkdir %s/bmod" % installdir)
+    nopen("cp -Ra bmod/*.py %s/bmod" % installdir)
     nopen("tar zcvf %s.tar.gz %s" % (fname.lower(), fname))
 
 ol.trm.execute(bmain)
