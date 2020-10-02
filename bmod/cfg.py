@@ -16,4 +16,4 @@ def cfg(event):
     if o.sets:
         ol.update(c, o.sets)
         ol.save(c)
-    event.reply(ol.format(c))
+    event.reply(ol.format(c, skip=["username", "realname"]))

@@ -8,7 +8,7 @@ import ol
 
 def main():
     k = ol.krn.boot("bot", os.path.expanduser("~/.bot"))
-    k.scandir(k.cfg.md, "bmod")
+    #k.scandir(k.cfg.md, "bmod")
     k.walk("bot")
     k.walk("bmod")
     k.start()
