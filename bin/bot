@@ -8,9 +8,11 @@ import ol
 
 def main():
     k = ol.krn.boot("bot", os.path.expanduser("~/.bot"))
-    #k.scandir(k.cfg.md, "bmod")
     k.walk("bot")
     k.walk("bmod")
+    if k.cfg.txt:
+        return k.cmd(k.cfg.otxt)
+    #k.scandir(k.cfg.md, "bmod")
     k.start()
     k.init(k.cfg.mods)
     c = ol.csl.Console()
