@@ -14,7 +14,7 @@ def edt(event):
         return
     cn = event.args[0]
     if "." not in cn:
-        cn = ol.get(k.names, cn, cn)
+        cn = ol.get(k.types, cn)
     try:
         l = ol.dbs.lasttype(cn)
     except IndexError:
@@ -27,7 +27,7 @@ def edt(event):
         except ol.ENOCLASS:
             event.reply(ol.utl.list_files(ol.wd))
             return
-    if len(event.args) == 1:
+    if not event.sets:
         event.reply(l)
         return
     ol.edit(l, event.sets)

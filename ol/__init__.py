@@ -118,7 +118,6 @@ def get_cls(name):
         mod = importlib.import_module(modname)
     return getattr(mod, clsname)
 
-
 def hook(fn):
     if fn.count(os.sep) > 3:
         oname = fn.split(os.sep)[-4:]
