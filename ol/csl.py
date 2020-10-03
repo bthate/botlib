@@ -38,7 +38,6 @@ class Console(ol.Object):
         e = ol.hdl.Event()
         e.orig = repr(self)
         e.txt = input("> ")
-        e.__hidden__.update(ol.prs.parse(e.txt))
         return e
 
     def raw(self, txt):

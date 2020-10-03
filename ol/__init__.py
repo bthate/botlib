@@ -39,7 +39,7 @@ class ENOFILENAME(Exception):
 
 class Object:
 
-    __slots__ = ("__dict__", "__stamp__", "__parsed__")
+    __slots__ = ("__dict__", "__stamp__", "__hidden__", "__parsed__")
 
     def __init__(self):
         timestamp = str(datetime.datetime.now()).split()
