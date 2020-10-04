@@ -27,9 +27,9 @@ def edt(event):
         except ol.ENOCLASS:
             event.reply(ol.utl.list_files(ol.wd))
             return
-    if not event.sets:
+    if not event.__prs__.sets:
         event.reply(l)
         return
-    ol.edit(l, event.sets)
+    ol.edit(l, event.__prs__.sets)
     ol.save(l)
     event.reply("ok")

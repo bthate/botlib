@@ -136,7 +136,7 @@ def hook(fn):
 
 def hooked(d):
     if "__path__" in d:
-        t = d.__path__.split(os.sep)[0]
+        t = d["__path__"].split(os.sep)[0]
         if not t:
             return d
         o = get_cls(t)()

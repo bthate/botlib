@@ -18,7 +18,7 @@ def fnd(event):
     k = ol.krn.get_kernel()
     otype = event.args[0]
     otypes = ol.get(k.names, otype, [otype,])
-    args = list(ol.keys(event.gets))
+    args = list(ol.keys(event.__prs__.gets))
     try:
         arg = event.args[1:]
     except ValueError:
@@ -26,13 +26,13 @@ def fnd(event):
     args.extend(arg)
     nr = -1
     for otype in otypes:
-        for o in ol.dbs.find(otype, event.gets, event.index, event.timed):
+        for o in ol.dbs.find(otype, event.__prs__.gets, event.__prs__.index, event.__prs__.timed):
             nr += 1
-            if "f" in event.opts:
+            if "f" in event.__prs__.opts:
                 pure = False
             else:
                 pure = True
-            txt = "%s %s" % (str(nr), ol.format(o, args, pure, event.skip))
-            if "t" in event.opts:
-                txt += " %s" % (ol.tms.elapsed(time.time() - ol.tms.fntime(o.__stamp__)))
+            txt = "%s %s" % (str(nr), ol.format(o, args, pure, event.__prs__.skip))
+            if "t" in event.__prs__.opts:
+                txt += " %s" % (ol.tms.elapsed(time.time() - ol.tms.fntime(o.__stp__)))
             event.reply(txt)

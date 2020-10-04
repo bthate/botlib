@@ -2,4 +2,4 @@
 #
 # cleanup all non distro files
 
-rm -fR bmod/*~ bmod/__pycache__ ol/*~ ol/__pycache__ .data build dist MANIFEST botlib.egg-info bot/*~ bot/__pycache__ bin/*~ *~ tests/*~ tests/__pycache__
+rm -fR docs/bmod*.rst docs/bot*.rst  docs/ol*.rst run run.tar.gz html env env.tar.gz bmod/*~ bmod/__pycache__ ol/*~ ol/__pycache__ .data build dist MANIFEST botlib.egg-info bot/*~ bot/__pycache__ bin/*~ *~ tests/*~ tests/__pycache__

@@ -21,7 +21,7 @@ class Test_Object(unittest.TestCase):
     def test_stamp(self):
         o = ol.Object()
         ol.save(o)
-        self.assertTrue(o.__stamp__)
+        self.assertTrue(o.__stp__)
 
     def test_attribute(self):
         o = ol.Object()
