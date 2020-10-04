@@ -16,10 +16,8 @@ def cmd(event):
         event.reply(",".join(c))
 
 def kcfg(event):
-    o = ol.Default()
-    ol.prs.parse(o, event.otxt)
-    if o.sets:
-        ol.update(k.cfg, o.sets)
+    if event.__prs__.sets:
+        ol.update(k.cfg, event.__prs__.sets)
         ol.save(k.cfg)
     event.reply(ol.format(k.cfg, skip=["otxt", "sets"]))
 

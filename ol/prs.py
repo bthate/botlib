@@ -83,7 +83,8 @@ class Timed(ol.Object):
 
 def parse_cli():
     cfg = ol.Default()
-    return ol.prs.parse(cfg, " ".join(sys.argv[1:]))
+    ol.prs.parse(cfg, " ".join(sys.argv[1:]))
+    return cfg
 
 def parse(o, txt):
     args = []

@@ -27,13 +27,16 @@ class Event(ol.Object):
         ol.bus.bus.say(self.orig, self.channel, txt)
 
     def parse(self):
+        o = ol.Default()
+        ol.prs.parse(o, self.txt)
+        ol.update(self.__prs__, o)
         args = self.txt.split()
         if args:
-            self.cmd = args[0]
-        if len(args) >= 2:
-            self.args = args[1:]
-            self.rest = " ".join(args[1:])
-        
+            self.cmd = args.pop(0)
+        if args:
+            self.args = args
+            self.rest = " ".join(args)
+            
     def reply(self, txt):
         if not self.result:
             self.result = []
@@ -63,7 +66,6 @@ class Handler(ol.ldr.Loader):
 
     @ol.locked(dispatchlock)
     def dispatch(self, e):
-        ol.prs.parse(e, e.txt)
         e.parse()
         if e.cmd in self.cmds:
             try:

@@ -30,6 +30,7 @@ class Kernel(ol.hdl.Handler):
             return None
         e = ol.hdl.Event()
         e.txt = txt
+        ol.bus.bus.add(self)
         self.dispatch(e)
         return e
 
