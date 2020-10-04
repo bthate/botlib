@@ -39,8 +39,7 @@ class ENOFILENAME(Exception):
 
 class O:
 
-    __slots__ = ("__dict__", "__stp__", "__prs__")
-
+    __slots__ = ("__dict__", "__stp__", "prs")
 
     def __delitem__(self, k):
         del self.__dict__[k]
@@ -69,7 +68,7 @@ class Object(O):
     def __init__(self):
         timestamp = str(datetime.datetime.now()).split()
         self.__stp__ = os.path.join(get_type(self), str(uuid.uuid4()), os.sep.join(timestamp))
-        self.__prs__ = O()
+        self.prs = O()
 
 class Ol(Object):
 
