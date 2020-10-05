@@ -8,6 +8,22 @@ import unittest
 
 class Test_Object(unittest.TestCase):
 
+    def testO(self):
+        o = ol.O()
+        self.assertEqual(type(o), ol.O)
+
+    def test_intern1(self):
+        o = ol.Object()
+        self.assertTrue(o.stp)
+
+    def test_intern2(self):
+        o = ol.Object()
+        self.assertFalse(o.prs)
+        
+    def test_intern3(self):
+        o = ol.Object()
+        self.assertTrue("<ol.O object at" in str(o.prs))
+
     def test_empty(self):
         o = ol.Object()
         self.assertTrue(not o) 
@@ -21,7 +37,7 @@ class Test_Object(unittest.TestCase):
     def test_stamp(self):
         o = ol.Object()
         ol.save(o)
-        self.assertTrue(o.__stp__)
+        self.assertTrue(o.stp)
 
     def test_attribute(self):
         o = ol.Object()

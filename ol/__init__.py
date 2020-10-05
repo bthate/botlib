@@ -39,7 +39,11 @@ class ENOFILENAME(Exception):
 
 class O:
 
-    __slots__ = ("__dict__", "__stp__", "prs")
+    __slots__ = ("__dict__", "stp", "prs")
+
+    def __init__(self):
+        timestamp = str(datetime.datetime.now()).split()
+        self.stp = os.path.join(get_type(self), str(uuid.uuid4()), os.sep.join(timestamp))
 
     def __delitem__(self, k):
         del self.__dict__[k]
@@ -60,15 +64,15 @@ class O:
         self.__dict__[k] = v
         return self.__dict__[k]
 
-    def __str__(self):
-        return json.dumps(self, default=default, sort_keys=True)
 
 class Object(O):
 
     def __init__(self):
-        timestamp = str(datetime.datetime.now()).split()
-        self.__stp__ = os.path.join(get_type(self), str(uuid.uuid4()), os.sep.join(timestamp))
+        super().__init__()
         self.prs = O()
+
+    def __str__(self):
+        return json.dumps(self, default=default, sort_keys=True)
 
 class Ol(Object):
 
@@ -134,8 +138,8 @@ def hook(fn):
     return o
 
 def hooked(d):
-    if "__path__" in d:
-        t = d["__path__"].split(os.sep)[0]
+    if "stp" in d:
+        t = d["stp"].split(os.sep)[0]
         if not t:
             return d
         o = get_cls(t)()
@@ -245,8 +249,8 @@ def keys(o):
 def load(o, path):
     assert path
     assert wd
-    o.__path__ = path
-    lpath = os.path.join(wd, "store", path)
+    stp = os.sep.join(path.split(os.sep)[-4:])
+    lpath = os.path.join(wd, "store", stp)
     cdir(lpath)
     with open(lpath, "r") as ofile:
         try:
@@ -268,26 +272,26 @@ def register(o, k, v):
 def save(o, stime=None):
     assert wd
     if stime:
-        o.__stp__ = os.path.join(get_type(o), str(uuid.uuid4()),
+        o.st_ = os.path.join(get_type(o), str(uuid.uuid4()),
                                    stime + "." + str(random.randint(0, 100000)))
     else:
         timestamp = str(datetime.datetime.now()).split()
-        if getattr(o, "__stp__", None):
+        if getattr(o, "stp", None):
             try:
-                spl = o.__stp__.split(os.sep)
+                spl = o.stp.split(os.sep)
                 spl[-2] = timestamp[0]
                 spl[-1] = timestamp[1]
-                o.__stp__ = os.sep.join(spl)
+                o.stp = os.sep.join(spl)
             except AttributeError:
                 pass
-        if not getattr(o, "__stp__", None):
-            o.__stp__ = os.path.join(get_type(o), str(uuid.uuid4()), os.sep.join(timestamp))
-    opath = os.path.join(wd, "store", o.__stp__)
+        if not getattr(o, "stp", None):
+            o.stp = os.path.join(get_type(o), str(uuid.uuid4()), os.sep.join(timestamp))
+    opath = os.path.join(wd, "store", o.stp)
     cdir(opath)
     with open(opath, "w") as ofile:
         json.dump(o, ofile, default=default)
     os.chmod(opath, 0o444)
-    return o.__stp__
+    return o.stp
 
 def scan(o, txt):
     for _k, v in items(o):
@@ -306,28 +310,28 @@ def search(o, s):
     return ok
 
 def stamp(o):
-    t = o.__stp__.split(os.sep)[0]
+    t = o.stp.split(os.sep)[0]
     oo = get_cls(t)()
     for k in xdir(o):
         oo = getattr(o, k, None)
         if isinstance(oo, Object):
             stamp(oo)
-            oo.__dict__["__stp__"] = oo.__stp__
+            oo.__dict__["stp"] = oo.stp
             ooo[k] = oo
         else:
             continue
-    oo.__dict__["__stp__"] = o.__stp__
+    oo.__dict__["stp"] = o.stp
     return oo
 
 def unstamp(o):
     for k in xdir(o):
         oo = getattr(o, k, None)
         if isinstance(oo, Object):
-            del oo.__dict__["__stp__"]
+            del oo.__dict__["stp"]
         else:
             continue
     try:
-        del o.__dict__["__stp__"]
+        del o.__dict__["stp"]
     except KeyError:
         pass
     return o
