@@ -1,0 +1,19 @@
+#!/usr/bin/python3 -u
+# BOTLIB - the bot library !
+#
+#
+
+import os, sys ; sys.path.insert(0, os.getcwd())
+import ol
+
+
+def main():
+    k = ol.krn.boot("table", os.path.expanduser("~/.bot"))
+    k.walk("ol")
+    k.walk("bmod")
+    k.walk("bot")
+    print("classes = %s" % k.classes)
+    print("mods = %s" % k.mods)
+    print("names = %s" % k.names)
+ 
+ol.trm.execute(main)

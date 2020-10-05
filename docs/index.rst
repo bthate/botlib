@@ -1,10 +1,19 @@
 BOTLIB
 ######
 
-| Welcome to BOTLIB, framework to program bots ! see https://pypi.org/project/botlib/ 
+| welcome to BOTLIB, framework to program bots ! see https://pypi.org/project/botlib/ 
 
-BOTLIB is placed in the public domain and contains no copyright or LICENSE, this makes BOTLIB truely
-free (pastable) code you can use how you see fit.
+
+BOTLIB is placed in the public domain and contains no copyright or LICENSE, this makes BOTLIB truely free (pastable) code you can use how you see
+fit. BOTLIB uses the OLIB library for the new functional object library, it provides a "move all methods to functions" like this:
+
+::
+
+ obj.method(*args) -> method(obj, *args) 
+
+
+a way of programming with objects, replacing OOP. not object-oriented
+programming, but object programming. if you are used to functional programming you'll like it (or not) ;]
 
 INSTALL
 =======
@@ -20,6 +29,9 @@ if you have previous versions already installed and things fail try to force rei
 ::
 
  > sudo pip3 install botlib --upgrade --force-reinstall
+
+
+you can also run directly from the tarball, see https://pypi.org/project/botlib/#files
 
 USAGE
 =====
@@ -39,69 +51,71 @@ see a list of commands:
 
  $ bcmd cmd
  cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
- $
+
 
 BOTLIB also has it's own shell, bsh:
 
 ::
 
- $ bsh
- > cmd
- cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
- >
+  $ bsh
+  > cmd
+  cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
 
 IRC
 ===
 
-BOTLIB provides the bot as IRC client, configuration is done with the cfg command:
+BOTLIB provides the bot as IRC client, configuration is done with the icfg command:
 
 ::
 
- $ bcmd cfg
- channel=#botlib nick=birc port=6667 server=localhost
+ $ bcmd icfg
+ channel=#botlib nick=birc port=6667 realname=botlib server=localhost username=botlib
 
 you can use setters to edit fields in a configuration:
 
 ::
 
- $ bcmd cfg server=irc.freenode.net channel=\#botlib nick=birc
- channel=#botib nick=botlib port=6669 server=irc.freenode.net
+ $ bcmd icfg server=irc.freenode.net channel=\#botlib nick=birc
+ channel=#botib nick=birc port=6667 realname=botlib server=irc.freenode.net username=botlib
 
 RSS
 ===
 
 BOTLIB provides with the use of feedparser the possibility to server rss
-feeds in your channel. adding rss to mods= will load the rss modules and
-start it's poller.
+feeds in your channel. BOTLIB itself doesn't depend, you need to install
+python3-feedparser first:
+
+::
+
+ $ sudo apt install python3-feedparser
+ $
+
+adding rss to mods= will load the rss module and start it's poller.
 
 ::
 
  $ bot mods=rss
- >
 
 to add an url use the rss command with an url:
 
 ::
 
- $ bcmd rss https://github.com/bthate/objr/commits/master.atom
+ $ bcmd rss https://github.com/bthate/botlib/commits/master.atom
  ok 1
- $
 
 run the rss command to see what urls are registered:
 
 ::
 
  $ bcmd fnd rss
- 0 https://github.com/bthate/objr/commits/master.atom
- $
+ 0 https://github.com/bthate/botlib/commits/master.atom
 
 the ftc (fetch) command can be used to poll the added feeds:
 
 ::
 
  $ bcmd ftc
- fetched 0
- $
+ fetched 20
 
 UDP
 ===
@@ -114,7 +128,6 @@ use the 'budp' command to send text via the bot to the channel on the irc server
 ::
 
  $ tail -f /var/log/syslog | budp
- $
 
 to send the tail output to the IRC channel you can use python3 code to send a UDP packet 
 to botlib, it's unencrypted txt send to the bot and display on the joined channels.
@@ -132,14 +145,6 @@ to send a udp packet to botlib in python3:
 MODULES
 =======
 
-BOTLIB use the OLIB library for the new functional object library, it provides
-a move all methods to functions and to 
-
-::
-
- method(obj, *args) instead of obj.method(*args)
-
-way of programming with objects. If you are use to functional programming you'll like it (or not) ;]
 
 OLIB has the following modules:
 
@@ -151,7 +156,6 @@ OLIB has the following modules:
     ol.dbs	- databases
     ol.hdl	- handler
     ol.krn	- kernel
-    ol.ldr	- loader
     ol.prs 	- parser
     ol.tms	- times
     ol.trm	- terminal
@@ -162,24 +166,25 @@ BOTLIB uses bmod as the namespace to distribute modules for BOTLIB:
 
 ::
 
-    bmod.cfg	= config
-    bmod.cmd	- command
-    bmod.edt	- edit
-    bmod.ent	- enter log and todo items
-    bmod.fnd	- find typed objects
-    bmod.mbx	- mailbox
-    bmod.rss	- rich site syndicate
-    bmod.udp	- UDP to IRC gateway
+   bmod.cfg	= config
+   bmod.cmd	- command
+   bmod.edt	- edit
+   bmod.ent	- enter log and todo items
+   bmod.fnd	- find typed objects
+   bmod.mbx	- mailbox
+   bmod.rss	- rich site syndicate
+   bmod.udp	- UDP to IRC gateway
 
 BOTLIB has 1 module, the bot.irc module:
 
 ::
 
-    bot.irc	- irc relay chat
+   bot.irc
 
 this package adds bot.irc to the bot namespace.
 
 you can add you own modules to the bot and bmod packages, they are namespace packages.
+
 
 SERVICE
 =======
@@ -199,7 +204,7 @@ the /etc/systemd/system/botd.service file:
  [Service]
  User=botd
  Group=botd
- ExecStart=/usr/local/bin/botd -s 
+ ExecStart=/usr/local/bin/botd
 
  [Install]
  WantedBy=multi-user.target

@@ -17,6 +17,7 @@ class Event(ol.Object):
         super().__init__()
         self.args = []
         self.cmd = ""
+        self.prs = ol.Object()
         self.ready = threading.Event()
         self.rest = ""
         self.result = []

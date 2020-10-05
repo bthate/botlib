@@ -37,7 +37,6 @@ BMOD
     bmod.edt     - edit
     bmod.ent     - enter log and todo items
     bmod.fnd     - find typed objects
-    bmod.mbx     - mailbox
     bmod.rss     - rich site syndicate
     bmod.udp     - UDP to IRC gateway
 

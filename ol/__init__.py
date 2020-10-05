@@ -37,7 +37,14 @@ class ENOFILENAME(Exception):
 
     pass
 
-class O:
+class Object:
+
+    __slots__ = ("__dict__", "stp")
+
+    def __init__(self):
+        super().__init__()
+        timestamp = str(datetime.datetime.now()).split()
+        self.stp = os.path.join(get_type(self), str(uuid.uuid4()), os.sep.join(timestamp))
 
     def __delitem__(self, k):
         del self.__dict__[k]
@@ -56,17 +63,6 @@ class O:
 
     def __setitem__(self, k, v):
         self.__dict__[k] = v
-
-
-class Object(O):
-
-    __slots__ = ("stp", "prs")
-
-    def __init__(self):
-        super().__init__()
-        timestamp = str(datetime.datetime.now()).split()
-        self.stp = os.path.join(get_type(self), str(uuid.uuid4()), os.sep.join(timestamp))
-        self.prs = O()
 
     def __str__(self):
         return json.dumps(self, default=default, sort_keys=True)

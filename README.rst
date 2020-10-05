@@ -6,9 +6,30 @@ BOTLIB
 
 | BOTLIB is placed in the public domain and contains no copyright or LICENSE, this makes BOTLIB truely free (pastable) code you can use how you see fit, 
 
+| BOTLIB uses the OLIB library for the new functional object library, it provides a "move all methods to functions" like this:
+
+::
+
+ method(obj, *args) instead of obj.method(*args)
+
+
+a new way of programming with objects, replacing OOP. If you are use to functional programming you'll like it (or not) ;]
+
+INSTALL
+=======
+
 installation is through pypi:
 
+::
+
+ > sudo pip3 install botlib
+
+if you have previous versions already installed and things fail try to force reinstall:
+
+::
+
  > sudo pip3 install botlib --upgrade --force-reinstall
+
 
 you can also run directly from the tarball, see https://pypi.org/project/botlib/#files
 
@@ -43,26 +64,33 @@ BOTLIB also has it's own shell, bsh:
 IRC
 ===
 
-BOTLIB provides the bot as IRC client, configuration is done with the cfg command:
+BOTLIB provides the bot as IRC client, configuration is done with the icfg command:
 
 ::
 
- $ bcmd cfg
+ $ bcmd icfg
  channel=#botlib nick=birc port=6667 realname=botlib server=localhost username=botlib
 
 you can use setters to edit fields in a configuration:
 
 ::
 
- $ bcmd cfg server=irc.freenode.net channel=\#botlib nick=birc
+ $ bcmd icfg server=irc.freenode.net channel=\#botlib nick=birc
  channel=#botib nick=birc port=6667 realname=botlib server=irc.freenode.net username=botlib
 
 RSS
 ===
 
 BOTLIB provides with the use of feedparser the possibility to server rss
-feeds in your channel. adding rss to mods= will load the rss modules and
-start it's poller.
+feeds in your channel. BOTLIB itself doesn't depend, you need to install
+python3-feedparser first:
+
+::
+
+ $ sudo apt install python3-feedparser
+ $
+
+ adding rss to mods= will load the rss module and start it's poller.
 
 ::
 
@@ -72,7 +100,7 @@ to add an url use the rss command with an url:
 
 ::
 
- $ bcmd rss https://github.com/bthate/objr/commits/master.atom
+ $ bcmd rss https://github.com/bthate/botlib/commits/master.atom
  ok 1
 
 run the rss command to see what urls are registered:
@@ -80,14 +108,14 @@ run the rss command to see what urls are registered:
 ::
 
  $ bcmd fnd rss
- 0 https://github.com/bthate/objr/commits/master.atom
+ 0 https://github.com/bthate/botlib/commits/master.atom
 
 the ftc (fetch) command can be used to poll the added feeds:
 
 ::
 
  $ bcmd ftc
- fetched 0
+ fetched 20
 
 UDP
 ===
@@ -117,14 +145,6 @@ to send a udp packet to botlib in python3:
 MODULES
 =======
 
-BOTLIB use the OLIB library for the new functional object library, it provides
-a move all methods to functions and to 
-
-::
-
- method(obj, *args) instead of obj.method(*args)
-
-way of programming with objects. If you are use to functional programming you'll like it (or not) ;]
 
 OLIB has the following modules:
 
