@@ -5,6 +5,12 @@
 import ol
 
 def cfg(event):
+    if event.prs.sets:
+        ol.update(k.cfg, event.prs.sets)
+        ol.save(k.cfg)
+    event.reply(ol.format(k.cfg, skip=["otxt", "sets"]))
+
+def icfg(event):
     try:
         from bot.irc import Cfg
     except ImportError:

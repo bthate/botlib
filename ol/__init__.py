@@ -185,7 +185,6 @@ def format(o, keylist=None, pure=False, skip=None, txt=""):
             val = o[key]
         except KeyError:
             continue
-        print(key, val)
         if not val:
             continue
         val = str(val).strip()
