@@ -39,12 +39,6 @@ class ENOFILENAME(Exception):
 
 class O:
 
-    __slots__ = ("__dict__", "stp", "prs")
-
-    def __init__(self):
-        timestamp = str(datetime.datetime.now()).split()
-        self.stp = os.path.join(get_type(self), str(uuid.uuid4()), os.sep.join(timestamp))
-
     def __delitem__(self, k):
         del self.__dict__[k]
 
@@ -52,7 +46,7 @@ class O:
         return self.__dict__.get(k, d)
 
     def __iter__(self):
-        return iter(self.__dict__.keys())
+        return iter(self.__dict__)
 
     def __len__(self):
         return len(self.__dict__)
@@ -62,13 +56,16 @@ class O:
 
     def __setitem__(self, k, v):
         self.__dict__[k] = v
-        return self.__dict__[k]
 
 
 class Object(O):
 
+    __slots__ = ("stp", "prs")
+
     def __init__(self):
         super().__init__()
+        timestamp = str(datetime.datetime.now()).split()
+        self.stp = os.path.join(get_type(self), str(uuid.uuid4()), os.sep.join(timestamp))
         self.prs = O()
 
     def __str__(self):
@@ -188,6 +185,7 @@ def format(o, keylist=None, pure=False, skip=None, txt=""):
             val = o[key]
         except KeyError:
             continue
+        print(key, val)
         if not val:
             continue
         val = str(val).strip()

@@ -248,7 +248,7 @@ def rm(event):
         o._deleted = True
         got.append(o)
     for o in got:
-        save(o)
+        ol.save(o)
     event.reply("ok")
 
 def dpl(event):

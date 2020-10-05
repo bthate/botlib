@@ -18,11 +18,11 @@ param.dpl = ["reddit title,summary,link",]
 param.log = ["test1", ""]
 param.flt = ["0", "1", ""]
 param.fnd = ["log test2", "todo test3", "rss reddit"]
-param.rss = ["https://www.reddit.com/r/python/.rss", ""]
+param.rss = ["https://www.reddit.com/r/python/.rss"]
 param.tdo = ["test4", ""]
 
 events = []
-ignore = ["ps", "rm"]
+ignore = ["tsk", "rm", "ftc", "rss"]
 nrtimes = 1
 
 k = ol.krn.get_kernel()
