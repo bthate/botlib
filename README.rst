@@ -4,16 +4,16 @@ BOTLIB
 | Welcome to BOTLIB, framework to program bots ! see https://pypi.org/project/botlib/ 
 
 
-| BOTLIB is placed in the public domain and contains no copyright or LICENSE, this makes BOTLIB truely free (pastable) code you can use how you see fit, 
-
-| BOTLIB uses the OLIB library for the new functional object library, it provides a "move all methods to functions" like this:
+BOTLIB uses the OLIB library for the new functional object library, it provides a "move all methods to functions" like this:
 
 ::
 
- method(obj, *args) instead of obj.method(*args)
+ obj.method(*args) -> method(obj, *args) 
 
 
-a new way of programming with objects, replacing OOP. If you are use to functional programming you'll like it (or not) ;]
+a way of programming with objects, replacing OOP. not object-oriented programming, but object programming. if you are used to functional programming you'll like it (or not) ;]
+
+BOTLIB is placed in the public domain and contains no copyright or LICENSE, this makes BOTLIB truely free (pastable) code you can use how you see fit.
 
 INSTALL
 =======
