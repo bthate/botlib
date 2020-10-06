@@ -1,7 +1,8 @@
 BOTLIB
 ######
 
-| welcome to BOTLIB, framework to program bots ! see https://pypi.org/project/botlib/ 
+| Welcome to BOTLIB, framework to program bots ! see https://pypi.org/project/botlib/ 
+
 
 BOTLIB uses the OLIB library for the new functional object library, it provides a "move all methods to functions" like this:
 
@@ -10,42 +11,39 @@ BOTLIB uses the OLIB library for the new functional object library, it provides 
  obj.method(*args) -> method(obj, *args) 
 
 
-a way of programming with objects, replacing OOP. not object-oriented
-programming, but object programming. if you are used to functional programming you'll like it (or not) ;]
+It's a way of programming with objects, replacing OOP. Not object-oriented programming, but object programming. If you are used to functional programming you'll like it (or not) ;]
 
 BOTLIB is placed in the public domain and contains no copyright or LICENSE, this makes BOTLIB truely free (pastable) code you can use how you see fit.
 
 INSTALL
 =======
 
-installation is through pypi:
+Installation is through pypi:
 
 ::
 
  > sudo pip3 install botlib
 
-if you have previous versions already installed and things fail try to force reinstall:
+If you have previous versions already installed and things fail try to force reinstall:
 
 ::
 
  > sudo pip3 install botlib --upgrade --force-reinstall
 
 
-you can also run directly from the tarball, see https://pypi.org/project/botlib/#files
+You can also run directly from the tarball, see https://pypi.org/project/botlib/#files
 
 USAGE
 =====
 
-BOTLIB has it's own CLI, you can run it by giving the bcmd command on the
-prompt, it will return with no response:
+BOTLIB has it's own CLI, you can run it by giving the bcmd command on the prompt, it will return with no response:
 
 :: 
 
  $ bcmd
  $ 
 
-you can use bcmd <cmd> to run a command directly, use the !cmd command to
-see a list of commands:
+You can use bcmd <cmd> to run a command directly, use the !cmd command to see a list of commands:
 
 ::
 
@@ -71,7 +69,7 @@ BOTLIB provides the bot as IRC client, configuration is done with the icfg comma
  $ bcmd icfg
  channel=#botlib nick=birc port=6667 realname=botlib server=localhost username=botlib
 
-you can use setters to edit fields in a configuration:
+You can use setters to edit fields in a configuration:
 
 ::
 
@@ -90,27 +88,27 @@ python3-feedparser first:
  $ sudo apt install python3-feedparser
  $
 
-adding rss to mods= will load the rss module and start it's poller.
+Adding rss to mods= will load the rss module and start it's poller.
 
 ::
 
  $ bot mods=rss
 
-to add an url use the rss command with an url:
+To add an url use the rss command with an url:
 
 ::
 
  $ bcmd rss https://github.com/bthate/botlib/commits/master.atom
  ok 1
 
-run the rss command to see what urls are registered:
+Run the rss command to see what urls are registered:
 
 ::
 
  $ bcmd fnd rss
  0 https://github.com/bthate/botlib/commits/master.atom
 
-the ftc (fetch) command can be used to poll the added feeds:
+The ftc (fetch) command can be used to poll the added feeds:
 
 ::
 
@@ -123,16 +121,16 @@ UDP
 BOTLIB also has the possibility to serve as a UDP to IRC relay where you
 can send UDP packages to the bot and have txt displayed on the channel.
 
-use the 'budp' command to send text via the bot to the channel on the irc server:
+Use the 'budp' command to send text via the bot to the channel on the irc server:
 
 ::
 
  $ tail -f /var/log/syslog | budp
 
-to send the tail output to the IRC channel you can use python3 code to send a UDP packet 
+To send the tail output to the IRC channel you can use python3 code to send a UDP packet 
 to botlib, it's unencrypted txt send to the bot and display on the joined channels.
 
-to send a udp packet to botlib in python3:
+To send a udp packet to botlib in python3:
 
 ::
 
@@ -144,7 +142,6 @@ to send a udp packet to botlib in python3:
 
 MODULES
 =======
-
 
 OLIB has the following modules:
 
@@ -175,41 +172,29 @@ BOTLIB uses bmod as the namespace to distribute modules for BOTLIB:
    bmod.rss	- rich site syndicate
    bmod.udp	- UDP to IRC gateway
 
-BOTLIB has 1 module, the bot.irc module:
+BOTLIB has 1 module in the bot namespace, the bot.irc module:
 
 ::
 
    bot.irc
 
-this package adds bot.irc to the bot namespace.
+This package adds bot.irc to the bot namespace.
 
-you can add you own modules to the bot and bmod packages, they are namespace packages.
+You can add you own modules to the bot and bmod packages, they are namespace packages.
 
 
 SERVICE
 =======
 
-if you want to run the BOTLIB 24/7 you can install botd as a service for
+If you want to run the BOTLIB 24/7 you can install botd as a service for
 the systemd daemon. You can do this by copying the following into
 the /etc/systemd/system/botd.service file:
 
 ::
 
+ $ sudo cp files/botd.service /etc/systemd/system/botd.service
 
- [Unit]
- Description=24/7 channel daemon
- After=network-online.target
- Wants=network-online.target
-
- [Service]
- User=botd
- Group=botd
- ExecStart=/usr/local/bin/botd
-
- [Install]
- WantedBy=multi-user.target
-
-add the botd user to the system:
+BOTLIB uses the botd user, so we add botd user and group to the system:
 
 ::
 
@@ -218,43 +203,42 @@ add the botd user to the system:
  $ passwd botd
  $ chown -R botd:botd /var/lib/botd/
 
-copy modules over to botd's work directory:
+Then copy any modules over to botd's modules directory (bmod):
 
 ::
 
  $ cp -Ra bmod/*.py /var/lib/botd/bmod
 
-make sure permissions are set properly:
+Make sure permissions are set properly:
 
 ::
 
  $ chmod -R 700 /var/lib/botd/bmod/
  $ chmod -R 400 /var/lib/botd/bmod/*.py
 
-add the botd service with:
+Add the botd service with:
 
 ::
 
  $ sudo systemctl enable botd
  $ sudo systemctl daemon-reload
 
-configure botd to connect to irc:
+Configure botd to connect to irc:
 
 ::
 
- $ sudo -u botd bcmd cfg server=irc.freenode.net channel=#botlib nick=botd
+ $ sudo -u botd bctl cfg server=irc.freenode.net channel=#botlib nick=botd
 
-then restart the botd service.
+Then restart the botd service.
 
 ::
 
  $ sudo service botd stop
  $ sudo service botd start
 
-the bot should join your configured channel, if it doesn't look at the
-/var/log/syslog for any debug messages. 
+The bot should join your configured channel, if it doesn't look at /var/log/syslog for any debug messages. 
 
-if you don't want botd to startup at boot, remove the service file:
+If you don't want botd to startup at boot, remove the service file:
 
 ::
 
@@ -263,7 +247,7 @@ if you don't want botd to startup at boot, remove the service file:
 CONTACT
 =======
 
-contact me on IRC/freenode/#dunkbots or email me at bthate@dds.nl
+you can contact me on IRC/freenode/#dunkbots or email me at bthate@dds.nl
 
 | Bart Thate (bthate@dds.nl, thatebart@gmail.com)
 | botfather on #dunkbots irc.freenode.net
