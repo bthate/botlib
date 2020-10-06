@@ -33,12 +33,13 @@ BMOD
     :template: module.rst
 
 
-    bmod.cmd     - command
-    bmod.edt     - edit
-    bmod.ent     - enter log and todo items
-    bmod.fnd     - find typed objects
-    bmod.rss     - rich site syndicate
-    bmod.udp     - UDP to IRC gateway
+    bmod.cfg	- configuration
+    bmod.cmd    - command
+    bmod.edt    - edit
+    bmod.ent    - enter log and todo items
+    bmod.fnd    - find typed objects
+    bmod.rss    - rich site syndicate
+    bmod.udp    - UDP to IRC gateway
 
 BOTLIB
 ======
