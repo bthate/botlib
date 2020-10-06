@@ -31,11 +31,10 @@ def privileges(name):
     old_umask = os.umask(0o22)
 
 def main():
-    k = ol.krn.boot("botd", os.path.expanduser("~/.bot"))
+    k = ol.krn.boot("botd", "/var/lib/botd")
     if "d" in k.cfg.opts:
         privileges("botd")
         daemon()
-    k = ol.krn.boot("botd", "/var/lib/botd")
     k.scandir(k.cfg.md, "bmod")
     k.walk("bot")
     k.walk("bmod")
