@@ -68,11 +68,14 @@ class Handler(ol.ldr.Loader):
     @ol.locked(dispatchlock)
     def dispatch(self, e):
         e.parse()
-        if e.cmd in self.cmds:
-            try:
-                self.cmds[e.cmd](e)
-            except Exception as ex:
-                print(ol.utl.get_exception())
+        if e.cmd not in self.cmds:
+            mn = ol.get(self.mods, "cmd", None)
+            if mn:
+                self.load(mn)
+        try:
+            self.cmds[e.cmd](e)
+        except Exception as ex:
+            print(ol.utl.get_exception())
         e.show()
         e.ready.set()
 

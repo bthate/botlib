@@ -59,7 +59,7 @@ def last(o):
     path, l = lastfn(str(ol.get_type(o)))
     if  l:
         ol.update(o, l)
-        o.__path__ = path
+        o.stp = os.sep.join(os.path.split(path)[-4:])
 
 def lasttype(otype):
     fns = objs(otype)
