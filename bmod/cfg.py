@@ -4,6 +4,8 @@
 
 import ol
 
+k = ol.krn.get_kernel()
+
 def cfg(event):
     if event.prs.sets:
         ol.update(k.cfg, event.prs.sets)
