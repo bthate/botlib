@@ -90,7 +90,7 @@ def mbx(event):
     if not event.args:
         return
     fn = os.path.expanduser(event.args[0])
-    event.direct("reading from %s" % fn)
+    event.reply("reading from %s" % fn)
     nr = 0
     if os.path.isdir(fn):
         thing = mailbox.Maildir(fn, create=False)
@@ -105,11 +105,11 @@ def mbx(event):
     for m in thing:
         o = Email()
         ol.update(o, m)
-        try:
+        if "Date" in o:
             sdate = os.sep.join(to_date(o.Date).split())
-            print(sdate)
-        except AttributeError:
-            sdate = None
+        else:
+            print("no date %s" % o)
+            continue
         o.text = ""
         for payload in m.walk():
             if payload.get_content_type() == 'text/plain':

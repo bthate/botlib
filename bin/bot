@@ -10,6 +10,7 @@ def main():
     k = ol.krn.boot("bot", os.path.expanduser("~/.bot"))
     k.walk("bot")
     k.walk("bmod")
+    k.walk("mymod")
     if k.cfg.txt:
         return k.cmd(k.cfg.otxt)
     k.start()

@@ -19,6 +19,11 @@ def fnd(event):
     otype = event.prs.args[0]
     otypes = ol.get(k.names, otype, [otype,])
     args = list(ol.keys(event.prs.gets))
+    try:
+        arg = event.args[1:]
+    except ValueError:
+        arg = []
+    args.extend(arg)
     nr = -1
     for otype in otypes:
         for o in ol.dbs.find(otype, event.prs.gets, event.prs.index, event.prs.timed):
@@ -28,9 +33,10 @@ def fnd(event):
             else:
                 pure = True
             if not args:
-                args = ol.keys(o)
-            txt = "%s %s" % (str(nr), ol.format(o, args, pure, event.prs.skip))
+                bargs = ol.keys(o)
+            else:
+                bargs = args
+            txt = "%s %s" % (str(nr), ol.format(o, bargs, pure, event.prs.skip))
             if "t" in event.prs.opts:
                 txt = txt + " %s" % (ol.tms.elapsed(time.time() - ol.tms.fntime(o.stp)))
-            args = []
             event.reply(txt)

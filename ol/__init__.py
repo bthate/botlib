@@ -170,7 +170,7 @@ def edit(o, setter, skip=False):
             o[key] = value
     return count
 
-def format(o, keylist=None, pure=False, skip=None, txt=""):
+def format(o, keylist=None, pure=False, skip=None, txt="", sep="\n"):
     if not keylist:
         keylist = vars(o).keys()
     res = []
@@ -184,7 +184,7 @@ def format(o, keylist=None, pure=False, skip=None, txt=""):
         if not val:
             continue
         val = str(val).strip()
-        val = val.replace("\n", "")
+        val = val.replace("\n", sep)
         res.append((key, val))
     result = []
     for k, v in res:
@@ -265,7 +265,7 @@ def register(o, k, v):
 def save(o, stime=None):
     assert wd
     if stime:
-        o.st_ = os.path.join(get_type(o), str(uuid.uuid4()),
+        o.stp = os.path.join(get_type(o), str(uuid.uuid4()),
                                    stime + "." + str(random.randint(0, 100000)))
     else:
         timestamp = str(datetime.datetime.now()).split()
