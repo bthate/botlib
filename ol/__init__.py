@@ -242,8 +242,8 @@ def keys(o):
 def load(o, path):
     assert path
     assert wd
-    stp = os.sep.join(path.split(os.sep)[-4:])
-    lpath = os.path.join(wd, "store", stp)
+    o.stp = os.sep.join(path.split(os.sep)[-4:])
+    lpath = os.path.join(wd, "store", o.stp)
     cdir(lpath)
     with open(lpath, "r") as ofile:
         try:
