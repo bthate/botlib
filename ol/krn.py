@@ -38,6 +38,8 @@ class Kernel(ol.hdl.Handler):
         if not mns:
             return
         for mn in ol.utl.spl(mns):
+            if mn not in self.table:
+                self.load(mn)
             if mn in self.table:
                 func = getattr(self.table[mn], "init", None)
                 if func:

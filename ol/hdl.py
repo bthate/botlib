@@ -69,13 +69,14 @@ class Handler(ol.ldr.Loader):
     def dispatch(self, e):
         e.parse()
         if e.cmd not in self.cmds:
-            mn = ol.get(self.mods, "cmd", None)
+            mn = ol.get(ol.tbl.mods, e.cmd, None)
             if mn:
                 self.load(mn)
-        try:
-            self.cmds[e.cmd](e)
-        except Exception as ex:
-            print(ol.utl.get_exception())
+        if e.cmd in self.cmds:
+            try:
+                self.cmds[e.cmd](e)
+            except Exception as ex:
+                print(ol.utl.get_exception())
         e.show()
         e.ready.set()
 
@@ -100,4 +101,3 @@ class Handler(ol.ldr.Loader):
     def stop(self):
         self.stopped = True
         self.queue.put(None)
-

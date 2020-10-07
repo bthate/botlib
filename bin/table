@@ -9,15 +9,10 @@ import ol
 
 def main():
     k = ol.krn.boot("table", os.path.expanduser("~/.bot"))
-    print(dir(ol.tbl))
-    if "classes" not in dir(ol.tbl):
-        ol.tbl.classes = {}
-    if "cmds" not in dir(ol.tbl):
-        ol.tbl.cmds = {}
-    if "mods" not in dir(ol.tbl):
-        ol.tbl.mods= {}
-    if "names" not in dir(ol.tbl):
-        ol.tbl.names = {}
+    ol.tbl.classes = {}
+    ol.tbl.cmds = {}
+    ol.tbl.mods= {}
+    ol.tbl.names = {}
     k.walk("ol")
     k.walk("bmod")
     k.walk("bot")
@@ -25,9 +20,7 @@ def main():
     print("#")
     print("#")
     print("")
-    print("classes = %s" % str(ol.tbl.classes))
-    print("")
-    print("cmds = %s" % str(ol.tbl.cmds))
+    print("classes = %s" % ol.tbl.classes)
     print("")
     print("mods = %s" % ol.tbl.mods)
     print("")

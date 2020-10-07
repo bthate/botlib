@@ -361,3 +361,4 @@ from ol import tsk
 from ol import utl
 from ol import bus
 from ol import krn
+from ol import tbl

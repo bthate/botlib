@@ -14,19 +14,20 @@ class Loader(ol.Object):
         self.classes = ol.Object()
         self.cmds = ol.Object()
         self.mods = ol.Object()
-        self.names = ol.Ol()
+        self.names = ol.Object()
         self.table = ol.Object()
 
     def load(self, name):
         if name not in self.table:
             self.table[name] = importlib.import_module(name)
+        self.scan(self.table[name])
 
     def scan(self, mod):
         ol.update(self.cmds, find_cmds(mod))
-        ol.update(self.mods, find_mods(mod))
-        ol.update(self.names, find_names(mod))
-        ol.update(self.classes, find_classes(mod))
-
+        ol.tbl.mods.update(vars(find_mods(mod)))
+        ol.tbl.names.update(vars(find_names(mod)))
+        ol.tbl.classes.update(vars(find_classes(mod)))
+        
     def walk(self, names):
         for name in names.split(","):
             spec = importlib.util.find_spec(name)
@@ -39,7 +40,6 @@ class Loader(ol.Object):
             for mi in pkgutil.iter_modules(pn):
                 mn = "%s.%s" % (name, mi.name)
                 self.load(mn)
-                self.scan(self.table[mn])
 
 def find_cmds(mod):
     cmds = ol.Object()
