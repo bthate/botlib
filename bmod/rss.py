@@ -243,7 +243,7 @@ def rm(event):
     selector = {"rss": event.args[0]}
     nr = 0
     got = []
-    for o in find("bmod.rss.Rss", selector):
+    for o in ol.dbs.find("bmod.rss.Rss", selector):
         nr += 1
         o._deleted = True
         got.append(o)

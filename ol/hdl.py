@@ -88,7 +88,10 @@ class Handler(ol.ldr.Loader):
             if "orig" not in event:
                 event.orig = repr(self)
             if event.txt:
-                ol.tsk.launch(self.dispatch, event, name=event.txt.split()[0])
+                if self.cfg.threaded:
+                    ol.tsk.launch(self.dispatch, event, name=event.txt.split()[0])
+                else:
+                    self.dispatch(event)
             else:
                 event.ready.set()
 
