@@ -235,6 +235,7 @@ Then restart the botd service.
 
  $ sudo service botd stop
  $ sudo service botd start
+
 The bot should join your configured channel, if it doesn't look at /var/log/syslog for any debug messages. 
 
 If you don't want botd to startup at boot, remove the service file:

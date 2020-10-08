@@ -9,8 +9,8 @@ import unittest
 class Test_Object(unittest.TestCase):
 
     def testO(self):
-        o = ol.O()
-        self.assertEqual(type(o), ol.O)
+        o = ol.Object()
+        self.assertEqual(type(o), ol.Object)
 
     def test_intern1(self):
         o = ol.Object()
@@ -18,11 +18,11 @@ class Test_Object(unittest.TestCase):
 
     def test_intern2(self):
         o = ol.Object()
-        self.assertFalse(o.prs)
+        self.assertFalse(o)
         
     def test_intern3(self):
         o = ol.Object()
-        self.assertTrue("<ol.O object at" in str(o.prs))
+        self.assertTrue("<ol.Object object at" in repr(o))
 
     def test_empty(self):
         o = ol.Object()
