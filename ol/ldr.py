@@ -19,8 +19,10 @@ class Loader(ol.Object):
 
     def load(self, name):
         if name not in self.table:
+            print("mod %s" % name)
             self.table[name] = importlib.import_module(name)
             self.scan(self.table[name])
+        return self.table[name]
 
     def scan(self, mod):
         ol.update(self.cmds, find_cmds(mod))

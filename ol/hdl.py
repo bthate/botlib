@@ -65,7 +65,6 @@ class Handler(ol.ldr.Loader):
         self.queue = queue.Queue()
         self.stopped = False
 
-    @ol.locked(dispatchlock)
     def dispatch(self, e):
         e.parse()
         if e.cmd not in self.cmds:
@@ -75,9 +74,10 @@ class Handler(ol.ldr.Loader):
         if e.cmd in self.cmds:
             try:
                 self.cmds[e.cmd](e)
+                e.show()
+                e.ready.set()
             except Exception as ex:
                 print(ol.utl.get_exception())
-        e.show()
         e.ready.set()
 
     def handler(self):
@@ -88,10 +88,10 @@ class Handler(ol.ldr.Loader):
             if "orig" not in event:
                 event.orig = repr(self)
             if event.txt:
-                #if self.cfg.threaded:
-                #    ol.tsk.launch(self.dispatch, event, name=event.txt.split()[0])
-                #else:
-                self.dispatch(event)
+                if self.cfg.nothread:
+                    self.dispatch(event)
+                else:
+                    ol.tsk.launch(self.dispatch, event)
             else:
                 event.ready.set()
 

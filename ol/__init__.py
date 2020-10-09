@@ -233,6 +233,9 @@ def items(o):
     except (TypeError, AttributeError):
         return o.__dict__.items()
 
+def ojson(o):
+    return json.dumps(o, default=default, indent=4, sort_keys=True)
+
 def keys(o):
     try:
         return o.keys()
@@ -245,6 +248,7 @@ def load(o, path):
     o.stp = os.sep.join(path.split(os.sep)[-4:])
     lpath = os.path.join(wd, "store", o.stp)
     cdir(lpath)
+    print("file %s" % path)
     with open(lpath, "r") as ofile:
         try:
             v = json.load(ofile, object_hook=hooked)
@@ -281,6 +285,7 @@ def save(o, stime=None):
             o.stp = os.path.join(get_type(o), str(uuid.uuid4()), os.sep.join(timestamp))
     opath = os.path.join(wd, "store", o.stp)
     cdir(opath)
+    print("save %s" % o.stp)
     with open(opath, "w") as ofile:
         json.dump(o, ofile, default=default)
     os.chmod(opath, 0o444)
