@@ -35,7 +35,7 @@ class Console(ol.Object):
             event.wait()
 
     def poll(self):
-        e = ol.hdl.Event()
+        e = ol.evt.Event()
         e.orig = repr(self)
         e.txt = input("> ")
         return e

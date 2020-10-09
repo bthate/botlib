@@ -233,8 +233,7 @@ def items(o):
     except (TypeError, AttributeError):
         return o.__dict__.items()
 
-def json(o):
-    import json
+def ojson(o):
     return json.dumps(o, default=default, indent=4, sort_keys=True)
 
 def keys(o):
@@ -249,7 +248,6 @@ def load(o, path):
     o.stp = os.sep.join(path.split(os.sep)[-4:])
     lpath = os.path.join(wd, "store", o.stp)
     cdir(lpath)
-    print("file %s" % path)
     with open(lpath, "r") as ofile:
         try:
             v = json.load(ofile, object_hook=hooked)
@@ -286,7 +284,6 @@ def save(o, stime=None):
             o.stp = os.path.join(get_type(o), str(uuid.uuid4()), os.sep.join(timestamp))
     opath = os.path.join(wd, "store", o.stp)
     cdir(opath)
-    print("save %s" % o.stp)
     with open(opath, "w") as ofile:
         json.dump(o, ofile, default=default)
     os.chmod(opath, 0o444)
@@ -356,7 +353,9 @@ def xdir(o, skip=None):
 
 import ol
 
+from ol import tbl
 from ol import ldr
+from ol import evt
 from ol import csl
 from ol import dbs
 from ol import hdl
@@ -367,4 +366,3 @@ from ol import tsk
 from ol import utl
 from ol import bus
 from ol import krn
-from ol import tbl

@@ -13,7 +13,13 @@ import threading
 
 starttime = time.time()
 
-class Kernel(ol.hdl.Handler):
+class Kernel(ol.hdl.Handler, ol.ldr.Loader):
+
+    classes = ol.Object()
+    cmds = ol.Object()
+    funcs = ol.Object()
+    mods = ol.Object()
+    names = ol.Object()
 
     def __init__(self):
         super().__init__()
