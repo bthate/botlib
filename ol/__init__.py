@@ -233,7 +233,8 @@ def items(o):
     except (TypeError, AttributeError):
         return o.__dict__.items()
 
-def ojson(o):
+def json(o):
+    import json
     return json.dumps(o, default=default, indent=4, sort_keys=True)
 
 def keys(o):

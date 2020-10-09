@@ -16,7 +16,7 @@ def cmd(event):
         event.reply(",".join(c))
 
 def krn(event):
-    event.reply(ol.ojson(k))
+    event.reply(ol.json(k))
 
 def mds(event):
     mods = ol.utl.find_modules("bmod")
