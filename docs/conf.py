@@ -8,7 +8,7 @@ import os
 
 sys.path.append(os.path.abspath("."))
 
-__version__ = 100
+__version__ = 104
 
 needs_sphinx='1.1'
 nitpick_ignore=[

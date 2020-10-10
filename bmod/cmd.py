@@ -46,4 +46,4 @@ def upt(event):
     event.reply(ol.tms.elapsed(time.time() - ol.krn.starttime))
 
 def ver(event):
-    event.reply(" | ".join(["%s %s" % (mod.__name__.upper(), mod.__version__) for mod in ol.values(k.table) if ol.get(mod, "__version__")]))
+    event.reply("BOTLIB %s | OLIB %s" % (__version__, ol.__version__))

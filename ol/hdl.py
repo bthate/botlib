@@ -35,6 +35,8 @@ class Handler(ol.Object):
         e.ready.set()
 
     def get_cmd(self, cmd):
+        if not cmd:
+            return
         mn = ol.get(ol.tbl.mods, cmd, None)
         mod = ol.utl.direct(mn)
         return getattr(mod, cmd, None)

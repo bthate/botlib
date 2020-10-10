@@ -2,8 +2,6 @@
 #
 #
 
-__version__ = 12
-
 import importlib
 import ol
 import os

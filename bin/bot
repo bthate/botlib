@@ -3,18 +3,15 @@
 #
 #
 
-import os, sys ; sys.path.insert(0, os.getcwd())
-import ol
+from ol.spc import Console, boot, execute, os
 
 def main():
-    k = ol.krn.boot("bot", os.path.expanduser("~/.bot"))
-    if k.cfg.txt:
-        return k.cmd(k.cfg.otxt)
+    k = boot("bot", os.path.expanduser("~/.bot"))
     k.start()
     k.init(k.cfg.mods)
-    c = ol.csl.Console()
+    c = Console()
     c.start()
     k.wait()
 
-ol.trm.execute(main)
+execute(main)
 os._exit(0)

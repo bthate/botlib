@@ -2,6 +2,8 @@
 #
 #
 
+__version__ = 12
+
 import datetime
 import importlib
 import json
