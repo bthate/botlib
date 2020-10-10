@@ -11,7 +11,7 @@ import time
 k = ol.krn.get_kernel()
 
 def cmd(event):
-    c = sorted(ol.keys(k.mods))
+    c = sorted(ol.keys(ol.tbl.mods))
     if c:
         event.reply(",".join(c))
 

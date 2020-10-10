@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # BOTLIB - framework to program bots
 #
 #
@@ -51,7 +50,7 @@ class Cfg(ol.Cfg):
         self.server = "localhost"
         self.username = "botd"
 
-class Event(ol.hdl.Event):
+class Event(ol.evt.Event):
 
     def show(self):
         for txt in self.result:
@@ -68,7 +67,7 @@ class TextWrap(textwrap.TextWrapper):
         self.tabsize = 4
         self.width = 450
 
-class IRC(ol.hdl.Handler):
+class IRC(ol.hdl.Handler, ol.ldr.Loader):
 
     def __init__(self):
         super().__init__()
