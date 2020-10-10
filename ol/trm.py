@@ -3,6 +3,7 @@
 #
 
 import atexit
+import ol
 import sys
 import termios
 
@@ -16,6 +17,9 @@ def execute(main):
         print("")
     except PermissionError:
         print("you need root permission.")
+    except Exception as ex:
+        print(str(main))
+        print(ol.utl.get_exception())
     finally:
         termreset()
 

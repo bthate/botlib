@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -u
-# BOTLIB - the bot library !
+# OLIB - object library
 #
 #
 
@@ -82,7 +82,7 @@ def main():
     ol.tbl.mods= {}
     ol.tbl.names = {}
     walk("ol,bmod,bot")
-    print("# BOTLIB - framework to program bots")
+    print("# OLIB - object library")
     print("#")
     print("#")
     print("")

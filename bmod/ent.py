@@ -1,4 +1,4 @@
-# OLIB - object library
+# BOTLIB - the bot library !
 #
 #
 

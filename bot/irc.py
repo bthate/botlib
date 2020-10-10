@@ -1,4 +1,4 @@
-# BOTLIB - framework to program bots
+# BOTLIB - the bot library !
 #
 #
 

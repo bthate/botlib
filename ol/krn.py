@@ -2,7 +2,7 @@
 #
 #
 
-__version__ = 11
+__version__ = 12
 
 import importlib
 import ol
@@ -11,6 +11,7 @@ import sys
 import time
 import threading
 
+booted = False
 starttime = time.time()
 
 class Kernel(ol.hdl.Handler, ol.ldr.Loader):
@@ -51,22 +52,6 @@ class Kernel(ol.hdl.Handler, ol.ldr.Loader):
                 if func:
                     ol.tsk.launch(func, self, name=ol.get_name(func))
 
-    def scandir(self, path, modname="ol"):
-        mods = []
-        ol.utl.cdir(path + os.sep + "")
-        sys.path.insert(0, path)
-        for fn in os.listdir(path):
-            if fn.startswith("_") or not fn.endswith(".py"):
-                continue
-            mn = "%s.%s" % (modname, fn[:-3])
-            try:
-                module = self.load(mn)
-            except Exception as ex:
-                print(ol.utl.get_exception())
-                continue
-            mods.append(module)
-        return mods
-
     def say(self, channel, txt):
         print(txt)
 
@@ -95,7 +80,41 @@ def boot(name, wd, md=""):
         print(ol.format(k.cfg))
     return k
 
+def cmd(txt, wd=None):
+    if not txt:
+        return 
+    global booted
+    if not booted:
+        k = boot("botlib", wd or os.path.expanduser("~/.bot"))
+        booted = True
+    else:
+        k = get_kernel()
+    ol.bus.bus.add(k)
+    if ol.utl.root():
+        scandir(os.path.join(k.cfg.wd, "bmod"), "bmod")
+    e = ol.evt.Event()
+    e.txt = txt
+    k.dispatch(e)
+    return e
+
 def get_kernel():
     if kernels:
         return kernels[0]
     return Kernel()
+
+def scandir(path, modname="ol"):
+    k = get_kernel()
+    mods = []
+    ol.utl.cdir(path + os.sep + "")
+    sys.path.insert(0, path)
+    for fn in os.listdir(path):
+        if fn.startswith("_") or not fn.endswith(".py"):
+            continue
+        mn = "%s.%s" % (modname, fn[:-3])
+        try:
+            module = k.load(mn)
+        except Exception as ex:
+            print(ol.utl.get_exception())
+            continue
+        mods.append(module)
+    return mods

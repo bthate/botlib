@@ -1,19 +1,9 @@
 BOTLIB
 ######
 
-| Welcome to BOTLIB, framework to program bots ! see https://pypi.org/project/botlib/ 
-
-
-BOTLIB uses the OLIB library for the new functional object library, it provides a "move all methods to functions" like this:
-
-::
-
- obj.method(*args) -> method(obj, *args) 
-
-
-It's a way of programming with objects, replacing OOP. Not object-oriented programming, but object programming. If you are used to functional programming you'll like it (or not) ;]
-
-BOTLIB is placed in the public domain and contains no copyright or LICENSE, this makes BOTLIB truely free (pastable) code you can use how you see fit.
+Welcome to BOTLIB, the bot library ! 
+BOTLIB (and OLIB) are placed in the public domain and contains no copyright or LICENSE, this makes BOTLIB/OLIB truely free (pastable) code you can use how you see fit.
+see https://pypi.org/project/botlib/ 
 
 INSTALL
 =======
@@ -58,6 +48,33 @@ BOTLIB also has it's own shell, bsh:
   $ bsh
   > cmd
   cmd|dne|edt|fnd|flt|krn|log|add|tsk|tdo|udp|upt|ver
+
+MODULES
+=======
+
+BOTLIB uses bmod as the namespace to distribute modules for BOTLIB:
+
+::
+
+   bmod.cfg	= config
+   bmod.cmd	- command
+   bmod.edt	- edit
+   bmod.ent	- enter log and todo items
+   bmod.fnd	- find typed objects
+   bmod.mbx	- mailbox
+   bmod.rss	- rich site syndicate
+   bmod.udp	- UDP to IRC gateway
+
+BOTLIB has 1 module in the bot namespace, the bot.irc module:
+
+::
+
+   bot.irc
+
+This package adds bot.irc to the bot namespace.
+
+You can add you own modules to the bot and bmod packages, they are namespace packages.
+
 
 IRC
 ===
@@ -140,8 +157,38 @@ To send a udp packet to botlib in python3:
      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
      sock.sendto(bytes(txt.strip(), "utf-8"), host, port)
 
-MODULES
-=======
+OBJECT PROGRAMMING
+==================
+
+BOTLIB uses the OLIB library as object library, it provides a "move all methods to functions" like this:
+
+::
+
+ obj.method(*args) -> method(obj, *args) 
+
+ e.g.
+
+ not:
+
+ >>> import ol
+ >>> o = ol.Object()
+ >>> o.set("key", "value")
+ >>> o.key
+ 'value'
+
+ but:
+
+ >>> import ol
+ >>> o = ol.Object()
+ >>> ol.set(o, "key", "value")
+ >>> o.key
+ 'value'
+
+It's a way of programming with objects, replacing OOP. It works because the
+object library is 2 characters long and using the, now generic, method is
+not too much typing.
+
+It's a way of programming with objects, replacing OOP. Not object-oriented programming, but object programming. If you are used to functional programming you'll like it (or not) ;]
 
 OLIB has the following modules:
 
@@ -159,29 +206,6 @@ OLIB has the following modules:
     ol.tsk	- tasks
     ol.utl	- utilities
 
-BOTLIB uses bmod as the namespace to distribute modules for BOTLIB:
-
-::
-
-   bmod.cfg	= config
-   bmod.cmd	- command
-   bmod.edt	- edit
-   bmod.ent	- enter log and todo items
-   bmod.fnd	- find typed objects
-   bmod.mbx	- mailbox
-   bmod.rss	- rich site syndicate
-   bmod.udp	- UDP to IRC gateway
-
-BOTLIB has 1 module in the bot namespace, the bot.irc module:
-
-::
-
-   bot.irc
-
-This package adds bot.irc to the bot namespace.
-
-You can add you own modules to the bot and bmod packages, they are namespace packages.
-
 
 SERVICE
 =======
@@ -191,10 +215,27 @@ the systemd daemon. You can do this by copying the following into
 the /etc/systemd/system/botd.service file:
 
 ::
+ 
+ [Unit]
+ Description=24/7 channel daemon
+ After=network-online.target
+ Wants=network-online.target
+ 
+ [Service]
+ User=botd
+ Group=botd
+ ExecStart=/usr/local/bin/botd
+  
+ [Install]
+ WantedBy=multi-user.target
+
+if you run from tarball you can just copy the service file:
+
+::
 
  $ sudo cp files/botd.service /etc/systemd/system/botd.service
 
-BOTLIB uses the botd user, so we add botd user and group to the system:
+BOTLIB uses the botd user, so we add botd user and group to the system (as root):
 
 ::
 
@@ -220,32 +261,34 @@ Add the botd service with:
 
 ::
 
- $ sudo systemctl enable botd
- $ sudo systemctl daemon-reload
+ $ systemctl enable botd
+ $ systemctl daemon-reload
 
 Configure botd to connect to irc:
 
 ::
 
- $ sudo -u botd bctl cfg server=irc.freenode.net channel=#botlib nick=botd
+ $ bctl icfg server=irc.freenode.net channel=#botlib nick=botd
 
 Then restart the botd service.
 
 ::
 
- $ sudo service botd stop
- $ sudo service botd start
+ $ service botd stop
+ $ service botd start
 
 The bot should join your configured channel, if it doesn't look at /var/log/syslog for any debug messages. 
 
-If you don't want botd to startup at boot, remove the service file:
+If you don't want botd to startup at boot, you can remove the service file:
 
 ::
 
- $ sudo rm /etc/systemd/system/botd.service
+ $ rm /etc/systemd/system/botd.service
 
 CONTACT
 =======
+
+"hope you enjoy my contribution back to society."
 
 you can contact me on IRC/freenode/#dunkbots or email me at bthate@dds.nl
 

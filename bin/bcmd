@@ -1,17 +1,7 @@
 #!/usr/bin/python3
-# BOTLIB - framework to program bots
+# BOTLIB - the bot library !
 #
 #
 
-import ol
-import os
-import sys
-
-sys.path.insert(0, os.getcwd())
-
-def main():
-    k = ol.krn.boot("bot", os.path.expanduser("~/.bot"))
-    k.cmd(k.cfg.otxt)
-
-ol.trm.execute(main)
-os._exit(0)
+from ol.spc import cmd, execute, sys
+execute(lambda: cmd(" ".join(sys.argv[1:])))

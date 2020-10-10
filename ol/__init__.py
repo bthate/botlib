@@ -305,6 +305,9 @@ def search(o, s):
         ok = True
     return ok
 
+def set(o, k, v):
+    setattr(o, k, v)
+
 def stamp(o):
     t = o.stp.split(os.sep)[0]
     oo = get_cls(t)()
