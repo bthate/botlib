@@ -1,0 +1,23 @@
+#!/usr/bin/python3
+# BOTLIB - the bot library !
+#
+#
+
+from ol.spc import Console, boot, execute, os
+from bot.irc import Cfg, IRC
+
+def main():
+    k = boot("bot", os.path.expanduser("~/.bot"))
+    k.start()
+    k.walk("mymod")
+    k.init(k.cfg.mods, k.cfg.exc)
+    i = IRC()
+    if k.cfg.args:
+        i.cfg.server = k.cfg.args[0]
+    i.start()
+    c = Console()
+    c.start()
+    k.wait()
+
+execute(main)
+os._exit(0)
