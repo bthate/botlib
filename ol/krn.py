@@ -5,6 +5,7 @@
 import importlib
 import ol
 import os
+import pkgutil
 import sys
 import time
 import threading
@@ -17,8 +18,8 @@ class Kernel(ol.hdl.Handler, ol.ldr.Loader):
     classes = ol.Object()
     cmds = ol.Object()
     funcs = ol.Object()
-    mods = ol.Object()
-    names = ol.Object()
+    mods = ol.tbl.mods
+    names = ol.tbl.names
 
     def __init__(self):
         super().__init__()
@@ -67,6 +68,24 @@ class Kernel(ol.hdl.Handler, ol.ldr.Loader):
     def wait(self):
         while not self.stopped:
             time.sleep(60.0)
+
+    def walk(self, names):
+        for name in names.split(","):
+            spec = importlib.util.find_spec(name)
+            if not spec:
+                continue
+            pkg = importlib.util.module_from_spec(spec)
+            pn = getattr(pkg, "__path__", None)
+            if not pn:
+                continue
+            for mi in pkgutil.iter_modules(pn):
+                mn = "%s.%s" % (name, mi.name)
+                mod = ol.utl.direct(mn)
+                ol.update(self.cmds, vars(ol.int.find_cmds(mod)))
+                ol.update(self.funcs, vars(ol.int.find_funcs(mod)))
+                ol.update(self.mods, vars(ol.int.find_mods(mod)))
+                ol.update(self.names, vars(ol.int.find_names(mod)))
+                ol.update(self.classes, vars(ol.int.find_class(mod)))
 
 kernels = []
 

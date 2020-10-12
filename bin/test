@@ -6,14 +6,14 @@
 import os, sys ; sys.path.insert(0, os.getcwd())
 
 import ol
-import bmod.rss
+#import bmod.rss
 import os
 import sys
 import time
 import unittest
 
 def main():
-    bmod.rss.debug = True
+    #bmod.rss.debug = True
     for line in os.popen("rm -fR ~/.test").readlines():
         print(line)
     k = ol.krn.boot("test", os.path.expanduser("~/.test"))

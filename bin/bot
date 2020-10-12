@@ -8,7 +8,7 @@ from ol.spc import Console, boot, execute, os
 def main():
     k = boot("bot", os.path.expanduser("~/.bot"))
     k.start()
-    k.init(k.cfg.mods)
+    k.init(k.cfg.mods, k.cfg.exc)
     c = Console()
     c.start()
     k.wait()

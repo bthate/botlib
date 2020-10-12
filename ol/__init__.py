@@ -235,8 +235,8 @@ def items(o):
     except (TypeError, AttributeError):
         return o.__dict__.items()
 
-def ojson(o):
-    return json.dumps(o, default=default, indent=4, sort_keys=True)
+def ojson(o, *args, **kwargs):
+    return json.dumps(o, default=default, *args, **kwargs)
 
 def keys(o):
     try:
@@ -338,9 +338,16 @@ def unstamp(o):
     return o
 
 def update(o, d):
-    if isinstance(d, Object):
-        return o.__dict__.update(vars(d))
-    return o.__dict__.update(d)
+    if isinstance(o, Object):
+        if isinstance(d, Object):
+            return o.__dict__.update(vars(d))
+        else:
+            return o.__dict__.update(d)
+    else:
+        if isinstance(d, Object):
+            return o.__dict__.update(d)
+        else:
+            return o.update(d)
 
 def values(o):
     try:
@@ -359,6 +366,7 @@ def xdir(o, skip=None):
 import ol
 
 from ol import tbl
+from ol import int
 from ol import ldr
 from ol import evt
 from ol import csl

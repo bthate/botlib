@@ -27,7 +27,7 @@ nrtimes = 1
 
 k = ol.krn.get_kernel()
 
-class Event(ol.hdl.Event):
+class Event(ol.evt.Event):
 
     def reply(self, txt):
         if "v" in k.cfg.opts:

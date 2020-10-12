@@ -36,7 +36,7 @@ def fnd(event):
                 bargs = ol.keys(o)
             else:
                 bargs = args
-            txt = "%s %s" % (str(nr), ol.format(o, bargs, pure, event.prs.skip))
+            txt = "%s %s" % (str(nr), ol.format(o, bargs, False, event.prs.skip))
             if "t" in event.prs.opts:
                 txt = txt + " %s" % (ol.tms.elapsed(time.time() - ol.tms.fntime(o.stp)))
             event.reply(txt)
