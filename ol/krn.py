@@ -39,10 +39,13 @@ class Kernel(ol.hdl.Handler, ol.ldr.Loader):
         self.dispatch(e)
         return e
 
-    def init(self, mns):
+    def init(self, mns, exc=""):
         if not mns:
             return
+        exclude = exc.split(",")
         for mn in ol.utl.spl(mns):
+            if mn in exclude:
+                continue
             if mn not in self.table:
                 self.load(mn)
             if mn in self.table:

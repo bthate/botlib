@@ -1,8 +1,8 @@
-# BOTLIB - the bot library !
+# BOTLIB - the bot library
 #
 #
 
-__version__ = 103
+__version__ = 1
 
 import ol
 import os
@@ -43,12 +43,12 @@ class Cfg(ol.Cfg):
 
     def __init__(self):
         super().__init__()
-        self.channel = "#botd"
-        self.nick = "botd"
+        self.channel = "#botlib"
+        self.nick = "botlib"
         self.port = 6667
-        self.realname = "bot daemon"
+        self.realname = "the bot library"
         self.server = "localhost"
-        self.username = "botd"
+        self.username = "botlib"
 
 class Event(ol.evt.Event):
 
