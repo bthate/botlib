@@ -68,30 +68,35 @@ def walk(names):
         for mi in pkgutil.iter_modules(pn):
             mn = "%s.%s" % (name, mi.name)
             mod = ol.utl.direct(mn)
-            ol.tbl.cmds.update(vars(find_cmds(mod)))
-            ol.tbl.funcs.update(vars(find_funcs(mod)))
-            ol.tbl.mods.update(vars(find_mods(mod)))
-            ol.tbl.names.update(vars(find_names(mod)))
-            ol.tbl.classes.update(vars(find_class(mod)))
+            ol.update(ol.tbl.funcs, vars(find_funcs(mod)))
+            ol.update(ol.tbl.mods, vars(find_mods(mod)))
+            ol.update(ol.tbl.names, vars(find_names(mod)))
+            ol.update(ol.tbl.classes, vars(find_class(mod)))
 
 def main():
     k = ol.krn.boot("table", os.path.expanduser("~/.bot"))
-    ol.tbl.classes = {}
-    ol.tbl.cmds = {}
-    ol.tbl.funcs = {}
-    ol.tbl.mods= {}
-    ol.tbl.names = {}
+    ol.tbl.classes = ol.Object()
+    ol.tbl.mods= ol.Object()
+    ol.tbl.funcs = ol.Object()
+    ol.tbl.names = ol.Object()
     walk("ol,bmod,bot")
     print("# OLIB - object library")
     print("#")
     print("#")
     print("")
-    print("classes = %s" % ol.tbl.classes)
+    print("import ol")
     print("")
-    print("mods = %s" % ol.tbl.mods)
+    print("classes = ol.Object()")
+    print("mods = ol.Object()")
+    print("funcs = ol.Object()")
+    print("names = ol.Object()")
     print("")
-    print("funcs = %s" % ol.tbl.funcs)
+    print("ol.update(classes, %s)" % ol.tbl.classes)
     print("")
-    print("names = %s" % ol.tbl.names)
+    print("ol.update(mods, %s)" % ol.tbl.mods)
+    print("")
+    print("ol.update(funcs, %s)" % ol.tbl.funcs)
+    print("")
+    print("ol.update(names, %s)" % ol.tbl.names)
  
 ol.trm.execute(main)

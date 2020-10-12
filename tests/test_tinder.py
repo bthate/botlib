@@ -12,12 +12,12 @@ import unittest
 param = ol.Object()
 param.add = ["test@shell", "bart"]
 param.dne = ["test4", ""]
-param.edt = ["bmod.rss.Cfg", "bmod.rss.Cfg server=localhost", "bmod.rss.Cfg channel=#dunkbots"]
+param.edt = ["mymod.rss.Cfg", "mymod.rss.Cfg server=localhost", "mymod.rss.Cfg channel=#dunkbots"]
 param.rm = ["reddit", ]
 param.dpl = ["reddit title,summary,link",]
 param.log = ["test1", ""]
 param.flt = ["0", "1", ""]
-param.fnd = ["log txt==test2", "todo text==test3", "rss rss==reddit"]
+param.fnd = ["mymod.ent.log txt==test2", "mymod.ent.Todo text==test3", "rss rss==reddit"]
 param.rss = ["https://www.reddit.com/r/python/.rss"]
 param.tdo = ["test4", ""]
 

@@ -338,16 +338,10 @@ def unstamp(o):
     return o
 
 def update(o, d):
-    if isinstance(o, Object):
-        if isinstance(d, Object):
-            return o.__dict__.update(vars(d))
-        else:
-            return o.__dict__.update(d)
+    if isinstance(d, Object):
+        return o.__dict__.update(vars(d))
     else:
-        if isinstance(d, Object):
-            return o.__dict__.update(d)
-        else:
-            return o.update(d)
+        return o.__dict__.update(d)
 
 def values(o):
     try:

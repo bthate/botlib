@@ -2,10 +2,17 @@
 #
 #
 
-classes = {'Bus': ['ol.bus'], 'Console': ['ol.csl'], 'Event': ['bot.irc'], 'Handler': ['ol.hdl'], 'Kernel': ['ol.krn'], 'Loader': ['ol.ldr'], 'Getter': ['ol.prs'], 'Option': ['ol.prs'], 'Setter': ['ol.prs'], 'Skip': ['ol.prs'], 'Timed': ['ol.prs'], 'Token': ['ol.prs'], 'Repeater': ['ol.tms'], 'Timer': ['ol.tms'], 'Cfg': ['bot.irc'], 'Feed': ['bmod.rss'], 'Fetcher': ['bmod.rss'], 'Rss': ['bmod.rss'], 'Seen': ['bmod.rss'], 'UDP': ['bmod.udp'], 'DCC': ['bot.irc'], 'IRC': ['bot.irc'], 'User': ['bot.irc'], 'Users': ['bot.irc']}
+import ol
 
-mods = {'cfg': 'bmod.cfg', 'cmd': 'bmod.cmd', 'tsk': 'bmod.cmd', 'upt': 'bmod.cmd', 'ver': 'bmod.cmd', 'fnd': 'bmod.fnd', 'dpl': 'bmod.rss', 'fed': 'bmod.rss', 'ftc': 'bmod.rss', 'rm': 'bmod.rss', 'rss': 'bmod.rss'}
+classes = ol.Object()
+mods = ol.Object()
+funcs = ol.Object()
+names = ol.Object()
 
-funcs = {'cfg': 'bmod.cfg.cfg', 'cmd': 'bmod.cmd.cmd', 'tsk': 'bmod.cmd.tsk', 'upt': 'bmod.cmd.upt', 'ver': 'bmod.cmd.ver', 'fnd': 'bmod.fnd.fnd', 'dpl': 'bmod.rss.dpl', 'fed': 'bmod.rss.fed', 'ftc': 'bmod.rss.ftc', 'rm': 'bmod.rss.rm', 'rss': 'bmod.rss.rss'}
+ol.update(classes, {"Bus": ["ol.bus"], "Cfg": ["bot.irc"], "Console": ["ol.csl"], "DCC": ["bot.irc"], "Event": ["bot.irc"], "Getter": ["ol.prs"], "Handler": ["ol.hdl"], "IRC": ["bot.irc"], "Kernel": ["ol.krn"], "Loader": ["ol.ldr"], "Option": ["ol.prs"], "Repeater": ["ol.tms"], "Setter": ["ol.prs"], "Skip": ["ol.prs"], "Timed": ["ol.prs"], "Timer": ["ol.tms"], "Token": ["ol.prs"], "UDP": ["bmod.udp"], "User": ["bot.irc"], "Users": ["bot.irc"]})
 
-names = {'bus': ['ol.bus.Bus'], 'console': ['ol.csl.Console'], 'event': ['bot.irc.Event'], 'handler': ['ol.hdl.Handler'], 'kernel': ['ol.krn.Kernel'], 'loader': ['ol.ldr.Loader'], 'getter': ['ol.prs.Getter'], 'option': ['ol.prs.Option'], 'setter': ['ol.prs.Setter'], 'skip': ['ol.prs.Skip'], 'timed': ['ol.prs.Timed'], 'token': ['ol.prs.Token'], 'repeater': ['ol.tms.Repeater'], 'timer': ['ol.tms.Timer'], 'cfg': ['bot.irc.Cfg'], 'feed': ['bmod.rss.Feed'], 'fetcher': ['bmod.rss.Fetcher'], 'rss': ['bmod.rss.Rss'], 'seen': ['bmod.rss.Seen'], 'udp': ['bmod.udp.UDP'], 'dcc': ['bot.irc.DCC'], 'irc': ['bot.irc.IRC'], 'user': ['bot.irc.User'], 'users': ['bot.irc.Users']}
+ol.update(mods, {"cfg": "bmod.cfg", "cmd": "bmod.cmd", "fnd": "bmod.fnd", "tsk": "bmod.cmd", "upt": "bmod.cmd", "ver": "bmod.cmd"})
+
+ol.update(funcs, {"cfg": "bmod.cfg.cfg", "cmd": "bmod.cmd.cmd", "fnd": "bmod.fnd.fnd", "tsk": "bmod.cmd.tsk", "upt": "bmod.cmd.upt", "ver": "bmod.cmd.ver"})
+
+ol.update(names, {"bus": ["ol.bus.Bus"], "cfg": ["bot.irc.Cfg"], "console": ["ol.csl.Console"], "dcc": ["bot.irc.DCC"], "event": ["bot.irc.Event"], "getter": ["ol.prs.Getter"], "handler": ["ol.hdl.Handler"], "irc": ["bot.irc.IRC"], "kernel": ["ol.krn.Kernel"], "loader": ["ol.ldr.Loader"], "option": ["ol.prs.Option"], "repeater": ["ol.tms.Repeater"], "setter": ["ol.prs.Setter"], "skip": ["ol.prs.Skip"], "timed": ["ol.prs.Timed"], "timer": ["ol.tms.Timer"], "token": ["ol.prs.Token"], "udp": ["bmod.udp.UDP"], "user": ["bot.irc.User"], "users": ["bot.irc.Users"]})

@@ -19,7 +19,6 @@ setup(
     description="""framework to program bots""",
     long_description=read(),
     license='Public Domain',
-    install_requires=["feedparser"],
     packages=["bot", "bmod", "ol"],
     namespace_packages=["bot", "bmod"],
     zip_safe=False,
