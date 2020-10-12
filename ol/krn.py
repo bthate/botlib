@@ -18,8 +18,8 @@ class Kernel(ol.hdl.Handler, ol.ldr.Loader):
     classes = ol.Object()
     cmds = ol.Object()
     funcs = ol.Object()
-    mods = ol.tbl.mods
-    names = ol.tbl.names
+    mods = ol.Object()
+    names = ol.Object()
 
     def __init__(self):
         super().__init__()
