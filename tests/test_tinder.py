@@ -83,6 +83,6 @@ def do_cmd(cmd):
         txt = cmd + " " + ex 
         e = Event()
         e.txt = txt
-        k.queue.put(e)
+        k.put(e)
         events.append(e)
     return events

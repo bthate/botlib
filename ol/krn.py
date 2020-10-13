@@ -57,6 +57,9 @@ class Kernel(ol.hdl.Handler, ol.ldr.Loader):
                 if func:
                     ol.tsk.launch(func, self, name=ol.get_name(func))
 
+    def put(self, e):
+        self.queue.put_nowait(e)
+
     def say(self, channel, txt):
         self.direct(txt)
 
