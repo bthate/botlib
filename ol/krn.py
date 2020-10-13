@@ -40,6 +40,9 @@ class Kernel(ol.hdl.Handler, ol.ldr.Loader):
         self.dispatch(e)
         return e
 
+    def direct(self, txt):
+        print(txt.rstrip())
+
     def init(self, mns, exc=""):
         if not mns:
             return
@@ -55,7 +58,7 @@ class Kernel(ol.hdl.Handler, ol.ldr.Loader):
                     ol.tsk.launch(func, self, name=ol.get_name(func))
 
     def say(self, channel, txt):
-        print(txt)
+        self.direct(txt)
 
     def start(self):
         assert ol.wd

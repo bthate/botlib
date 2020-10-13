@@ -89,6 +89,9 @@ def eml(event):
 def mbx(event):
     if not event.args:
         return
+    if os.path.exists(os.path.join(ol.wd, "mymod.mbx.Email")):
+        event.reply("email is already scanned")
+        return
     fn = os.path.expanduser(event.args[0])
     event.reply("reading from %s" % fn)
     nr = 0

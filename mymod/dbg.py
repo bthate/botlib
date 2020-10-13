@@ -4,6 +4,8 @@
 
 import ol
 
+k = ol.krn.get_kernel()
+
 def krn(event):
     event.reply(ol.ojson(k))
 

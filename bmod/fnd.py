@@ -7,7 +7,7 @@ import os
 import time
 
 def fnd(event):
-    if not event.args:
+    if not event.prs.args:
         wd = os.path.join(ol.wd, "store", "")
         ol.cdir(wd)
         fns = os.listdir(wd)
@@ -16,16 +16,14 @@ def fnd(event):
             event.reply(",".join(fns))
         return
     k = ol.krn.get_kernel()
-    otype = event.prs.args[0]
-    otypes = ol.get(k.names, otype, [otype,])
-    args = list(ol.keys(event.prs.gets))
+    args = []
     try:
-        arg = event.args[1:]
+        arg = event.prs.args[1:]
     except ValueError:
         arg = []
     args.extend(arg)
     nr = -1
-    for otype in otypes:
+    for otype in event.types:
         for o in ol.dbs.find(otype, event.prs.gets, event.prs.index, event.prs.timed):
             nr += 1
             if "f" in event.prs.opts:

@@ -18,9 +18,13 @@ class Console(ol.Object):
     def __init__(self):
         super().__init__()
         self.ready = threading.Event()
+        ol.bus.bus.add(self)
 
     def announce(self, txt):
         pass
+
+    def direct(self, txt):
+        print(txt.rstrip())
 
     def input(self):
         k = ol.krn.get_kernel()
@@ -40,11 +44,8 @@ class Console(ol.Object):
         e.txt = input("> ")
         return e
 
-    def raw(self, txt):
-        print(txt.rstrip())
-
     def say(self, channel, txt):
-        self.raw(txt)
+        self.direct(txt)
 
     def start(self):
         k = ol.krn.get_kernel()

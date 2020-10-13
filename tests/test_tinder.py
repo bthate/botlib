@@ -1,4 +1,4 @@
-# OLIB - object library
+# BOTLIB - the bot library !
 #
 #
 
@@ -17,12 +17,13 @@ param.rm = ["reddit", ]
 param.dpl = ["reddit title,summary,link",]
 param.log = ["test1", ""]
 param.flt = ["0", "1", ""]
-param.fnd = ["mymod.ent.log txt==test2", "mymod.ent.Todo text==test3", "rss rss==reddit"]
+param.fnd = ["cfg server==localhost", "kernel mods==rss", "rss rss==reddit", "email From==pvp"]
 param.rss = ["https://www.reddit.com/r/python/.rss"]
 param.tdo = ["test4", ""]
+param.mbx = ["~/Desktop/25-1-2013", ""]
 
 events = []
-ignore = []
+ignore = ["mbx",]
 nrtimes = 1
 
 k = ol.krn.get_kernel()
@@ -35,15 +36,18 @@ class Event(ol.evt.Event):
 
 class Test_Tinder(unittest.TestCase):
 
-    def test_all(self):
-        for x in range(k.cfg.index or 1):
-            tests(k)
 
     def test_thrs(self):
         thrs = []
         for x in range(k.cfg.index or 1):
             ol.tsk.launch(tests, k)
         consume(events)
+
+    def test_neuman(self):
+        for e in do_cmd("mbx"):
+            e.wait()
+        for x in range(k.cfg.index or 1):
+            tests(k)
         
 def consume(elems):
     fixed = []
@@ -77,8 +81,6 @@ def do_cmd(cmd):
     for ex in e:
         nr += 1
         txt = cmd + " " + ex 
-        if "-v" in sys.argv:
-            print(txt)
         e = Event()
         e.txt = txt
         k.queue.put(e)

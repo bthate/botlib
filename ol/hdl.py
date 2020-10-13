@@ -6,6 +6,7 @@ import importlib
 import ol
 import pkgutil
 import queue
+import sys
 import threading
 import _thread
 
@@ -20,6 +21,8 @@ class Handler(ol.Object):
 
     def dispatch(self, e):
         e.parse()
+        if not e.orig:
+            e.orig = repr(self)
         func = self.get_cmd(e.cmd)
         if not func:
             mn = ol.get(ol.tbl.mods, e.cmd, None)
@@ -35,11 +38,15 @@ class Handler(ol.Object):
         e.ready.set()
 
     def get_cmd(self, cmd):
-        if not cmd:
-            return
         mn = ol.get(ol.tbl.mods, cmd, None)
-        mod = ol.utl.direct(mn)
-        return getattr(mod, cmd, None)
+        if not mn:
+             return
+        if mn in sys.modules:
+            mod = sys.modules[mn]
+        else:
+            mod = ol.utl.direct(mn)
+        if mod:
+            return getattr(mod, cmd, None)
 
     def handler(self):
         while not self.stopped:

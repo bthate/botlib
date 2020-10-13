@@ -11,11 +11,14 @@ class Event(ol.Object):
         super().__init__()
         self.args = []
         self.cmd = ""
+        self.channel = ""
+        self.orig = ""
         self.prs = ol.Object()
         self.ready = threading.Event()
         self.rest = ""
         self.result = []
         self.thrs = []
+        self.types = []
         self.txt = ""
 
     def direct(self, txt):
@@ -31,18 +34,14 @@ class Event(ol.Object):
         if args:
             self.args = args
             self.rest = " ".join(args)
+            self.targets = ol.get(ol.tbl.names, self.args[0], [self.cmd,])
 
     def reply(self, txt):
-        if not self.result:
-            self.result = []
         self.result.append(txt)
 
     def show(self):
         for txt in self.result:
-            try:
-                print(txt)
-            except:
-               pass
+            self.direct(txt)
 
     def wait(self):
         self.ready.wait()
@@ -50,3 +49,4 @@ class Event(ol.Object):
         for thr in self.thrs:
             res.append(thr.join())
         return res
+

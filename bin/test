@@ -4,6 +4,7 @@
 #
 
 import os, sys ; sys.path.insert(0, os.getcwd())
+sys.path.insert(0, sys.path.insert(0, os.path.join(os.getcwd(), "mymod")))
 
 import ol
 import os
@@ -30,7 +31,7 @@ def main():
         pat = "test*"
     suite = unittest.loader.TestLoader().discover(test_path, pattern=pat)
     unittest.TextTestRunner(verbosity=3).run(suite)
-    #k.wait()
+    k.wait()
    
 ol.trm.execute(main)
 os._exit(0)
