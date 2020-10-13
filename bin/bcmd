@@ -4,5 +4,12 @@
 #
 
 import os, sys ; sys.path.insert(0, os.getcwd())
-from ol.spc import cmd, execute, sys
-execute(lambda: cmd(" ".join(sys.argv[1:])))
+from ol.spc import boot, cmd, execute, sys
+
+def main():
+    k = boot("kcmd", os.path.expanduser("~/.bot"))
+    cmd(k.cfg.txt, k.cfg.wd)
+   
+
+execute(main)
+

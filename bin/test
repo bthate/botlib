@@ -18,8 +18,8 @@ def main():
         mymod.rss.debug = True
     except: 
         pass
-    for line in os.popen("rm -fR ~/.test").readlines():
-        print(line)
+    #for line in os.popen("rm -fR ~/.test").readlines():
+    #    print(line)
     k = ol.krn.boot("test", os.path.expanduser("~/.test"))
     ol.update(k.cfg, ol.prs.parse_cli())
     k.walk("mymod")

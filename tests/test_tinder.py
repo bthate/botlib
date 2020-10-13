@@ -28,6 +28,7 @@ nrtimes = 1
 
 k = ol.krn.get_kernel()
 
+
 class Event(ol.evt.Event):
 
     def reply(self, txt):
@@ -44,10 +45,12 @@ class Test_Tinder(unittest.TestCase):
         consume(events)
 
     def test_neuman(self):
-        for e in do_cmd("mbx"):
-            e.wait()
         for x in range(k.cfg.index or 1):
             tests(k)
+
+    def test_sorted(self):
+        for x in range(k.cfg.index or 1):
+            sortedtests(k)
         
 def consume(elems):
     fixed = []
@@ -64,6 +67,13 @@ def consume(elems):
     k.stop()
     return res
     
+def sortedtests(b):
+    keys = sorted(k.cmds)
+    for cmd in keys:
+        if cmd in ignore:
+            continue
+        events.extend(do_cmd(cmd))
+
 def tests(b):
     keys = list(k.cmds)
     random.shuffle(keys)
@@ -86,3 +96,6 @@ def do_cmd(cmd):
         k.put(e)
         events.append(e)
     return events
+
+for e in do_cmd("mbx"):
+    e.wait()
