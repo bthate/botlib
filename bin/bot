@@ -1,18 +1,26 @@
 #!/usr/bin/python3
-# BOTLIB - the bot library !
+# BOTLIB
 #
 #
 
-import os, sys ; sys.path.insert(0, os.getcwd())
-from ol.spc import Console, boot, execute, os
+from ol.spc import Console, boot, cmd, execute, ol, privileges, root, scandir
+from ol.spc import os, pwd, sys, time 
 
 def main():
-    k = boot("bot", os.path.expanduser("~/.bot"))
+    ol.wd = os.path.expanduser("~/.bot")
+    k = boot("bot")
+    if "b" in k.cfg.opts:
+        print("BOTLIB started at %s" % time.ctime(time.time()))
+        print(ol.format(k.cfg))
+    if k.cfg.txt:
+        return cmd(k.cfg.otxt)
+    if "s" in k.cfg.opts:
+        c = Console()
+        c.start()
     k.start()
     k.init(k.cfg.mods, k.cfg.exc)
-    c = Console()
-    c.start()
-    k.wait()
-
+    if "s" in k.cfg.opts:
+        k.wait()
+         
 execute(main)
 os._exit(0)
