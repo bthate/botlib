@@ -41,7 +41,7 @@ class ENOFILENAME(Exception):
 
 class Object:
 
-    __slots__ = ("__dict__", "stp")
+    __slots__ = ("__dict__", "prs", "stp")
 
     def __init__(self):
         super().__init__()

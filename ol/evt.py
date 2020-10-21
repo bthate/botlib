@@ -28,7 +28,7 @@ class Event(ol.Object):
         o = ol.Default()
         ol.prs.parse(o, self.txt)
         ol.update(self.prs, o)
-        args = self.txt.split()
+        args = self.prs.txt.split()
         if args:
             self.cmd = args.pop(0)
         if args:

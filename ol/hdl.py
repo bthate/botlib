@@ -27,8 +27,10 @@ class Handler(ol.Object):
         if not func:
             mn = ol.get(ol.tbl.mods, e.cmd, None)
             if mn:
-                self.load(mn)
-                func = self.get_cmd(e.cmd)
+                spec = importlib.util.find_spec(mn)
+                if spec:
+                    self.load(mn)
+                    func = self.get_cmd(e.cmd)
         if func:
             try:
                 func(e)
@@ -41,10 +43,13 @@ class Handler(ol.Object):
         mn = ol.get(ol.tbl.mods, cmd, None)
         if not mn:
              return
+        mod = None
         if mn in sys.modules:
             mod = sys.modules[mn]
         else:
-            mod = ol.utl.direct(mn)
+            spec = importlib.util.find_spec(mn)
+            if spec:
+                mod = ol.utl.direct(mn)
         if mod:
             return getattr(mod, cmd, None)
 

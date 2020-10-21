@@ -5,6 +5,7 @@
 import importlib
 import inspect
 import os
+import pwd
 import sys
 import threading
 import traceback
@@ -67,7 +68,7 @@ def get_exception(txt="", sep=" "):
         mod = []
         for element in plugfile[::-1]:
             mod.append(element)
-            if "ol" in element or "bmod" in element:
+            if "ol" in element or "mods" in element or "python3" in element:
                 break
         ownname = ".".join(mod[::-1])
         result.append("%s:%s" % (ownname, elem[1]))
