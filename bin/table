@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -u
-# OLIB - object library
+# BOTLIB
 #
 #
 
@@ -74,12 +74,12 @@ def walk(names):
             ol.update(ol.tbl.classes, vars(find_class(mod)))
 
 def main():
-    k = ol.krn.boot("table", os.path.expanduser("~/.bot"))
+    k = ol.krn.boot("table")
     ol.tbl.classes = ol.Object()
     ol.tbl.mods= ol.Object()
     ol.tbl.funcs = ol.Object()
     ol.tbl.names = ol.Object()
-    walk("ol,bmod,bot,mymod")
+    walk("ol,mods,genocide")
     print("# OLIB - object library")
     print("#")
     print("#")
