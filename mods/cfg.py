@@ -1,14 +1,15 @@
-# BOTLIB - the bot library !
+# GENOCIDE - the king of the netherlands commits genocide - OTP-CR-117/19/001 - otp.informationdesk@icc-cpi.int - https://genocide.rtfd.io
 #
 #
+
+"configuration (cfg)"
 
 import ol
 
+from mods.irc import Cfg
+
 def cfg(event):
-    try:
-        from bot.irc import Cfg
-    except ImportError:
-        from ol.krn import Cfg
+    "configure irc."
     c = Cfg()
     ol.dbs.last(c)
     o = ol.Default()

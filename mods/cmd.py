@@ -1,21 +1,21 @@
-# BOTLIB - the bot library !
+# GENOCIDE - the king of the netherlands commits genocide - OTP-CR-117/19/001 - otp.informationdesk@icc-cpi.int - https://genocide.rtfd.io
 #
 #
 
-__version__ = 104
+"basic commands (cmd)"
 
-import ol
-import threading
-import time
+import mods, ol, threading, time
 
 k = ol.krn.get_kernel()
 
 def cmd(event):
+    "list commands (cmd)"
     c = sorted(ol.keys(ol.tbl.mods))
     if c:
         event.reply(",".join(c))
 
 def tsk(event):
+    "list tasks (tsk)"
     psformat = "%s %s"
     result = []
     for thr in sorted(threading.enumerate(), key=lambda x: x.getName()):
@@ -36,7 +36,9 @@ def tsk(event):
     event.reply(" | ".join(res))
 
 def upt(event):
+    "show uptime (utp)"
     event.reply(ol.tms.elapsed(time.time() - ol.krn.starttime))
 
 def ver(event):
-    event.reply("BOTLIB %s | OLIB %s" % (__version__, ol.__version__))
+    "show version (ver)"
+    event.reply("GENOCIDE %s | %s" % (mods.__version__, mods.__txt2__))

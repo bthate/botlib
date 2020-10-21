@@ -1,12 +1,15 @@
-# BOTLIB - the bot library !
+# GENOCIDE - the king of the netherlands commits genocide - OTP-CR-117/19/001 - otp.informationdesk@icc-cpi.int - https://genocide.rtfd.io
 #
 #
+
+"find objects (fnd)"
 
 import ol
 import os
 import time
 
 def fnd(event):
+    "locate and show objects on disk"
     if not event.args:
         wd = os.path.join(ol.wd, "store", "")
         ol.cdir(wd)
@@ -15,24 +18,19 @@ def fnd(event):
         if fns:
             event.reply(",".join(fns))
         return
-    k = ol.krn.get_kernel()
-    args = []
-    print(event)
-    try:
-        arg = event.args[1:]
-    except ValueError:
-        arg = []
-    args.extend(arg)
     nr = -1
+    args = []
+    try:
+        args = event.prs.args[1:]
+    except IndexError:
+        args = ol.keys(o)
     for otype in event.types:
-        print(otype)
         for o in ol.dbs.find(otype, event.prs.gets, event.prs.index, event.prs.timed):
             nr += 1
+            pure = True
             if "f" in event.prs.opts:
                 pure = False
-            else:
-                pure = True
-            txt = "%s %s" % (str(nr), ol.format(o, args or ol.keys(o), False, event.prs.skip))
+            txt = "%s %s" % (str(nr), ol.format(o, args, pure, event.prs.skip))
             if "t" in event.prs.opts:
                 txt = txt + " %s" % (ol.tms.elapsed(time.time() - ol.tms.fntime(o.stp)))
             event.reply(txt)
