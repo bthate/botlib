@@ -1,4 +1,4 @@
-# GENOCIDE - the king of the netherlands commits genocide - OTP-CR-117/19/001 - otp.informationdesk@icc-cpi.int - https://genocide.rtfd.io
+# BOTLIB
 #
 #
 
@@ -49,12 +49,12 @@ class Cfg(ol.Cfg):
 
     def __init__(self):
         super().__init__()
-        self.channel = "#genocide"
-        self.nick = "genocide"
+        self.channel = "#botlib"
+        self.nick = "botlib"
         self.port = 6667
-        self.realname = "OTP-CR-117/19/001 - otp.informationdesk@icc-cpi.int - https://genocide.rtfd.io"
+        self.realname = "https://botlib.rtfd.io"
         self.server = "localhost"
-        self.username = "genocide"
+        self.username = "botlib"
 
 class Event(ol.evt.Event):
 
@@ -398,7 +398,7 @@ class IRC(ol.hdl.Handler, ol.ldr.Loader):
     def NOTICE(self, event):
         "handle noticed"
         if event.txt.startswith("VERSION"):
-            txt = "\001VERSION %s %s - %s\001" % ("GENOCIDE", __version__, "# GENOCIDE - the king of the netherlands commits genocide - OTP-CR-117/19/001 - otp.informationdesk@icc-cpi.int - https://genocide.rtfd.io")
+            txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "# botlib")
             self.command("NOTICE", event.channel, txt)
 
     def PRIVMSG(self, event):
@@ -461,7 +461,7 @@ class DCC(ol.hdl.Handler):
             s.connect((addr, port))
         except ConnectionError:
             return
-        s.send(bytes('Welcome to GENOCIDE %s !!\n' % event.nick, "utf-8"))
+        s.send(bytes('Welcome to BOTLIB %s !!\n' % event.nick, "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s
