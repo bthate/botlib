@@ -41,4 +41,4 @@ def upt(event):
 
 def ver(event):
     "show version (ver)"
-    event.reply("GENOCIDE %s | %s" % (mods.__version__, mods.__txt2__))
+    event.reply("BOTLIB %s" % mods.__version__)

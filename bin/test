@@ -4,7 +4,7 @@
 #
 
 import os, sys ; sys.path.insert(0, os.getcwd())
-sys.path.insert(0, sys.path.insert(0, os.path.join(os.getcwd(), "mymod")))
+sys.path.insert(0, sys.path.insert(0, os.path.join(os.getcwd(), "mods")))
 
 import ol
 import os
@@ -14,16 +14,15 @@ import unittest
 
 def main():
     try:
-        import mymod.rss
-        mymod.rss.debug = True
+        import mods.rss
+        mods.rss.debug = True
     except: 
         pass
     #for line in os.popen("rm -fR ~/.test").readlines():
     #    print(line)
-    k = ol.krn.boot("test", os.path.expanduser("~/.test"))
+    k = ol.krn.boot("test")
     ol.update(k.cfg, ol.prs.parse_cli())
-    k.walk("mymod")
-    print(ol.tbl.classes)
+    k.walk("mods")
     k.start()
     test_path = os.getcwd() + os.sep + "tests"
     if k.cfg.txt:
