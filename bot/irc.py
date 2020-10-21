@@ -4,7 +4,7 @@
 
 "Internet Relay Chat"
 
-__version__ = 1
+__version__ = 104
 
 import ol
 import os
