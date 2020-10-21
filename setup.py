@@ -22,7 +22,7 @@ setup(
     packages=["bot", "mods", "ol"],
     namespace_packages=["bot"],
     zip_safe=False,
-    scripts=["bin/bcmd", "bin/bctl", "bin/bot", "bin/botd", "bin/budp"],
+    scripts=["bin/bot"],
     classifiers=['Development Status :: 4 - Beta',
                  'License :: Public Domain',
                  'Operating System :: Unix',

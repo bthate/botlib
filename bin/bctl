@@ -1,7 +1,0 @@
-#!/usr/bin/python3
-# BOTLIB = the bot library !
-#
-#
-
-from ol.spc import cmd, execute, sys
-execute(lambda: cmd(" ".join(sys.argv[1:]), "/var/lib/botd/"))
