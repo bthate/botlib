@@ -14,9 +14,6 @@ OP" programming library where the methods are factored out into functions
 that use the object as the first argument. BOTLIB is placed in the Public
 Domain and has no COPYRIGHT or LICENSE.
 
-it also provides information on the genocide the king of the netherlands is
-doing. See https://pypi.org/project/genocide/ 
-
 INSTALL
 =======
 
@@ -24,33 +21,34 @@ installation is through pypi:
 
 ::
 
- > sudo pip3 install genocide
+ > sudo pip3 install botlib
 
 if you have previous versions already installed and things fail try to force reinstall:
 
 ::
 
- > sudo pip3 install genocide --upgrade --force-reinstall
+ > sudo pip3 install botlib --upgrade --force-reinstall
 
 if this also doesn't work you'll need to remove all installed previous  versions, so you can do a clean install.
 
-you can run directly from the tarball, see https://pypi.org/project/genocide/#files
+you can run directly from the tarball, see https://pypi.org/project/botlib/#files
 
 USAGE
 =====
 
-BOTLIB has it's own CLI, you can run it by giving the genocide command on the prompt, it will return with no response:
+BOTLIB is a library and doesn't have it's own CLI, however a bot test
+program is provided with the tarball. you can run the bot command on the prompt, it will return with no response:
 
 :: 
 
- $ sudo genocide
+ $ bot
  $ 
 
-you can use genocide <cmd> to run a command directly, use the cmd command to see a list of commands:
+you can use bot <cmd> to run a command directly, use the cmd command to see a list of commands:
 
 ::
 
- $ sudo genocide cmd
+ $ bot cmd
  cfg,cmd,cor,dne,dpl,fed,fnd,ftc,log,mbx,rem,req,rss,sts,tdo,trt,tsk,upt,ver,wsd
 
 BOTLIB also has it's own shell, use genocide -s to start a genocide shell:

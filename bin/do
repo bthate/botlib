@@ -6,15 +6,12 @@
 import importlib
 importlib.invalidate_caches()
 
-import ol
 import os
 import shutil
 import sys
 import urllib
 import urllib.parse
 import urllib.request
-
-from ol.spc import execute
 
 from setuptools.command.easy_install import main
 
@@ -98,4 +95,4 @@ def bmain():
     nopen("rm %s/get-pip.py" % installdir)
     nopen("tar zcvf %s.tar.gz %s" % (fname.lower(), fname))
 
-execute(bmain)
+bmain()

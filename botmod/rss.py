@@ -1,7 +1,3 @@
-# GENOCIDE - the king of the netherlands commits genocide
-#
-# OTP-CR-117/19/001 otp.informationdesk@icc-cpi.int https://genocide.rtfd.io
-
 "rich site syndicate"
 
 import datetime
@@ -156,7 +152,7 @@ class Fetcher(ol.Object):
     def run(self):
         "update all feeds"
         thrs = []
-        for o in ol.dbs.all("genocide.rss.Rss"):
+        for o in ol.dbs.all("botmod.rss.Rss"):
             thrs.append(ol.tsk.launch(self.fetch, o))
         return thrs
 
@@ -261,7 +257,7 @@ def unescape(text):
 
 def useragent():
     "return useragent"
-    return 'Mozilla/5.0 (X11; Linux x86_64) GENOCIDE +http://github.com/bthate/genocide)'
+    return 'Mozilla/5.0 (X11; Linux x86_64) BOTLIB +http://github.com/bthate/botlib)'
 
 def rem(event):
     "remove a rss feed"
@@ -270,7 +266,7 @@ def rem(event):
     selector = {"rss": event.args[0]}
     nr = 0
     got = []
-    for o in ol.dbs.find("genocide.rss.Rss", selector):
+    for o in ol.dbs.find("botmod.rss.Rss", selector):
         nr += 1
         o._deleted = True
         got.append(o)
@@ -283,7 +279,7 @@ def dpl(event):
     if len(event.args) < 2:
         return
     setter = {"display_list": event.args[1]}
-    for o in ol.dbs.find("genocide.rss.Rss", {"rss": event.args[0]}):
+    for o in ol.dbs.find("botmod.rss.Rss", {"rss": event.args[0]}):
         ol.edit(o, setter)
         ol.save(o)
     event.reply("ok")
@@ -306,7 +302,7 @@ def rss(event):
     if not event.args:
         return
     url = event.args[0]
-    res = list(ol.dbs.find("genocide.rss.Rss", {"rss": url}))
+    res = list(ol.dbs.find("botmod.rss.Rss", {"rss": url}))
     if res:
         return
     o = Rss()
