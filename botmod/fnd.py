@@ -4,7 +4,7 @@ import ol
 import os
 import time
 
-from ol.spc import get_kernel
+from ol.spc import elapsed, find, fntime, get_kernel
 
 k = get_kernel()
 
@@ -26,7 +26,7 @@ def fnd(event):
         pass
     types = ol.get(k.names, event.args[0], [event.cmd,])
     for otype in types:
-        for o in ol.dbs.find(otype, event.prs.gets, event.prs.index, event.prs.timed):
+        for o in find(otype, event.prs.gets, event.prs.index, event.prs.timed):
             nr += 1
             pure = True
             if not args:
@@ -35,5 +35,5 @@ def fnd(event):
                 pure = False
             txt = "%s %s" % (str(nr), ol.format(o, args, pure, event.prs.skip))
             if "t" in event.prs.opts:
-                txt = txt + " %s" % (ol.tms.elapsed(time.time() - ol.tms.fntime(o.stp)))
+                txt = txt + " %s" % (elapsed(time.time() - fntime(o.stp)))
             event.reply(txt)

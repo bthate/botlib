@@ -13,6 +13,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
+from ol.spc import Repeater, find, last, start
+
 try:
     import feedparser
     gotparser = True
@@ -152,16 +154,16 @@ class Fetcher(ol.Object):
     def run(self):
         "update all feeds"
         thrs = []
-        for o in ol.dbs.all("botmod.rss.Rss"):
-            thrs.append(ol.tsk.launch(self.fetch, o))
+        for o in all("botmod.rss.Rss"):
+            thrs.append(start(self.fetch, o))
         return thrs
 
     def start(self, repeat=True):
         "start the rss poller"
-        ol.dbs.last(Fetcher.cfg)
-        ol.dbs.last(Fetcher.seen)
+        last(Fetcher.cfg)
+        last(Fetcher.seen)
         if repeat:
-            repeater = ol.tms.Repeater(300.0, self.run)
+            repeater = Repeater(300.0, self.run)
             repeater.start()
 
     def stop(self):
@@ -266,7 +268,7 @@ def rem(event):
     selector = {"rss": event.args[0]}
     nr = 0
     got = []
-    for o in ol.dbs.find("botmod.rss.Rss", selector):
+    for o in find("botmod.rss.Rss", selector):
         nr += 1
         o._deleted = True
         got.append(o)
@@ -279,7 +281,7 @@ def dpl(event):
     if len(event.args) < 2:
         return
     setter = {"display_list": event.args[1]}
-    for o in ol.dbs.find("botmod.rss.Rss", {"rss": event.args[0]}):
+    for o in find("botmod.rss.Rss", {"rss": event.args[0]}):
         ol.edit(o, setter)
         ol.save(o)
     event.reply("ok")
@@ -302,7 +304,7 @@ def rss(event):
     if not event.args:
         return
     url = event.args[0]
-    res = list(ol.dbs.find("botmod.rss.Rss", {"rss": url}))
+    res = list(find("botmod.rss.Rss", {"rss": url}))
     if res:
         return
     o = Rss()

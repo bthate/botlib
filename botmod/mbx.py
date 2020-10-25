@@ -67,7 +67,7 @@ def to_date(date):
 def mbx(event):
     if not event.args:
         return
-    if os.path.exists(os.path.join(ol.wd, "store", "mymod.mbx.Email")):
+    if os.path.exists(os.path.join(ol.wd, "store", "botmod.mbx.Email")):
         event.reply("email is already scanned")
         return
     fn = os.path.expanduser(event.args[0])

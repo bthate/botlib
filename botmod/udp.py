@@ -6,6 +6,8 @@ import socket
 import sys
 import time
 
+from ol.spc import bus, last, start
+
 def init(kernel):
     "start a udp to irc relay server and return it"
     u = UDP()
@@ -37,8 +39,7 @@ class UDP(ol.Object):
 
     def output(self, txt, addr):
         "output message on fleet"
-        k = get_fleet()
-        for bot in k.fleet.bots:
+        for bot in bus:
             bot.announce(txt.replace("\00", ""))
 
     def server(self):
@@ -64,8 +65,8 @@ class UDP(ol.Object):
 
     def start(self):
         "start udp to irc relay server"
-        ol.dbs.last(self.cfg)
-        ol.tsk.launch(self.server)
+        last(self.cfg)
+        start(self.server)
 
 def toudp(host, port, txt):
     "send text over udp to the udp to irc relay server"
@@ -75,7 +76,7 @@ def toudp(host, port, txt):
 def udp(event):
     "send text over udp to the bot"
     cfg = Cfg()
-    ol.dbs.last(cfg)
+    last(cfg)
     if len(sys.argv) > 2:
         txt = " ".join(sys.argv[2:])
         toudp(cfg.host, cfg.port, txt)
