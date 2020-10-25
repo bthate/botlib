@@ -1,25 +1,22 @@
 #!/usr/bin/python3
-# BOTLIB
-#
-#
 
-from ol.spc import Console, boot, cmd, execute, ol, privileges, root, scandir
-from ol.spc import os, pwd, sys, time 
+from ol.spc import Console, boot, cmd, execute, ol, os, scandir
 
 def main():
-    ol.wd = os.path.expanduser("~/.bot")
     k = boot("bot")
     if "b" in k.cfg.opts:
-        print("BOTLIB started at %s" % time.ctime(time.time()))
+        print("BOT started at %s" % time.ctime(time.time()))
         print(ol.format(k.cfg))
+    scandir(k.cfg.wd)
+    k.walk("bot,botmod")
     if k.cfg.txt:
         return cmd(k.cfg.otxt)
-    if "s" in k.cfg.opts:
+    k.start()
+    k.init(k.cfg.mods)
+    if "s" in k.cfg.opts or k.cfg.mods:
         c = Console()
         c.start()
-    k.start()
-    k.init(k.cfg.mods, k.cfg.exc)
-    if "s" in k.cfg.opts:
+    if "s" in k.cfg.opts or "d" in k.cfg.opts:
         k.wait()
          
 execute(main)

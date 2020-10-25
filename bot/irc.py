@@ -1,7 +1,3 @@
-# GENOCIDE - the king of the netherlands commits genocide
-#
-# OTP-CR-117/19/001 otp.informationdesk@icc-cpi.int https://genocide.rtfd.io
-
 "Internet Relay Chat"
 
 import ol
@@ -13,8 +9,12 @@ import time
 import threading
 import _thread
 
-k = ol.krn.get_kernel()
+from ol.spc import Handler, Loader, get_kernel
+from bot.cmd import __version__
+
+k = get_kernel()
 saylock = _thread.allocate_lock()
+
 
 def init(kernel):
     "create a IRC bot and return it"
@@ -47,12 +47,12 @@ class Cfg(ol.Cfg):
 
     def __init__(self):
         super().__init__()
-        self.channel = "#genocide"
-        self.nick = "genocide"
+        self.channel = "#botlib"
+        self.nick = "botlib"
         self.port = 6667
-        self.realname = "OTP-CR-117/19/001 - otp.informationdesk@icc-cpi.int - https://genocide.rtfd.io"
+        self.realname = "the bot library"
         self.server = "localhost"
-        self.username = "genocide"
+        self.username = "botlib"
 
 class Event(ol.evt.Event):
 
@@ -396,9 +396,8 @@ class IRC(ol.ldr.Loader, ol.hdl.Handler):
 
     def NOTICE(self, event):
         "handle noticed"
-        import genocide
         if event.txt.startswith("VERSION"):
-            txt = "\001VERSION %s %s - %s\001" % ("GENOCIDE", genocide.__version__, "# GENOCIDE - the king of the netherlands commits genocide OTP-CR-117/19/001 otp.informationdesk@icc-cpi.int https://genocide.rtfd.io")
+            txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "the bot library")
             self.command("NOTICE", event.channel, txt)
 
     def PRIVMSG(self, event):
@@ -461,7 +460,7 @@ class DCC(ol.hdl.Handler):
             s.connect((addr, port))
         except ConnectionError:
             return
-        s.send(bytes('Welcome to GENOCIDE %s !!\n' % event.nick, "utf-8"))
+        s.send(bytes('Welcome to BOTLIB %s !!\n' % event.nick, "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s

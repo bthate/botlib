@@ -14,6 +14,8 @@ import urllib
 import urllib.parse
 import urllib.request
 
+from ol.spc import execute
+
 from setuptools.command.easy_install import main
 
 pipurl = "https://bootstrap.pypa.io/get-pip.py"
@@ -87,14 +89,13 @@ def bmain():
     rss = rs + " -f dist botlib feedparser"
     print("easy_install %s" % rss)
     main(rss.split())
+    nopen("cp bin/bot %s/bin/bot" % installdir)
     nopen("rm %s/pip" % installdir)
     nopen('rm -fR %s/pip-19.1.1.dist-info' % installdir)
     nopen('rm -fR %s/wheel' % installdir)
     nopen('rm -fR %s/wheel-0.33.4.dist-info' % installdir)
     nopen("rm -fR %s/__pycache__" % installdir)
     nopen("rm %s/get-pip.py" % installdir)
-    nopen("mkdir %s/bmod" % installdir)
-    nopen("cp -Ra bmod/*.py %s/bmod" % installdir)
     nopen("tar zcvf %s.tar.gz %s" % (fname.lower(), fname))
 
-ol.trm.execute(bmain)
+execute(bmain)

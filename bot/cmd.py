@@ -1,5 +1,7 @@
 "basic commands (cmd)"
 
+__version__ = 105
+
 import ol
 import threading
 import time
@@ -41,5 +43,4 @@ def upt(event):
 
 def ver(event):
     "show version (ver)"
-    import genocide
-    event.reply("GENOCIDE %s | %s" % (genocide.__version__, genocide.__txt2__))
+    event.reply("BOTLIB %s | OLIB %s" % (__version__, ol.__version__))
