@@ -13,7 +13,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
-from ol.spc import Repeater, find, last, start
+from ol.spc import Repeater, all, find, last, start
 
 try:
     import feedparser

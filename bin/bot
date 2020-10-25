@@ -16,7 +16,7 @@ def main():
     if "s" in k.cfg.opts or k.cfg.mods:
         c = Console()
         c.start()
-    if "s" in k.cfg.opts or "d" in k.cfg.opts or bot.cfg.mods:
+    if "s" in k.cfg.opts or "d" in k.cfg.opts or k.cfg.mods:
         k.wait()
          
 execute(main)
