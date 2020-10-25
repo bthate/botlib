@@ -58,7 +58,6 @@ html_theme = "haiku"
 #}
 html_theme_path = []
 html_short_title = "BOTLIB %s" % __version__
-html_short_title = ""
 html_favicon = "blsmile.png"
 html_static_path = []
 html_extra_path = []
@@ -77,7 +76,7 @@ rst_prolog = """.. image:: botlib2.png
     :width: 100%
     :height: 3.5cm
 
-.. title:: framework to program bots
+.. title:: the bot library !
 """
 rst_epilog = """.. image:: blsmile.png
     :align: center

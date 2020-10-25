@@ -9,12 +9,11 @@ import time
 import threading
 import _thread
 
-from ol.spc import Handler, Loader, get_kernel
+from ol.spc import Event, Handler, Loader, bus, find, get_kernel, last, parse, start
 from bot.cmd import __version__
 
 k = get_kernel()
 saylock = _thread.allocate_lock()
-
 
 def init(kernel):
     "create a IRC bot and return it"
@@ -54,7 +53,7 @@ class Cfg(ol.Cfg):
         self.server = "localhost"
         self.username = "botlib"
 
-class Event(ol.evt.Event):
+class Event(Event):
 
     "IRC event"
     
@@ -71,7 +70,7 @@ class TextWrap(textwrap.TextWrapper):
         self.tabsize = 4
         self.width = 450
 
-class IRC(ol.ldr.Loader, ol.hdl.Handler):
+class IRC(Loader, Handler):
 
     "IRC bot"
 
@@ -105,7 +104,7 @@ class IRC(ol.ldr.Loader, ol.hdl.Handler):
         self.register("PRIVMSG", self.PRIVMSG)
         self.register("QUIT", self.QUIT)
         self.register("366", self.JOINED)
-        ol.bus.bus.add(self)
+        bus.add(self)
 
     def _connect(self, server):
         "connect (blocking) to irc server"
@@ -255,13 +254,13 @@ class IRC(ol.ldr.Loader, ol.hdl.Handler):
             self.cmds[event.command](event)
 
     def doconnect(self):
-        "launch input/output tasks on connect"
+        "start input/output tasks on connect"
         assert self.cfg.server
         assert self.cfg.nick
         super().start()
         self.connect(self.cfg.server, self.cfg.nick)
-        ol.tsk.launch(self.input)
-        ol.tsk.launch(self.output)
+        start(self.input)
+        start(self.output)
 
     def input(self):
         "loop for input"
@@ -360,12 +359,12 @@ class IRC(ol.ldr.Loader, ol.hdl.Handler):
         if cfg is not None:
             self.cfg.update(cfg)
         else:
-            ol.dbs.last(self.cfg)
+            last(self.cfg)
         assert self.cfg.channel
         assert self.cfg.server
         self.channels.append(self.cfg.channel)
         self._joined.clear()
-        ol.tsk.launch(self.doconnect)
+        start(self.doconnect)
         self._joined.wait()
 
     def stop(self):
@@ -408,7 +407,7 @@ class IRC(ol.ldr.Loader, ol.hdl.Handler):
             try:
                 dcc = DCC()
                 dcc.encoding = "utf-8"
-                ol.tsk.launch(dcc.connect, event)
+                start(dcc.connect, event)
                 return
             except ConnectionError:
                 return
@@ -416,7 +415,7 @@ class IRC(ol.ldr.Loader, ol.hdl.Handler):
             if self.cfg.users and not users.allowed(event.origin, "USER"):
                 return
             event.txt = event.txt[1:]
-            ol.prs.parse(event, event.txt)
+            parse(event, event.txt)
             k.queue.put(event)
 
     def QUIT(self, event):
@@ -424,7 +423,7 @@ class IRC(ol.ldr.Loader, ol.hdl.Handler):
         if self.cfg.server in event.orig:
             self.stop()
 
-class DCC(ol.hdl.Handler):
+class DCC(Handler):
 
     "direct client to client"
 
@@ -435,7 +434,7 @@ class DCC(ol.hdl.Handler):
         self._fsock = None
         self.encoding = "utf-8"
         self.origin = ""
-        ol.bus.bus.add(self)
+        bus.add(self)
 
     def raw(self, txt):
         "send text on the dcc socket"
@@ -466,13 +465,13 @@ class DCC(ol.hdl.Handler):
         self._sock = s
         self._fsock = self._sock.makefile("rw")
         self.origin = event.origin
-        ol.tsk.launch(self.input)
+        start(self.input)
         super().start()
         self._connected.set()
 
     def input(self):
         "loop for input"
-        k = ol.krn.get_kernel()
+        k = get_kernel()
         while 1:
             try:
                 e = self.poll()
@@ -486,7 +485,7 @@ class DCC(ol.hdl.Handler):
         e = Event()
         txt = self._fsock.readline()
         txt = txt.rstrip()
-        ol.prs.parse(e, txt)
+        parse(e, txt)
         e._sock = self._sock
         e._fsock = self._fsock
         e.channel = self.origin
@@ -536,7 +535,7 @@ class Users(ol.Object):
     def get_users(self, origin=""):
         "get all users, optionaly provding an matching origin"
         s = {"user": origin}
-        return ol.dbs.find("mods.irc.User", s)
+        return find("mods.irc.User", s)
 
     def get_user(self, origin):
         "get specific user with corresponding origin"

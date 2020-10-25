@@ -41,23 +41,23 @@ program is provided with the tarball. you can run the bot command on the prompt,
 
 :: 
 
- $ bot
+ $ ./bin/bot
  $ 
 
 you can use bot <cmd> to run a command directly, use the cmd command to see a list of commands:
 
 ::
 
- $ bot cmd
- cfg,cmd,cor,dne,dpl,fed,fnd,ftc,log,mbx,rem,req,rss,sts,tdo,trt,tsk,upt,ver,wsd
+ $ ./bin/bot cmd
+ cfg,cmd,dne,dpl,fnd,ftc,log,mbx,rem,rss,tdo,tsk,udp,upt,ver
 
-BOTLIB also has it's own shell, use genocide -s to start a genocide shell:
+BOTLIB also has it's own shell, use bot -s to start a bot shell:
 
 ::
 
-  $ sudo genocide -s
+  $ ./bin/bot -s
   > cmd
-  cfg,cmd,cor,dne,dpl,fed,fnd,ftc,log,mbx,rem,req,rss,sts,tdo,trt,tsk,upt,ver,wsd
+  cfg,cmd,dne,dpl,fnd,ftc,log,mbx,rem,rss,tdo,tsk,udp,upt,ver
 
 
 IRC
@@ -67,19 +67,21 @@ configuration is done with the cfg command:
 
 ::
 
- $ sudo genocide cfg
- channel=#genocide nick=genocide port=6667 server=localhost
+ $ ./bin/bot cfg
+ channel=#botlib nick=botlib port=6667 server=localhost
 
 you can use setters to edit fields in a configuration:
 
 ::
 
- $ genocide cfg server=irc.freenode.net channel=\#genocude nick=genocide
- channel=#genocide nick=genocide port=6667 server=irc.freenode.net
+ $ ./bin/bot cfg server=irc.freenode.net channel=\#botlib nick=botlib
+ channel=#botlib nick=botlib port=6667 server=irc.freenode.net
 
 to have the irc bot started use the mods=irc option at start:
 
- $ sudo genocide mods=irc
+::
+
+ $ ./bin/bot mods=irc
 
 RSS
 ===
@@ -97,27 +99,27 @@ adding rss to mods= will load the rss module and start it's poller.
 
 ::
 
- $ sudo genocide mods=irc,rss
+ $ ./bin/bot mods=irc,rss
 
 to add an url use the rss command with an url:
 
 ::
 
- $ sudo genocide rss https://github.com/bthate/botlib/commits/master.atom
+ $ ./bin/bot rss https://github.com/bthate/botlib/commits/master.atom
  ok 1
 
 run the rss command to see what urls are registered:
 
 ::
 
- $ sudo genocide fnd rss
+ $ ./bin/bot fnd rss
  0 https://github.com/bthate/botlib/commits/master.atom
 
 the ftc (fetch) command can be used to poll the added feeds:
 
 ::
 
- $ sudo genocide ftc
+ $ ./bin/bot ftc
  fetched 20
 
 UDP
@@ -126,16 +128,16 @@ UDP
 BOTLIB also has the possibility to serve as a UDP to IRC relay where you
 can send UDP packages to the bot and have txt displayed on the channel.
 
-use the 'genocide udp' command to send text via the bot to the channel on the irc server:
+use the 'bot udp' command to send text via the bot to the channel on the irc server:
 
 ::
 
- $ tail -f /var/log/syslog | genocide udp
+ $ tail -f /var/log/syslog | ./bin/bot udp
 
 output to the IRC channel can be done with the use python3 code to send a UDP packet 
-to genocide, it's unencrypted txt send to the bot and display on the joined channels.
+to botlib, it's unencrypted txt send to the bot and display on the joined channels.
 
-to send a udp packet to genocide in python3:
+to send a udp packet to botlib in python3:
 
 ::
 

@@ -2,6 +2,7 @@
 
 import ol
 
+from ol.spc import last
 from bot.irc import Cfg
 
 def cfg(event):
