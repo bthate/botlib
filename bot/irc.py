@@ -1,10 +1,8 @@
-# BOTLIB
+# GENOCIDE - the king of the netherlands commits genocide
 #
-#
+# OTP-CR-117/19/001 otp.informationdesk@icc-cpi.int https://genocide.rtfd.io
 
 "Internet Relay Chat"
-
-__version__ = 104
 
 import ol
 import os
@@ -49,12 +47,12 @@ class Cfg(ol.Cfg):
 
     def __init__(self):
         super().__init__()
-        self.channel = "#botlib"
-        self.nick = "botlib"
+        self.channel = "#genocide"
+        self.nick = "genocide"
         self.port = 6667
-        self.realname = "https://botlib.rtfd.io"
+        self.realname = "OTP-CR-117/19/001 - otp.informationdesk@icc-cpi.int - https://genocide.rtfd.io"
         self.server = "localhost"
-        self.username = "botlib"
+        self.username = "genocide"
 
 class Event(ol.evt.Event):
 
@@ -73,7 +71,7 @@ class TextWrap(textwrap.TextWrapper):
         self.tabsize = 4
         self.width = 450
 
-class IRC(ol.hdl.Handler, ol.ldr.Loader):
+class IRC(ol.ldr.Loader, ol.hdl.Handler):
 
     "IRC bot"
 
@@ -89,6 +87,7 @@ class IRC(ol.hdl.Handler, ol.ldr.Loader):
         self.cc = "!"
         self.cfg = Cfg()
         self.channels = []
+        self.cmds = ol.Object()
         self.speed = "slow"
         self.state = ol.Object()
         self.state.needconnect = False
@@ -397,8 +396,9 @@ class IRC(ol.hdl.Handler, ol.ldr.Loader):
 
     def NOTICE(self, event):
         "handle noticed"
+        import genocide
         if event.txt.startswith("VERSION"):
-            txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "# botlib")
+            txt = "\001VERSION %s %s - %s\001" % ("GENOCIDE", genocide.__version__, "# GENOCIDE - the king of the netherlands commits genocide OTP-CR-117/19/001 otp.informationdesk@icc-cpi.int https://genocide.rtfd.io")
             self.command("NOTICE", event.channel, txt)
 
     def PRIVMSG(self, event):
@@ -461,7 +461,7 @@ class DCC(ol.hdl.Handler):
             s.connect((addr, port))
         except ConnectionError:
             return
-        s.send(bytes('Welcome to BOTLIB %s !!\n' % event.nick, "utf-8"))
+        s.send(bytes('Welcome to GENOCIDE %s !!\n' % event.nick, "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s

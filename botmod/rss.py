@@ -1,6 +1,6 @@
-# GENOCIDE - the king of the netherlands commits genocide - OTP-CR-117/19/001 - otp.informationdesk@icc-cpi.int - https://genocide.rtfd.io
+# GENOCIDE - the king of the netherlands commits genocide
 #
-#
+# OTP-CR-117/19/001 otp.informationdesk@icc-cpi.int https://genocide.rtfd.io
 
 "rich site syndicate"
 
@@ -156,7 +156,7 @@ class Fetcher(ol.Object):
     def run(self):
         "update all feeds"
         thrs = []
-        for o in ol.dbs.all("mods.rss.Rss"):
+        for o in ol.dbs.all("genocide.rss.Rss"):
             thrs.append(ol.tsk.launch(self.fetch, o))
         return thrs
 
@@ -270,7 +270,7 @@ def rem(event):
     selector = {"rss": event.args[0]}
     nr = 0
     got = []
-    for o in ol.dbs.find("mods.rss.Rss", selector):
+    for o in ol.dbs.find("genocide.rss.Rss", selector):
         nr += 1
         o._deleted = True
         got.append(o)
@@ -283,37 +283,10 @@ def dpl(event):
     if len(event.args) < 2:
         return
     setter = {"display_list": event.args[1]}
-    for o in ol.dbs.find("mods.rss.Rss", {"rss": event.args[0]}):
+    for o in ol.dbs.find("genocide.rss.Rss", {"rss": event.args[0]}):
         ol.edit(o, setter)
         ol.save(o)
     event.reply("ok")
-
-def fed(event):
-    "search through saved feed items"
-    if not event.args:
-        return
-    match = event.args[0]
-    nr = 0
-    res = list(find("mods.rss.Feed", {"link": match}))
-    for o in res:
-        if match:
-            event.reply("%s %s - %s - %s" % (nr,
-                                                  o.title,
-                                                  o.summary,
-                                                  o.link))
-        nr += 1
-    if nr:
-        return
-    res = list(ol.dbs.find("mods.rss.Feed", {"title": match}))
-    for o in res:
-        if match:
-            event.reply("%s %s - %s - %s" % (nr, o.title, o.summary, o.link))
-        nr += 1
-    res = list(ol.dbs.find("mods.rss.Feed", {"summary": match}))
-    for o in res:
-        if match:
-            event.reply("%s %s - %s - %s" % (nr, o.title, o.summary, o.link))
-        nr += 1
 
 def ftc(event):
     "manual run a fetch batch"
@@ -333,7 +306,7 @@ def rss(event):
     if not event.args:
         return
     url = event.args[0]
-    res = list(ol.dbs.find("mods.rss.Rss", {"rss": url}))
+    res = list(ol.dbs.find("genocide.rss.Rss", {"rss": url}))
     if res:
         return
     o = Rss()

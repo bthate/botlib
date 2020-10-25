@@ -1,6 +1,8 @@
-# BOTLIB
+# GENOCIDE - the king of the netherlands commits genocide
 #
-#
+# OTP-CR-117/19/001 otp.informationdesk@icc-cpi.int https://genocide.rtfd.io
+
+"mailbox"
 
 import mailbox
 import ol
@@ -65,17 +67,6 @@ def to_date(date):
                         except (IndexError, KeyError):
                             ddd = ""
     return ddd
-
-def cor(event):
-    if not event.args:
-        return
-    event.gets["From"] = event.args[0]
-    event.args = list(ol.keys(event.gets)) + event.rest.split()
-    event.otype = "bmod.mbx.Email"
-    nr = -1
-    for email in ol.dbs.find_event(event):
-        nr += 1
-        event.reply("%s %s %s" % (nr, ol.format(email, event.args, True, event.skip), ol.tms.elapsed(time.time() - ol.tms.fntime(email.__stp__))))
 
 def mbx(event):
     if not event.args:

@@ -1,6 +1,6 @@
-# BOTLIB
+# GENOCIDE - the king of the netherlands commits genocide
 #
-#
+# OTP-CR-117/19/001 otp.informationdesk@icc-cpi.int https://genocide.rtfd.io
 
 "data entry"
 
@@ -27,7 +27,7 @@ def dne(event):
     if not event.args:
         return
     selector = {"txt": event.args[0]}
-    for o in ol.dbs.find("mods.ent.Todo", selector):
+    for o in ol.dbs.find("genocide.ent.Todo", selector):
         o._deleted = True
         ol.save(o)
         event.reply("ok")

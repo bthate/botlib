@@ -1,16 +1,16 @@
-# BOTLIB
-#
-#
-
 "basic commands (cmd)"
 
-import mods, ol, threading, time
+import ol
+import threading
+import time
 
-k = ol.krn.get_kernel()
+from ol.spc import elapsed, get_kernel, starttime
+
+k = get_kernel()
 
 def cmd(event):
     "list commands (cmd)"
-    c = sorted(ol.keys(ol.tbl.mods))
+    c = sorted(ol.keys(k.mods))
     if c:
         event.reply(",".join(c))
 
@@ -41,4 +41,5 @@ def upt(event):
 
 def ver(event):
     "show version (ver)"
-    event.reply("BOTLIB %s" % mods.__version__)
+    import genocide
+    event.reply("GENOCIDE %s | %s" % (genocide.__version__, genocide.__txt2__))
