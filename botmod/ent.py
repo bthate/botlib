@@ -1,8 +1,13 @@
+# TRIPBOT - pure python3 IRC channel bot
+#
+#
+
 "data entry"
 
-import ol
+from dbs import find
+from obj import Object, save
 
-class Log(ol.Object):
+class Log(Object):
 
     "log items"
 
@@ -10,7 +15,7 @@ class Log(ol.Object):
         super().__init__()
         self.txt = ""
 
-class Todo(ol.Object):
+class Todo(Object):
 
     "todo items"
 
@@ -23,9 +28,9 @@ def dne(event):
     if not event.args:
         return
     selector = {"txt": event.args[0]}
-    for o in ol.dbs.find("genocide.ent.Todo", selector):
+    for fn, o in find("ent.Todo", selector):
         o._deleted = True
-        ol.save(o)
+        save(o)
         event.reply("ok")
         break
 
@@ -35,7 +40,7 @@ def log(event):
         return
     l = Log()
     l.txt = event.rest
-    ol.save(l)
+    save(l)
     event.reply("ok")
 
 def tdo(event):
@@ -44,5 +49,5 @@ def tdo(event):
         return
     o = Todo()
     o.txt = event.rest
-    ol.save(o)
+    save(o)
     event.reply("ok")

@@ -1,12 +1,15 @@
+# TRIPBOT - pure python3 IRC channel bot
+#
+#
+
 "udp to irc relay"
 
-import ol
-import select
-import socket
-import sys
-import time
+import select, socket, sys, time
 
-from ol.spc import bus, last, start
+from bus import bus
+from dbs import last
+from obj import Cfg, Object
+from thr import launch
 
 def init(kernel):
     "start a udp to irc relay server and return it"
@@ -14,7 +17,7 @@ def init(kernel):
     u.start()
     return u
 
-class Cfg(ol.Cfg):
+class Cfg(Cfg):
 
     "udp configuration"
 
@@ -23,7 +26,7 @@ class Cfg(ol.Cfg):
         self.host = "localhost"
         self.port = 5500
 
-class UDP(ol.Object):
+class UDP(Object):
 
     "udp to irc relay server"
 
@@ -66,7 +69,7 @@ class UDP(ol.Object):
     def start(self):
         "start udp to irc relay server"
         last(self.cfg)
-        start(self.server)
+        launch(self.server)
 
 def toudp(host, port, txt):
     "send text over udp to the udp to irc relay server"

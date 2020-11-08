@@ -1,24 +1,20 @@
 "Internet Relay Chat"
 
-import ol
-import os
-import queue
-import socket
-import textwrap
-import time
-import threading
-import _thread
+import os, queue, socket, textwrap, time, threading, _thread
 
-from ol.spc import Event, Handler, Loader, bus, find, get_kernel, last, parse, start
-from bot.cmd import __version__
+from dbs import find, last
+from hdl import Event, Handler
+from obj import Cfg, Default, Object, register, save, update
+from ofn import format
+from prs import parse, parse_cli
+from thr import launch
 
-k = get_kernel()
 saylock = _thread.allocate_lock()
 
 def init(kernel):
     "create a IRC bot and return it"
     i = IRC()
-    i.start()
+    launch(i.start)
     return i
 
 def locked(l):
@@ -40,22 +36,24 @@ class ENOUSER(Exception):
 
     "no matching user found"
 
-class Cfg(ol.Cfg):
+class Cfg(Cfg):
 
     "IRC configuration object"
 
     def __init__(self):
-        super().__init__()
-        self.channel = "#botlib"
-        self.nick = "botlib"
-        self.port = 6667
-        self.realname = "the bot library"
+        self.channel = "#bot"
+        self.nick = "bot"
         self.server = "localhost"
-        self.username = "botlib"
-
+        self.username = "bot"
+        self.realname = "bot"
+         
 class Event(Event):
 
     "IRC event"
+
+    def show(self):
+        for txt in self.result:
+            self.src.say(self.channel, txt)
     
 class TextWrap(textwrap.TextWrapper):
 
@@ -70,7 +68,7 @@ class TextWrap(textwrap.TextWrapper):
         self.tabsize = 4
         self.width = 450
 
-class IRC(Loader, Handler):
+class IRC(Handler):
 
     "IRC bot"
 
@@ -85,10 +83,10 @@ class IRC(Loader, Handler):
         self._trc = ""
         self.cc = "!"
         self.cfg = Cfg()
+        self.cmds = Object()
         self.channels = []
-        self.cmds = ol.Object()
         self.speed = "slow"
-        self.state = ol.Object()
+        self.state = Object()
         self.state.needconnect = False
         self.state.error = ""
         self.state.last = 0
@@ -98,13 +96,12 @@ class IRC(Loader, Handler):
         self.state.nrsend = 0
         self.state.pongcheck = False
         self.threaded = False
-        self.register("ERROR", self.ERROR)
-        self.register("LOG", self.LOG)
-        self.register("NOTICE", self.NOTICE)
-        self.register("PRIVMSG", self.PRIVMSG)
-        self.register("QUIT", self.QUIT)
-        self.register("366", self.JOINED)
-        bus.add(self)
+        register(self.cmds, "ERROR", self.ERROR)
+        register(self.cmds, "LOG", self.LOG)
+        register(self.cmds, "NOTICE", self.NOTICE)
+        register(self.cmds, "PRIVMSG", self.PRIVMSG)
+        register(self.cmds, "QUIT", self.QUIT)
+        register(self.cmds, "366", self.JOINED)
 
     def _connect(self, server):
         "connect (blocking) to irc server"
@@ -134,8 +131,6 @@ class IRC(Loader, Handler):
         rawstr = str(txt)
         rawstr = rawstr.replace("\u0001", "")
         rawstr = rawstr.replace("\001", "")
-        if "v" in k.cfg.opts:
-            print(rawstr)
         o = Event()
         o.rawstr = rawstr
         o.orig = repr(self)
@@ -197,8 +192,6 @@ class IRC(Loader, Handler):
         for t in wrapper.wrap(txt):
             if not t:
                 continue
-            if "v" in k.cfg.opts:
-                print(t)
             self.command("PRIVMSG", channel, t)
             if (time.time() - self.state.last) < 4.0:
                 time.sleep(4.0)
@@ -248,8 +241,7 @@ class IRC(Loader, Handler):
         self._connected.wait()
         self.logon(server, nick)
 
-    def dispatch(self, event):
-        "dispatch on event.command"
+    def handle(self, event):
         if event.command in self.cmds:
             self.cmds[event.command](event)
 
@@ -259,8 +251,8 @@ class IRC(Loader, Handler):
         assert self.cfg.nick
         super().start()
         self.connect(self.cfg.server, self.cfg.nick)
-        start(self.input)
-        start(self.output)
+        launch(self.input)
+        launch(self.output)
 
     def input(self):
         "loop for input"
@@ -276,7 +268,7 @@ class IRC(Loader, Handler):
                 break
             if not e.orig:
                 e.orig = repr(self)
-            self.dispatch(e)
+            self.handle(e)
 
     def joinall(self):
         "join all channels"
@@ -346,10 +338,6 @@ class IRC(Loader, Handler):
         self.state.last = time.time()
         self.state.nrsend += 1
 
-    def register(self, cmd, cb):
-        "register a callback"
-        self.cmds[cmd] = cb
-
     def say(self, channel, txt):
         "forward to output loop"
         self._outqueue.put_nowait((channel, txt))
@@ -364,7 +352,7 @@ class IRC(Loader, Handler):
         assert self.cfg.server
         self.channels.append(self.cfg.channel)
         self._joined.clear()
-        start(self.doconnect)
+        launch(self.doconnect)
         self._joined.wait()
 
     def stop(self):
@@ -396,13 +384,13 @@ class IRC(Loader, Handler):
     def NOTICE(self, event):
         "handle noticed"
         if event.txt.startswith("VERSION"):
-            txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "the bot library")
+            txt = "\001VERSION %s %s - %s\001" % ("TRIPBOT", obj.__version__, "pure python3 IRC channel bot")
             self.command("NOTICE", event.channel, txt)
 
     def PRIVMSG(self, event):
         "handle a private message"
         if event.txt.startswith("DCC CHAT"):
-            if self.cfg.users and users.allowed(event.origin, "USER"):
+            if self.cfg.users and not users.allowed(event.origin, "USER"):
                 return
             try:
                 dcc = DCC()
@@ -415,8 +403,8 @@ class IRC(Loader, Handler):
             if self.cfg.users and not users.allowed(event.origin, "USER"):
                 return
             event.txt = event.txt[1:]
-            parse(event, event.txt)
-            k.queue.put(event)
+            event.iscmd = True
+            self.put(event)
 
     def QUIT(self, event):
         "handle quit"
@@ -434,7 +422,6 @@ class DCC(Handler):
         self._fsock = None
         self.encoding = "utf-8"
         self.origin = ""
-        bus.add(self)
 
     def raw(self, txt):
         "send text on the dcc socket"
@@ -458,14 +445,15 @@ class DCC(Handler):
         try:
             s.connect((addr, port))
         except ConnectionError:
+            print("failed to connect to %s:%s" % (addr, port))
             return
-        s.send(bytes('Welcome to BOTLIB %s !!\n' % event.nick, "utf-8"))
+        s.send(bytes('Welcome to TRIPBOT\n',"utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s
         self._fsock = self._sock.makefile("rw")
         self.origin = event.origin
-        start(self.input)
+        launch(self.input)
         super().start()
         self._connected.set()
 
@@ -497,7 +485,7 @@ class DCC(Handler):
         "skip channel and print on socket"
         self.raw(txt)
 
-class User(ol.Object):
+class User(Object):
 
     "IRC user"
 
@@ -506,11 +494,11 @@ class User(ol.Object):
         self.user = ""
         self.perms = []
 
-class Users(ol.Object):
+class Users(Object):
 
     "IRC users"
 
-    userhosts = ol.Object()
+    userhosts = Object()
 
     def allowed(self, origin, perm):
         "see if origin has needed permission"
@@ -535,13 +523,13 @@ class Users(ol.Object):
     def get_users(self, origin=""):
         "get all users, optionaly provding an matching origin"
         s = {"user": origin}
-        return find("mods.irc.User", s)
+        return find("irc.User", s)
 
     def get_user(self, origin):
         "get specific user with corresponding origin"
         u = list(self.get_users(origin))
         if u:
-            return u[-1]
+            return u[-1][-1]
 
     def meet(self, origin, perms=None):
         "add a irc user"
@@ -551,7 +539,7 @@ class Users(ol.Object):
         user = User()
         user.user = origin
         user.perms = ["USER", ]
-        ol.save(user)
+        save(user)
         return user
 
     def oper(self, origin):
@@ -562,7 +550,7 @@ class Users(ol.Object):
         user = User()
         user.user = origin
         user.perms = ["OPER", "USER"]
-        ol.save(user)
+        save(user)
         return user
 
     def perm(self, origin, permission):
@@ -572,8 +560,20 @@ class Users(ol.Object):
             raise ENOUSER(origin)
         if permission.upper() not in user.perms:
             user.perms.append(permission.upper())
-            ol.save(user)
+            save(user)
         return user
 
-#:
 users = Users()
+
+def cfg(event):
+    "configure irc."
+    c = Cfg()
+    last(c)
+    if not event.args:
+        return event.reply(format(c, skip=["username", "realname"]))
+    o = Object()
+    parse(o, event.prs.otxt)
+    if o.sets:
+        update(c, o.sets)
+        save(c)
+        event.reply("ok")

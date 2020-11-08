@@ -12,14 +12,14 @@ def read():
 
 setup(
     name='botlib',
-    version='105',
+    version='106',
     url='https://bitbucket.org/bthate/botlib',
     author='Bart Thate',
     author_email='bthate@dds.nl', 
     description="the bot library",
     long_description=read(),
     license='Public Domain',
-    install_requires=["olib"],
+    install_requires=["libobj"],
     packages=["bot", "botmod"],
     namespace_packages=["bot", "botmod"],
     zip_safe=False,

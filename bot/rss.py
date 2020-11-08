@@ -1,19 +1,22 @@
+# TRIPBOT - pure python3 IRC channel daemon
+#
+#
+
 "rich site syndicate"
 
-import datetime
-import html.parser
-import ol
-import os
-import random
-import re
-import time
-import urllib
+import datetime, os, random, re, time, urllib
 
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
-from ol.spc import Repeater, all, find, last, start
+from bus import bus
+from clk import Repeater
+from dbs import all, find, last, lastmatch
+from obj import Cfg, Default, O, Object, save, get, update
+from ofn import edit
+from hdl import debug
+from thr import launch
 
 try:
     import feedparser
@@ -21,10 +24,6 @@ try:
 except ModuleNotFoundError:
     gotparser = False
 
-#:
-debug = False
-
-#;
 timestrings = [
     "%a, %d %b %Y %H:%M:%S %z",
     "%d %b %Y %H:%M:%S %z",
@@ -50,7 +49,7 @@ def init(krn):
     f.start()
     return f
 
-class Cfg(ol.Cfg):
+class Cfg(Cfg):
 
     "rss configuration"
 
@@ -58,11 +57,11 @@ class Cfg(ol.Cfg):
         super().__init__()
         self.dosave = True
 
-class Feed(ol.Default):
+class Feed(Default):
 
     "a feed item"
 
-class Rss(ol.Object):
+class Rss(Object):
 
     "a rss feed url"
 
@@ -70,7 +69,7 @@ class Rss(ol.Object):
         super().__init__()
         self.rss = ""
 
-class Seen(ol.Object):
+class Seen(Object):
 
     "all urls seen"
 
@@ -78,12 +77,12 @@ class Seen(ol.Object):
         super().__init__()
         self.urls = []
 
-class Fetcher(ol.Object):
+class Fetcher(Object):
 
     "rss feed poller"
 
     #:
-    cfg = ol.Cfg()
+    cfg = Cfg()
     #:
     seen = Seen()
 
@@ -106,17 +105,18 @@ class Fetcher(ol.Object):
         for key in dl:
             if not key:
                 continue
-            data = ol.get(o, key, None)
+            data = get(o, key, None)
+            if not data:
+                continue
             if key == "link" and self.cfg.tinyurl:
                 datatmp = get_tinyurl(data)
                 if datatmp:
                     data = datatmp[0]
-            if data:
-                data = data.replace("\n", " ")
-                data = strip_html(data.rstrip())
-                data = unescape(data)
-                result += data.rstrip()
-                result += " - "
+            data = data.replace("\n", " ")
+            data = strip_html(data.rstrip())
+            data = unescape(data)
+            result += data.rstrip()
+            result += " - "
         return result[:-2].rstrip()
 
     def fetch(self, rssobj):
@@ -129,8 +129,8 @@ class Fetcher(ol.Object):
             if not o:
                 continue
             f = Feed()
-            ol.update(f, rssobj)
-            ol.update(f, o)
+            update(f, rssobj)
+            update(f, O(o))
             u = urllib.parse.urlparse(f.link)
             if u.path and not u.path == "/":
                 url = "%s://%s/%s" % (u.scheme, u.netloc, u.path)
@@ -142,20 +142,20 @@ class Fetcher(ol.Object):
             counter += 1
             objs.append(f)
             if self.cfg.dosave:
-                ol.save(f)
+                save(f)
         if objs:
-            ol.save(Fetcher.seen)
+            save(Fetcher.seen)
         for o in objs:
             txt = self.display(o)
-            for bot in ol.bus.bus:
+            for bot in bus:
                 bot.announce(txt)
         return counter
 
     def run(self):
         "update all feeds"
         thrs = []
-        for o in all("botmod.rss.Rss"):
-            thrs.append(start(self.fetch, o))
+        for fn, o in all("rss.Rss"):
+            thrs.append(launch(self.fetch, o))
         return thrs
 
     def start(self, repeat=True):
@@ -168,7 +168,7 @@ class Fetcher(ol.Object):
 
     def stop(self):
         "stop the rss poller"
-        ol.save(self.seen)
+        save(self.seen)
 
 #:
 fetcher = Fetcher()
@@ -176,11 +176,11 @@ fetcher = Fetcher()
 def get_feed(url):
     "return a feed by it's url"
     if debug:
-        return [ol.Object(), ol.Object()]
+        return [Object(), Object()]
     try:
         result = get_url(url)
     except (HTTPError, URLError):
-        return [ol.Object(), ol.Object()]
+        return [Object(), Object()]
     if gotparser:
         result = feedparser.parse(result.data)
         if "entries" in result:
@@ -188,7 +188,7 @@ def get_feed(url):
                 yield entry
     else:
         print("feedparser is missing")
-        return [ol.Object(), ol.Object()]
+        return [Object(), Object()]
 
 def file_time(timestamp):
     s = str(datetime.datetime.fromtimestamp(timestamp))
@@ -254,12 +254,13 @@ def to_time(daystr):
 
 def unescape(text):
     "unescape html codes"
+    import html.parser
     txt = re.sub(r"\s+", " ", text)
     return html.parser.HTMLParser().unescape(txt)
 
 def useragent():
     "return useragent"
-    return 'Mozilla/5.0 (X11; Linux x86_64) BOTLIB +http://github.com/bthate/botlib)'
+    return 'Mozilla/5.0 (X11; Linux x86_64) TRIPBOT +http://pypi.org/bthate/tripbot)'
 
 def rem(event):
     "remove a rss feed"
@@ -268,12 +269,12 @@ def rem(event):
     selector = {"rss": event.args[0]}
     nr = 0
     got = []
-    for o in find("botmod.rss.Rss", selector):
+    for fn, o in find("rss.Rss", selector):
         nr += 1
         o._deleted = True
         got.append(o)
     for o in got:
-        ol.save(o)
+        save(o)
     event.reply("ok")
 
 def dpl(event):
@@ -281,10 +282,10 @@ def dpl(event):
     if len(event.args) < 2:
         return
     setter = {"display_list": event.args[1]}
-    for o in find("botmod.rss.Rss", {"rss": event.args[0]}):
-        ol.edit(o, setter)
-        ol.save(o)
-    event.reply("ok")
+    for fn, o in lastmatch("rss.Rss", {"rss": event.args[0]}):
+        edit(o, setter)
+        save(o)
+        event.reply("ok")
 
 def ftc(event):
     "manual run a fetch batch"
@@ -304,10 +305,10 @@ def rss(event):
     if not event.args:
         return
     url = event.args[0]
-    res = list(find("botmod.rss.Rss", {"rss": url}))
+    res = list(find("rss.Rss", {"rss": url}))
     if res:
         return
     o = Rss()
     o.rss = event.args[0]
-    ol.save(o)
+    save(o)
     event.reply("ok")

@@ -1,23 +1,34 @@
 #!/usr/bin/python3
+"botlib - library to program bots"
 
-from ol.spc import Console, boot, cmd, execute, ol, os, scandir
+__version__ = 106
+
+import os, sys
+sys.path.insert(0, os.getcwd())
+sys.path.insert(0, "lib")
+
+import obj
+
+from csl import Console
+from prs import parse_cli
+from trm import execute
+
+from bot.irc import IRC
 
 def main():
-    k = boot("bot")
-    if "b" in k.cfg.opts:
-        print("BOT started at %s" % time.ctime(time.time()))
-        print(ol.format(k.cfg))
-    scandir(k.cfg.wd)
-    k.walk("bot,botmod")
-    if k.cfg.txt:
-        return cmd(k.cfg.otxt)
-    k.start()
-    k.init(k.cfg.mods)
-    if "s" in k.cfg.opts or k.cfg.mods:
-        c = Console()
+    obj.wd = os.path.expanduser("~/.losh")
+    cfg = parse_cli()
+    c = Console()
+    c.walk("bot")
+    c.walk("botmod")
+    if len(sys.argv) >= 2:
+       return c.cmd(" ".join(sys.argv[1:]))
+    if "s" in cfg.opts:
         c.start()
-    if "s" in k.cfg.opts or "d" in k.cfg.opts or k.cfg.mods:
-        k.wait()
-         
+    i = IRC()
+    i.clone(c)
+    i.start()
+    i.wait()     
+
 execute(main)
 os._exit(0)
