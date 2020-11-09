@@ -1,6 +1,6 @@
 "handler (hdl)"
 
-import importlib, inspect, os, queue, sys, threading, time
+import importlib, inspect, obj, os, queue, sys, threading, time
 import importlib.util
 
 from obj import Default, Object, Ol, spl, update
@@ -85,6 +85,24 @@ class Handler(Object):
             event.show()
         event.ready()
 
+    def files(self):
+        return list_files(obj.wd)
+
+    def init(self, mns):
+        "call init() of modules"
+        for mn in spl(mns):
+            try:
+                spec = importlib.util.find_spec(mn)
+            except ModuleNotFoundError:
+                print("%s not found" % mn)
+                continue
+            if spec:
+                mod = direct(mn)
+                self.scan(mod)
+            func = getattr(mod, "init", None)
+            if func:
+                func(self)
+
     def handler(self):
         "handler loop"
         while not self.stopped:
@@ -105,12 +123,27 @@ class Handler(Object):
         "register a callback"
         self.cbs[name] = callback
 
-    def scan(self, mod):
-        "scan for commands"
+    def intro(self, mod):
+        "introspect a module"
         for key, o in inspect.getmembers(mod, inspect.isfunction):
             if "event" in o.__code__.co_varnames:
                 if o.__code__.co_argcount == 1:
                     self.register(key, o) 
+        for _key, o in inspect.getmembers(mod, inspect.isclass):
+            if issubclass(o, Object):
+                t = "%s.%s" % (o.__module__, o.__name__)
+                self.names.append(o.__name__.lower(), t)
+
+    def scan(self, path=None):
+        "scan a modules directory"
+        if not path:
+            path = os.path.dirname(obj.__file__)
+        sys.path.insert(0, path)
+        for mn in [x[:-3] for x in os.listdir(path)
+                          if x and x.endswith(".py")
+                          and not x.startswith("__")
+                          and not x == "setup.py"]:
+            self.intro(direct(mn))
 
     def start(self):
         "start handler"
@@ -121,12 +154,14 @@ class Handler(Object):
         self.stopped = True
         self.queue.put(None)
 
-    def walk(self, pkgname):
+    def walk(self, pkgnames):
         "walk over packages and load their modules"
-        mod = direct(pkgname)
-        for name in [x[:-3] for x in os.listdir(mod.__path__[0])
-                            if x.endswith(".py")]:
-            self.scan(direct("%s.%s" % (pkgname, name)))
+        for name in spl(pkgnames):
+            print(name)
+            mod = direct(name)
+            for n in [x[:-3] for x in os.listdir(mod.__path__[0])
+                                if x.endswith(".py")]:
+                self.intro(direct("%s.%s" % (name, n)))
             
     def wait(self):
         if not self.stopped:
@@ -136,21 +171,6 @@ class Handler(Object):
 def direct(name, pname=''):
     "load a module"
     return importlib.import_module(name, pname)
-
-def init(hdl, mns):
-    "call init() of modules"
-    for mn in spl(mns):
-        try:
-            spec = importlib.util.find_spec(mn)
-        except ModuleNotFoundError:
-            print("%s not found" % mn)
-            continue
-        if spec:
-            mod = direct(mn)
-            scan(hdl, mod)
-            func = getattr(mod, "init", None)
-            if func:
-                func(hdl)
 
 def mods(mn):
     "return all modules in a package"
@@ -176,27 +196,3 @@ def mods(mn):
                 continue
             modules.append(direct(mmm))
     return modules
-
-
-def scan(hdl, mod):
-    "scan for commands"
-    for key, o in inspect.getmembers(mod, inspect.isfunction):
-        if "event" in o.__code__.co_varnames:
-            if o.__code__.co_argcount == 1:
-                hdl.register(key, o)
-    for _key, o in inspect.getmembers(mod, inspect.isclass):
-        if issubclass(o, Object):
-            t = "%s.%s" % (o.__module__, o.__name__)
-            hdl.names.append(o.__name__.lower(), t)
-
-
-def scandir(hdl, path=None):
-    "scan a modules directory"
-    if not path:
-        path = os.path.dirname(obj.__file__)
-    sys.path.insert(0, path)
-    for mn in [x[:-3] for x in os.listdir(path)
-                      if x and x.endswith(".py")
-                      and not x.startswith("__")
-                      and not x == "setup.py"]:
-        scan(hdl, direct(mn))

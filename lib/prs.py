@@ -1,5 +1,6 @@
 "parse (prs)"
 
+import obj
 import sys
 import time
 
@@ -137,10 +138,13 @@ def elapsed(seconds, short=True):
     txt = txt.strip()
     return txt
 
-def parse_cli():
+def parse_cli(name=None):
     "parse commandline"
     cfg = Default()
     parse(cfg, " ".join(sys.argv[1:]))
+    if name:
+         obj.wd = os.path.expanduser("~/.%s" % name)
+         cfg.wd = obj.wd
     return cfg
 
 def parse(o, txt):

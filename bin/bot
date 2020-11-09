@@ -1,24 +1,21 @@
 #!/usr/bin/python3
 "library for programming objects"
 
-__version__ = 1
-
 import os, sys ; sys.path.insert(0, "lib")
+import obj
 
 from csl import Console
-from hdl import init, scandir
 from prs import parse_cli
 from trm import execute, os
 
 def main():
-    cfg = parse_cli()
-    import obj
     obj.wd = os.path.expanduser("~/.bot")
+    cfg = parse_cli()
     c = Console()
-    scandir(c, "cmds")
+    c.walk("cmds,bot")
     if cfg.txt:
        return c.cmd(cfg.txt)
-    init(c, cfg.mods)
+    c.init(cfg.mods)
     c.start()
     c.wait()
      
