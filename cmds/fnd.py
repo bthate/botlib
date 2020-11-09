@@ -17,9 +17,10 @@ def fnd(event):
     if not event.args:
         return event.reply(" | ".join(list_files(obj.wd)))
     nr = -1
-    for fn, o in find(event.otype, event.prs.gets, event.prs.index, event.prs.timed):
-        nr += 1
-        txt = "%s %s" % (str(nr), format(o, event.xargs, skip=event.prs.skip))
-        if "t" in event.prs.opts:
-            txt = txt + " %s" % (elapsed(time.time() - fntime(fn)))
-        event.reply(txt)
+    for otype in get(event.src.names, event.args[0], [event.args[0]]):
+        for fn, o in find(otype, event.prs.gets, event.prs.index, event.prs.timed):
+            nr += 1
+            txt = "%s %s" % (str(nr), format(o, event.xargs, skip=event.prs.skip))
+            if "t" in event.prs.opts:
+                txt = txt + " %s" % (elapsed(time.time() - fntime(fn)))
+            event.reply(txt)
