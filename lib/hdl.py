@@ -97,11 +97,22 @@ class Handler(Object):
                 print("%s not found" % mn)
                 continue
             if spec:
-                mod = direct(mn)
-                self.scan(mod)
-            func = getattr(mod, "init", None)
-            if func:
-                func(self)
+                mod = self.intro(direct(mn))
+                func = getattr(mod, "init", None)
+                if func:
+                    func(self)
+
+    def intro(self, mod):
+        "introspect a module"
+        for key, o in inspect.getmembers(mod, inspect.isfunction):
+            if "event" in o.__code__.co_varnames:
+                if o.__code__.co_argcount == 1:
+                    self.register(key, o) 
+        for _key, o in inspect.getmembers(mod, inspect.isclass):
+            if issubclass(o, Object):
+                t = "%s.%s" % (o.__module__, o.__name__)
+                self.names.append(o.__name__.lower(), t)
+        return mod
 
     def handler(self):
         "handler loop"
@@ -123,16 +134,6 @@ class Handler(Object):
         "register a callback"
         self.cbs[name] = callback
 
-    def intro(self, mod):
-        "introspect a module"
-        for key, o in inspect.getmembers(mod, inspect.isfunction):
-            if "event" in o.__code__.co_varnames:
-                if o.__code__.co_argcount == 1:
-                    self.register(key, o) 
-        for _key, o in inspect.getmembers(mod, inspect.isclass):
-            if issubclass(o, Object):
-                t = "%s.%s" % (o.__module__, o.__name__)
-                self.names.append(o.__name__.lower(), t)
 
     def scan(self, path=None):
         "scan a modules directory"
@@ -157,7 +158,6 @@ class Handler(Object):
     def walk(self, pkgnames):
         "walk over packages and load their modules"
         for name in spl(pkgnames):
-            print(name)
             mod = direct(name)
             for n in [x[:-3] for x in os.listdir(mod.__path__[0])
                                 if x.endswith(".py")]:

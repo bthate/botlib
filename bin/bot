@@ -9,8 +9,7 @@ from prs import parse_cli
 from trm import execute, os
 
 def main():
-    obj.wd = os.path.expanduser("~/.bot")
-    cfg = parse_cli()
+    cfg = parse_cli("bot")
     c = Console()
     c.walk("cmds,bot")
     if cfg.txt:

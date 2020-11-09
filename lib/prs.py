@@ -1,6 +1,7 @@
 "parse (prs)"
 
 import obj
+import os
 import sys
 import time
 
