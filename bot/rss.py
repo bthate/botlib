@@ -43,7 +43,7 @@ timestrings = [
 ]
 
 
-def init():
+def init(hdl):
     "start a rss poller and return it"
     f = Fetcher()
     f.start()

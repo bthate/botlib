@@ -11,9 +11,10 @@ from thr import launch
 
 saylock = _thread.allocate_lock()
 
-def init():
+def init(hdl):
     "create a IRC bot and return it"
     i = IRC()
+    i.clone(hdl)
     launch(i.start)
     return i
 

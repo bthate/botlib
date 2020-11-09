@@ -3,6 +3,8 @@
 
 __version__ = 1
 
+import os, sys ; sys.path.insert(0, "lib")
+
 from csl import Console
 from hdl import init, scandir
 from prs import parse_cli
@@ -16,7 +18,7 @@ def main():
     scandir(c, "cmds")
     if cfg.txt:
        return c.cmd(cfg.txt)
-    init(cfg.mods)
+    init(c, cfg.mods)
     c.start()
     c.wait()
      

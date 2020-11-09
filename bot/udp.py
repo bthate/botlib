@@ -1,7 +1,3 @@
-# TRIPBOT - pure python3 IRC channel bot
-#
-#
-
 "udp to irc relay"
 
 import select, socket, sys, time
@@ -11,7 +7,7 @@ from dbs import last
 from obj import Cfg, Object
 from thr import launch
 
-def init():
+def init(hdl):
     "start a udp to irc relay server and return it"
     u = UDP()
     u.start()
