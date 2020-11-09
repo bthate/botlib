@@ -180,25 +180,6 @@ not too much typing.
 
 it's a way of programming with objects, replacing OOP. Not object-oriented programming, but object programming. If you are used to functional programming you'll like it (or not) ;]
 
-OLIB has the following modules:
-
-::
-
-    ol	 	- object library
-    ol.bus	- announce
-    ol.csl	- console
-    ol.dbs	- databases
-    ol.evt	- event
-    ol.hdl	- handler
-    ol.int	- introspection
-    ol.krn	- kernel
-    ol.prs 	- parser
-    ol.spc	- specification
-    ol.tms	- times
-    ol.trm	- terminal
-    ol.tsk	- tasks
-    ol.utl	- utilities
-
 MODULES
 =======
 
@@ -207,17 +188,16 @@ BOTLIB uses the bot and botmod as the namespace to distribute modules:
 
 ::
 
-   bot.cfg	- config
-   bot.cmd	- command
    bot.irc	- irc 
+   bot.rss	- rich site syndicate
+   bot.udp	- udp to irc relay
 
 ::
 
+   botmod.cms	- commands
    botmod.ent	- entry
+   botmod.edt   - edit
    botmod.fnd	- find
-   botmod.mbx	- mail
-   botmod.rss	- rich site syndicate
-   botmod.udp	- UDP to IRC
 
 
 CONTACT

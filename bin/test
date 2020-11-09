@@ -1,37 +1,32 @@
 #!/usr/bin/python3
-# BOTLIB - the bot library !
-#
-#
 
-import os, sys ; sys.path.insert(0, os.getcwd())
-sys.path.insert(0, sys.path.insert(0, os.path.join(os.getcwd(), "mods")))
+import os, sys ; sys.path.insert(0, os.path.join(os.getcwd(), "lib"))
+import time, unittest
 
-import ol
-import os
-import sys
-import time
-import unittest
+import obj, hdl
+
+from trm import execute
+from prs import parse_cli
+
+def open(txt):
+    try:
+        for line in os.popen(txt).readlines():
+            print(line.rstrip())
+    except:
+        pass
 
 def main():
-    try:
-        import mods.rss
-        mods.rss.debug = True
-    except: 
-        pass
-    #for line in os.popen("rm -fR ~/.test").readlines():
-    #    print(line)
-    k = ol.krn.boot("test")
-    ol.update(k.cfg, ol.prs.parse_cli())
-    k.walk("mods")
-    k.start()
-    test_path = os.getcwd() + os.sep + "tests"
-    if k.cfg.txt:
+    open("rm -fR ~/.test")
+    obj.wd = os.path.expanduser("~/.test")
+    hdl.debug = True
+    cfg = parse_cli()
+    test_path = os.getcwd() + os.sep + "test"
+    if cfg.txt:
         pat = "test_%s*" % k.cfg.txt
     else:
         pat = "test*"
     suite = unittest.loader.TestLoader().discover(test_path, pattern=pat)
     unittest.TextTestRunner(verbosity=3).run(suite)
-    k.wait()
    
-ol.trm.execute(main)
+execute(main)
 os._exit(0)

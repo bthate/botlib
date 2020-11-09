@@ -11,7 +11,7 @@ from dbs import last
 from obj import Cfg, Object
 from thr import launch
 
-def init(kernel):
+def init():
     "start a udp to irc relay server and return it"
     u = UDP()
     u.start()

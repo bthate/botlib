@@ -11,7 +11,7 @@ from thr import launch
 
 saylock = _thread.allocate_lock()
 
-def init(kernel):
+def init():
     "create a IRC bot and return it"
     i = IRC()
     launch(i.start)
@@ -102,7 +102,7 @@ class IRC(Handler):
         register(self.cmds, "PRIVMSG", self.PRIVMSG)
         register(self.cmds, "QUIT", self.QUIT)
         register(self.cmds, "366", self.JOINED)
-
+ 
     def _connect(self, server):
         "connect (blocking) to irc server"
         oldsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -459,13 +459,12 @@ class DCC(Handler):
 
     def input(self):
         "loop for input"
-        k = get_kernel()
         while 1:
             try:
                 e = self.poll()
             except EOFError:
                 break
-            k.queue.put(e)
+            self.put(e)
 
     def poll(self):
         "poll (blocking) for input and create an event for it"

@@ -43,7 +43,7 @@ timestrings = [
 ]
 
 
-def init(krn):
+def init():
     "start a rss poller and return it"
     f = Fetcher()
     f.start()

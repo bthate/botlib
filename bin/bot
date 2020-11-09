@@ -1,34 +1,24 @@
 #!/usr/bin/python3
-"botlib - library to program bots"
+"library for programming objects"
 
-__version__ = 106
-
-import os, sys
-sys.path.insert(0, os.getcwd())
-sys.path.insert(0, "lib")
-
-import obj
+__version__ = 1
 
 from csl import Console
+from hdl import init, scandir
 from prs import parse_cli
-from trm import execute
-
-from bot.irc import IRC
+from trm import execute, os
 
 def main():
-    obj.wd = os.path.expanduser("~/.losh")
     cfg = parse_cli()
+    import obj
+    obj.wd = os.path.expanduser("~/.bot")
     c = Console()
-    c.walk("bot")
-    c.walk("botmod")
-    if len(sys.argv) >= 2:
-       return c.cmd(" ".join(sys.argv[1:]))
-    if "s" in cfg.opts:
-        c.start()
-    i = IRC()
-    i.clone(c)
-    i.start()
-    i.wait()     
-
+    scandir(c, "cmds")
+    if cfg.txt:
+       return c.cmd(cfg.txt)
+    init(cfg.mods)
+    c.start()
+    c.wait()
+     
 execute(main)
 os._exit(0)
