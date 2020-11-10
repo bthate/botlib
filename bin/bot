@@ -1,10 +1,6 @@
 #!/usr/bin/python3
 "library for programming objects"
 
-import os, sys
-sys.path.insert(0, "lib")
-sys.path.insert(0, "bot")
-
 from csl import Console
 from prs import parse_cli
 from trm import execute, os
