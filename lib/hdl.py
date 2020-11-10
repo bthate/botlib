@@ -134,10 +134,11 @@ class Handler(Object):
         "register a callback"
         self.cbs[name] = callback
 
-
-    def scan(self, path=None):
+    def scan(self, modname="", path=""):
         "scan a modules directory"
-        if not path:
+        if modname:
+            path = os.path.dirname(direct(modname).__file__)
+        elif not path:
             path = os.path.dirname(obj.__file__)
         sys.path.insert(0, path)
         for mn in [x[:-3] for x in os.listdir(path)

@@ -1,6 +1,6 @@
 "object base class (obj)"
 
-__version__ = 12
+__version__ = 13
 
 import datetime, importlib, json, os, random, sys, time, uuid, _thread
 

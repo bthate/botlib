@@ -1,7 +1,3 @@
-# TRIPBOT - pure python3 IRC channel daemon
-#
-#
-
 "rich site syndicate"
 
 import datetime, os, random, re, time, urllib
@@ -260,7 +256,7 @@ def unescape(text):
 
 def useragent():
     "return useragent"
-    return 'Mozilla/5.0 (X11; Linux x86_64) TRIPBOT +http://pypi.org/bthate/tripbot)'
+    return 'Mozilla/5.0 (X11; Linux x86_64) BOTLIB +http://pypi.org/bthate/botlib)'
 
 def rem(event):
     "remove a rss feed"

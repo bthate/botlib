@@ -9,6 +9,8 @@ from ofn import format
 from prs import parse, parse_cli
 from thr import launch
 
+__version__ = 106
+
 saylock = _thread.allocate_lock()
 
 def init(hdl):
@@ -385,7 +387,7 @@ class IRC(Handler):
     def NOTICE(self, event):
         "handle noticed"
         if event.txt.startswith("VERSION"):
-            txt = "\001VERSION %s %s - %s\001" % ("TRIPBOT", obj.__version__, "pure python3 IRC channel bot")
+            txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", obj.__version__, "bot programming library")
             self.command("NOTICE", event.channel, txt)
 
     def PRIVMSG(self, event):
@@ -448,7 +450,7 @@ class DCC(Handler):
         except ConnectionError:
             print("failed to connect to %s:%s" % (addr, port))
             return
-        s.send(bytes('Welcome to TRIPBOT\n',"utf-8"))
+        s.send(bytes('Welcome to BOTLIB', "utf-8"))
         s.setblocking(1)
         os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s

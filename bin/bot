@@ -1,9 +1,6 @@
 #!/usr/bin/python3
 "library for programming objects"
 
-import os, sys ; sys.path.insert(0, "lib")
-import obj
-
 from csl import Console
 from prs import parse_cli
 from trm import execute, os
@@ -11,7 +8,7 @@ from trm import execute, os
 def main():
     cfg = parse_cli("bot")
     c = Console()
-    c.walk("cmds,bot")
+    c.scan("bot")
     if cfg.txt:
        return c.cmd(cfg.txt)
     c.init(cfg.mods)

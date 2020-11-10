@@ -1,7 +1,3 @@
-# TRIPBOT - pure python3 IRC channel bot
-#
-#
-
 "data entry"
 
 from dbs import find
