@@ -19,7 +19,7 @@ def read():
 
 setup(
     name='botlib',
-    version='107',
+    version='108',
     url='https://bitbucket.org/bthate/botlib',
     author='Bart Thate',
     author_email='bthate@dds.nl', 
@@ -30,6 +30,7 @@ setup(
     package_dir={'': 'bot'},
     py_modules=mods("bot"),
     zip_safe=False,
+    scripts=["bin/bot"],
     classifiers=['Development Status :: 4 - Beta',
                  'License :: Public Domain',
                  'Operating System :: Unix',
