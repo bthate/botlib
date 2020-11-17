@@ -10,7 +10,7 @@ from ofn import format
 from prs import parse, parse_cli
 from thr import launch
 
-__version__ = 1
+__version__ = 109
 
 saylock = _thread.allocate_lock()
 

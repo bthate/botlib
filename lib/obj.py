@@ -1,7 +1,5 @@
 "object base class (obj)"
 
-__version__ = 127
-
 import datetime
 import importlib
 import json

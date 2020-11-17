@@ -2,6 +2,8 @@
 #
 #
 
+"library to program bots"
+
 import os
 
 from setuptools import setup
@@ -19,7 +21,7 @@ def read():
 
 setup(
     name='botlib',
-    version='108',
+    version='109',
     url='https://bitbucket.org/bthate/botlib',
     author='Bart Thate',
     author_email='bthate@dds.nl', 
@@ -27,10 +29,9 @@ setup(
     long_description=read(),
     install_requires=["obj"],
     license='Public Domain',
-    package_dir={'': 'bot'},
-    py_modules=mods("bot"),
+    package_dir={'': 'lib'},
+    py_modules=mods("lib"),
     zip_safe=False,
-    scripts=["bin/bot"],
     classifiers=['Development Status :: 4 - Beta',
                  'License :: Public Domain',
                  'Operating System :: Unix',
