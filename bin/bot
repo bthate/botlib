@@ -9,7 +9,7 @@ from trm import execute
 
 def main():
     import obj
-    obj.wd = os.path.expanduser("~/.obot")
+    obj.wd = os.path.expanduser("~/.bot")
     cfg = parse_cli()
     c = Console()
     c.scan("irc")

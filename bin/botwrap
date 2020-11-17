@@ -8,7 +8,7 @@ from trm import execute
 import obj
 
 def main():
-    obj.wd = "/var/lib/obot"
+    obj.wd = "/var/lib/botd"
     c = Console()
     c.scan("irc")
     return c.cmd(" ".join(sys.argv[1:]))

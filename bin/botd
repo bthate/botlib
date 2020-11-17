@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-
 from csl import Console, os, sys
 from ofn import format
 from prs import parse_cli
@@ -22,7 +21,7 @@ def daemon():
 
 def main():
     import obj
-    obj.wd = "/var/lib/obot"
+    obj.wd = "/var/lib/botd"
     cfg = parse_cli()
     print(format(cfg))
     if "w" not in cfg.opts:
