@@ -1,0 +1,17 @@
+#!/usr/bin/python3
+
+import os, sys ; sys.path.insert(0, "lib")
+
+from csl import Console
+from trm import execute
+
+import obj
+
+def main():
+    obj.wd = "/var/lib/obot"
+    c = Console()
+    c.scan("irc")
+    return c.cmd(" ".join(sys.argv[1:]))
+
+execute(main)
+os._exit(0)
