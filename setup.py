@@ -27,7 +27,6 @@ setup(
     author_email='bthate@dds.nl', 
     description="the bot library",
     long_description=read(),
-    install_requires=["obj"],
     license='Public Domain',
     package_dir={'': 'lib'},
     py_modules=mods("lib"),
