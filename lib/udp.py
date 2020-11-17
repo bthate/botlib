@@ -10,8 +10,7 @@ from thr import launch
 def init(hdl):
     "start a udp to irc relay server and return it"
     u = UDP()
-    u.start()
-    return u
+    return launch(u.start)
 
 class Cfg(Cfg):
 
@@ -45,7 +44,7 @@ class UDP(Object):
         "loop for output"
         try:
             self._sock.bind((self.cfg.host, self.cfg.port))
-        except socket.gaierror:
+        except (socket.gaierror, OSError):
             return
         while not self.stopped:
             (txt, addr) = self._sock.recvfrom(64000)

@@ -5,7 +5,13 @@ import os
 import sys
 import termios
 
+from thr import get_exception
+
 resume = {}
+
+class EWRONG(Exception):
+
+    "wrong assumption"
 
 def execute(main):
     "provide context for funcion"
@@ -16,6 +22,8 @@ def execute(main):
         print("")
     except PermissionError:
         print("you need root permission.")
+    except Exception as ex:
+        print(get_exception())
     finally:
         termreset()
 

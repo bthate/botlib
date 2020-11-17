@@ -2,9 +2,9 @@
 
 import queue, sys, threading, time, traceback
 
-from obj import Object
+from obj import Default, Object, get_name, get_type
 
-class Task(threading.Thread):
+class Thr(threading.Thread):
 
     "task class"
 
@@ -24,12 +24,19 @@ class Task(threading.Thread):
         for k in dir(self):
             yield k
 
+    def join(self, timeout=None):
+        super().join(timeout)
+        return self._result
+
     def run(self):
         "run a task"
         func, args = self._queue.get()
-        self.setName(self._name)
+        target = None
+        if args:
+            target = Default(vars(args[0]))
+        self.setName((target and target.txt) or self._name)
         self._result = func(*args)
-        
+
     def wait(self, timeout=None):
         "wait for task to finish"
         super().join(timeout)
@@ -37,13 +44,8 @@ class Task(threading.Thread):
 
 def launch(func, *args, **kwargs):
     "start a task"
-    name = kwargs.get("name", None) 
-    if not name:        
-        if "__func__" in dir(func):
-            name = func.__func__.__qualname__
-    if not name:
-            name = str(func)
-    t = Task(func, *args, name=name, daemon=True)
+    name = kwargs.get("name", get_name(func))
+    t = Thr(func, *args, name=name, daemon=True)
     t.start()
     return t
 

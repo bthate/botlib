@@ -44,5 +44,4 @@ class Bus(Object):
             if repr(o) == orig:
                 o.say(channel, str(txt))
 
-#: bus object
 bus = Bus()

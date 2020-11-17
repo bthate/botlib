@@ -2,6 +2,7 @@
 
 import os, queue, socket, textwrap, time, threading, _thread
 
+from bus import bus
 from dbs import find, last
 from hdl import Event, Handler
 from obj import Cfg, Default, Object, register, save, update
@@ -9,7 +10,7 @@ from ofn import format
 from prs import parse, parse_cli
 from thr import launch
 
-__version__ = 107
+__version__ = 1
 
 saylock = _thread.allocate_lock()
 
@@ -17,8 +18,7 @@ def init(hdl):
     "create a IRC bot and return it"
     i = IRC()
     i.clone(hdl)
-    launch(i.start)
-    return i
+    return launch(i.start)
 
 def locked(l):
     "lock descriptor"
@@ -31,7 +31,7 @@ def locked(l):
             finally:
                 l.release()
             return res
-        lockedfunc.__doc__ = func.__doc__
+        lockeddec.__doc__ = func.__doc__
         return lockedfunc
     return lockeddec
 
@@ -44,12 +44,13 @@ class Cfg(Cfg):
     "IRC configuration object"
 
     def __init__(self):
+        super().__init__()
         self.channel = "#bot"
         self.nick = "bot"
         self.server = "localhost"
         self.username = "bot"
         self.realname = "bot"
-         
+                 
 class Event(Event):
 
     "IRC event"
@@ -99,12 +100,14 @@ class IRC(Handler):
         self.state.nrsend = 0
         self.state.pongcheck = False
         self.threaded = False
+        self.verbose = False
         register(self.cmds, "ERROR", self.ERROR)
         register(self.cmds, "LOG", self.LOG)
         register(self.cmds, "NOTICE", self.NOTICE)
         register(self.cmds, "PRIVMSG", self.PRIVMSG)
         register(self.cmds, "QUIT", self.QUIT)
         register(self.cmds, "366", self.JOINED)
+        bus.add(self)
  
     def _connect(self, server):
         "connect (blocking) to irc server"
@@ -131,6 +134,7 @@ class IRC(Handler):
 
     def _parsing(self, txt):
         "parse incoming text into an event"
+        print("%s %s" % (time.ctime(time.time()), txt))
         rawstr = str(txt)
         rawstr = rawstr.replace("\u0001", "")
         rawstr = rawstr.replace("\001", "")
@@ -329,6 +333,7 @@ class IRC(Handler):
         if not txt.endswith("\r\n"):
             txt += "\r\n"
         txt = txt[:512]
+        print("%s %s" % (time.ctime(time.time()), txt))
         txt = bytes(txt, "utf-8")
         self._connected.wait()
         try:
@@ -351,12 +356,14 @@ class IRC(Handler):
             self.cfg.update(cfg)
         else:
             last(self.cfg)
+        print(format(self.cfg))
         assert self.cfg.channel
         assert self.cfg.server
         self.channels.append(self.cfg.channel)
         self._joined.clear()
         launch(self.doconnect)
         self._joined.wait()
+        print("connected to %s" % self.cfg.server)
 
     def stop(self):
         "stop the irc bot"
@@ -371,7 +378,6 @@ class IRC(Handler):
         "error handling"
         self.state.nrerror += 1
         self.state.error = event.error
-        print(event.error)
         self._connected.clear()
         self.stop()
         self.start()
@@ -382,12 +388,13 @@ class IRC(Handler):
 
     def LOG(self, event):
         "log to console"
-        print(event.error)
+        if self.verbose:
+            print(event)
 
     def NOTICE(self, event):
         "handle noticed"
         if event.txt.startswith("VERSION"):
-            txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", obj.__version__, "bot programming library")
+            txt = "\001VERSION %s %s - %s\001" % ("OBJ", obj.__version__, "object programming library")
             self.command("NOTICE", event.channel, txt)
 
     def PRIVMSG(self, event):
@@ -398,9 +405,11 @@ class IRC(Handler):
             try:
                 dcc = DCC()
                 dcc.encoding = "utf-8"
-                start(dcc.connect, event)
+                dcc.clone(self)
+                launch(dcc.connect, event)
                 return
-            except ConnectionError:
+            except ConnectionError as ex:
+                print(ex)
                 return
         if event.txt and event.txt[0] == self.cc:
             if self.cfg.users and not users.allowed(event.origin, "USER"):
@@ -445,16 +454,12 @@ class DCC(Handler):
             s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
         else:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            s.connect((addr, port))
-        except ConnectionError:
-            print("failed to connect to %s:%s" % (addr, port))
-            return
-        s.send(bytes('Welcome to BOTLIB', "utf-8"))
+        s.connect((addr, port))
         s.setblocking(1)
-        os.set_inheritable(s.fileno(), os.O_RDWR)
+        #os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s
         self._fsock = self._sock.makefile("rw")
+        self.raw('Welcome %s' % event.nick)
         self.origin = event.origin
         launch(self.input)
         super().start()
@@ -571,11 +576,8 @@ def cfg(event):
     "configure irc."
     c = Cfg()
     last(c)
-    if not event.args:
+    if not event.prs.sets:
         return event.reply(format(c, skip=["username", "realname"]))
-    o = Object()
-    parse(o, event.prs.otxt)
-    if o.sets:
-        update(c, o.sets)
-        save(c)
-        event.reply("ok")
+    update(c, event.prs.sets)
+    save(c)
+    event.reply("ok")

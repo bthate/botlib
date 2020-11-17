@@ -42,8 +42,7 @@ timestrings = [
 def init(hdl):
     "start a rss poller and return it"
     f = Fetcher()
-    f.start()
-    return f
+    return launch(f.start)
 
 class Cfg(Cfg):
 
@@ -77,14 +76,8 @@ class Fetcher(Object):
 
     "rss feed poller"
 
-    #:
     cfg = Cfg()
-    #:
     seen = Seen()
-
-    def __init__(self):
-        super().__init__()
-        self._thrs = []
 
     def display(self, o):
         "display a rss feed item"
@@ -143,8 +136,7 @@ class Fetcher(Object):
             save(Fetcher.seen)
         for o in objs:
             txt = self.display(o)
-            for bot in bus:
-                bot.announce(txt)
+            bus.announce(txt)
         return counter
 
     def run(self):
@@ -166,7 +158,6 @@ class Fetcher(Object):
         "stop the rss poller"
         save(self.seen)
 
-#:
 fetcher = Fetcher()
 
 def get_feed(url):
@@ -256,7 +247,7 @@ def unescape(text):
 
 def useragent():
     "return useragent"
-    return 'Mozilla/5.0 (X11; Linux x86_64) BOTLIB +http://pypi.org/bthate/botlib)'
+    return 'Mozilla/5.0 (X11; Linux x86_64) OBJ +http://pypi.org/bthate/obj)'
 
 def rem(event):
     "remove a rss feed"

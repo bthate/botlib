@@ -1,10 +1,18 @@
 "object base class (obj)"
 
-__version__ = 13
+__version__ = 127
 
-import datetime, importlib, json, os, random, sys, time, uuid, _thread
+import datetime
+import importlib
+import json
+import os
+import random
+import sys
+import time
+import types
+import uuid
+import _thread
 
-sl = _thread.allocate_lock()
 wd = ""
 
 class ENOFILENAME(Exception):
@@ -21,6 +29,9 @@ class O:
         super().__init__()
         if args:
             self.__dict__.update(args[0])
+
+    def __call__(self):
+        pass
 
     def __delitem__(self, k):
         del self.__dict__[k]
@@ -51,7 +62,6 @@ class Object(O):
         super().__init__(*args, **kwargs)
         self.__id__ = str(uuid.uuid4())        
         self.__type__ = get_type(self)
-
 
 class Default(Object):
 
@@ -162,6 +172,25 @@ def default(o):
         return o
     return repr(o)
 
+def get_name(o):
+    "return fully qualified name of an object"
+    t = type(o)
+    if t == types.ModuleType:
+        return o.__name__
+    try:
+        n = "%s.%s" % (o.__self__.__class__.__name__, o.__name__)
+    except AttributeError:
+        try:
+            n = "%s.%s" % (o.__class__.__name__, o.__name__)
+        except AttributeError:
+            try:
+                n = o.__class__.__name__
+            except AttributeError:
+                n = o.__name__
+    return n
+
+
+
 def get_type(o):
     "return type of an object"
     t = type(o)
@@ -172,7 +201,6 @@ def get_type(o):
             pass
     return str(type(o)).split()[-1][1:-2]
 
-
 def get(o, k, d=None):
     "return o[k]"
     try:
@@ -180,7 +208,6 @@ def get(o, k, d=None):
     except (TypeError, AttributeError):
         res = o.__dict__.get(k, d)
     return res
-
 
 def items(o):
     "return items (k,v) of an object"
@@ -216,6 +243,7 @@ def load(o, path):
             update(o, v)
     o.__id__ = id
     o.__type__ = typ
+    return stp
     
 def register(o, k, v):
     "register key/value"
@@ -255,4 +283,3 @@ def values(o):
         return o.values()
     except (TypeError, AttributeError):
         return o.__dict__.values()
-

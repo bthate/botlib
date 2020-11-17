@@ -1,11 +1,11 @@
 "parse (prs)"
 
-import obj
 import os
 import sys
 import time
 
-from obj import Default, Object, update
+from obj import Default, Object, cdir, update
+from ofn import format
 
 class Token(Object):
 
@@ -139,25 +139,30 @@ def elapsed(seconds, short=True):
     txt = txt.strip()
     return txt
 
-def parse_cli(name=None):
+def parse_cli():
     "parse commandline"
+    import hdl
+    import obj
     cfg = Default()
     parse(cfg, " ".join(sys.argv[1:]))
-    if name:
-         obj.wd = os.path.expanduser("~/.%s" % name)
-         cfg.wd = obj.wd
+    cfg.sets.wd = obj.wd = cfg.sets.wd or obj.wd
+    assert obj.wd
+    hdl.md = os.path.join(obj.wd, "mod")
+    if "b" in cfg.opts:
+        print("OBJ started at %s" % time.ctime(time.time()))
+        print(format(cfg))
     return cfg
 
 def parse(o, txt):
     "parse an object"
     args = []
+    o.txt = txt
     o.otxt = txt
-    o.gets = Object()
-    o.opts = Object()
-    o.sets = Object()
-    o.skip = Object()
+    o.gets = Default()
+    o.opts = Default()
+    o.sets = Default()
+    o.skip = Default()
     o.timed = ()
-    o.txt = ""
     o.index = None
     for token in [Token(txt) for txt in txt.split()]:
         s = Skip(token.txt)
@@ -175,7 +180,6 @@ def parse(o, txt):
         s = Setter(token.txt)
         if s:
             update(o.sets, s)
-            update(o, s)
             continue
         opt = Option(token.txt)
         if opt.opt:

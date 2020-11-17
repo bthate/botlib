@@ -1,10 +1,13 @@
 "console (csl)"
 
-import atexit, readline
+import atexit, os, pwd, readline, sys
 
 from hdl import Event, Handler
 from thr import launch
 from trm import termsave, termreset
+
+def __dir__():
+    return ("Console", "setcompleter")
 
 cmds = []
 
@@ -12,19 +15,28 @@ class Console(Handler):
 
     "console class"
 
+    def __init__(self):
+        super().__init__()
+
     def announce(self, txt):
         "silence announcing"
 
     def direct(self, txt):
         "print txt"
-        print(txt.rstrip())
+        super().direct(txt)
 
     def input(self):
         "loop for input"
         while 1:
-            event = self.poll()
+            try:
+                event = self.poll()
+            except EOFError:
+                break
             self.put(event)
             event.wait()
+
+    def handler(self):
+        super().handler()
             
     def poll(self):
         "wait for input"
@@ -40,7 +52,7 @@ class Console(Handler):
     def start(self):
         "start console"
         super().start()
-        launch(self.input, name="Console.input")
+        launch(self.input)
 
 def complete(text, state):
     "complete matches"

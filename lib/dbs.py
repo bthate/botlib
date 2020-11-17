@@ -1,6 +1,6 @@
 "database (dbs)"
 
-import obj, time
+import time
 
 from obj import hook, update, os, get_type
 from ofn import format, search
@@ -34,6 +34,7 @@ def every(selector=None, index=None, timed=None):
     nr = -1
     if selector is None:
         selector = {}
+    import obj
     for otype in os.listdir(os.path.join(obj.wd, "store")):
         for fn in fns(otype, timed):
             o = hook(fn)
@@ -81,6 +82,7 @@ def fns(name, timed=None):
     "return filenames"
     if not name:
         return []
+    import obj
     p = os.path.join(obj.wd, "store", name) + os.sep
     res = []
     d = ""
@@ -130,6 +132,10 @@ def last(o):
     path, l = lastfn(str(get_type(o)))
     if  l:
         update(o, l)
+    if path:
+        spl = path.split(os.sep)
+        stp = os.sep.join(spl[-4:])
+        return stp
 
 def lastmatch(otype, selector=None, index=None, timed=None):
     for fn, o in find(otype, selector, index, timed):

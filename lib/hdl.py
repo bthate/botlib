@@ -1,13 +1,15 @@
 "handler (hdl)"
 
-import importlib, inspect, obj, os, queue, sys, threading, time
+import importlib, inspect, os, queue, sys, threading, time
 import importlib.util
 
-from obj import Default, Object, Ol, spl, update
+from dbs import list_files
+from obj import Default, Object, Ol, get_type, spl, update
 from prs import parse
 from thr import launch, get_exception
 
 debug = False
+md = ""
 
 class Event(Default):
 
@@ -15,19 +17,20 @@ class Event(Default):
 
     __slots__ = ("prs", "src")
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kw):
+        super().__init__(*args, **kw)
         self.done = threading.Event()
         self.result = []
-        
+        self.thrs = []
+
     def direct(self, txt):
         "send txt to console"
         print(txt)
 
-    def parse(self, txt):
+    def parse(self):
         "parse an event"
         self.prs = Default()
-        parse(self.prs, txt)
+        parse(self.prs, self.otxt or self.txt)
         args = self.prs.txt.split()
         if args:
             self.cmd = args.pop(0)
@@ -39,6 +42,7 @@ class Event(Default):
             self.xargs = args
 
     def ready(self):
+        "event is handled"
         self.done.set()
         
     def reply(self, txt):
@@ -52,7 +56,10 @@ class Event(Default):
         self.ready()
         
     def wait(self):
+        "wait for event to be handled"
         self.done.wait()
+        for thr in self.thrs:
+            thr.join()
 
 class Handler(Object):
 
@@ -68,9 +75,12 @@ class Handler(Object):
         self.stopped = False
 
     def clone(self, hdl):
+        "copy callbacks"
         update(self.cbs, hdl.cbs)
+        update(self.names, hdl.names)
 
     def cmd(self, txt):
+        "do a command"
         e = Event()
         e.txt = txt
         return self.dispatch(e)
@@ -79,17 +89,21 @@ class Handler(Object):
         "run callbacks for event"
         if not event.src:
             event.src = self
-        event.parse(event.txt)
+        event.parse()
         if event.cmd and event.cmd in self.cbs:
             self.cbs[event.cmd](event)
             event.show()
         event.ready()
 
     def files(self):
+        "show files in workdir"
+        import obj
+        assert obj.wd
         return list_files(obj.wd)
 
     def init(self, mns):
         "call init() of modules"
+        thrs = []
         for mn in spl(mns):
             try:
                 spec = importlib.util.find_spec(mn)
@@ -100,7 +114,8 @@ class Handler(Object):
                 mod = self.intro(direct(mn))
                 func = getattr(mod, "init", None)
                 if func:
-                    func(self)
+                    thrs.append(func(self))
+        return thrs
 
     def intro(self, mod):
         "introspect a module"
@@ -113,6 +128,16 @@ class Handler(Object):
                 t = "%s.%s" % (o.__module__, o.__name__)
                 self.names.append(o.__name__.lower(), t)
         return mod
+        
+    def mods(self, pkgname):
+        path = os.path.dirname(direct(pkgname).__file__)
+        res = []
+        for mn in [x[:-3] for x in os.listdir(path)
+                          if x and x.endswith(".py")
+                          and not x.startswith("__")
+                          and not x == "setup.py"]:
+              res.append(direct(mn))
+        return res
 
     def handler(self):
         "handler loop"
@@ -120,11 +145,7 @@ class Handler(Object):
             event = self.queue.get()
             if not event:
                 break
-            if self.threaded:
-                event.thrs = []
-                event.thrs.append(launch(self.dispatch, event, name=event.cmd))
-                continue
-            self.dispatch(event)
+            event.thrs.append(launch(self.dispatch, event))
 
     def put(self, e):
         "put event on queue"
@@ -134,12 +155,10 @@ class Handler(Object):
         "register a callback"
         self.cbs[name] = callback
 
-    def scan(self, modname="", path=""):
+    def fromdir(self, path):
         "scan a modules directory"
-        if modname:
-            path = os.path.dirname(direct(modname).__file__)
-        elif not path:
-            path = os.path.dirname(obj.__file__)
+        if not path:
+            return
         sys.path.insert(0, path)
         for mn in [x[:-3] for x in os.listdir(path)
                           if x and x.endswith(".py")
@@ -147,9 +166,14 @@ class Handler(Object):
                           and not x == "setup.py"]:
             self.intro(direct(mn))
 
+    def scan(self, modname):
+        "scan a modules directory"
+        path = os.path.dirname(direct(modname).__file__)
+        self.fromdir(path)
+
     def start(self):
         "start handler"
-        launch(self.handler, name="Handler.handler")
+        launch(self.handler)
 
     def stop(self):
         "stop handler"
@@ -160,11 +184,10 @@ class Handler(Object):
         "walk over packages and load their modules"
         for name in spl(pkgnames):
             mod = direct(name)
-            for n in [x[:-3] for x in os.listdir(mod.__path__[0])
-                                if x.endswith(".py")]:
-                self.intro(direct("%s.%s" % (name, n)))
+            self.fromdir(mod.__path__[0])
             
     def wait(self):
+        "wait for handler stopped status"
         if not self.stopped:
             while 1:
                 time.sleep(30.0)
@@ -175,25 +198,11 @@ def direct(name, pname=''):
 
 def mods(mn):
     "return all modules in a package"
-    try:
-        spec = importlib.util.find_spec(mn)
-    except ModuleNotFoundError:
-        print("%s not found" % mn)
-        return
-    modules = []
-    if spec:
-        pkg = direct(mn)
-        path = pkg.__file__ or pkg.__path__[0]
-        m = [x.split(os.sep)[-1][:-3] for x in os.listdir(path) 
-                                     if x.endswith(".py")
-                                     and not x == "setup.py"]
-        
-        for mm in m:
-            mmm = "%s.%s" % (mn, mm)
-            try:
-                spec = importlib.util.find_spec(mmm)
-            except ModuleNotFoundError:
-                print("%s not found" % mn)
-                continue
-            modules.append(direct(mmm))
-    return modules
+    mod = []
+    pkg = direct(mn)
+    path = os.path.dirname(pkg.__file__ or pkg.__path__[0])
+    for m in [x.split(os.sep)[-1][:-3] for x in os.listdir(path) 
+                                  if x.endswith(".py")
+                                  and not x == "setup.py"]:
+        mod.append(direct(m))
+    return mod
