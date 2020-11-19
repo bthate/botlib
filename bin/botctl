@@ -1,1 +1,0 @@
-systemd-run -q --pipe --property=DynamicUser=yes --property=StateDirectory=botd botcmd $*
