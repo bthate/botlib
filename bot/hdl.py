@@ -8,7 +8,7 @@ from bot.obj import Default, Object, Ol, get_type, spl, update
 from bot.prs import parse
 from bot.thr import launch, get_exception
 
-__version__ = 22
+__version__ = 110
 
 debug = False
 md = ""

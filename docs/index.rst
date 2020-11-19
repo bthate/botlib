@@ -210,5 +210,6 @@ you can contact me on IRC/freenode/#dunkbots or email me at bthate@dds.nl
 
 .. toctree::
     :hidden:
+    :glob:
 
-    source
+    *

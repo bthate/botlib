@@ -1,7 +1,4 @@
 #!/bin/bash
-# BOTLIB - the bot library !
-#
-#
 
 bin/env
 env/bin/python3 env/bin/pip3 install -r docs/requirements.txt --upgrade --force-reinstall

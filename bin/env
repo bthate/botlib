@@ -22,14 +22,14 @@ def main():
     except:
         pass
     try:
-        shutil.rmtree("%s.egg-info" % genoclaim)
+        shutil.rmtree("botlib.egg-info")
     except:
         pass
     for line in os.popen("python3 setup.py sdist").readlines():
         print(line.strip())
     #obopen("rm -fR ~/.cache/pip/")
     obopen("python3 -mvirtualenv -p python3 env")
-    obopen("env/bin/pip3 install botd -f dist --upgrade --force-reinstall")
+    obopen("env/bin/pip3 install botlib -f dist --upgrade --force-reinstall")
 
 if __name__ == "__main__":
     main()

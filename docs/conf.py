@@ -8,7 +8,7 @@ import os
 
 sys.path.append(os.path.abspath("."))
 
-__version__ = 104
+from bot.hdl import __version__
 
 needs_sphinx='1.1'
 nitpick_ignore=[
@@ -57,7 +57,8 @@ html_theme = "haiku"
 #     "nosidebar": True,
 #}
 html_theme_path = []
-html_short_title = "BOTLIB %s" % __version__
+#html_short_title = "BOTLIB %s" % __version__
+html_short_title = ""
 html_favicon = "blsmile.png"
 html_static_path = []
 html_extra_path = []
@@ -76,11 +77,7 @@ rst_prolog = """.. image:: botlib2.png
     :width: 100%
     :height: 3.5cm
 
-.. title:: the bot library !
-"""
-rst_epilog = """.. image:: blsmile.png
-    :align: center
-    :height: 2.5cm
+.. title:: pure python3 bot library
 """
 
 htmlhelp_basename = 'pydoc'
