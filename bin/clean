@@ -1,5 +1,22 @@
-# BOTLIB - the bot library !
-#
-#
+#!/usr/bin/python3
 
-rm -fR *~ bot/botlib.egg-info lib/botlib.egg-info lib/*~ lib/__pycache__ mods/*~ mods/__pycache__ docs/botmod*.rst docs/bot*.rst  docs/ol*.rst run run.tar.gz html env env.tar.gz ol/*~ ol/__pycache__ .data build dist MANIFEST botlib.egg-info bot/*~ bot/__pycache__ bin/*~ *~ tests/*~ tests/__pycache__
+import os
+
+def rsts():
+    return ["docs/%s.rst" % x.split(os.sep)[-1][:-3] for x in os.listdir("bot") 
+                                                if x.endswith(".py")
+                                                and not x == "setup.py"]
+
+def open(txt):
+    txt += " 2>&1"
+    try:
+        for line in os.popen(txt).readlines():
+            pass
+    except:
+        pass
+
+
+open("rm -fR test/*~ test/__pycache__ build *~ botd.egg-info bot/*~ bot/__pycache__ run run.tar.gz html env env.tar.gz .data build dist MANIFEST bin/*~ *~ docs/*~")
+
+for r in rsts():
+    open("rm %s" % r)
