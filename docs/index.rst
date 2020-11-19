@@ -3,16 +3,13 @@ README
 
 Welcome to BOTLIB,
 
-BOTLIB is a pure python3 IRC chat bot that can run as a background daemon
-for 24/7 a day presence in a IRC channel. It installs itself as a service so
-you can get it restarted on reboot. You can use it to display RSS feeds, act as a
-UDP to IRC gateway, program your own commands for it, have it log objects on
-disk and search them and scan emails for correspondence analysis. BOTLIB uses
-a JSON in file database with a versioned readonly storage. It reconstructs
-objects based on type information in the path and uses a "dump OOP and use
-OP" programming library where the methods are factored out into functions
-that use the object as the first argument. BOTLIB is placed in the Public
-Domain and has no COPYRIGHT or LICENSE.
+BOTLIB is a pure python3 bot library you can use to program bots.
+BOTLIB uses a JSON in file database with a versioned readonly storage. It 
+reconstructs objects based on type information in the path and is a "dump 
+OOP and use OP" programming library where the methods are factored out into
+functions that use the object as the first argument. 
+
+BOTLIB is placed in the Public Domain and has no COPYRIGHT and no LICENSE.
 
 INSTALL
 =======
@@ -29,9 +26,64 @@ if you have previous versions already installed and things fail try to force rei
 
  > sudo pip3 install botlib --upgrade --force-reinstall
 
-if this also doesn't work you'll need to remove all installed previous  versions, so you can do a clean install.
+if this also doesn't work you'll need to remove all installed previous versions, so you can do a clean install.
 
 you can run directly from the tarball, see https://pypi.org/project/botlib/#files
+
+OBJECT PROGRAMMING
+==================
+
+BOTLIB provides a "move all methods to functions" like this:
+
+::
+
+ obj.method(*args) -> method(obj, *args) 
+
+ e.g.
+
+ not:
+
+ >>> from bot.obj import Object
+ >>> o = Object()
+ >>> o.set("key", "value")
+ >>> o.key
+ 'value'
+
+ but:
+
+ >>> from bot.obj import Object, set
+ >>> o = Object()
+ >>> set(o, "key", "value")
+ >>> o.key
+ 'value'
+
+it's a way of programming with objects, replacing OOP. Not object-oriented 
+programming, but object programming. If you are used to functional programming
+you'll like it (or not) ;]
+
+MODULES
+=======
+
+BOTLIB provides the following modules:
+
+.. autosummary::
+    :toctree: 
+    :template: module.rst
+
+    bot.bus          - messaging
+    bot.clk          - clock/repeater
+    bot.cmd          - commands
+    bot.csl          - console
+    bot.dbs          - databases
+    bot.hdl          - handler
+    bot.irc          - internet relay chat
+    bot.obj          - objects
+    bot.ofn          - object functions
+    bot.prs          - parser
+    bot.rss          - rich site syndicate
+    bot.thr          - threads
+    bot.trm          - terminal
+    bot.udp          - udp to irc relay
 
 USAGE
 =====
@@ -58,7 +110,6 @@ BOTLIB also has it's own shell, use bot -s to start a bot shell:
   $ ./bin/bot -s
   > cmd
   cfg,cmd,dne,dpl,fnd,ftc,log,mbx,rem,rss,tdo,tsk,udp,upt,ver
-
 
 IRC
 ===
@@ -147,83 +198,10 @@ to send a udp packet to botlib in python3:
      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
      sock.sendto(bytes(txt.strip(), "utf-8"), host, port)
 
-OBJECT PROGRAMMING
-==================
-
-BOTLIB uses the OLIB library as object library, it provides a "move all methods to functions" like this:
-
-::
-
- obj.method(*args) -> method(obj, *args) 
-
- e.g.
-
- not:
-
- >>> import ol
- >>> o = ol.Object()
- >>> o.set("key", "value")
- >>> o.key
- 'value'
-
- but:
-
- >>> import ol
- >>> o = ol.Object()
- >>> ol.set(o, "key", "value")
- >>> o.key
- 'value'
-
-A way of programming with objects, replacing OOP., it works because the
-object library is 2 characters long and using the, now generic, method is
-not too much typing.
-
-it's a way of programming with objects, replacing OOP. Not object-oriented programming, but object programming. If you are used to functional programming you'll like it (or not) ;]
-
-OLIB has the following modules:
-
-::
-
-    ol	 	- object library
-    ol.bus	- announce
-    ol.csl	- console
-    ol.dbs	- databases
-    ol.evt	- event
-    ol.hdl	- handler
-    ol.int	- introspection
-    ol.krn	- kernel
-    ol.prs 	- parser
-    ol.spc	- specification
-    ol.tms	- times
-    ol.trm	- terminal
-    ol.tsk	- tasks
-    ol.utl	- utilities
-
-MODULES
-=======
-
-BOTLIB uses the bot and botmod as the namespace to distribute modules:
-
-
-::
-
-   bot.cfg	- config
-   bot.cmd	- command
-   bot.irc	- irc 
-
-::
-
-   botmod.ent	- entry
-   botmod.fnd	- find
-   botmod.mbx	- mail
-   botmod.rss	- rich site syndicate
-   botmod.udp	- UDP to IRC
-
-
 CONTACT
 =======
 
-"hope you enjoy my contribution back to society."
+"contributed back to society."
 
 you can contact me on IRC/freenode/#dunkbots or email me at bthate@dds.nl
 

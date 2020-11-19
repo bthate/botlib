@@ -2,15 +2,13 @@
 
 import os, queue, socket, textwrap, time, threading, _thread
 
-from bus import bus
-from dbs import find, last
-from hdl import Event, Handler
-from obj import Cfg, Default, Object, register, save, update
-from ofn import format
-from prs import parse, parse_cli
-from thr import launch
-
-__version__ = 109
+from bot.bus import bus
+from bot.dbs import find, last
+from bot.hdl import Event, Handler
+from bot.obj import Cfg, Default, Object, register, save, update
+from bot.ofn import format
+from bot.prs import parse, parse_cli
+from bot.thr import launch
 
 saylock = _thread.allocate_lock()
 
@@ -134,7 +132,6 @@ class IRC(Handler):
 
     def _parsing(self, txt):
         "parse incoming text into an event"
-        print("%s %s" % (time.ctime(time.time()), txt))
         rawstr = str(txt)
         rawstr = rawstr.replace("\u0001", "")
         rawstr = rawstr.replace("\001", "")
@@ -333,7 +330,6 @@ class IRC(Handler):
         if not txt.endswith("\r\n"):
             txt += "\r\n"
         txt = txt[:512]
-        print("%s %s" % (time.ctime(time.time()), txt))
         txt = bytes(txt, "utf-8")
         self._connected.wait()
         try:
@@ -356,14 +352,12 @@ class IRC(Handler):
             self.cfg.update(cfg)
         else:
             last(self.cfg)
-        print(format(self.cfg))
         assert self.cfg.channel
         assert self.cfg.server
         self.channels.append(self.cfg.channel)
         self._joined.clear()
         launch(self.doconnect)
         self._joined.wait()
-        print("connected to %s" % self.cfg.server)
 
     def stop(self):
         "stop the irc bot"
@@ -387,9 +381,7 @@ class IRC(Handler):
         self._joined.set()
 
     def LOG(self, event):
-        "log to console"
-        if self.verbose:
-            print(event)
+        "log to console - override this"
 
     def NOTICE(self, event):
         "handle noticed"
@@ -409,7 +401,6 @@ class IRC(Handler):
                 launch(dcc.connect, event)
                 return
             except ConnectionError as ex:
-                print(ex)
                 return
         if event.txt and event.txt[0] == self.cc:
             if self.cfg.users and not users.allowed(event.origin, "USER"):

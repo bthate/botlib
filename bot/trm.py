@@ -5,7 +5,7 @@ import os
 import sys
 import termios
 
-from thr import get_exception
+from bot.thr import get_exception
 
 resume = {}
 
@@ -20,8 +20,6 @@ def execute(main):
         main()
     except KeyboardInterrupt:
         print("")
-    except PermissionError:
-        print("you need root permission.")
     except Exception as ex:
         print(get_exception())
     finally:

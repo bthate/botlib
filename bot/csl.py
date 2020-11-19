@@ -2,28 +2,30 @@
 
 import atexit, os, pwd, readline, sys
 
-from hdl import Event, Handler
-from thr import launch
-from trm import termsave, termreset
+from bot.hdl import Event, Handler
+from bot.thr import launch
+from bot.trm import termsave, termreset
 
 def __dir__():
     return ("Console", "setcompleter")
 
 cmds = []
 
+class Event(Event):
+
+    def direct(self, txt):
+        self.src.direct(txt)
+
 class Console(Handler):
 
     "console class"
-
-    def __init__(self):
-        super().__init__()
 
     def announce(self, txt):
         "silence announcing"
 
     def direct(self, txt):
-        "print txt"
-        super().direct(txt)
+        "print to stdout"
+        print(txt)
 
     def input(self):
         "loop for input"
