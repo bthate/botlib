@@ -8,7 +8,7 @@ from bot.obj import Default, Object, Ol, get_type, spl, update
 from bot.prs import parse
 from bot.thr import launch, get_exception
 
-__version__ = 22
+__version__ = 111
 
 debug = False
 md = ""
@@ -167,11 +167,11 @@ class Handler(Object):
         self.stopped = True
         self.queue.put(None)
 
-    def walk(self, pkgnames):
+    def walk(self, pkgnames, name="bot"):
         "walk over packages and load their modules"
-        for name in spl(pkgnames):
-            mod = direct(name)
-            self.fromdir(mod.__path__[0])
+        for pn in spl(pkgnames):
+            mod = direct(pn)
+            self.fromdir(mod.__path__[0], name)
             
     def wait(self):
         "wait for handler stopped status"
