@@ -8,7 +8,7 @@ from bot.obj import Default, Object, Ol, get_type, spl, update
 from bot.prs import parse
 from bot.thr import launch, get_exception
 
-__version__ = 110
+__version__ = 22
 
 debug = False
 md = ""
@@ -187,7 +187,7 @@ def mods(mn, name="bot"):
     "return all modules in a package"
     mod = []
     pkg = direct(mn)
-    path = os.path.dirname(pkg.__file__ or pkg.__path__[0])
+    path = pkg.__file__ or pkg.__path__[0]
     for m in ["%s.%s" % (name, x.split(os.sep)[-1][:-3]) for x in os.listdir(path) 
                                   if x.endswith(".py")
                                   and not x == "setup.py"]:

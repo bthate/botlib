@@ -242,6 +242,8 @@ class IRC(Handler):
                 break
             time.sleep(10.0)
             nr += 1
+        else:
+            self._connected.set()
         self._connected.wait()
         self.logon(server, nick)
 
@@ -425,6 +427,7 @@ class DCC(Handler):
         self._fsock = None
         self.encoding = "utf-8"
         self.origin = ""
+        bus.add(self)
 
     def raw(self, txt):
         "send text on the dcc socket"

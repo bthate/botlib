@@ -69,9 +69,9 @@ def thr(event):
             result.append((up, thrname))
     res = []
     for up, txt in sorted(result, key=lambda x: x[0]):
-        res.append(txt)
+        res.append("%s %s" % (txt, elapsed(up)))
     if res:
-        event.reply(res)
+        event.reply(" | ".join(res))
 
 def fnd(event):
     "find objects (fnd)"
@@ -114,4 +114,5 @@ def ver(event):
             versions[mod.__name__.upper()] = mod.__version__
         except:
             pass
-    event.reply(format(versions))
+    if versions:
+        event.reply(format(versions))
