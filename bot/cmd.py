@@ -78,7 +78,7 @@ def fnd(event):
     if not event.args:
         fls = event.src.files()
         if fls:
-            event.reply(fls)
+            event.reply(" | ".join([x.split(".")[-1].lower() for x in fls]))
         return
     nr = -1
     for otype in get(event.src.names, event.args[0], [event.args[0]]):
