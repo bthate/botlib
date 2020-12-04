@@ -1,7 +1,7 @@
 "commands (cmd)"
 
 def __dir__():
-    return ("Log", "Todo", "cmd", "dne", "fnd", "log", "todo", "thr", "ver")
+    return ("Log", "Todo", "cmd", "dne", "fnd", "log", "tdo", "thr", "ver")
 
 import os
 import sys

@@ -7,7 +7,10 @@ BOTLIB is a pure python3 bot library you can use to program bots.
 BOTLIB uses a JSON in file database with a versioned readonly storage. It 
 reconstructs objects based on type information in the path and is a "dump 
 OOP and use OP" programming library where the methods are factored out into
-functions that use the object as the first argument. 
+functions that use the object as the first argument. This to obtain a clean
+namespace object, which has no methods to clutter the namespace. A "clean",
+still has hidden methods, loadable from JSON object, that provides load/save
+methods to other classes derived from Object.
 
 BOTLIB is placed in the Public Domain and has no COPYRIGHT and no LICENSE.
 
