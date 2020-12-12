@@ -1,3 +1,7 @@
+# BOTLIB - test_fuzzer.py
+#
+# this file is placed in the public domain
+
 "call all methods"
 
 import os, sys ; sys.path.insert(0, os.getcwd())

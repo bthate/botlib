@@ -1,3 +1,7 @@
+# BOTLIB - README.rst
+#
+# this file is placed in the public domain
+
 README
 ######
 

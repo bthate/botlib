@@ -1,3 +1,7 @@
+# BOTLIB - MANIFEST.in
+#
+# this file is placed in the public domain
+
 include README.rst
 include MANIFEST.in
 include bin/bot

@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# BOTLIB - conf.py
+#
+# this file is placed in the public domain
 
 import unittest
 import doctest

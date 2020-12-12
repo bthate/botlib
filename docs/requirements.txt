@@ -1,3 +1,7 @@
+# BOTLIB - requirements.txt
+#
+# this file is in the public domain
+
 Pygments==2.2.0
 setuptools<40
 docutils==0.13.1

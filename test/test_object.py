@@ -1,3 +1,7 @@
+# BOTLIB - test_object.py
+#
+# this file is placed in the public domain
+
 "test object functions"
 
 import types

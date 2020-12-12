@@ -1,3 +1,7 @@
+# BOTLIB - module.rst
+#
+# this file is placed in the public domain
+
 {{ fullname }}
 {{ underline }}
 

@@ -1,3 +1,7 @@
+# BOTLIB - test_tinder.py
+#
+# this file is placed in the public domain
+
 "run all commands"
 
 import os, sys ; sys.path.insert(0, os.getcwd())
