@@ -1,3 +1,7 @@
+# BOTLIB - dbs.py
+#
+# this file is placed in the public domain
+
 "database (dbs)"
 
 import time
@@ -5,8 +9,6 @@ import bot.obj
 
 from bot.obj import hook, update, os, get_type
 from bot.ofn import format, search
-
-
 
 def all(otype, selector=None, index=None, timed=None):
     "return all matching objects"

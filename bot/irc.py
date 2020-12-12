@@ -1,3 +1,7 @@
+# BOTLIB - irc.py
+#
+# this file is placed in the public domain
+
 "Internet Relay Chat"
 
 import os, queue, socket, textwrap, time, threading, _thread

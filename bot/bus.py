@@ -1,3 +1,7 @@
+# BOTLIB - bus.py
+#
+# this file is placed in the public domain
+
 "announce to listeners"
 
 from bot.obj import Object

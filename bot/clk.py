@@ -1,3 +1,7 @@
+# BOTLIB - clk.py
+#
+# this file is placed in the public domain
+
 " clock functions (clk)"
 
 import threading, time

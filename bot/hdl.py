@@ -1,3 +1,7 @@
+# BOTLIB - hdl.py
+#
+# this file is placed in the public domain
+
 "handler (hdl)"
 
 import importlib, inspect, os, queue, sys, threading, time

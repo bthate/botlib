@@ -1,3 +1,7 @@
+# BOTLIB - trm.py
+#
+# this file is placed in the public domain
+
 "terminal (trm)"
 
 import atexit

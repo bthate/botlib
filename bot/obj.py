@@ -1,3 +1,7 @@
+# BOTLIB - obj.py
+#
+# this file is placed in the public domain
+
 "object base class (obj)"
 
 import datetime

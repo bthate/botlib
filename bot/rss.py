@@ -1,3 +1,7 @@
+# BOTLIB - rss.py
+#
+# this file is placed in the public domain
+
 "rich site syndicate"
 
 import datetime, os, random, re, time, urllib

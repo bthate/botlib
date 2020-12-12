@@ -1,3 +1,7 @@
+# BOTLIB - ofn.py
+#
+# this file is placed in the public domain
+
 "object functions (ofn)"
 
 from bot.obj import get, items, get_type

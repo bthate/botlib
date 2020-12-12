@@ -1,3 +1,7 @@
+# BOTLIB - thr.py
+#
+# this file is placed in the public domain
+
 "tasks (tsk)"
 
 import queue, sys, threading, time, traceback

@@ -1,3 +1,7 @@
+# BOTLIB - cmd.py
+#
+# this file is placed in the public domain
+
 "commands (cmd)"
 
 def __dir__():

@@ -1,3 +1,8 @@
+# BOTLIB - setup.py
+#
+# this file is placed in the public domain
+
+
 "library to program bots"
 
 import os

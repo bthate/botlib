@@ -1,3 +1,7 @@
+# BOTLIB - prs.py
+#
+# this file is placed in the public domain
+
 "parse (prs)"
 
 import os
