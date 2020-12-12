@@ -5,7 +5,6 @@
 "terminal (trm)"
 
 import atexit
-import os
 import sys
 import termios
 

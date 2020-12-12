@@ -4,13 +4,14 @@
 
 "handler (hdl)"
 
-import importlib, inspect, os, queue, sys, threading, time
+import inspect, os, queue, threading, time
+import importlib
 import importlib.util
 
 from bot.dbs import list_files
-from bot.obj import Default, Object, Ol, get_type, spl, update
+from bot.obj import Default, Object, Ol, spl, update
 from bot.prs import parse
-from bot.thr import launch, get_exception
+from bot.thr import launch
 
 __version__ = 112
 
@@ -49,7 +50,7 @@ class Event(Default):
     def ready(self):
         "event is handled"
         self.done.set()
-        
+
     def reply(self, txt):
         "add txt to result"
         self.result.append(txt)
@@ -59,7 +60,7 @@ class Event(Default):
         for txt in self.result:
             self.direct(txt)
         self.ready()
-        
+
     def wait(self):
         "wait for event to be handled"
         self.done.wait()
@@ -129,13 +130,13 @@ class Handler(Object):
         for key, o in inspect.getmembers(mod, inspect.isfunction):
             if "event" in o.__code__.co_varnames:
                 if o.__code__.co_argcount == 1:
-                    self.register(key, o) 
+                    self.register(key, o)
         for _key, o in inspect.getmembers(mod, inspect.isclass):
             if issubclass(o, Object):
                 t = "%s.%s" % (o.__module__, o.__name__)
                 self.names.append(o.__name__.lower(), t)
         return mod
-        
+
     def handler(self):
         "handler loop"
         while not self.stopped:
@@ -157,9 +158,9 @@ class Handler(Object):
         if not path:
             return
         for mn in [x[:-3] for x in os.listdir(path)
-                          if x and x.endswith(".py")
-                          and not x.startswith("__")
-                          and not x == "setup.py"]:
+                   if x and x.endswith(".py")
+                   and not x.startswith("__")
+                   and not x == "setup.py"]:
             self.intro(direct("%s.%s" % (name, mn)))
 
     def start(self):
@@ -176,7 +177,7 @@ class Handler(Object):
         for pn in spl(pkgnames):
             mod = direct(pn)
             self.fromdir(mod.__path__[0], name)
-            
+
     def wait(self):
         "wait for handler stopped status"
         if not self.stopped:
@@ -192,8 +193,8 @@ def mods(mn, name="bot"):
     mod = []
     pkg = direct(mn)
     path = pkg.__file__ or pkg.__path__[0]
-    for m in ["%s.%s" % (name, x.split(os.sep)[-1][:-3]) for x in os.listdir(path) 
-                                  if x.endswith(".py")
-                                  and not x == "setup.py"]:
+    for m in ["%s.%s" % (name, x.split(os.sep)[-1][:-3]) for x in os.listdir(path)
+              if x.endswith(".py")
+              and not x == "setup.py"]:
         mod.append(direct(m))
     return mod

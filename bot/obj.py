@@ -13,7 +13,6 @@ import sys
 import time
 import types
 import uuid
-import _thread
 
 wd = ""
 
@@ -21,12 +20,16 @@ class ENOFILENAME(Exception):
 
     "provided argument is not a filename"
 
+class ENOCLASS(Exception):
+
+    "class is not available"
+
 class O:
 
     "basic object"
 
     __slots__ = ("__dict__",)
-        
+
     def __init__(self, *args, **kwargs):
         super().__init__()
         if args:
@@ -62,7 +65,7 @@ class Object(O):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.__id__ = str(uuid.uuid4())        
+        self.__id__ = str(uuid.uuid4())
         self.__type__ = get_type(self)
 
 class Default(Object):
@@ -245,7 +248,7 @@ def load(o, path):
     o.__id__ = id
     o.__type__ = typ
     return stp
-    
+
 def register(o, k, v):
     "register key/value"
     o[k] = v
@@ -255,7 +258,7 @@ def save(o, stime=None):
     assert wd
     if stime:
         stp = os.path.join(o.__type__, o.__id__,
-                             stime + "." + str(random.randint(0, 100000)))
+                           stime + "." + str(random.randint(0, 100000)))
     else:
         timestamp = str(datetime.datetime.now()).split()
         stp = os.path.join(o.__type__, o.__id__, os.sep.join(timestamp))

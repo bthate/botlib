@@ -6,7 +6,7 @@
 
 import threading, time
 
-from bot.obj import Object, get_type
+from bot.obj import Object
 from bot.thr import launch
 
 class Timer(Object):

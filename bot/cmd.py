@@ -4,19 +4,17 @@
 
 "commands (cmd)"
 
-def __dir__():
-    return ("Log", "Todo", "cmd", "dne", "fnd", "log", "tdo", "thr", "ver")
-
-import os
-import sys
 import threading
 import time
 
-from bot.dbs import find, list_files
+from bot.dbs import find
 from bot.hdl import mods
-from bot.obj import Default, Object, cdir, fntime, get, keys, save, update
+from bot.obj import Object, fntime, get, keys, save, update
 from bot.ofn import format
-from bot.prs import elapsed, parse
+from bot.prs import elapsed
+
+def __dir__():
+    return ("Log", "Todo", "cmd", "dne", "fnd", "log", "tdo", "thr", "ver")
 
 starttime = time.time()
 
@@ -116,7 +114,7 @@ def ver(event):
     for mod in mods("bot"):
         try:
             versions[mod.__name__.upper()] = mod.__version__
-        except:
+        except AttributeError:
             pass
     if versions:
         event.reply(format(versions))

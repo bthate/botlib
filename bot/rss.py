@@ -250,7 +250,7 @@ def unescape(text):
 
 def useragent():
     "return useragent"
-    return 'Mozilla/5.0 (X11; Linux x86_64) OBJ +http://pypi.org/bthate/obj)'
+    return 'Mozilla/5.0 (X11; Linux x86_64) BOTLIB +http://pypi.org/project/botlib)'
 
 def rem(event):
     "remove a rss feed"

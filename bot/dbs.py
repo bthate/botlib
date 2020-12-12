@@ -8,7 +8,7 @@ import time
 import bot.obj
 
 from bot.obj import hook, update, os, get_type
-from bot.ofn import format, search
+from bot.ofn import search
 
 def all(otype, selector=None, index=None, timed=None):
     "return all matching objects"
@@ -39,7 +39,6 @@ def every(selector=None, index=None, timed=None):
     nr = -1
     if selector is None:
         selector = {}
-    import obj
     for otype in os.listdir(os.path.join(bot.obj.wd, "store")):
         for fn in fns(otype, timed):
             o = hook(fn)
@@ -87,7 +86,6 @@ def fns(name, timed=None):
     "return filenames"
     if not name:
         return []
-    import bot.obj
     p = os.path.join(bot.obj.wd, "store", name) + os.sep
     res = []
     d = ""

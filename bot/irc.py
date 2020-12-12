@@ -9,9 +9,9 @@ import os, queue, socket, textwrap, time, threading, _thread
 from bot.bus import bus
 from bot.dbs import find, last
 from bot.hdl import Event, Handler
-from bot.obj import Cfg, Default, Object, register, save, update
+from bot.obj import Cfg, Object, get, register, save, update, __version__
 from bot.ofn import format
-from bot.prs import parse, parse_cli
+from bot.prs import parse
 from bot.thr import launch
 
 saylock = _thread.allocate_lock()
@@ -52,7 +52,7 @@ class Cfg(Cfg):
         self.server = "localhost"
         self.username = "bot"
         self.realname = "bot"
-                 
+
 class Event(Event):
 
     "IRC event"
@@ -60,7 +60,7 @@ class Event(Event):
     def show(self):
         for txt in self.result:
             self.src.say(self.channel, txt)
-    
+
 class TextWrap(textwrap.TextWrapper):
 
     "text wrapper"
@@ -110,7 +110,7 @@ class IRC(Handler):
         register(self.cmds, "QUIT", self.QUIT)
         register(self.cmds, "366", self.JOINED)
         bus.add(self)
- 
+
     def _connect(self, server):
         "connect (blocking) to irc server"
         oldsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -392,7 +392,7 @@ class IRC(Handler):
     def NOTICE(self, event):
         "handle noticed"
         if event.txt.startswith("VERSION"):
-            txt = "\001VERSION %s %s - %s\001" % ("OBJ", obj.__version__, "object programming library")
+            txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "pure python3 bot library")
             self.command("NOTICE", event.channel, txt)
 
     def PRIVMSG(self, event):
