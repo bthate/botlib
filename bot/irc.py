@@ -9,7 +9,7 @@ import os, queue, socket, textwrap, time, threading, _thread
 from bot.bus import bus
 from bot.dbs import find, last
 from bot.hdl import Event, Handler
-from bot.obj import Cfg, Object, get, register, save, update, __version__
+from bot.obj import Cfg, Object, get, register, save, update
 from bot.ofn import format
 from bot.prs import parse
 from bot.thr import launch
@@ -392,6 +392,7 @@ class IRC(Handler):
     def NOTICE(self, event):
         "handle noticed"
         if event.txt.startswith("VERSION"):
+            from bot.hdl import __version__
             txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "pure python3 bot library")
             self.command("NOTICE", event.channel, txt)
 

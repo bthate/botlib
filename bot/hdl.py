@@ -13,7 +13,7 @@ from bot.obj import Default, Object, Ol, spl, update
 from bot.prs import parse
 from bot.thr import launch
 
-__version__ = 112
+__version__ = 113
 
 debug = False
 md = ""
