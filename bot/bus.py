@@ -5,10 +5,11 @@
 "announce to listeners"
 
 from bot.obj import Object
+from bot.hdl import Handler
 
-class Bus(Object):
+class Bus(Handler):
 
-    "bus class"
+    "bus class - registered recipient event handler"
 
     objs = []
 
@@ -32,10 +33,9 @@ class Bus(Object):
 
     def dispatch(self, event):
         "dispatch on all listeners"
-        for b in Bus.objs:
-            if repr(b) == event.orig:
-                b.dispatch(event)
-
+        for o in Bus.objs:
+            o.put(event)
+            
     def by_orig(self, orig):
         "fetch listener by orig"
         for o in Bus.objs:
