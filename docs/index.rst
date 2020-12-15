@@ -1,7 +1,3 @@
-# BOTLIB - index.rst
-#
-# this file is placed in the public domain
-
 README
 ######
 

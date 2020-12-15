@@ -78,7 +78,7 @@ html_use_opensearch = 'http://botlib.rtfd.io'
 html_file_suffix = '.html'
 rst_prolog = """.. image:: botlib2.png
     :width: 100%
-    :height: 3.5cm
+    :height: 3.14cm
 
 .. title:: pure python3 bot library
 """
