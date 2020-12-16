@@ -44,8 +44,10 @@ class Console(Handler):
     def poll(self):
         "wait for input"
         e = Event()
+        e.type = "cmdcb"
         e.orig = repr(self)
         e.otxt = e.txt = input("> ")
+        e.parse()
         return e
 
     def say(self, channel, txt):

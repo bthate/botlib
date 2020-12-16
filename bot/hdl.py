@@ -9,7 +9,7 @@ import importlib
 import importlib.util
 
 from bot.dbs import list_files
-from bot.obj import Default, Object, Ol, spl, update
+from bot.obj import Default, Object, Ol, get, spl, update
 from bot.prs import parse
 from bot.thr import launch
 
@@ -98,11 +98,8 @@ class Handler(Object):
         "run callbacks for event"
         if not event.src:
             event.src = self
-        event.parse()
-        if event.cmd and event.cmd in self.cbs:
-            self.cbs[event.cmd](event)
-            event.show()
-        event.ready()
+        if event.type and event.type in self.cbs:
+            self.cbs[event.type](event)
 
     def files(self):
         "show files in workdir"
@@ -184,6 +181,13 @@ class Handler(Object):
             while 1:
                 time.sleep(30.0)
 
+def cmdcb(event):
+  
+    if event.cmd and event.cmd in event.src.cbs:
+        get(event.src.cbs, event.cmd)(event)
+    event.show()
+    event.ready()
+    
 def direct(name, pname=''):
     "load a module"
     return importlib.import_module(name, pname)

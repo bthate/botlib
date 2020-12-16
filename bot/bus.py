@@ -32,9 +32,11 @@ class Bus(Handler):
                 h.announce(txt)
 
     def dispatch(self, event):
-        "dispatch on all listeners"
-        for o in Bus.objs:
-            o.put(event)
+        "run callbacks for event"
+        if not event.src:
+            event.src = self
+        if event.type and event.type in self.cbs:
+            self.cbs[event.type](event)
             
     def by_orig(self, orig):
         "fetch listener by orig"
