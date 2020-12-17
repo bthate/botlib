@@ -9,6 +9,7 @@ import atexit, os, pwd, readline, sys
 
 from bot.bus import bus
 from bot.hdl import Event, Handler
+from bot.obj import get
 from bot.ofn import format
 from bot.prs import parse_cli
 from bot.thr import launch
@@ -37,6 +38,13 @@ class Console(Handler):
         "print to stdout"
         print(txt)
 
+    def dispatch(self, event):
+        f = get(self.cmds, event.cmd, None)
+        if f:
+            f(event)
+            event.show()
+            event.ready()
+
     def input(self):
         "loop for input"
         while 1:
@@ -50,7 +58,7 @@ class Console(Handler):
     def poll(self):
         "wait for input"
         e = Event()
-        e.type = "cb_cmd"
+        e.type = "cmd"
         e.orig = repr(self)
         e.otxt = e.txt = input("> ")
         e.parse()

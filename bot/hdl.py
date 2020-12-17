@@ -8,6 +8,7 @@ import inspect, os, queue, threading, time
 import importlib
 import importlib.util
 
+from bot.bus import bus
 from bot.dbs import list_files
 from bot.obj import Default, Object, Ol, get, spl, update
 from bot.prs import parse
@@ -76,12 +77,16 @@ class Handler(Object):
     def __init__(self):
         super().__init__()
         self.cbs = Object()
+        self.cmds = Object()
         self.names = Ol()
         self.queue = queue.Queue()
         self.stopped = False
-
+        self.register("cmd", cmd)
+        bus.add(self)
+        
     def clone(self, hdl):
         "copy callbacks"
+        update(self.cmds, hdl.cmds)
         update(self.cbs, hdl.cbs)
         update(self.names, hdl.names)
 
@@ -127,7 +132,9 @@ class Handler(Object):
         for key, o in inspect.getmembers(mod, inspect.isfunction):
             if "event" in o.__code__.co_varnames:
                 if o.__code__.co_argcount == 1:
-                    self.register(key, o)
+                    self.cmds[key] = o
+            else:
+                self.register(key, o)
         for _key, o in inspect.getmembers(mod, inspect.isclass):
             if issubclass(o, Object):
                 t = "%s.%s" % (o.__module__, o.__name__)
@@ -140,6 +147,7 @@ class Handler(Object):
             event = self.queue.get()
             if not event:
                 break
+            event.src = self
             event.thrs.append(launch(self.dispatch, event))
 
     def put(self, e):
@@ -181,13 +189,10 @@ class Handler(Object):
             while 1:
                 time.sleep(30.0)
 
-def cb_cmd(event):
-    "callback to dispatch to command"  
-    if event.cmd and event.cmd in event.src.cbs:
-        get(event.src.cbs, event.cmd)(event)
-    event.show()
-    event.ready()
-    
+def cmd(o):
+    "callbackx to dispatch to command"  
+    bus.dispatch(o)
+
 def direct(name, pname=''):
     "load a module"
     return importlib.import_module(name, pname)

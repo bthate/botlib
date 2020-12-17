@@ -38,9 +38,9 @@ events = []
 ignore = ["mbx", "rss"]
 nrtimes = 1
 
-k = Handler()
-k.walk("bot")
-k.start()
+h = Handler()
+h.walk("bot")
+h.start()
 
 class Event(Event):
 
@@ -53,16 +53,16 @@ class Test_Tinder(unittest.TestCase):
     def test_thrs(self):
         thrs = []
         for x in range(index or 1):
-            launch(tests, k)
+            launch(tests, h)
         consume(events)
 
     def test_neuman(self):
         for x in range(index or 1):
-            tests(k)
+            tests(h)
 
     def test_sorted(self):
         for x in range(index or 1):
-            sortedtests(k)
+            sortedtests(h)
         
 def consume(elems):
     fixed = []
@@ -76,18 +76,18 @@ def consume(elems):
             elems.remove(f)
         except ValueError:
             continue
-    k.stop()
+    h.stop()
     return res
     
 def sortedtests(b):
-    keys = sorted(k.cbs)
+    keys = sorted(h.cbs)
     for cmd in keys:
         if cmd in ignore:
             continue
         events.extend(do_cmd(cmd))
 
 def tests(b):
-    keys = list(k.cbs)
+    keys = list(h.cbs)
     random.shuffle(keys)
     for cmd in keys:
         if cmd in ignore:
@@ -104,8 +104,9 @@ def do_cmd(cmd):
         nr += 1
         txt = cmd + " " + ex 
         e = Event()
+        e.type ="cb_cmd"
         e.txt = txt
-        k.put(e)
+        h.put(e)
         events.append(e)
     return events
 

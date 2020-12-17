@@ -6,7 +6,9 @@
 
 import threading
 import time
+import types
 
+from bot.bus import bus
 from bot.dbs import find
 from bot.hdl import mods
 from bot.obj import Object, fntime, get, keys, save, update
@@ -36,7 +38,8 @@ class Todo(Object):
 
 def cmd(event):
     "list commands (cmd)"
-    c = sorted(keys(event.src.cbs))
+    bot = bus.by_orig(event.orig)
+    c = sorted(keys(bot.cmds))
     if c:
         event.reply(",".join(c))
 

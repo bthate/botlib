@@ -36,6 +36,10 @@ class Bus(Object):
             if repr(o) == orig:
                 return o
 
+    def dispatch(self, event):
+        for o in Bus.objs:
+            o.dispatch(event)
+
     def say(self, orig, channel, txt):
         "say something to specific listener"
         for o in Bus.objs:
