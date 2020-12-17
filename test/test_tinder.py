@@ -63,6 +63,14 @@ class Test_Tinder(unittest.TestCase):
     def test_sorted(self):
         for x in range(index or 1):
             sortedtests(h)
+
+    def test_mbx(self):
+        for e in do_cmd("mbx"):
+            e.wait()
+
+    def test_rss(self):
+        for e in do_cmd("rss https://www.reddit.com/r/python/.rss"):
+            e.wait()
         
 def consume(elems):
     fixed = []
@@ -80,14 +88,14 @@ def consume(elems):
     return res
     
 def sortedtests(b):
-    keys = sorted(h.cbs)
+    keys = sorted(h.cmds)
     for cmd in keys:
         if cmd in ignore:
             continue
         events.extend(do_cmd(cmd))
 
 def tests(b):
-    keys = list(h.cbs)
+    keys = list(h.cmds)
     random.shuffle(keys)
     for cmd in keys:
         if cmd in ignore:
@@ -104,14 +112,8 @@ def do_cmd(cmd):
         nr += 1
         txt = cmd + " " + ex 
         e = Event()
-        e.type ="cmd"
+        e.type = "cmd"
         e.txt = txt
         h.put(e)
         events.append(e)
     return events
-
-for e in do_cmd("mbx"):
-    e.wait()
-
-for e in do_cmd("rss https://www.reddit.com/r/python/.rss"):
-    e.wait()

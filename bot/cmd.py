@@ -87,7 +87,8 @@ def fnd(event):
             event.reply(" | ".join([x.split(".")[-1].lower() for x in fls]))
         return
     nr = -1
-    for otype in get(event.src.names, event.args[0], [event.args[0]]):
+    bot = bus.by_orig(event.orig)
+    for otype in get(bot.names, event.args[0], [event.args[0]]):
         for fn, o in find(otype, event.prs.gets, event.prs.index, event.prs.timed):
             nr += 1
             txt = "%s %s" % (str(nr), format(o, event.xargs, skip=event.prs.skip))

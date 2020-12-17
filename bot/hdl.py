@@ -34,6 +34,7 @@ class Event(Default):
 
     def direct(self, txt):
         "send txt to console - overload this"
+        bus.say(self.orig, self.channel, txt)
 
     def parse(self):
         "parse an event"
@@ -111,8 +112,8 @@ class Handler(Object):
 
     def dispatch(self, event):
         "run callbacks for event"
-        if not event.src:
-            event.src = self
+        event.orig = repr(self)
+        event.parse()
         if event.type and event.type in self.cbs:
             self.cbs[event.type](event)
 
@@ -206,7 +207,7 @@ def cmd(obj):
         if f:
             f(obj)
             obj.show()
-            obj.ready()
+    obj.ready()
 
 def direct(name, pname=''):
     "load a module"
