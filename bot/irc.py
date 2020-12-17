@@ -431,7 +431,6 @@ class DCC(Handler):
         self._fsock = None
         self.encoding = "utf-8"
         self.origin = ""
-        bus.add(self)
 
     def raw(self, txt):
         "send text on the dcc socket"
@@ -476,6 +475,7 @@ class DCC(Handler):
         "poll (blocking) for input and create an event for it"
         self._connected.wait()
         e = Event()
+        e.type = "cmd"
         txt = self._fsock.readline()
         txt = txt.rstrip()
         parse(e, txt)
