@@ -5,9 +5,8 @@
 "announce to listeners"
 
 from bot.obj import Object
-from bot.hdl import Handler
 
-class Bus(Handler):
+class Bus(Object):
 
     "bus class - registered recipient event handler"
 
@@ -31,13 +30,6 @@ class Bus(Handler):
             if "announce" in dir(h):
                 h.announce(txt)
 
-    def dispatch(self, event):
-        "run callbacks for event"
-        if not event.src:
-            event.src = self
-        if event.type and event.type in self.cbs:
-            self.cbs[event.type](event)
-            
     def by_orig(self, orig):
         "fetch listener by orig"
         for o in Bus.objs:

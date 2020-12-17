@@ -181,8 +181,8 @@ class Handler(Object):
             while 1:
                 time.sleep(30.0)
 
-def cmdcb(event):
-  
+def cb_cmd(event):
+    "callback to dispatch to command"  
     if event.cmd and event.cmd in event.src.cbs:
         get(event.src.cbs, event.cmd)(event)
     event.show()
