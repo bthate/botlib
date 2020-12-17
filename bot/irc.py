@@ -8,7 +8,7 @@ import os, queue, socket, textwrap, time, threading, _thread
 
 from bot.bus import bus
 from bot.dbs import find, last
-from bot.hdl import Event, Handler
+from bot.hdl import Command, Event, Handler
 from bot.obj import Cfg, Object, get, register, save, update
 from bot.ofn import format
 from bot.prs import parse
@@ -59,7 +59,7 @@ class Event(Event):
 
     def show(self):
         for txt in self.result:
-            self.src.say(self.channel, txt)
+            bus.say(self.orig, self.channel, txt)
 
 class TextWrap(textwrap.TextWrapper):
 
@@ -103,13 +103,12 @@ class IRC(Handler):
         self.state.pongcheck = False
         self.threaded = False
         self.verbose = False
-        register(self.cmds, "ERROR", self.ERROR)
-        register(self.cmds, "LOG", self.LOG)
-        register(self.cmds, "NOTICE", self.NOTICE)
-        register(self.cmds, "PRIVMSG", self.PRIVMSG)
-        register(self.cmds, "QUIT", self.QUIT)
-        register(self.cmds, "366", self.JOINED)
-        bus.add(self)
+        self.register("ERROR", self.ERROR)
+        self.register("LOG", self.LOG)
+        self.register("NOTICE", self.NOTICE)
+        self.register("PRIVMSG", self.PRIVMSG)
+        self.register("QUIT", self.QUIT)
+        self.register("366", self.JOINED)
 
     def _connect(self, server):
         "connect (blocking) to irc server"
@@ -251,9 +250,9 @@ class IRC(Handler):
         self._connected.wait()
         self.logon(server, nick)
 
-    def handle(self, event):
-        if event.command in self.cmds:
-            self.cmds[event.command](event)
+    def dispatch(self, event):
+        if event.command in self.cbs:
+            self.cbs[event.command](event)
 
     def doconnect(self):
         "start input/output tasks on connect"
@@ -278,7 +277,7 @@ class IRC(Handler):
                 break
             if not e.orig:
                 e.orig = repr(self)
-            self.handle(e)
+            self.put(e)
 
     def joinall(self):
         "join all channels"
@@ -412,9 +411,9 @@ class IRC(Handler):
         if event.txt and event.txt[0] == self.cc:
             if self.cfg.users and not users.allowed(event.origin, "USER"):
                 return
+            event.type = "cmd"
             event.txt = event.txt[1:]
-            event.iscmd = True
-            self.put(event)
+            self.cmd(event.txt[1:])
 
     def QUIT(self, event):
         "handle quit"

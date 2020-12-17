@@ -38,10 +38,13 @@ class Todo(Object):
 
 def cmd(event):
     "list commands (cmd)"
+    print(event)
     bot = bus.by_orig(event.orig)
-    c = sorted(keys(bot.cmds))
-    if c:
-        event.reply(",".join(c))
+    print(bot)
+    if bot:
+        c = sorted(keys(bot.cmds))
+        if c:
+            event.reply(",".join(c))
 
 def dne(event):
     "flag as done (dne)"

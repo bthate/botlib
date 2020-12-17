@@ -26,10 +26,6 @@ class Console(Handler):
 
     "console class"
 
-    def __init__(self):
-        super().__init__()
-        bus.add(self)
-
     def announce(self, txt):
         "silence announcing"
         self.direct(txt)

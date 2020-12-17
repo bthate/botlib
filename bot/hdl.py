@@ -30,6 +30,7 @@ class Event(Default):
         self.done = threading.Event()
         self.result = []
         self.thrs = []
+        self.type = "event"
 
     def direct(self, txt):
         "send txt to console - overload this"
@@ -68,6 +69,14 @@ class Event(Default):
         for thr in self.thrs:
             thr.join()
 
+class Command(Event):
+
+    def __init__(self, txt):
+        super().__init__()
+        self.type = "cmd"
+        self.txt = txt
+        parse(self, self.txt)
+
 class Handler(Object):
 
     "basic event handler"
@@ -91,13 +100,9 @@ class Handler(Object):
         update(self.names, hdl.names)
 
     def cmd(self, txt):
-        "do a command"
-        class E(Event):
-            def direct(self, txt):
-                print(txt)
-        e = E()
-        e.txt = txt
-        return self.dispatch(e)
+        c = Command(txt)
+        c.orig = repr(self)
+        self.exec(c)
 
     def dispatch(self, event):
         "run callbacks for event"
@@ -105,6 +110,10 @@ class Handler(Object):
             event.src = self
         if event.type and event.type in self.cbs:
             self.cbs[event.type](event)
+
+    def exec(self, c):
+        if c.cmd in self.cmds:
+            self.cmds[c.cmd](c)
 
     def files(self):
         "show files in workdir"
@@ -130,11 +139,11 @@ class Handler(Object):
     def intro(self, mod):
         "introspect a module"
         for key, o in inspect.getmembers(mod, inspect.isfunction):
-            if "event" in o.__code__.co_varnames:
-                if o.__code__.co_argcount == 1:
+            if o.__code__.co_argcount == 1:
+                if "obj" in o.__code__.co_varnames:
+                    self.register(key, o)
+                elif "event" in o.__code__.co_varnames:
                     self.cmds[key] = o
-            else:
-                self.register(key, o)
         for _key, o in inspect.getmembers(mod, inspect.isclass):
             if issubclass(o, Object):
                 t = "%s.%s" % (o.__module__, o.__name__)
@@ -189,9 +198,16 @@ class Handler(Object):
             while 1:
                 time.sleep(30.0)
 
-def cmd(o):
+def cmd(obj):
     "callbackx to dispatch to command"  
-    bus.dispatch(o)
+    bot = bus.by_orig(o.orig)
+    print(bot)
+    if bot and o.cmd in bot.cmds:
+        f = get(bot.cmds, o.cmd, None)
+        if f:
+            f(event)
+            event.show()
+            event.ready()
 
 def direct(name, pname=''):
     "load a module"
