@@ -104,7 +104,7 @@ def do_cmd(cmd):
         nr += 1
         txt = cmd + " " + ex 
         e = Event()
-        e.type ="cb_cmd"
+        e.type ="cmd"
         e.txt = txt
         h.put(e)
         events.append(e)

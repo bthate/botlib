@@ -75,8 +75,11 @@ class Command(Event):
         super().__init__()
         self.type = "cmd"
         self.txt = txt
-        parse(self, self.txt)
+        self.parse()
 
+    def direct(self, txt):
+        print(txt)
+ 
 class Handler(Object):
 
     "basic event handler"
@@ -100,9 +103,11 @@ class Handler(Object):
         update(self.names, hdl.names)
 
     def cmd(self, txt):
+        global cmd
         c = Command(txt)
         c.orig = repr(self)
-        self.exec(c)
+        c.origin = "root@shell"
+        self.dispatch(c)
 
     def dispatch(self, event):
         "run callbacks for event"
@@ -110,10 +115,6 @@ class Handler(Object):
             event.src = self
         if event.type and event.type in self.cbs:
             self.cbs[event.type](event)
-
-    def exec(self, c):
-        if c.cmd in self.cmds:
-            self.cmds[c.cmd](c)
 
     def files(self):
         "show files in workdir"
@@ -156,7 +157,6 @@ class Handler(Object):
             event = self.queue.get()
             if not event:
                 break
-            event.src = self
             event.thrs.append(launch(self.dispatch, event))
 
     def put(self, e):
@@ -200,14 +200,13 @@ class Handler(Object):
 
 def cmd(obj):
     "callbackx to dispatch to command"  
-    bot = bus.by_orig(o.orig)
-    print(bot)
-    if bot and o.cmd in bot.cmds:
-        f = get(bot.cmds, o.cmd, None)
+    bot = bus.by_orig(obj.orig)
+    if bot and obj.cmd in bot.cmds:
+        f = get(bot.cmds, obj.cmd, None)
         if f:
-            f(event)
-            event.show()
-            event.ready()
+            f(obj)
+            obj.show()
+            obj.ready()
 
 def direct(name, pname=''):
     "load a module"

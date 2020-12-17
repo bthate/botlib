@@ -413,7 +413,7 @@ class IRC(Handler):
                 return
             event.type = "cmd"
             event.txt = event.txt[1:]
-            self.cmd(event.txt[1:])
+            super().dispatch(event)
 
     def QUIT(self, event):
         "handle quit"

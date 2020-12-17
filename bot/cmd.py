@@ -38,9 +38,7 @@ class Todo(Object):
 
 def cmd(event):
     "list commands (cmd)"
-    print(event)
     bot = bus.by_orig(event.orig)
-    print(bot)
     if bot:
         c = sorted(keys(bot.cmds))
         if c:
