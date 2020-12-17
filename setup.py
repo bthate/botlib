@@ -1,7 +1,6 @@
-# BOTLIB - setup.py
+# BOTLIB - pure python3 bot library
 #
-# this file is placed in the public domain
-
+# this file is place in the public domain
 
 "library to program bots"
 
