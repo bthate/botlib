@@ -28,6 +28,7 @@ class Event(Default):
     def __init__(self, *args, **kw):
         super().__init__(*args, **kw)
         self.done = threading.Event()
+        self.orig = None
         self.result = []
         self.thrs = []
         self.type = "event"
@@ -35,7 +36,7 @@ class Event(Default):
     def direct(self, txt):
         "send txt to console - overload this"
         bus.say(self.orig, self.channel, txt)
-
+            
     def parse(self):
         "parse an event"
         self.prs = Default()
@@ -58,11 +59,13 @@ class Event(Default):
         "add txt to result"
         self.result.append(txt)
 
-    def show(self):
+    def show(self, target=None):
         "display result"
         for txt in self.result:
+            if target:
+                target.direct(txt)
+                continue
             self.direct(txt)
-        self.ready()
 
     def wait(self):
         "wait for event to be handled"
@@ -72,15 +75,13 @@ class Event(Default):
 
 class Command(Event):
 
-    def __init__(self, txt):
-        super().__init__()
+    def __init__(self, txt, **kwargs):
+        super().__init__([], **kwargs)
         self.type = "cmd"
-        self.txt = txt
+        if txt:
+            self.txt = txt
         self.parse()
 
-    def direct(self, txt):
-        print(txt)
- 
 class Handler(Object):
 
     "basic event handler"
@@ -94,7 +95,6 @@ class Handler(Object):
         self.names = Ol()
         self.queue = queue.Queue()
         self.stopped = False
-        self.register("cmd", cmd)
         bus.add(self)
         
     def clone(self, hdl):
@@ -104,18 +104,17 @@ class Handler(Object):
         update(self.names, hdl.names)
 
     def cmd(self, txt):
-        global cmd
+        "execute command"
         c = Command(txt)
-        c.orig = repr(self)
-        c.origin = "root@shell"
         self.dispatch(c)
+
+    def direct(self, txt):
+        "override this"
 
     def dispatch(self, event):
         "run callbacks for event"
-        event.orig = repr(self)
-        event.parse()
         if event.type and event.type in self.cbs:
-            self.cbs[event.type](event)
+            self.cbs[event.type](self, event)
 
     def files(self):
         "show files in workdir"
@@ -155,10 +154,12 @@ class Handler(Object):
     def handler(self):
         "handler loop"
         while not self.stopped:
-            event = self.queue.get()
-            if not event:
+            e = self.queue.get()
+            if not e:
                 break
-            event.thrs.append(launch(self.dispatch, event))
+            if not e.orig:
+                e.orig = repr(self)
+            e.thrs.append(launch(self.dispatch, e))
 
     def put(self, e):
         "put event on queue"
@@ -199,14 +200,13 @@ class Handler(Object):
             while 1:
                 time.sleep(30.0)
 
-def cmd(obj):
+def cmd(handler, obj):
     "callbackx to dispatch to command"  
-    bot = bus.by_orig(obj.orig)
-    if bot and obj.cmd in bot.cmds:
-        f = get(bot.cmds, obj.cmd, None)
-        if f:
-            f(obj)
-            obj.show()
+    obj.parse()
+    f = get(handler.cmds, obj.cmd, None)
+    if f:
+        f(obj)
+        obj.show(handler)
     obj.ready()
 
 def direct(name, pname=''):
