@@ -63,7 +63,7 @@ class Event(Default):
         "display result"
         for txt in self.result:
             if target:
-                target.direct(txt)
+                target.say(self.channel, txt)
                 continue
             self.direct(txt)
 

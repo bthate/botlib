@@ -57,10 +57,6 @@ class Event(Event):
 
     "IRC event"
 
-    def show(self):
-        for txt in self.result:
-            bus.say(self.orig, self.channel, txt)
-
 class TextWrap(textwrap.TextWrapper):
 
     "text wrapper"
@@ -252,6 +248,7 @@ class IRC(Handler):
         self.logon(server, nick)
 
     def dispatch(self, event):
+        "invoke callback"
         if event.command in self.cbs:
             self.cbs[event.command](event)
 
