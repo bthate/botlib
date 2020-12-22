@@ -1,5 +1,1 @@
-# BOTLIB - clean
-#
-# this file is placed in the public domain
-
-rm -fR docs/bot*.rst docs/*~ docs/__pycache__ test/*~ test/__pycache__ build *~ botlib.egg-info bot/*~ bot/__pycache__ run run.tar.gz html env env.tar.gz .data build dist MANIFEST bin/*~ *~ 
+rm -fR test/*~ test/__pycache__ build *~ botd.egg-info bot/*~ bot/__pycache__ run run.tar.gz html env env.tar.gz .data build dist MANIFEST bin/*~ *~ docs/*~

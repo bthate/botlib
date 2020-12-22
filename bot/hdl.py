@@ -36,7 +36,7 @@ class Event(Default):
     def direct(self, txt):
         "send txt to console - overload this"
         bus.say(self.orig, self.channel, txt)
-            
+
     def parse(self):
         "parse an event"
         self.prs = Default()
@@ -80,7 +80,6 @@ class Command(Event):
         self.type = "cmd"
         if txt:
             self.txt = txt
-        self.parse()
 
 class Handler(Object):
 
@@ -96,7 +95,7 @@ class Handler(Object):
         self.queue = queue.Queue()
         self.stopped = False
         bus.add(self)
-        
+
     def clone(self, hdl):
         "copy callbacks"
         update(self.cmds, hdl.cmds)
@@ -105,11 +104,14 @@ class Handler(Object):
 
     def cmd(self, txt):
         "execute command"
+        self.register("cmd", cmd)
         c = Command(txt)
+        c.orig = repr(self)
         self.dispatch(c)
+        c.wait()
 
     def direct(self, txt):
-        "override this"
+        "outputs text, overload this"
 
     def dispatch(self, event):
         "run callbacks for event"
@@ -121,6 +123,16 @@ class Handler(Object):
         import bot.obj
         assert bot.obj.wd
         return list_files(bot.obj.wd)
+
+    def fromdir(self, path, name="bot"):
+        "scan a modules directory"
+        if not path:
+            return
+        for mn in [x[:-3] for x in os.listdir(path)
+                   if x and x.endswith(".py")
+                   and not x.startswith("__")
+                   and not x == "setup.py"]:
+            self.intro(direct("%s.%s" % (name, mn)))
 
     def init(self, mns, name="bot"):
         "call init() of modules"
@@ -169,15 +181,9 @@ class Handler(Object):
         "register a callback"
         self.cbs[name] = callback
 
-    def fromdir(self, path, name="bot"):
-        "scan a modules directory"
-        if not path:
-            return
-        for mn in [x[:-3] for x in os.listdir(path)
-                   if x and x.endswith(".py")
-                   and not x.startswith("__")
-                   and not x == "setup.py"]:
-            self.intro(direct("%s.%s" % (name, mn)))
+    def say(self, channel, txt):
+        "forward to direct"
+        self.direct(txt)
 
     def start(self):
         "start handler"
@@ -201,7 +207,7 @@ class Handler(Object):
                 time.sleep(30.0)
 
 def cmd(handler, obj):
-    "callbackx to dispatch to command"  
+    "callbackx to dispatch to command"
     obj.parse()
     f = get(handler.cmds, obj.cmd, None)
     if f:
