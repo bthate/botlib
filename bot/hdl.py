@@ -14,7 +14,7 @@ from bot.obj import Default, Object, Ol, get, spl, update
 from bot.prs import parse
 from bot.thr import launch
 
-__version__ = 115
+__version__ = 114
 
 debug = False
 md = ""
@@ -198,8 +198,10 @@ class Handler(Object):
         self.stopped = True
         self.queue.put(None)
 
-    def walk(self, pkgnames, name="bot"):
+    def walk(self, pkgnames, name=""):
         "walk over packages and load their modules"
+        if not name:
+            name = list(spl(pkgnames))[0]
         for pn in spl(pkgnames):
             mod = direct(pn)
             self.fromdir(mod.__path__[0], name)
