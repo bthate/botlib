@@ -14,7 +14,7 @@ from bot.obj import Default, Object, Ol, get, spl, update
 from bot.prs import parse
 from bot.thr import launch
 
-__version__ = 115
+__version__ = 114
 
 debug = False
 md = ""
@@ -27,6 +27,7 @@ class Event(Default):
 
     def __init__(self, *args, **kw):
         super().__init__(*args, **kw)
+        self.channel = ""
         self.done = threading.Event()
         self.orig = None
         self.result = []
@@ -107,8 +108,9 @@ class Handler(Object):
         self.register("cmd", cmd)
         c = Command(txt)
         c.orig = repr(self)
-        self.dispatch(c)
-        c.wait()
+        if c.cmd in self.cmds:
+            self.dispatch(c)
+            c.wait()
 
     def direct(self, txt):
         "outputs text, overload this"
@@ -117,6 +119,8 @@ class Handler(Object):
         "run callbacks for event"
         if event.type and event.type in self.cbs:
             self.cbs[event.type](self, event)
+        else:
+            event.ready()
 
     def files(self):
         "show files in workdir"
@@ -165,6 +169,7 @@ class Handler(Object):
 
     def handler(self):
         "handler loop"
+        self.running = True
         while not self.stopped:
             e = self.queue.get()
             if not e:
