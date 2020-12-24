@@ -9,7 +9,7 @@ import time
 
 from bot.bus import bus
 from bot.dbs import find
-from bot.hdl import mods
+from bot.hdl import mods, __version__
 from bot.obj import Object, fntime, get, keys, save, update
 from bot.ofn import format
 from bot.prs import elapsed
@@ -114,11 +114,4 @@ def tdo(event):
     event.reply("ok")
 
 def ver(event):
-    versions = Object()
-    for mod in mods("bot"):
-        try:
-            versions[mod.__name__.upper()] = mod.__version__
-        except AttributeError:
-            pass
-    if versions:
-        event.reply(format(versions))
+    event.reply("BOTLIB %s" % __version__)
