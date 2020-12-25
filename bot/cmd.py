@@ -106,9 +106,7 @@ def fnd(event):
             event.reply(" | ".join([x.split(".")[-1].lower() for x in fls]))
         return
     nr = -1
-    print(bot.tbl.names)
     for otype in get(bot.tbl.names, event.args[0], [event.args[0]]):
-        print(otype)
         for fn, o in find(otype, event.prs.gets, event.prs.index, event.prs.timed):
             nr += 1
             txt = "%s %s" % (str(nr), format(o, event.xargs, skip=event.prs.skip))
