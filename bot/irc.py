@@ -25,7 +25,7 @@ from bot.utl import locked
 # defines
 
 def __dir__():
-    return ("ENOUSER", "Cfg", "DCC", "Event", "IRC", "init")
+    return ("Cfg", "DCC", "Event", "IRC", "init")
 
 def init(hdl):
     "create a IRC bot and return it"
@@ -36,12 +36,6 @@ def init(hdl):
 # locks
 
 saylock = _thread.allocate_lock()
-
-# exceptions
-
-class ENOUSER(Exception):
-
-    "no matching user found"
 
 # classes
 

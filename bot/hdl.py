@@ -260,7 +260,7 @@ class Handler(Object):
 # functions
 
 def cmd(handler, obj):
-    "callbackx to dispatch to command"
+    "callback to dispatch to command"
     import bot.tbl
     obj.parse()
     f = get(handler.cmds, obj.cmd, None)

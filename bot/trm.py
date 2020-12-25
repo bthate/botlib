@@ -12,10 +12,6 @@ from bot.utl import get_exception
 
 resume = {}
 
-class EWRONG(Exception):
-
-    "wrong assumption"
-
 def execute(main):
     "provide context for funcion"
     termsave()
