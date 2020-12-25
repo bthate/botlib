@@ -9,18 +9,19 @@
 import threading
 import time
 
-from bot.bus import bus
-from bot.dbs import find
-from bot.obj import Object, get, keys, save, update
-from bot.ofn import format
+from bot.dbs import find, last, last_match
+from bot.obj import Object, edit, format, get, keys, save, update
 from bot.hdl import __version__
+from bot.irc import Cfg
 from bot.prs import elapsed
+from bot.rss import Rss
+from bot.spc import bus, fetcher
 from bot.utl import fntime, mods
 
 # defines
 
 def __dir__():
-    return ("Log", "Todo", "cmd", "dne", "fnd", "log", "tdo", "thr", "ver")
+    return ("cmd", "cfg", "dpl", "dne", "fnd", "ftc", "log", "rem", "rss", "tdo", "thr", "ver")
 
 starttime = time.time()
 
@@ -54,7 +55,6 @@ def cmd(event):
 
 def cfg(event):
     "configure irc."
-    from bot.irc import Cfg
     c = Cfg()
     last(c)
     if not event.prs.sets:
@@ -73,6 +73,28 @@ def dne(event):
         save(o)
         event.reply("ok")
         break
+
+def dpl(event):
+    "set keys to display"
+    if len(event.args) < 2:
+        return
+    setter = {"display_list": event.args[1]}
+    for fn, o in last_match("bot.rss.Rss", {"rss": event.args[0]}):
+        edit(o, setter)
+        save(o)
+        event.reply("ok")
+
+def ftc(event):
+    "manual run a fetch batch"
+    res = []
+    thrs = []
+    fetcher.start(False)
+    thrs = fetcher.run()
+    for thr in thrs:
+        res.append(thr.join() or 0)
+    if res:
+        event.reply("fetched %s" % ",".join([str(x) for x in res]))
+        return
 
 def fnd(event):
     "find objects (fnd)"
@@ -98,6 +120,34 @@ def log(event):
     l = Log()
     l.txt = event.rest
     save(l)
+    event.reply("ok")
+
+def rem(event):
+    "remove a rss feed"
+    if not event.args:
+        return
+    selector = {"rss": event.args[0]}
+    nr = 0
+    got = []
+    for fn, o in find("bot.rss.Rss", selector):
+        nr += 1
+        o._deleted = True
+        got.append(o)
+    for o in got:
+        save(o)
+    event.reply("ok")
+
+def rss(event):
+    "add a feed"
+    if not event.args:
+        return
+    url = event.args[0]
+    res = list(find("bot.rss.Rss", {"rss": url}))
+    if res:
+        return
+    o = Rss()
+    o.rss = event.args[0]
+    save(o)
     event.reply("ok")
 
 def tdo(event):
@@ -134,4 +184,5 @@ def thr(event):
         event.reply(" | ".join(res))
 
 def ver(event):
+    "show version"
     event.reply("BOTLIB %s" % __version__)

@@ -16,15 +16,16 @@ import _thread
 
 from bot.dbs import find, last
 from bot.hdl import Event, Handler, cmd
-from bot.obj import Cfg, Object, get,  save, update
-from bot.ofn import format
+from bot.obj import Cfg, Object, format, get,  save, update
 from bot.prs import parse
 from bot.thr import launch
 from bot.usr import Users
+from bot.utl import locked
 
 # defines
 
-saylock = _thread.allocate_lock()
+def __dir__():
+    return ("ENOUSER", "Cfg", "DCC", "Event", "IRC", "init")
 
 def init(hdl):
     "create a IRC bot and return it"
@@ -32,20 +33,9 @@ def init(hdl):
     i.clone(hdl)
     return launch(i.start)
 
-def locked(l):
-    "lock descriptor"
-    def lockeddec(func, *args, **kwargs):
-        def lockedfunc(*args, **kwargs):
-            l.acquire()
-            res = None
-            try:
-                res = func(*args, **kwargs)
-            finally:
-                l.release()
-            return res
-        lockeddec.__doc__ = func.__doc__
-        return lockedfunc
-    return lockeddec
+# locks
+
+saylock = _thread.allocate_lock()
 
 # exceptions
 
@@ -502,3 +492,4 @@ class DCC(Handler):
     def say(self, channel, txt):
         "skip channel and print on socket"
         self.raw(txt)
+

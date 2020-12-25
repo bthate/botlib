@@ -17,16 +17,17 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
-from bot.bus import bus
 from bot.clk import Repeater
-from bot.dbs import all, find, last, lastmatch
-from bot.obj import Cfg, Default, O, Object, save, get, update
-from bot.ofn import edit
+from bot.dbs import all, find, last
+from bot.obj import Cfg, Default, O, Object, edit, save, get, update
 from bot.hdl import debug
 from bot.thr import launch
 from bot.utl import unescape, useragent
 
 # defines
+
+def __dir__():
+    return ("Cfg", "Rss", "Feed", "Fetcher", "init")
 
 try:
     import feedparser
@@ -125,6 +126,7 @@ class Fetcher(Object):
 
     def fetch(self, rssobj):
         "update a rss feed"
+        from bot.spc import bus
         counter = 0
         objs = []
         if not rssobj.rss:
@@ -190,61 +192,3 @@ def get_feed(url):
                 yield entry
     else:
         return [Object(), Object()]
-
-# runtime
-
-fetcher = Fetcher()
-
-# commands
-
-def rem(event):
-    "remove a rss feed"
-    if not event.args:
-        return
-    selector = {"rss": event.args[0]}
-    nr = 0
-    got = []
-    for fn, o in find("bot.rss.Rss", selector):
-        nr += 1
-        o._deleted = True
-        got.append(o)
-    for o in got:
-        save(o)
-    event.reply("ok")
-
-def dpl(event):
-    "set keys to display"
-    if len(event.args) < 2:
-        return
-    setter = {"display_list": event.args[1]}
-    for fn, o in lastmatch("bot.rss.Rss", {"rss": event.args[0]}):
-        edit(o, setter)
-        save(o)
-        event.reply("ok")
-
-def ftc(event):
-    "manual run a fetch batch"
-    res = []
-    thrs = []
-    fetchr = Fetcher()
-    fetchr.start(False)
-    thrs = fetchr.run()
-    for thr in thrs:
-        res.append(thr.join() or 0)
-    if res:
-        event.reply("fetched %s" % ",".join([str(x) for x in res]))
-        return
-
-def rss(event):
-    "add a feed"
-    if not event.args:
-        return
-    url = event.args[0]
-    res = list(find("bot.rss.Rss", {"rss": url}))
-    if res:
-        return
-    o = Rss()
-    o.rss = event.args[0]
-    save(o)
-    event.reply("ok")
-

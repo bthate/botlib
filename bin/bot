@@ -15,11 +15,10 @@ import pwd
 import readline
 import sys
 
-from bot.bus import bus
 from bot.hdl import Command, Handler, cmd
-from bot.obj import get
-from bot.ofn import format
+from bot.obj import format, get
 from bot.prs import parse_cli
+from bot.spc import bus
 from bot.thr import launch
 from bot.trm import execute, termsave, termreset
 
@@ -38,6 +37,7 @@ class Console(Handler):
         self.direct(txt)
 
     def direct(self, txt):
+        "print to console"
         print(txt)
 
     def input(self):

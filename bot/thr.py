@@ -11,8 +11,7 @@ import queue
 import sys
 import threading
 
-from bot.obj import Default, Object
-from bot.ofn import get_name
+from bot.obj import Default, Object, get_name
 
 # classes
 

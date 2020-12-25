@@ -14,7 +14,6 @@ import queue
 import threading
 import time
 
-from bot.bus import bus
 from bot.dbs import list_files
 from bot.obj import Default, Object, Ol, get, update
 from bot.prs import parse
@@ -25,10 +24,51 @@ from bot.utl import direct, spl
 
 __version__ = 116
 
-debug = False
-md = ""
+def __dir__():
+    return ("Bus", "Command", "Event", "Handler", "cmd")
 
 # classes
+
+class Bus(Object):
+
+    "bus class - registered recipient event handler"
+
+    objs = []
+
+    def __call__(self, *args, **kwargs):
+        return self.objs
+
+    def __iter__(self):
+        return iter(Bus.objs)
+
+    def add(self, obj):
+        "add listener to bus"
+        Bus.objs.append(obj)
+
+    def announce(self, txt, skip=None):
+        "announce to all listeners"
+        for h in self.objs:
+            if skip is not None and isinstance(h, skip):
+                continue
+            if "announce" in dir(h):
+                h.announce(txt)
+
+    def by_orig(self, orig):
+        "fetch listener by orig"
+        for o in Bus.objs:
+            if repr(o) == orig:
+                return o
+
+    def dispatch(self, event):
+        for o in Bus.objs:
+            o.dispatch(event)
+
+    def say(self, orig, channel, txt):
+        "say something to specific listener"
+        for o in Bus.objs:
+            if repr(o) == orig:
+                o.say(channel, str(txt))
+
 
 class Event(Default):
 
@@ -47,7 +87,7 @@ class Event(Default):
 
     def direct(self, txt):
         "send txt to console - overload this"
-        bus.say(self.orig, self.channel, txt)
+        Bus.say(self.orig, self.channel, txt)
 
     def parse(self):
         "parse an event"
@@ -101,12 +141,13 @@ class Handler(Object):
 
     def __init__(self):
         super().__init__()
+        self.bus = Bus()
         self.cbs = Object()
         self.cmds = Object()
         self.names = Ol()
         self.queue = queue.Queue()
         self.stopped = False
-        bus.add(self)
+        self.bus.add(self)
 
     def clone(self, hdl):
         "copy callbacks"
@@ -233,3 +274,8 @@ def cmd(handler, obj):
         f(obj)
         obj.show(handler)
     obj.ready()
+
+# runtime
+
+debug = False
+md = ""

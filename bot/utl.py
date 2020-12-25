@@ -147,6 +147,21 @@ def get_url(url):
     response.data = response.read()
     return response
 
+def locked(l):
+    "lock descriptor"
+    def lockeddec(func, *args, **kwargs):
+        def lockedfunc(*args, **kwargs):
+            l.acquire()
+            res = None
+            try:
+                res = func(*args, **kwargs)
+            finally:
+                l.release()
+            return res
+        lockeddec.__doc__ = func.__doc__
+        return lockedfunc
+    return lockeddec
+
 def mods(mn, name="bot"):
     "return all modules in a package"
     mod = []

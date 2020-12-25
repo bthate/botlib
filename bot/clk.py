@@ -12,6 +12,11 @@ import time
 from bot.obj import Object
 from bot.thr import launch
 
+# defines
+
+def __dir__():
+    return ("Repeater", "Timer")
+
 # classes
 
 class Timer(Object):

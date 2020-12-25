@@ -15,6 +15,9 @@ from bot.utl import day
 
 # defines
 
+def __dir__():
+    return ("elapsed", "parse", "parse_cli", "parse_time", "parse_ymd")
+
 year_formats = [
     "%b %H:%M",
     "%b %H:%M:%S",
@@ -173,26 +176,6 @@ def elapsed(seconds, short=True):
     txt = txt.strip()
     return txt
 
-def get_time(daystr):
-    "extract time from string"
-    for f in year_formats:
-        try:
-            t = time.mktime(time.strptime(daystr, f))
-            return t
-        except ValueError:
-            pass
-
-def parse_cli():
-    "parse commandline"
-    import bot.hdl
-    import bot.obj
-    cfg = Default()
-    parse(cfg, " ".join(sys.argv[1:]))
-    cfg.sets.wd = bot.obj.wd = cfg.sets.wd or bot.obj.wd
-    assert bot.obj.wd
-    bot.hdl.md = os.path.join(bot.obj.wd, "mod")
-    return cfg
-
 def parse(o, txt):
     "parse an object"
     args = []
@@ -243,7 +226,36 @@ def parse(o, txt):
     o.rest = " ".join(args[1:])
     return o
 
-def parse_time(daystr):
+def parse_cli():
+    "parse commandline"
+    import bot.hdl
+    import bot.obj
+    cfg = Default()
+    parse(cfg, " ".join(sys.argv[1:]))
+    cfg.sets.wd = bot.obj.wd = cfg.sets.wd or bot.obj.wd
+    assert bot.obj.wd
+    bot.hdl.md = os.path.join(bot.obj.wd, "mod")
+    return cfg
+
+def parse_time(daystring):
+    "extract time from string"
+    line = ""
+    daystr = str(daystring)
+    for word in daystr.split():
+        if "-" in word:
+            line += word + " "
+        elif ":" in word:
+            line += word
+    if "-" not in line:
+        line = day() + " " + line
+    for f in year_formats:
+        try:
+            t = time.mktime(time.strptime(line, f))
+            return t
+        except ValueError:
+            pass
+
+def parse_ymd(daystr):
     "elapsed time from string"
     if not any([c.isdigit() for c in daystr]):
         return 0
@@ -269,19 +281,3 @@ def parse_time(daystr):
             valstr += c
         total += val
     return total
-
-def to_day(daystring):
-    "extract time from string"
-    line = ""
-    daystr = str(daystring)
-    for word in daystr.split():
-        if "-" in word:
-            line += word + " "
-        elif ":" in word:
-            line += word
-    if "-" not in line:
-        line = day() + " " + line
-    try:
-        return get_time(line.strip())
-    except ValueError:
-        pass

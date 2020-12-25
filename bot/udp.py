@@ -9,9 +9,9 @@ import socket
 import sys
 import time
 
-from bot.bus import bus
 from bot.dbs import last
 from bot.obj import Cfg, Object
+from bot.spc import bus
 from bot.thr import launch
 
 def init(hdl):

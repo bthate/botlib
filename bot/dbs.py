@@ -10,9 +10,13 @@ import os
 import time
 import bot.obj
 
-from bot.obj import update, hook
-from bot.ofn import get_type, search
+from bot.obj import get_type, hook, update, search
 from bot.utl import fntime
+
+# defines
+
+def __dir__():
+    return ("all", "deleted", "every", "find", "find_event", "last", "last_match", "last_type", "last_fn")
 
 # functions
 
@@ -112,7 +116,7 @@ def fns(name, timed=None):
 
 def last(o):
     "return last object"
-    path, l = lastfn(str(get_type(o)))
+    path, l = last_fn(str(get_type(o)))
     if  l:
         update(o, l)
     if path:
@@ -120,18 +124,19 @@ def last(o):
         stp = os.sep.join(spl[-4:])
         return stp
 
-def lastmatch(otype, selector=None, index=None, timed=None):
+def last_match(otype, selector=None, index=None, timed=None):
+    "return last on matched type"
     for fn, o in find(otype, selector, index, timed):
         yield fn, o
         break
 
-def lasttype(otype):
+def last_type(otype):
     "return last object of type"
     fnn = fns(otype)
     if fnn:
         return hook(fnn[-1])
 
-def lastfn(otype):
+def last_fn(otype):
     "return filename of last object"
     fn = fns(otype)
     if fn:
