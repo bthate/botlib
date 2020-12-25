@@ -4,7 +4,7 @@
 
 "run all commands"
 
-import os, sys ; sys.path.insert(0, os.getcwd())
+# imports
 
 import os
 import random
@@ -12,10 +12,12 @@ import sys
 import time
 import unittest
 
-from bot.hdl import Event, Handler
+from bot.hdl import Command, Handler
 from bot.obj import Object, get
 from bot.prs import parse_cli
-from bot.thr import launch
+from bot.utl import cmd, launch
+
+# defines
 
 cfg = parse_cli()
 verbose = "v" in cfg.opts
@@ -38,15 +40,18 @@ events = []
 ignore = ["mbx", "rss"]
 nrtimes = 1
 
-h = Handler()
+class TestHandler(Handler):
+
+     def direct(self, txt):
+        if verbose:
+            print(txt)
+
+h = TestHandler()
+h.register("cmd", cmd)
 h.walk("bot")
 h.start()
 
-class Event(Event):
-
-    def direct(self, txt):
-        if verbose:
-            print(txt)
+# classes
 
 class Test_Tinder(unittest.TestCase):
 
@@ -71,7 +76,9 @@ class Test_Tinder(unittest.TestCase):
     def test_rss(self):
         for e in do_cmd("rss https://www.reddit.com/r/python/.rss"):
             e.wait()
-        
+
+# functions
+
 def consume(elems):
     fixed = []
     res = []
@@ -111,9 +118,7 @@ def do_cmd(cmd):
     for ex in e:
         nr += 1
         txt = cmd + " " + ex 
-        e = Event()
-        e.type = "cmd"
-        e.txt = txt
+        e = Command(txt)
         h.put(e)
         events.append(e)
     return events

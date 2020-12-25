@@ -134,6 +134,8 @@ def get_exception(txt="", sep=" "):
 
 def get_feed(url):
     "return a feed by it's url"
+    from bot.hdl import debug
+    from bot.obj import Object
     if debug:
         return [Object(), Object()]
     try:

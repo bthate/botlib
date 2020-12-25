@@ -16,8 +16,8 @@ import time
 import types
 import uuid
 
-from bot.ofn import get_type
-from bot.utl import hooked
+from bot.ofn import default, get_type
+from bot.utl import cdir, hooked
 
 # defines
 

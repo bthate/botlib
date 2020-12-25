@@ -16,6 +16,7 @@ import uuid
 
 def default(o):
     "return strinfified version of an object"
+    from bot.obj import Object
     if isinstance(o, Object):
         return vars(o)
     if isinstance(o, dict):

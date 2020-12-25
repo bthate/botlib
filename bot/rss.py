@@ -23,7 +23,7 @@ from bot.dbs import all, find, last, lastmatch
 from bot.obj import Cfg, Default, O, Object, save, get, update
 from bot.ofn import edit
 from bot.hdl import debug
-from bot.utl import launch, unescape, useragent
+from bot.utl import launch, get_feed, unescape, useragent
 
 # defines
 

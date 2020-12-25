@@ -1,13 +1,21 @@
 #!/usr/bin/python3
 
+"botlib unittests"
+
+# imports
+
 import os, sys ; sys.path.insert(0, os.getcwd())
-import time, unittest
+
+import time
+import unittest
 
 import bot.obj
 import bot.hdl
 
 from bot.trm import execute
 from bot.prs import parse_cli
+
+# functions
 
 def open(txt):
     try:
@@ -28,6 +36,8 @@ def main():
         pat = "test*"
     suite = unittest.loader.TestLoader().discover(test_path, pattern=pat)
     unittest.TextTestRunner(verbosity=3).run(suite)
+
+# runtime
    
 execute(main)
 os._exit(0)
