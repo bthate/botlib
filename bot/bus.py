@@ -4,7 +4,11 @@
 
 "announce to listeners"
 
+# imports
+
 from bot.obj import Object
+
+# classes
 
 class Bus(Object):
 
@@ -45,5 +49,7 @@ class Bus(Object):
         for o in Bus.objs:
             if repr(o) == orig:
                 o.say(channel, str(txt))
+
+# runtime
 
 bus = Bus()

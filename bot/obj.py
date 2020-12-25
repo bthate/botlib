@@ -4,6 +4,8 @@
 
 "object base class (obj)"
 
+# imports
+
 import datetime
 import importlib
 import json
@@ -14,7 +16,14 @@ import time
 import types
 import uuid
 
+from bot.ofn import get_type
+from bot.utl import hooked
+
+# defines
+
 wd = ""
+
+# exceptions
 
 class ENOFILENAME(Exception):
 
@@ -23,6 +32,8 @@ class ENOFILENAME(Exception):
 class ENOCLASS(Exception):
 
     "class is not available"
+
+# classes
 
 class O:
 
@@ -101,110 +112,7 @@ class Ol(Object):
         for k, v in d.items():
             self.append(k, v)
 
-# utilities
-
-def cdir(path):
-    "create directory"
-    if os.path.exists(path):
-        return
-    res = ""
-    path2, _fn = os.path.split(path)
-    for p in path2.split(os.sep):
-        res += "%s%s" % (p, os.sep)
-        padje = os.path.abspath(os.path.normpath(res))
-        try:
-            os.mkdir(padje)
-            os.chmod(padje, 0o700)
-        except (IsADirectoryError, NotADirectoryError, FileExistsError):
-            pass
-
-def fntime(daystr):
-    "return time from filename"
-    daystr = daystr.replace("_", ":")
-    datestr = " ".join(daystr.split(os.sep)[-2:])
-    try:
-        datestr, rest = datestr.rsplit(".", 1)
-    except ValueError:
-        rest = ""
-    try:
-        t = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
-        if rest:
-            t += float("." + rest)
-    except ValueError:
-        t = 0
-    return t
-
-def get_cls(name):
-    "return class from full qualified name"
-    try:
-        modname, clsname = name.rsplit(".", 1)
-    except Exception as ex:
-        raise ENOCLASS(name) from ex
-    if modname in sys.modules:
-        mod = sys.modules[modname]
-    else:
-        mod = importlib.import_module(modname)
-    return getattr(mod, clsname)
-
-def hook(fn):
-    "construct object from filename"
-    if fn.count(os.sep) > 3:
-        oname = fn.split(os.sep)[-4:]
-    else:
-        oname = fn.split(os.sep)
-    cname = oname[0]
-    fn = os.sep.join(oname)
-    cls = get_cls(cname)
-    o = cls()
-    load(o, fn)
-    return o
-
-def hooked(d):
-    "construct object from stamp"
-    return Object(d)
-
-# object functions
-
-def default(o):
-    "return strinfified version of an object"
-    if isinstance(o, Object):
-        return vars(o)
-    if isinstance(o, dict):
-        return o.items()
-    if isinstance(o, list):
-        return iter(o)
-    if isinstance(o, (type(str), type(True), type(False), type(int), type(float))):
-        return o
-    return repr(o)
-
-def get_name(o):
-    "return fully qualified name of an object"
-    t = type(o)
-    if t == types.ModuleType:
-        return o.__name__
-    try:
-        n = "%s.%s" % (o.__self__.__class__.__name__, o.__name__)
-    except AttributeError:
-        try:
-            n = "%s.%s" % (o.__class__.__name__, o.__name__)
-        except AttributeError:
-            try:
-                n = o.__class__.__name__
-            except AttributeError:
-                n = o.__name__
-    return n
-
-
-
-def get_type(o):
-    "return type of an object"
-    t = type(o)
-    if t == type:
-        try:
-            return "%s.%s" % (o.__module__, o.__name__)
-        except AttributeError:
-            pass
-    return str(type(o)).split()[-1][1:-2]
+# methods
 
 def get(o, k, d=None):
     "return o[k]"
@@ -272,10 +180,6 @@ def save(o, stime=None):
 def set(o, k, v):
     "set o[k]=v"
     setattr(o, k, v)
-
-def spl(txt):
-    "return comma splitted values"
-    return iter([x for x in txt.split(",") if x])
 
 def update(o, d):
     "update object with other object"

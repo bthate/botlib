@@ -5,15 +5,19 @@
 
 import os, sys ; sys.path.insert(0, os.getcwd())
 
-import atexit, os, pwd, readline, sys
+import atexit
+import os
+import pwd
+import readline
+import sys
 
 from bot.bus import bus
-from bot.hdl import Command, Handler, cmd
+from bot.hdl import Command, Handler
 from bot.obj import get
 from bot.ofn import format
 from bot.prs import parse_cli
-from bot.thr import launch
 from bot.trm import execute, termsave, termreset
+from bot.utl import cmd, launch
 
 cmds = []
 

@@ -4,10 +4,15 @@
 
 " clock functions (clk)"
 
-import threading, time
+# imports
+
+import threading
+import time
 
 from bot.obj import Object
-from bot.thr import launch
+from bot.utl import launch
+
+# classes
 
 class Timer(Object):
 

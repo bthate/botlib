@@ -4,11 +4,17 @@
 
 "database (dbs)"
 
+# imports
+
+import os
 import time
 import bot.obj
 
-from bot.obj import hook, update, os, get_type
-from bot.ofn import search
+from bot.obj import update
+from bot.ofn import get_type, search
+from bot.utl import fntime, hook
+
+# functions
 
 def all(otype, selector=None, index=None, timed=None):
     "return all matching objects"
@@ -103,32 +109,6 @@ def fns(name, timed=None):
                         continue
                     res.append(p)
     return sorted(res, key=fntime)
-
-def fntime(daystr):
-    "return time from filename"
-    daystr = daystr.replace("_", ":")
-    datestr = " ".join(daystr.split(os.sep)[-2:])
-    try:
-        datestr, rest = datestr.rsplit(".", 1)
-    except ValueError:
-        rest = ""
-    try:
-        t = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
-        if rest:
-            t += float("." + rest)
-    except ValueError:
-        t = 0
-    return t
-
-def get_type(o):
-    "return type of an object"
-    t = type(o)
-    if t == type:
-        try:
-            return "%s.%s" % (o.__module__, o.__name__)
-        except AttributeError:
-            pass
-    return str(type(o)).split()[-1][1:-2]
 
 def last(o):
     "return last object"

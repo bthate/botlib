@@ -4,20 +4,30 @@
 
 "handler (hdl)"
 
-import inspect, os, queue, threading, time
+# imports
+
+import inspect
 import importlib
 import importlib.util
+import os
+import queue
+import threading
+import  time
 
 from bot.bus import bus
 from bot.dbs import list_files
-from bot.obj import Default, Object, Ol, get, spl, update
+from bot.obj import Default, Object, Ol, get, update
 from bot.prs import parse
-from bot.thr import launch
+from bot.utl import cmd, direct, launch, spl
 
-__version__ = 114
+# defines
+
+__version__ = 116
 
 debug = False
 md = ""
+
+# classes
 
 class Event(Default):
 
@@ -211,27 +221,3 @@ class Handler(Object):
         if not self.stopped:
             while 1:
                 time.sleep(30.0)
-
-def cmd(handler, obj):
-    "callbackx to dispatch to command"
-    obj.parse()
-    f = get(handler.cmds, obj.cmd, None)
-    if f:
-        f(obj)
-        obj.show(handler)
-    obj.ready()
-
-def direct(name, pname=''):
-    "load a module"
-    return importlib.import_module(name, pname)
-
-def mods(mn, name="bot"):
-    "return all modules in a package"
-    mod = []
-    pkg = direct(mn)
-    path = pkg.__file__ or pkg.__path__[0]
-    for m in ["%s.%s" % (name, x.split(os.sep)[-1][:-3]) for x in os.listdir(path)
-              if x.endswith(".py")
-              and not x == "setup.py"]:
-        mod.append(direct(m))
-    return mod

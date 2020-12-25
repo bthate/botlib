@@ -4,14 +4,25 @@
 
 "Internet Relay Chat"
 
-import os, queue, socket, textwrap, time, threading, _thread
+# imports
+
+import os
+import queue
+import socket
+import textwrap
+import time
+import threading
+import _thread
 
 from bot.dbs import find, last
-from bot.hdl import Event, Handler, cmd
+from bot.hdl import Event, Handler
 from bot.obj import Cfg, Object, get,  save, update
 from bot.ofn import format
 from bot.prs import parse
-from bot.thr import launch
+from bot.usr import Users
+from bot.utl import cmd, launch
+
+# defines
 
 saylock = _thread.allocate_lock()
 
@@ -36,9 +47,13 @@ def locked(l):
         return lockedfunc
     return lockeddec
 
+# exceptions
+
 class ENOUSER(Exception):
 
     "no matching user found"
+
+# classes
 
 class Cfg(Cfg):
 
@@ -86,6 +101,13 @@ class IRC(Handler):
         self.cfg = Cfg()
         self.cmds = Object()
         self.channels = []
+        self.register("cmd", cmd)
+        self.register("ERROR", self.ERROR)
+        self.register("LOG", self.LOG)
+        self.register("NOTICE", self.NOTICE)
+        self.register("PRIVMSG", self.PRIVMSG)
+        self.register("QUIT", self.QUIT)
+        self.register("366", self.JOINED)
         self.speed = "slow"
         self.state = Object()
         self.state.needconnect = False
@@ -98,13 +120,7 @@ class IRC(Handler):
         self.state.pongcheck = False
         self.threaded = False
         self.verbose = False
-        self.register("cmd", cmd)
-        self.register("ERROR", self.ERROR)
-        self.register("LOG", self.LOG)
-        self.register("NOTICE", self.NOTICE)
-        self.register("PRIVMSG", self.PRIVMSG)
-        self.register("QUIT", self.QUIT)
-        self.register("366", self.JOINED)
+        self.users = Users()
 
     def _connect(self, server):
         "connect (blocking) to irc server"
@@ -395,7 +411,7 @@ class IRC(Handler):
     def PRIVMSG(self, event):
         "handle a private message"
         if event.txt.startswith("DCC CHAT"):
-            if self.cfg.users and not users.allowed(event.origin, "USER"):
+            if self.cfg.users and not self.users.allowed(event.origin, "USER"):
                 return
             try:
                 dcc = DCC()
@@ -406,7 +422,7 @@ class IRC(Handler):
             except ConnectionError as ex:
                 return
         if event.txt and event.txt[0] == self.cc:
-            if self.cfg.users and not users.allowed(event.origin, "USER"):
+            if self.cfg.users and not self.users.allowed(event.origin, "USER"):
                 return
             event.type = "cmd"
             event.txt = event.txt[1:]
@@ -486,93 +502,3 @@ class DCC(Handler):
     def say(self, channel, txt):
         "skip channel and print on socket"
         self.raw(txt)
-
-class User(Object):
-
-    "IRC user"
-
-    def __init__(self):
-        super().__init__()
-        self.user = ""
-        self.perms = []
-
-class Users(Object):
-
-    "IRC users"
-
-    userhosts = Object()
-
-    def allowed(self, origin, perm):
-        "see if origin has needed permission"
-        perm = perm.upper()
-        origin = get(self.userhosts, origin, origin)
-        user = self.get_user(origin)
-        if user:
-            if perm in user.perms:
-                return True
-        return False
-
-    def delete(self, origin, perm):
-        "remove a permission of the user"
-        for user in self.get_users(origin):
-            try:
-                user.perms.remove(perm)
-                save(user)
-                return True
-            except ValueError:
-                pass
-
-    def get_users(self, origin=""):
-        "get all users, optionaly provding an matching origin"
-        s = {"user": origin}
-        return find("irc.User", s)
-
-    def get_user(self, origin):
-        "get specific user with corresponding origin"
-        u = list(self.get_users(origin))
-        if u:
-            return u[-1][-1]
-
-    def meet(self, origin, perms=None):
-        "add a irc user"
-        user = self.get_user(origin)
-        if user:
-            return user
-        user = User()
-        user.user = origin
-        user.perms = ["USER", ]
-        save(user)
-        return user
-
-    def oper(self, origin):
-        "grant origin oper permission"
-        user = self.get_user(origin)
-        if user:
-            return user
-        user = User()
-        user.user = origin
-        user.perms = ["OPER", "USER"]
-        save(user)
-        return user
-
-    def perm(self, origin, permission):
-        "add permission to origin"
-        user = self.get_user(origin)
-        if not user:
-            raise ENOUSER(origin)
-        if permission.upper() not in user.perms:
-            user.perms.append(permission.upper())
-            save(user)
-        return user
-
-users = Users()
-
-def cfg(event):
-    "configure irc."
-    c = Cfg()
-    last(c)
-    if not event.prs.sets:
-        return event.reply(format(c, skip=["username", "realname"]))
-    update(c, event.prs.sets)
-    save(c)
-    event.reply("ok")

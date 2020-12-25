@@ -4,20 +4,27 @@
 
 "commands (cmd)"
 
+# imports
+
 import threading
 import time
 
 from bot.bus import bus
 from bot.dbs import find
-from bot.hdl import mods
-from bot.obj import Object, fntime, get, keys, save, update
+from bot.obj import Object, get, keys, save, update
 from bot.ofn import format
+from bot.hdl import __version__
 from bot.prs import elapsed
+from bot.utl import fntime, mods
+
+# defines
 
 def __dir__():
     return ("Log", "Todo", "cmd", "dne", "fnd", "log", "tdo", "thr", "ver")
 
 starttime = time.time()
+
+# classes
 
 class Log(Object):
 
@@ -35,6 +42,8 @@ class Todo(Object):
         super().__init__()
         self.txt = ""
 
+# commands
+
 def cmd(event):
     "list commands (cmd)"
     bot = bus.by_orig(event.orig)
@@ -42,6 +51,17 @@ def cmd(event):
         c = sorted(keys(bot.cmds))
         if c:
             event.reply(",".join(c))
+
+def cfg(event):
+    "configure irc."
+    from bot.irc import Cfg
+    c = Cfg()
+    last(c)
+    if not event.prs.sets:
+        return event.reply(format(c, skip=["username", "realname"]))
+    update(c, event.prs.sets)
+    save(c)
+    event.reply("ok")
 
 def dne(event):
     "flag as done (dne)"
@@ -53,30 +73,6 @@ def dne(event):
         save(o)
         event.reply("ok")
         break
-
-def thr(event):
-    "list tasks (tsk)"
-    psformat = "%s %s"
-    result = []
-    for thr in sorted(threading.enumerate(), key=lambda x: x.getName()):
-        if str(thr).startswith("<_"):
-            continue
-        o = Object()
-        update(o, thr)
-        if get(o, "sleep", None):
-            up = o.sleep - int(time.time() - o.state.latest)
-        else:
-            up = int(time.time() - starttime)
-        thrname = thr.getName()
-        if not thrname:
-            continue
-        if thrname:
-            result.append((up, thrname))
-    res = []
-    for up, txt in sorted(result, key=lambda x: x[0]):
-        res.append("%s %s" % (txt, elapsed(up)))
-    if res:
-        event.reply(" | ".join(res))
 
 def fnd(event):
     "find objects (fnd)"
@@ -113,12 +109,29 @@ def tdo(event):
     save(o)
     event.reply("ok")
 
+def thr(event):
+    "list tasks (tsk)"
+    psformat = "%s %s"
+    result = []
+    for thr in sorted(threading.enumerate(), key=lambda x: x.getName()):
+        if str(thr).startswith("<_"):
+            continue
+        o = Object()
+        update(o, thr)
+        if get(o, "sleep", None):
+            up = o.sleep - int(time.time() - o.state.latest)
+        else:
+            up = int(time.time() - starttime)
+        thrname = thr.getName()
+        if not thrname:
+            continue
+        if thrname:
+            result.append((up, thrname))
+    res = []
+    for up, txt in sorted(result, key=lambda x: x[0]):
+        res.append("%s %s" % (txt, elapsed(up)))
+    if res:
+        event.reply(" | ".join(res))
+
 def ver(event):
-    versions = Object()
-    for mod in mods("bot"):
-        try:
-            versions[mod.__name__.upper()] = mod.__version__
-        except AttributeError:
-            pass
-    if versions:
-        event.reply(format(versions))
+    event.reply("BOTLIB %s" % __version__)

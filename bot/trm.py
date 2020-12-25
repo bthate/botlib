@@ -8,7 +8,7 @@ import atexit
 import sys
 import termios
 
-from bot.thr import get_exception
+from bot.utl import get_exception
 
 resume = {}
 

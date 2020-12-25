@@ -4,9 +4,13 @@
 
 "tasks (tsk)"
 
-import os, queue, sys, threading, traceback
+import os
+import queue
+import sys
+import threading
 
-from bot.obj import Default, Object, get_name
+from bot.obj import Default, Object
+from bot.ofn import get_name
 
 class Thr(threading.Thread):
 
@@ -45,28 +49,3 @@ class Thr(threading.Thread):
         "wait for task to finish"
         super().join(timeout)
         return self._result
-
-def launch(func, *args, **kwargs):
-    "start a task"
-    name = kwargs.get("name", get_name(func))
-    t = Thr(func, *args, name=name, daemon=True)
-    t.start()
-    return t
-
-def get_exception(txt="", sep=" "):
-    "print exception trace"
-    exctype, excvalue, tb = sys.exc_info()
-    trace = traceback.extract_tb(tb)
-    result = []
-    for elem in trace:
-        if "python3" in elem[0] or "<frozen" in elem[0]:
-            continue
-        res = []
-        for x in elem[0].split(os.sep)[::-1]:
-            if x in ["bot"]:
-                break
-            res.append(x)
-        result.append("%s:%s" % (os.sep.join(res[::-1]), elem[1]))
-    res = "%s %s: %s %s" % (sep.join(result), exctype, excvalue, str(txt))
-    del trace
-    return res
