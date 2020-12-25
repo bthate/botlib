@@ -156,7 +156,6 @@ class Handler(Object):
         c = Command(txt)
         c.orig = repr(self)
         self.dispatch(c)
-        print(c)
         c.wait()
 
     def direct(self, txt):

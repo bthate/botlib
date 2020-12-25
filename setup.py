@@ -22,7 +22,6 @@ setup(
     license='Public Domain',
     packages=["bot"],
     namespace_packages=["bot"],
-    scripts=["bin/bot"],
     zip_safe=False,
     classifiers=['Development Status :: 4 - Beta',
                  'License :: Public Domain',
