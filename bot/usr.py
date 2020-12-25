@@ -7,7 +7,7 @@
 # imports
 
 from bot.obj import Object, get, save
-
+from bot.dbs import find
 # exceptions
 
 class ENOUSER(Exception):
@@ -54,7 +54,7 @@ class Users(Object):
     def get_users(self, origin=""):
         "get all users, optionaly provding an matching origin"
         s = {"user": origin}
-        return find("irc.User", s)
+        return find("bot.usr.User", s)
 
     def get_user(self, origin):
         "get specific user with corresponding origin"

@@ -168,12 +168,6 @@ class Handler(Object):
         else:
             event.ready()
 
-    def files(self):
-        "show files in workdir"
-        import bot.obj
-        assert bot.obj.wd
-        return list_files(bot.obj.wd)
-
     def fromdir(self, path, name="bot"):
         "scan a modules directory"
         if not path:

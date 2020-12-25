@@ -8,8 +8,10 @@
 
 import threading
 import time
+import bot.obj
+import bot.tbl
 
-from bot.dbs import find, last, last_match
+from bot.dbs import find, last, last_match, list_files
 from bot.obj import Object, edit, format, get, keys, save, update
 from bot.hdl import Bus, __version__
 from bot.irc import Cfg
@@ -20,7 +22,7 @@ from bot.utl import fntime, mods
 # defines
 
 def __dir__():
-    return ("cmd", "cfg", "dpl", "dne", "fnd", "ftc", "log", "rem", "rss", "tdo", "thr", "ver")
+    return ("Log", "Todo", "cmd", "cfg", "dpl", "dne", "fnd", "ftc", "log", "rem", "rss", "tdo", "thr", "ver")
 
 starttime = time.time()
 
@@ -99,13 +101,14 @@ def ftc(event):
 def fnd(event):
     "find objects (fnd)"
     if not event.args:
-        fls = event.src.files()
+        fls = list_files(bot.obj.wd)
         if fls:
             event.reply(" | ".join([x.split(".")[-1].lower() for x in fls]))
         return
     nr = -1
-    bot = Bus.by_orig(event.orig)
-    for otype in get(bot.names, event.args[0], [event.args[0]]):
+    print(bot.tbl.names)
+    for otype in get(bot.tbl.names, event.args[0], [event.args[0]]):
+        print(otype)
         for fn, o in find(otype, event.prs.gets, event.prs.index, event.prs.timed):
             nr += 1
             txt = "%s %s" % (str(nr), format(o, event.xargs, skip=event.prs.skip))

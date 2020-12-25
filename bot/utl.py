@@ -17,12 +17,10 @@ import time
 import traceback
 import urllib
 
+from urllib.parse import quote_plus, urlencode
+from urllib.request import Request, urlopen
 
-try:
-    import feedparser
-    gotparser = True
-except ModuleNotFoundError:
-    gotparser = False
+# defines
 
 timestrings = [
     "%a, %d %b %Y %H:%M:%S %z",
@@ -41,6 +39,12 @@ timestrings = [
     "%d %b %Y %H:%M:%S +0000",
     "%d, %b %Y %H:%M:%S +0000"
 ]
+
+# exceptions
+
+class ENOCLASS(Exception):
+
+    "class not found"
 
 # functions
 

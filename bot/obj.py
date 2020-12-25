@@ -24,10 +24,6 @@ class ENOFILENAME(Exception):
 
     "provided argument is not a filename"
 
-class ENOCLASS(Exception):
-
-    "class is not available"
-
 # classes
 
 class O:
