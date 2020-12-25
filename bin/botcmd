@@ -6,7 +6,7 @@
 import os, sys ; sys.path.insert(0, os.getcwd())
 
 from bot.hdl import Handler
-from bot.trm import execute
+from bot.spc import h, execute
 
 import bot.obj
 
