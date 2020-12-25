@@ -4,6 +4,8 @@
 
 "tasks (tsk)"
 
+# imports
+
 import os
 import queue
 import sys
@@ -11,6 +13,8 @@ import threading
 
 from bot.obj import Default, Object
 from bot.ofn import get_name
+
+# classes
 
 class Thr(threading.Thread):
 
@@ -33,6 +37,7 @@ class Thr(threading.Thread):
             yield k
 
     def join(self, timeout=None):
+        "join thread and return result"
         super().join(timeout)
         return self._result
 
@@ -49,3 +54,12 @@ class Thr(threading.Thread):
         "wait for task to finish"
         super().join(timeout)
         return self._result
+
+# functions
+
+def launch(func, *args, **kwargs):
+    "start a task"
+    name = kwargs.get("name", get_name(func))
+    t = Thr(func, *args, name=name, daemon=True)
+    t.start()
+    return t

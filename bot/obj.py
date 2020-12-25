@@ -17,7 +17,7 @@ import types
 import uuid
 
 from bot.ofn import default, get_type
-from bot.utl import cdir, hooked
+from bot.utl import cdir, get_cls
 
 # defines
 
@@ -111,6 +111,26 @@ class Ol(Object):
         "update from other object list"
         for k, v in d.items():
             self.append(k, v)
+
+# functions
+
+def hook(fn):
+    "construct object from filename"
+    if fn.count(os.sep) > 3:
+        oname = fn.split(os.sep)[-4:]
+    else:
+        oname = fn.split(os.sep)
+    cname = oname[0]
+    fn = os.sep.join(oname)
+    cls = get_cls(cname)
+    o = cls()
+    load(o, fn)
+    return o
+
+def hooked(d):
+    "construct object from stamp"
+    from bot.obj import Object
+    return Object(d)
 
 # methods
 

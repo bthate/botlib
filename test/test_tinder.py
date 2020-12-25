@@ -12,10 +12,10 @@ import sys
 import time
 import unittest
 
-from bot.hdl import Command, Handler
+from bot.hdl import Command, Handler, cmd
 from bot.obj import Object, get
 from bot.prs import parse_cli
-from bot.utl import cmd, launch
+from bot.thr import launch
 
 # defines
 

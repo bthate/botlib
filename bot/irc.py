@@ -15,12 +15,12 @@ import threading
 import _thread
 
 from bot.dbs import find, last
-from bot.hdl import Event, Handler
+from bot.hdl import Event, Handler, cmd
 from bot.obj import Cfg, Object, get,  save, update
 from bot.ofn import format
 from bot.prs import parse
+from bot.thr import launch
 from bot.usr import Users
-from bot.utl import cmd, launch
 
 # defines
 

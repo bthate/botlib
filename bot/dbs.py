@@ -10,9 +10,9 @@ import os
 import time
 import bot.obj
 
-from bot.obj import update
+from bot.obj import update, hook
 from bot.ofn import get_type, search
-from bot.utl import fntime, hook
+from bot.utl import fntime
 
 # functions
 

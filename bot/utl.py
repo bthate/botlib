@@ -64,16 +64,6 @@ def cdir(path):
         except (IsADirectoryError, NotADirectoryError, FileExistsError):
             pass
 
-def cmd(handler, obj):
-    "callbackx to dispatch to command"
-    from bot.obj import get
-    obj.parse()
-    f = get(handler.cmds, obj.cmd, None)
-    if f:
-        f(obj)
-        obj.show(handler)
-    obj.ready()
-
 def day():
     "return this day"
     return str(datetime.datetime.today()).split()[0]
@@ -132,24 +122,6 @@ def get_exception(txt="", sep=" "):
     del trace
     return res
 
-def get_feed(url):
-    "return a feed by it's url"
-    from bot.hdl import debug
-    from bot.obj import Object
-    if debug:
-        return [Object(), Object()]
-    try:
-        result = get_url(url)
-    except (HTTPError, URLError):
-        return [Object(), Object()]
-    if gotparser:
-        result = feedparser.parse(result.data)
-        if "entries" in result:
-            for entry in result["entries"]:
-                yield entry
-    else:
-        return [Object(), Object()]
-
 def get_tinyurl(url):
     "return a corresponding timyurl"
     postarray = [
@@ -174,34 +146,6 @@ def get_url(url):
     response = urllib.request.urlopen(req)
     response.data = response.read()
     return response
-
-def hook(fn):
-    "construct object from filename"
-    from bot.obj import load
-    if fn.count(os.sep) > 3:
-        oname = fn.split(os.sep)[-4:]
-    else:
-        oname = fn.split(os.sep)
-    cname = oname[0]
-    fn = os.sep.join(oname)
-    cls = get_cls(cname)
-    o = cls()
-    load(o, fn)
-    return o
-
-def hooked(d):
-    "construct object from stamp"
-    from bot.obj import Object
-    return Object(d)
-
-def launch(func, *args, **kwargs):
-    "start a task"
-    from bot.thr import Thr
-    from bot.ofn import get_name
-    name = kwargs.get("name", get_name(func))
-    t = Thr(func, *args, name=name, daemon=True)
-    t.start()
-    return t
 
 def mods(mn, name="bot"):
     "return all modules in a package"

@@ -12,7 +12,7 @@ import time
 from bot.bus import bus
 from bot.dbs import last
 from bot.obj import Cfg, Object
-from bot.utl import launch
+from bot.thr import launch
 
 def init(hdl):
     "start a udp to irc relay server and return it"

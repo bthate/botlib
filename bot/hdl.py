@@ -12,13 +12,14 @@ import importlib.util
 import os
 import queue
 import threading
-import  time
+import time
 
 from bot.bus import bus
 from bot.dbs import list_files
 from bot.obj import Default, Object, Ol, get, update
 from bot.prs import parse
-from bot.utl import cmd, direct, launch, spl
+from bot.thr import launch
+from bot.utl import direct, spl
 
 # defines
 
@@ -221,3 +222,14 @@ class Handler(Object):
         if not self.stopped:
             while 1:
                 time.sleep(30.0)
+
+# functions
+
+def cmd(handler, obj):
+    "callbackx to dispatch to command"
+    obj.parse()
+    f = get(handler.cmds, obj.cmd, None)
+    if f:
+        f(obj)
+        obj.show(handler)
+    obj.ready()

@@ -23,7 +23,8 @@ from bot.dbs import all, find, last, lastmatch
 from bot.obj import Cfg, Default, O, Object, save, get, update
 from bot.ofn import edit
 from bot.hdl import debug
-from bot.utl import launch, get_feed, unescape, useragent
+from bot.thr import launch
+from bot.utl import unescape, useragent
 
 # defines
 
@@ -172,6 +173,24 @@ class Fetcher(Object):
         "stop the rss poller"
         save(self.seen)
 
+# functions
+
+def get_feed(url):
+    "return a feed by it's url"
+    if debug:
+        return [Object(), Object()]
+    try:
+        result = get_url(url)
+    except (HTTPError, URLError):
+        return [Object(), Object()]
+    if gotparser:
+        result = feedparser.parse(result.data)
+        if "entries" in result:
+            for entry in result["entries"]:
+                yield entry
+    else:
+        return [Object(), Object()]
+
 # runtime
 
 fetcher = Fetcher()
@@ -228,3 +247,4 @@ def rss(event):
     o.rss = event.args[0]
     save(o)
     event.reply("ok")
+

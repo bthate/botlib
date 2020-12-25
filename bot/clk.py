@@ -2,7 +2,7 @@
 #
 # this file is placed in the public domain
 
-" clock functions (clk)"
+"clock functions (clk)"
 
 # imports
 
@@ -10,7 +10,7 @@ import threading
 import time
 
 from bot.obj import Object
-from bot.utl import launch
+from bot.thr import launch
 
 # classes
 
