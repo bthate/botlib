@@ -29,30 +29,6 @@ from bot.utl import unescape, useragent
 def __dir__():
     return ("Cfg", "Rss", "Feed", "Fetcher", "init")
 
-try:
-    import feedparser
-    gotparser = True
-except ModuleNotFoundError:
-    gotparser = False
-
-timestrings = [
-    "%a, %d %b %Y %H:%M:%S %z",
-    "%d %b %Y %H:%M:%S %z",
-    "%d %b %Y %H:%M:%S",
-    "%a, %d %b %Y %H:%M:%S",
-    "%d %b %a %H:%M:%S %Y %Z",
-    "%d %b %a %H:%M:%S %Y %z",
-    "%a %d %b %H:%M:%S %Y %z",
-    "%a %b %d %H:%M:%S %Y",
-    "%d %b %Y %H:%M:%S",
-    "%a %b %d %H:%M:%S %Y",
-    "%Y-%m-%d %H:%M:%S",
-    "%Y-%m-%dt%H:%M:%S+00:00",
-    "%a, %d %b %Y %H:%M:%S +0000",
-    "%d %b %Y %H:%M:%S +0000",
-    "%d, %b %Y %H:%M:%S +0000"
-]
-
 def init(hdl):
     "start a rss poller and return it"
     f = Fetcher()
@@ -152,7 +128,7 @@ class Fetcher(Object):
             save(Fetcher.seen)
         for o in objs:
             txt = self.display(o)
-            Bus().announce(txt)
+            Bus.announce(txt)
         return counter
 
     def run(self):

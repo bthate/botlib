@@ -311,7 +311,10 @@ def search(o, s):
 
 def update(o, d):
     "update object with other object"
-    return o.__dict__.update(vars(d))
+    try:
+        return o.__dict__.update(vars(d))
+    except TypeError:
+        return o.__dict__.update(d)
 
 def values(o):
     "return values of an object"

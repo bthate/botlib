@@ -46,7 +46,7 @@ class Todo(Object):
 
 def cmd(event):
     "list commands (cmd)"
-    bot = Bus().by_orig(event.orig)
+    bot = Bus.by_orig(event.orig)
     if bot:
         c = sorted(keys(bot.cmds))
         if c:
@@ -104,7 +104,7 @@ def fnd(event):
             event.reply(" | ".join([x.split(".")[-1].lower() for x in fls]))
         return
     nr = -1
-    bot = Bus().by_orig(event.orig)
+    bot = Bus.by_orig(event.orig)
     for otype in get(bot.names, event.args[0], [event.args[0]]):
         for fn, o in find(otype, event.prs.gets, event.prs.index, event.prs.timed):
             nr += 1

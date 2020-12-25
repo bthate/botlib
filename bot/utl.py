@@ -17,11 +17,6 @@ import time
 import traceback
 import urllib
 
-from urllib.error import HTTPError, URLError
-from urllib.parse import quote_plus, urlencode
-from urllib.request import Request, urlopen
-
-# defines
 
 try:
     import feedparser

@@ -41,11 +41,13 @@ class Bus(Object):
     def __iter__(self):
         return iter(Bus.objs)
 
-    def add(self, obj):
+    @staticmethod
+    def add(obj):
         "add listener to bus"
         Bus.objs.append(obj)
 
-    def announce(self, txt, skip=None):
+    @staticmethod
+    def announce(txt, skip=None):
         "announce to all listeners"
         for h in self.objs:
             if skip is not None and isinstance(h, skip):
@@ -53,17 +55,14 @@ class Bus(Object):
             if "announce" in dir(h):
                 h.announce(txt)
 
-    def by_orig(self, orig):
+    @staticmethod
+    def by_orig(orig):
         "fetch listener by orig"
         for o in Bus.objs:
             if repr(o) == orig:
                 return o
-
-    def dispatch(self, event):
-        for o in Bus.objs:
-            o.dispatch(event)
-
-    def say(self, orig, channel, txt):
+    @staticmethod
+    def say(orig, channel, txt):
         "say something to specific listener"
         for o in Bus.objs:
             if repr(o) == orig:
@@ -110,7 +109,7 @@ class Event(Default):
         "add txt to result"
         self.result.append(txt)
 
-    def show(self, target=None):
+    def show(self):
         "display result"
         for txt in self.result:
             self.direct(txt)
@@ -140,6 +139,7 @@ class Handler(Object):
         self.bus = Bus()
         self.cbs = Object()
         self.cmds = Object()
+        self.modnames = Object()
         self.names = Ol()
         self.queue = queue.Queue()
         self.stopped = False
@@ -207,11 +207,15 @@ class Handler(Object):
                     self.register(key, o)
                 elif "event" in o.__code__.co_varnames:
                     self.cmds[key] = o
+                    self.modnames[key] = o.__module__
         for _key, o in inspect.getmembers(mod, inspect.isclass):
             if issubclass(o, Object):
                 t = "%s.%s" % (o.__module__, o.__name__)
                 self.names.append(o.__name__.lower(), t)
         return mod
+
+    def load(self, mn):
+        self.intro(direct(mn))
 
     def handler(self):
         "handler loop"
@@ -263,12 +267,18 @@ class Handler(Object):
 
 def cmd(handler, obj):
     "callbackx to dispatch to command"
+    import bot.tbl
     obj.parse()
     f = get(handler.cmds, obj.cmd, None)
+    if not f:
+        mn = get(bot.tbl.modnames, obj.cmd, None)
+        if mn:
+            handler.load(mn)
+            f = get(handler.cmds, obj.cmd, None)
     res = None
     if f:
         res = f(obj)
-        obj.show(handler)
+        obj.show()
     obj.ready()
     return res
 

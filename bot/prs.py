@@ -227,13 +227,13 @@ def parse(o, txt):
     o.rest = " ".join(args[1:])
     return o
 
-def parse_cli():
+def parse_cli(wd=None):
     "parse commandline"
     import bot.hdl
     import bot.obj
     cfg = Default()
     parse(cfg, " ".join(sys.argv[1:]))
-    cfg.sets.wd = bot.obj.wd = cfg.sets.wd or bot.obj.wd
+    cfg.sets.wd = bot.obj.wd = cfg.sets.wd or bot.obj.wd or wd
     assert bot.obj.wd
     bot.hdl.md = os.path.join(bot.obj.wd, "mod")
     return cfg

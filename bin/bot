@@ -21,6 +21,10 @@ from bot.prs import parse_cli
 from bot.thr import launch
 from bot.trm import execute
 
+# defines
+
+wd = os.path.expanduser("~/.bot")
+
 # classes
 
 class Console(Handler):
@@ -88,11 +92,8 @@ def setcompleter(commands):
 cmds = []
 
 def main():
-    import bot.obj
-    bot.obj.wd = os.path.expanduser("~/.bot")
-    cfg = parse_cli()
+    cfg = parse_cli(wd)
     c = Console()
-    c.walk("bot")
     if cfg.txt:
         return c.cmd(cfg.otxt)
     c.init(cfg.sets.mods)
