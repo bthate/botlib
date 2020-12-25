@@ -9,6 +9,7 @@
 import os
 import sys
 import time
+import bot.obj
 
 from bot.obj import Default, Object, update
 from bot.utl import day

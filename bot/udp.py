@@ -10,8 +10,8 @@ import sys
 import time
 
 from bot.dbs import last
+from bot.hdl import Bus
 from bot.obj import Cfg, Object
-from bot.spc import bus
 from bot.thr import launch
 
 def init(hdl):
@@ -44,7 +44,7 @@ class UDP(Object):
 
     def output(self, txt, addr):
         "output message on fleet"
-        bus.announce(txt.replace("\00", ""))
+        Bus.announce(txt.replace("\00", ""))
 
     def server(self):
         "loop for output"

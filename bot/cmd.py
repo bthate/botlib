@@ -11,11 +11,10 @@ import time
 
 from bot.dbs import find, last, last_match
 from bot.obj import Object, edit, format, get, keys, save, update
-from bot.hdl import __version__
+from bot.hdl import Bus, __version__
 from bot.irc import Cfg
 from bot.prs import elapsed
-from bot.rss import Rss
-from bot.spc import bus, fetcher
+from bot.rss import Fetcher, Rss
 from bot.utl import fntime, mods
 
 # defines
@@ -47,7 +46,7 @@ class Todo(Object):
 
 def cmd(event):
     "list commands (cmd)"
-    bot = bus.by_orig(event.orig)
+    bot = Bus().by_orig(event.orig)
     if bot:
         c = sorted(keys(bot.cmds))
         if c:
@@ -88,6 +87,7 @@ def ftc(event):
     "manual run a fetch batch"
     res = []
     thrs = []
+    fetcher = Fetcher()
     fetcher.start(False)
     thrs = fetcher.run()
     for thr in thrs:
@@ -104,7 +104,7 @@ def fnd(event):
             event.reply(" | ".join([x.split(".")[-1].lower() for x in fls]))
         return
     nr = -1
-    bot = bus.by_orig(event.orig)
+    bot = Bus().by_orig(event.orig)
     for otype in get(bot.names, event.args[0], [event.args[0]]):
         for fn, o in find(otype, event.prs.gets, event.prs.index, event.prs.timed):
             nr += 1

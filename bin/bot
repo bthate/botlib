@@ -18,9 +18,8 @@ import sys
 from bot.hdl import Command, Handler, cmd
 from bot.obj import format, get
 from bot.prs import parse_cli
-from bot.spc import bus
 from bot.thr import launch
-from bot.trm import execute, termsave, termreset
+from bot.trm import execute
 
 # classes
 
@@ -84,39 +83,21 @@ def setcompleter(commands):
     readline.parse_and_bind("tab: complete")
     atexit.register(lambda: readline.set_completer(None))
 
-def daemon():
-    pid = os.fork()
-    if pid != 0:
-        termreset()
-        os._exit(0)
-    os.setsid()
-    os.umask(0)
-    si = open("/dev/null", 'r')
-    so = open("/dev/null", 'a+')
-    se = open("/dev/null", 'a+')
-    os.dup2(si.fileno(), sys.stdin.fileno())
-    os.dup2(so.fileno(), sys.stdout.fileno())
-    os.dup2(se.fileno(), sys.stderr.fileno())
-
 # runtime
 
 cmds = []
 
 def main():
     import bot.obj
-    bot.obj.wd = os.path.expanduser("~/.botd")
+    bot.obj.wd = os.path.expanduser("~/.bot")
     cfg = parse_cli()
-    if "d" in cfg.opts:
-        daemon()
-        h = Handler()
-    else:
-        h = Console()
-    h.walk("bot")
+    c = Console()
+    c.walk("bot")
     if cfg.txt:
-        return h.cmd(cfg.otxt)
-    h.init(cfg.sets.mods)
-    h.start()
-    h.wait()
+        return c.cmd(cfg.otxt)
+    c.init(cfg.sets.mods)
+    c.start()
+    c.wait()
      
 execute(main)
 os._exit(0)

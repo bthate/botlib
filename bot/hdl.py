@@ -69,7 +69,6 @@ class Bus(Object):
             if repr(o) == orig:
                 o.say(channel, str(txt))
 
-
 class Event(Default):
 
     "event class"
@@ -87,7 +86,7 @@ class Event(Default):
 
     def direct(self, txt):
         "send txt to console - overload this"
-        Bus.say(self.orig, self.channel, txt)
+        Bus().say(self.orig, self.channel, txt)
 
     def parse(self):
         "parse an event"
@@ -114,9 +113,6 @@ class Event(Default):
     def show(self, target=None):
         "display result"
         for txt in self.result:
-            if target:
-                target.say(self.channel, txt)
-                continue
             self.direct(txt)
 
     def wait(self):
@@ -157,10 +153,10 @@ class Handler(Object):
 
     def cmd(self, txt):
         "execute command"
-        self.register("cmd", cmd)
         c = Command(txt)
         c.orig = repr(self)
         self.dispatch(c)
+        print(c)
         c.wait()
 
     def direct(self, txt):
@@ -270,10 +266,12 @@ def cmd(handler, obj):
     "callbackx to dispatch to command"
     obj.parse()
     f = get(handler.cmds, obj.cmd, None)
+    res = None
     if f:
-        f(obj)
+        res = f(obj)
         obj.show(handler)
     obj.ready()
+    return res
 
 # runtime
 
