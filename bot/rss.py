@@ -126,7 +126,6 @@ class Fetcher(Object):
 
     def fetch(self, rssobj):
         "update a rss feed"
-        from bot.spc import bus
         counter = 0
         objs = []
         if not rssobj.rss:
@@ -153,7 +152,7 @@ class Fetcher(Object):
             save(Fetcher.seen)
         for o in objs:
             txt = self.display(o)
-            bus.announce(txt)
+            Bus().announce(txt)
         return counter
 
     def run(self):
