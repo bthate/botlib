@@ -2,7 +2,7 @@
 #
 # this file is placed in the public domain
 
-"object base class (obj)"
+"object class and methods (obj)"
 
 # imports
 
@@ -22,13 +22,13 @@ from bot.utl import cdir, get_cls
 
 class ENOFILENAME(Exception):
 
-    "provided argument is not a filename"
+    "is not a filename"
 
 # classes
 
 class O:
 
-    "basic object"
+    "object"
 
     __slots__ = ("__dict__",)
 
@@ -63,6 +63,8 @@ class O:
 
 class Object(O):
 
+    "id/type"
+
     __slots__ = ("__id__", "__type__")
 
     def __init__(self, *args, **kwargs):
@@ -72,7 +74,7 @@ class Object(O):
 
 class Default(Object):
 
-    "uses default values"
+    "default values"
 
     def __getattr__(self, k):
         try:
@@ -82,7 +84,7 @@ class Default(Object):
 
 class Cfg(Default):
 
-    "base config class"
+    "config class"
 
 class Ol(Object):
 
@@ -99,7 +101,7 @@ class Ol(Object):
                 self[key].append(value)
 
     def update(self, d):
-        "update from other object list"
+        "to object list"
         for k, v in d.items():
             self.append(k, v)
 
@@ -119,14 +121,14 @@ def hook(fn):
     return o
 
 def hooked(d):
-    "construct object from stamp"
+    "construct from stamp"
     from bot.obj import Object
     return Object(d)
 
 # methods
 
 def default(o):
-    "return strinfified version of an object"
+    "stringified version"
     from bot.obj import Object
     if isinstance(o, Object):
         return vars(o)
@@ -139,7 +141,7 @@ def default(o):
     return repr(o)
 
 def edit(o, setter, skip=False):
-    "update an object from a dict"
+    "update o from a setter dict"
     try:
         setter = vars(setter)
     except (TypeError, ValueError):
@@ -160,7 +162,7 @@ def edit(o, setter, skip=False):
     return count
 
 def format(o, keys=None, skip=None):
-    "return 1 line output string"
+    "1 line output string"
     if keys is None:
         keys = vars(o).keys()
     if skip is None:
@@ -185,7 +187,7 @@ def format(o, keys=None, skip=None):
     return txt.strip()
 
 def get(o, k, d=None):
-    "return o[k]"
+    "o[k] if key, otherwise return d"
     try:
         res = o.get(k, d)
     except (TypeError, AttributeError):
@@ -193,7 +195,7 @@ def get(o, k, d=None):
     return res
 
 def get_name(o):
-    "return fully qualified name of an object"
+    "fully qualified name"
     t = type(o)
     if t == types.ModuleType:
         return o.__name__
@@ -210,7 +212,7 @@ def get_name(o):
     return n
 
 def get_type(o):
-    "return type of an object"
+    "type"
     t = type(o)
     if t == type:
         try:
@@ -220,21 +222,21 @@ def get_type(o):
     return str(type(o)).split()[-1][1:-2]
 
 def items(o):
-    "return items (k,v) of an object"
+    "items (k,v)"
     try:
         return o.items()
     except (TypeError, AttributeError):
         return o.__dict__.items()
 
 def keys(o):
-    "return keys of an object"
+    "keys"
     try:
         return o.keys()
     except (TypeError, AttributeError):
         return o.__dict__.keys()
 
 def load(o, path):
-    "load from disk into an object"
+    "from disk"
     assert path
     if path.count(os.sep) != 3:
         raise ENOFILENAME(path)
@@ -255,20 +257,20 @@ def load(o, path):
     return stp
 
 def mkstamp(o):
-    "create a type/uuid/time stamp"
+    "type/uuid/time stamp"
     timestamp = str(datetime.datetime.now()).split()
     return os.path.join(get_type(o), str(uuid.uuid4()), os.sep.join(timestamp))
 
 def ojson(o, *args, **kwargs):
-    "return jsonified string"
+    "jsonified string"
     return json.dumps(o, default=default, *args, **kwargs)
 
 def register(o, k, v):
-    "register key/value"
+    "key/value"
     o[k] = v
 
 def save(o, stime=None):
-    "save object to disk"
+    "to disk"
     assert wd
     if stime:
         stp = os.path.join(o.__type__, o.__id__,
@@ -284,18 +286,18 @@ def save(o, stime=None):
     return stp
 
 def scan(o, txt):
-    "scan object values for txt"
+    "values for txt"
     for _k, v in items(o):
         if txt in str(v):
             return True
     return False
 
 def set(o, k, v):
-    "set o[k]=v"
+    "o[k]=v"
     setattr(o, k, v)
 
 def search(o, s):
-    "search object for a key,value to match dict"
+    "key,value to match dict"
     ok = False
     for k, v in items(s):
         vv = get(o, k)
@@ -306,21 +308,21 @@ def search(o, s):
     return ok
 
 def update(o, d):
-    "update object with other object"
+    "other object"
     try:
         return o.__dict__.update(vars(d))
     except TypeError:
         return o.__dict__.update(d)
 
 def values(o):
-    "return values of an object"
+    "values"
     try:
         return o.values()
     except (TypeError, AttributeError):
         return o.__dict__.values()
 
 def xdir(o, skip=None):
-    "return a dir(o) with keys skipped"
+    "dir(o) with keys skipped"
     res = []
     for k in dir(o):
         if skip is not None and skip in k:
@@ -330,5 +332,6 @@ def xdir(o, skip=None):
 
 # runtime
 
+#: working directory
 wd = ""
  

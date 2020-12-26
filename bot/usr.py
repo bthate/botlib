@@ -1,24 +1,24 @@
-# BOTLIB - irc.py
+# BOTLIB - usr.py
 #
 # this file is placed in the public domain
 
-"Internet Relay Chat"
+"users (usr)"
 
 # imports
 
 from bot.obj import Object, get, save
 from bot.dbs import find
+
 # exceptions
 
 class ENOUSER(Exception):
     "no matching user found."
     
-
 # classes
 
 class User(Object):
 
-    "IRC user"
+    "user"
 
     def __init__(self):
         super().__init__()
@@ -27,12 +27,12 @@ class User(Object):
 
 class Users(Object):
 
-    "IRC users"
+    "users"
 
     userhosts = Object()
 
     def allowed(self, origin, perm):
-        "see if origin has needed permission"
+        "origin has needed permission"
         perm = perm.upper()
         origin = get(self.userhosts, origin, origin)
         user = self.get_user(origin)
@@ -42,7 +42,7 @@ class Users(Object):
         return False
 
     def delete(self, origin, perm):
-        "remove a permission of the user"
+        "permission"
         for user in self.get_users(origin):
             try:
                 user.perms.remove(perm)
@@ -52,18 +52,18 @@ class Users(Object):
                 pass
 
     def get_users(self, origin=""):
-        "get all users, optionaly provding an matching origin"
+        "all users, optionaly matching origin"
         s = {"user": origin}
         return find("bot.usr.User", s)
 
     def get_user(self, origin):
-        "get specific user with corresponding origin"
+        "specific user with matching origin"
         u = list(self.get_users(origin))
         if u:
             return u[-1][-1]
 
     def meet(self, origin, perms=None):
-        "add a irc user"
+        "user"
         user = self.get_user(origin)
         if user:
             return user
@@ -74,7 +74,7 @@ class Users(Object):
         return user
 
     def oper(self, origin):
-        "grant origin oper permission"
+        "grant oper permission"
         user = self.get_user(origin)
         if user:
             return user
@@ -85,7 +85,7 @@ class Users(Object):
         return user
 
     def perm(self, origin, permission):
-        "add permission to origin"
+        "add permission"
         user = self.get_user(origin)
         if not user:
             raise ENOUSER(origin)

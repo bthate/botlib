@@ -2,7 +2,7 @@
 #
 # this file is placed in the public domain
 
-"utilities file"
+"utilities (utl)"
 
 # imports
 
@@ -64,19 +64,20 @@ def cdir(path):
             pass
 
 def day():
-    "return this day"
+    "this day"
     return str(datetime.datetime.today()).split()[0]
 
 def direct(name, pname=''):
-    "load a module"
+    "load module"
     return importlib.import_module(name, pname)
 
 def file_time(timestamp):
+    "filename from timestramp"
     s = str(datetime.datetime.fromtimestamp(timestamp))
     return s.replace(" ", os.sep) + "." + str(random.randint(111111, 999999))
 
 def fntime(daystr):
-    "return time from filename"
+    "time from filename"
     daystr = daystr.replace("_", ":")
     datestr = " ".join(daystr.split(os.sep)[-2:])
     try:
@@ -92,7 +93,7 @@ def fntime(daystr):
     return t
 
 def get_cls(name):
-    "return class from full qualified name"
+    "class"
     try:
         modname, clsname = name.rsplit(".", 1)
     except Exception as ex:
@@ -104,7 +105,7 @@ def get_cls(name):
     return getattr(mod, clsname)
 
 def get_exception(txt="", sep=" "):
-    "print exception trace"
+    "trace"
     exctype, excvalue, tb = sys.exc_info()
     trace = traceback.extract_tb(tb)
     result = []
@@ -122,7 +123,7 @@ def get_exception(txt="", sep=" "):
     return res
 
 def get_tinyurl(url):
-    "return a corresponding timyurl"
+    "tinyurl"
     postarray = [
         ('submit', 'submit'),
         ('url', url),
@@ -138,7 +139,7 @@ def get_tinyurl(url):
     return []
 
 def get_url(url):
-    "return a http page"
+    "http page"
     url = urllib.parse.urlunparse(urllib.parse.urlparse(url))
     req = urllib.request.Request(url)
     req.add_header('User-agent', useragent())
@@ -162,7 +163,7 @@ def locked(l):
     return lockeddec
 
 def mods(mn, name="bot"):
-    "return all modules in a package"
+    "modules in a package"
     mod = []
     pkg = direct(mn)
     path = pkg.__file__ or pkg.__path__[0]
@@ -173,16 +174,16 @@ def mods(mn, name="bot"):
     return mod
 
 def spl(txt):
-    "return comma splitted values"
+    "comma splitted values"
     return iter([x for x in txt.split(",") if x])
 
 def strip_html(text):
-    "strip html codes from a page"
+    "strip html from a page"
     clean = re.compile('<.*?>')
     return re.sub(clean, '', text)
 
 def to_time(daystr):
-    "convert a timestring to unix timestamp"
+    "timestring to unix timestamp"
     daystr = daystr.strip()
     if "," in daystr:
         daystr = " ".join(daystr.split(None)[1:7])
@@ -210,7 +211,7 @@ def to_time(daystr):
     return res
 
 def toudp(host, port, txt):
-    "send text over udp to the udp to irc relay server"
+    "send text to the udp to irc relay"
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(bytes(txt.strip(), "utf-8"), (host, port))
 
@@ -221,5 +222,5 @@ def unescape(text):
     return html.parser.HTMLParser().unescape(txt)
 
 def useragent():
-    "return useragent"
+    "useragent"
     return 'Mozilla/5.0 (X11; Linux x86_64) BOTLIB +http://pypi.org/project/botlib)'

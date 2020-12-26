@@ -2,7 +2,7 @@
 #
 # this file is placed in the public domain
 
-"rich site syndicate"
+"rich site syndicate (rss)"
 
 # imports
 
@@ -30,7 +30,7 @@ def __dir__():
     return ("Cfg", "Rss", "Feed", "Fetcher", "init")
 
 def init(hdl):
-    "start a rss poller and return it"
+    "start a rss poller"
     f = Fetcher()
     return launch(f.start)
 
@@ -46,11 +46,11 @@ class Cfg(Cfg):
 
 class Feed(Default):
 
-    "a feed item"
+    "feed item"
 
 class Rss(Object):
 
-    "a rss feed url"
+    "rss feed url"
 
     def __init__(self):
         super().__init__()
@@ -101,7 +101,7 @@ class Fetcher(Object):
         return result[:-2].rstrip()
 
     def fetch(self, rssobj):
-        "update a rss feed"
+        "rss feed"
         counter = 0
         objs = []
         if not rssobj.rss:
@@ -132,14 +132,14 @@ class Fetcher(Object):
         return counter
 
     def run(self):
-        "update all feeds"
+        "all feeds"
         thrs = []
         for fn, o in all("bot.rss.Rss"):
             thrs.append(launch(self.fetch, o))
         return thrs
 
     def start(self, repeat=True):
-        "start the rss poller"
+        "rss poller"
         last(Fetcher.cfg)
         last(Fetcher.seen)
         if repeat:
@@ -147,13 +147,13 @@ class Fetcher(Object):
             repeater.start()
 
     def stop(self):
-        "stop the rss poller"
+        "rss poller"
         save(self.seen)
 
 # functions
 
 def get_feed(url):
-    "return a feed by it's url"
+    "feed"
     if debug:
         return [Object(), Object()]
     try:

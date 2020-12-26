@@ -55,7 +55,7 @@ def cmd(event):
             event.reply(",".join(c))
 
 def cfg(event):
-    "configure irc."
+    "configure irc (cfg)"
     c = Cfg()
     last(c)
     if not event.prs.sets:
@@ -76,7 +76,7 @@ def dne(event):
         break
 
 def dpl(event):
-    "set keys to display"
+    "set keys to display (dpl)"
     if len(event.args) < 2:
         return
     setter = {"display_list": event.args[1]}
@@ -86,7 +86,7 @@ def dpl(event):
         event.reply("ok")
 
 def ftc(event):
-    "manual run a fetch batch"
+    "run a fetch (ftc)"
     res = []
     thrs = []
     fetcher = Fetcher()
@@ -124,7 +124,7 @@ def log(event):
     event.reply("ok")
 
 def rem(event):
-    "remove a rss feed"
+    "remove a rss feed (rem)"
     if not event.args:
         return
     selector = {"rss": event.args[0]}
@@ -139,7 +139,7 @@ def rem(event):
     event.reply("ok")
 
 def rss(event):
-    "add a feed"
+    "add a rss feed (rss)"
     if not event.args:
         return
     url = event.args[0]
@@ -161,7 +161,7 @@ def tdo(event):
     event.reply("ok")
 
 def thr(event):
-    "list tasks (tsk)"
+    "list running threads (thr)"
     psformat = "%s %s"
     result = []
     for thr in sorted(threading.enumerate(), key=lambda x: x.getName()):
@@ -185,5 +185,5 @@ def thr(event):
         event.reply(" | ".join(res))
 
 def ver(event):
-    "show version"
+    "show version (ver)"
     event.reply("BOTLIB %s" % __version__)

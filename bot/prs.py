@@ -64,7 +64,7 @@ class Option(Default):
 
 class Getter(Object):
 
-    "token that contains =="
+    "contains =="
 
     def __init__(self, txt):
         super().__init__()
@@ -77,7 +77,7 @@ class Getter(Object):
 
 class Setter(Object):
 
-    "token that contains ="
+    "contains ="
 
     def __init__(self, txt):
         super().__init__()
@@ -90,7 +90,7 @@ class Setter(Object):
 
 class Skip(Object):
 
-    "token that endswith -"
+    "endswith -"
 
     def __init__(self, txt):
         super().__init__()
@@ -108,7 +108,7 @@ class Skip(Object):
 
 class Timed(Object):
 
-    "token that is a time"
+    "is a time"
 
     def __init__(self, txt):
         super().__init__()
@@ -134,7 +134,7 @@ class Timed(Object):
 # functions
 
 def elapsed(seconds, short=True):
-    "return elapsed time"
+    "elapsed time"
     txt = ""
     nsec = float(seconds)
     year = 365*24*60*60
@@ -178,7 +178,7 @@ def elapsed(seconds, short=True):
     return txt
 
 def parse(o, txt):
-    "parse an object"
+    "txt to object"
     args = []
     o.txt = txt
     o.otxt = txt
@@ -228,7 +228,7 @@ def parse(o, txt):
     return o
 
 def parse_cli(wd=None):
-    "parse commandline"
+    "commandline"
     import bot.hdl
     import bot.obj
     cfg = Default()
@@ -239,7 +239,7 @@ def parse_cli(wd=None):
     return cfg
 
 def parse_time(daystring):
-    "extract time from string"
+    "time"
     line = ""
     daystr = str(daystring)
     for word in daystr.split():
@@ -257,7 +257,7 @@ def parse_time(daystring):
             pass
 
 def parse_ymd(daystr):
-    "elapsed time from string"
+    "ymdms time"
     if not any([c.isdigit() for c in daystr]):
         return 0
     valstr = ""

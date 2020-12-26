@@ -31,25 +31,25 @@ def __dir__():
 
 class Bus(Object):
 
-    "bus class - registered recipient event handler"
+    "registered recipient event handler"
 
     objs = []
 
     def __call__(self, *args, **kwargs):
-        return self.objs
+        return Bus.objs
 
     def __iter__(self):
         return iter(Bus.objs)
 
     @staticmethod
     def add(obj):
-        "add listener to bus"
+        "listener"
         Bus.objs.append(obj)
 
     @staticmethod
     def announce(txt, skip=None):
-        "announce to all listeners"
-        for h in self.objs:
+        "all listeners"
+        for h in Bus.objs:
             if skip is not None and isinstance(h, skip):
                 continue
             if "announce" in dir(h):
@@ -57,13 +57,13 @@ class Bus(Object):
 
     @staticmethod
     def by_orig(orig):
-        "fetch listener by orig"
+        "listener"
         for o in Bus.objs:
             if repr(o) == orig:
                 return o
     @staticmethod
     def say(orig, channel, txt):
-        "say something to specific listener"
+        "say to specific listener"
         for o in Bus.objs:
             if repr(o) == orig:
                 o.say(channel, str(txt))
@@ -115,12 +115,14 @@ class Event(Default):
             self.direct(txt)
 
     def wait(self):
-        "wait for event to be handled"
+        "wait"
         self.done.wait()
         for thr in self.thrs:
             thr.join()
 
 class Command(Event):
+
+    "based on txt"
 
     def __init__(self, txt, **kwargs):
         super().__init__([], **kwargs)
@@ -130,7 +132,7 @@ class Command(Event):
 
 class Handler(Object):
 
-    "basic event handler"
+    "event handler"
 
     threaded = False
 
@@ -149,6 +151,7 @@ class Handler(Object):
         "copy callbacks"
         update(self.cmds, hdl.cmds)
         update(self.cbs, hdl.cbs)
+        update(self.modnames, hdl.modnames)
         update(self.names, hdl.names)
 
     def cmd(self, txt):
@@ -209,6 +212,7 @@ class Handler(Object):
         return mod
 
     def load(self, mn):
+        "load from modulename"
         self.intro(direct(mn))
 
     def handler(self):
@@ -260,7 +264,7 @@ class Handler(Object):
 # functions
 
 def cmd(handler, obj):
-    "callback to dispatch to command"
+    "dispatch to command"
     import bot.tbl
     obj.parse()
     f = get(handler.cmds, obj.cmd, None)

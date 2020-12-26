@@ -21,7 +21,7 @@ def __dir__():
 # functions
 
 def all(otype, selector=None, index=None, timed=None):
-    "return all matching objects"
+    "matching objects"
     nr = -1
     if selector is None:
         selector = {}
@@ -37,7 +37,7 @@ def all(otype, selector=None, index=None, timed=None):
         yield fn, o
 
 def deleted(otype):
-    "return all deleted objects"
+    "deleted objects"
     for fn in fns(otype):
         o = hook(fn)
         if "_deleted" not in o or not o._deleted:
@@ -45,7 +45,7 @@ def deleted(otype):
         yield fn, o
 
 def every(selector=None, index=None, timed=None):
-    "return subset from all objects"
+    "subset from all objects"
     nr = -1
     if selector is None:
         selector = {}
@@ -62,7 +62,7 @@ def every(selector=None, index=None, timed=None):
             yield fn, o
 
 def find(otype, selector=None, index=None, timed=None):
-    "find objects"
+    "objects"
     nr = -1
     if selector is None:
         selector = {}
@@ -79,7 +79,7 @@ def find(otype, selector=None, index=None, timed=None):
         yield fn, o
 
 def find_event(e):
-    "find objects based on event"
+    "objects based on event"
     nr = -1
     for fn in fns(e.otype, e.timed):
         o = hook(fn)
@@ -93,7 +93,7 @@ def find_event(e):
         yield fn, o
 
 def fns(name, timed=None):
-    "return filenames"
+    "filenames"
     if not name:
         return []
     p = os.path.join(bot.obj.wd, "store", name) + os.sep
@@ -115,7 +115,7 @@ def fns(name, timed=None):
     return sorted(res, key=fntime)
 
 def last(o):
-    "return last object"
+    "last o"
     path, l = last_fn(str(get_type(o)))
     if  l:
         update(o, l)
@@ -125,19 +125,19 @@ def last(o):
         return stp
 
 def last_match(otype, selector=None, index=None, timed=None):
-    "return last on matched type"
+    "object with matched type"
     for fn, o in find(otype, selector, index, timed):
         yield fn, o
         break
 
 def last_type(otype):
-    "return last object of type"
+    "object of a type"
     fnn = fns(otype)
     if fnn:
         return hook(fnn[-1])
 
 def last_fn(otype):
-    "return filename of last object"
+    "filename of last object of a type"
     fn = fns(otype)
     if fn:
         fnn = fn[-1]
@@ -145,7 +145,7 @@ def last_fn(otype):
     return (None, None)
 
 def list_files(wd):
-    "list files in directory"
+    "files in directory"
     path = os.path.join(wd, "store")
     if not os.path.exists(path):
         return []

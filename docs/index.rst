@@ -62,9 +62,12 @@ BOTLIB provides the following modules:
     bot.obj          - objects
     bot.prs          - parser
     bot.rss          - rich site syndicate
+    bot.tbl	     - tables
     bot.thr          - threads
     bot.trm          - terminal
     bot.udp          - udp to irc relay
+    bot.usr	     - users
+    bot.utl	     - utilities
 
 INSTALL
 =======
