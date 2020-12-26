@@ -9,6 +9,7 @@
 import datetime
 import importlib
 import os
+import pwd
 import random
 import re
 import socket
@@ -172,6 +173,16 @@ def mods(mn, name="bot"):
               and not x == "setup.py"]:
         mod.append(direct(m))
     return mod
+
+def privilege(name):
+    "lower privileges"
+    if os.getuid() != 0:
+        return
+    pwnam = pwd.getpwnam(name)
+    os.setgroups([])
+    os.setgid(pwnam.pw_gid)
+    os.setuid(pwnam.pw_uid)
+    old_umask = os.umask(0o22)
 
 def spl(txt):
     "comma splitted values"

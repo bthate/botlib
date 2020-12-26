@@ -19,6 +19,8 @@ def execute(main):
         main()
     except KeyboardInterrupt:
         print("")
+    except PermissionError as ex:
+        print(str(ex))
     except Exception as ex:
         print(get_exception())
     finally:
