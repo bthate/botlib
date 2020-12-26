@@ -14,7 +14,7 @@ import unittest
 import bot.obj
 import bot.cmd
 
-from bot.obj import Object, get
+from bot.obj import Object, get, get_name
 from bot.hdl import Event, Handler, cmd
 from bot.prs import parse_cli
 from bot.utl import get_exception, mods
@@ -39,35 +39,35 @@ class FuzzHandler(Handler):
             print(txt)
 
 values = Object()
-values["txt"] = "yoo"
-values["key"] = "txt"
-values["value"] = Object()
-values["d"] = {}
-values["hdl"] = FuzzHandler()
-values["event"] = Event({"txt": "thr", "error": "test"})
-values["path"] = bot.obj.wd
-values["channel"] = "#bot"
-values["orig"] = repr(values["hdl"])
-values["obj"] = Object()
-values["d"] = {}
-values["value"] = 1
-values["pkgnames"] = "bot"
-values["name"] = "bot"
+values["addr"] = ("localhost", 6667)
 values["callback"] = cb
+values["channel"] = "#bot"
+values["d"] = {}
 values["e"] = Event()
-values["mod"] = bot.cmd
-values["mns"] = "irc,udp,rss"
-values["sleep"] = 60.0
+values["event"] = Event({"txt": "thr", "error": "test"})
 values["func"] = cb
+values["handler"] = FuzzHandler()
+values["hdl"] = FuzzHandler()
+values["key"] = "txt"
+values['mn'] = "bot.cmd"
+values["mns"] = "irc,udp,rss"
+values["mod"] = bot.cmd
+values["name"] = "bot"
+values["nick"] = "bot"
+values["o"] = Object()
+values["orig"] = repr(values["hdl"])
+values["obj"] = Event()
 values["origin"] = "test@shell"
+values["path"] = bot.obj.wd
 values["perm"] = "USER"
 values["permission"] = "USER"
-values["text"] = "yoo"
-values["server"] = "localhost"
-values["nick"] = "bot"
+values["pkgnames"] = "bot"
 values["rssobj"] = Object()
-values["o"] = Object()
-values["handler"] = FuzzHandler()
+values["sleep"] = 60.0
+values["server"] = "localhost"
+values["text"] = "yoo"
+values["txt"] = "yoo"
+values["value"] = Object()
 
 # classes
         
@@ -91,9 +91,9 @@ def get_values(vars):
            args.append(res)
     return args
 
-def handle_type(ex):
+def handle_type(name, o, ex):
     if debug and verbose:
-        print(ex)
+        print("%s(%s) -> %s" % (name, o, ex))
 
 def fuzz(mod, *args, **kwargs):
     for name, o in inspect.getmembers(mod, inspect.isclass):
@@ -102,24 +102,24 @@ def fuzz(mod, *args, **kwargs):
         try:
             oo = o()
         except TypeError as ex:
-            handle_type(ex)
+            handle_type(name, o, ex)
             continue
         for name, meth in inspect.getmembers(oo):
             if "_" in name or name in exclude:
                 continue
-            print(meth)
             try:
                 spec = inspect.getfullargspec(meth)
-                args = get_values(spec.args[1:])
+                if "self" in spec.args:
+                    args = get_values(spec.args[1:])
+                else:
+                    args = get_values(spec.args)
             except TypeError as ex:
-                handle_type(ex)
+                handle_type(name, meth, ex)
                 continue
-            if debug and verbose:
-                print(meth)
             try:
                 res = meth(*args, **kwargs)
                 if debug:
-                    print("%s(%s) -> %s" % (name, ",".join([str(x) for x in args]), res))
+                    print("%s(%s) -> %s" % (get_name(meth), ",".join([str(x) for x in args]), res))
             except Exception as ex:
                 if debug:
                     print(get_exception())

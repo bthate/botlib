@@ -246,7 +246,7 @@ class IRC(Handler):
         self._connected.wait()
         self.logon(server, nick)
 
-    def dispatch(self, event):
+    def handle(self, event):
         "invoke callback"
         if event.command in self.cbs:
             self.cbs[event.command](event)
@@ -274,7 +274,7 @@ class IRC(Handler):
                 break
             if not e.orig:
                 e.orig = repr(self)
-            self.put(e)
+            self.handle(e)
 
     def joinall(self):
         "all channels"

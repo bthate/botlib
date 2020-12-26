@@ -113,6 +113,7 @@ class Event(Default):
         "display result"
         for txt in self.result:
             self.direct(txt)
+        self.ready()
 
     def wait(self):
         "wait"
