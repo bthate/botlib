@@ -139,14 +139,13 @@ class Handler(Object):
 
     def __init__(self):
         super().__init__()
-        self.bus = Bus()
         self.cbs = Object()
         self.cmds = Object()
         self.modnames = Object()
         self.names = Ol()
         self.queue = queue.Queue()
         self.stopped = False
-        self.bus.add(self)
+        Bus.add(self)
 
     def clone(self, hdl):
         "copy callbacks"
@@ -201,9 +200,9 @@ class Handler(Object):
         "introspect a module"
         for key, o in inspect.getmembers(mod, inspect.isfunction):
             if o.__code__.co_argcount == 1:
-                if "obj" in o.__code__.co_varnames:
+                if "obj" == o.__code__.co_varnames[0]:
                     self.register(key, o)
-                elif "event" in o.__code__.co_varnames:
+                elif "event" == o.__code__.co_varnames[0]:
                     self.cmds[key] = o
                     self.modnames[key] = o.__module__
         for _key, o in inspect.getmembers(mod, inspect.isclass):
