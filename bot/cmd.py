@@ -109,7 +109,7 @@ def fnd(event):
     for otype in get(bot.tbl.names, event.args[0], [event.args[0]]):
         for fn, o in find(otype, event.prs.gets, event.prs.index, event.prs.timed):
             nr += 1
-            txt = "%s %s" % (str(nr), format(o, event.xargs, skip=event.prs.skip))
+            txt = "%s %s" % (str(nr), format(o, event.xargs or keys(o), skip=event.prs.skip))
             if "t" in event.prs.opts:
                 txt = txt + " %s" % (elapsed(time.time() - fntime(fn)))
             event.reply(txt)

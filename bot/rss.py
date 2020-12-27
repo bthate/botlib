@@ -20,7 +20,7 @@ from urllib.request import Request, urlopen
 from bot.clk import Repeater
 from bot.dbs import all, find, last
 from bot.obj import Cfg, Default, O, Object, edit, save, get, update
-from bot.hdl import debug
+from bot.hdl import Bus, debug
 from bot.thr import launch
 from bot.utl import get_url, strip_html, unescape, useragent
 
