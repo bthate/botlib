@@ -36,12 +36,12 @@ class Thr(threading.Thread):
             yield k
 
     def join(self, timeout=None):
-        "join and return result"
+        "join thread and return result"
         super().join(timeout)
         return self._result
 
     def run(self):
-        "run"
+        "run thread"
         func, args = self._queue.get()
         target = None
         if args:
@@ -50,14 +50,14 @@ class Thr(threading.Thread):
         self._result = func(*args)
 
     def wait(self, timeout=None):
-        "wait"
+        "wait for thread to finish"
         super().join(timeout)
         return self._result
 
 # functions
 
 def launch(func, *args, **kwargs):
-    "thread"
+    "run a function in a thread"
     name = kwargs.get("name", get_name(func))
     t = Thr(func, *args, name=name, daemon=True)
     t.start()

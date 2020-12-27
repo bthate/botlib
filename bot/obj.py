@@ -28,7 +28,7 @@ class ENOFILENAME(Exception):
 
 class O:
 
-    "object"
+    "clear namespacce object (no methods)"
 
     __slots__ = ("__dict__",)
 
@@ -212,7 +212,7 @@ def get_name(o):
     return n
 
 def get_type(o):
-    "type"
+    "type of o"
     t = type(o)
     if t == type:
         try:
@@ -222,14 +222,14 @@ def get_type(o):
     return str(type(o)).split()[-1][1:-2]
 
 def items(o):
-    "items (k,v)"
+    "items of o"
     try:
         return o.items()
     except (TypeError, AttributeError):
         return o.__dict__.items()
 
 def keys(o):
-    "keys"
+    "keys of o"
     try:
         return o.keys()
     except (TypeError, AttributeError):
@@ -293,7 +293,7 @@ def scan(o, txt):
     return False
 
 def set(o, k, v):
-    "o[k]=v"
+    "o[k] = v"
     setattr(o, k, v)
 
 def search(o, s):
@@ -315,7 +315,7 @@ def update(o, d):
         return o.__dict__.update(d)
 
 def values(o):
-    "values"
+    "values of o"
     try:
         return o.values()
     except (TypeError, AttributeError):

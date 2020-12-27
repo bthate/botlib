@@ -233,5 +233,5 @@ def unescape(text):
     return html.parser.HTMLParser().unescape(txt)
 
 def useragent():
-    "useragent"
+    "useragent used when fetching http"
     return 'Mozilla/5.0 (X11; Linux x86_64) BOTLIB +http://pypi.org/project/botlib)'
