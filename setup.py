@@ -13,11 +13,11 @@ def read():
 
 setup(
     name='botlib',
-    version='116',
-    url='https://bitbucket.org/bthate/botlib',
+    version='117',
+    url='https://github.com/bthate/botlib',
     author='Bart Thate',
     author_email='bthate@dds.nl', 
-    description="pure python3 bot library you can use to program bots",
+    description="pure python3 bot library",
     long_description=read(),
     license='Public Domain',
     packages=["bot"],

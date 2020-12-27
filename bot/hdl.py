@@ -22,7 +22,7 @@ from bot.utl import direct, spl
 
 # defines
 
-__version__ = 116
+__version__ = 117
 
 def __dir__():
     return ("Bus", "Command", "Event", "Handler", "cmd")
