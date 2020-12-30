@@ -94,6 +94,7 @@ cmds = []
 def main():
     cfg = parse_cli(wd)
     c = Console()
+    c.load("bot.cmd")
     if cfg.txt:
         return c.cmd(cfg.otxt)
     c.init(cfg.sets.mods)

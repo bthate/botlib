@@ -196,4 +196,4 @@ def thr(event):
 
 def ver(event):
     "show version (ver)"
-    event.reply("BOTD %s - 24/7 channel daemon" % __version__)
+    event.reply("BOTLIB %s - pure python3 bot library" % __version__)
