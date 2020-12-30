@@ -1,4 +1,4 @@
-# BOTLIB - prs.py
+# BOTD - 24/7 channel daemon (prs.py)
 #
 # this file is placed in the public domain
 
@@ -206,7 +206,7 @@ def parse(o, txt):
             update(o.sets, s)
             continue
         opt = Option(token.txt)
-        if opt.opt:
+        if opt:
             try:
                 o.index = int(opt.opt)
                 continue
