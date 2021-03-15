@@ -311,6 +311,13 @@ def merge(o, d):
         else:
             o[k] = v
 
+def orepr(self):
+    return '<%s.%s object at %s>' % (
+        self.__class__.__module__,
+        self.__class__.__name__,
+        hex(id(self))
+    )
+
 def overlay(o, d, keys=None, skip=None):
     for k, v in items(d):
         if keys and k not in keys:
@@ -322,13 +329,6 @@ def overlay(o, d, keys=None, skip=None):
 
 def register(o, k, v):
     o[k] = v
-
-def orepr(self):
-    return '<%s.%s object at %s>' % (
-        self.__class__.__module__,
-        self.__class__.__name__,
-        hex(id(self))
-    )
 
 @locked(savelock)
 def save(o):

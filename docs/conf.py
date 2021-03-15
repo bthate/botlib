@@ -11,7 +11,7 @@ import os
 
 sys.path.append(os.path.abspath("."))
 
-from bot.hdl import __version__
+from bot.ver import __version__
 
 needs_sphinx='1.1'
 nitpick_ignore=[

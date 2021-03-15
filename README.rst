@@ -65,7 +65,7 @@ complete method less object, it is a pure object what __dict__ is concerned
 COMMANDS
 ========
 
-Programming your own commands is easy, open /mod/hlo.py and add the following
+Programming your own commands is easy, open mod/hlo.py and add the following
 code::
 
     def hlo(event):
