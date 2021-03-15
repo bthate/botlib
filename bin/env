@@ -3,8 +3,6 @@
 
 import os
 
-old =  os.getcwd()
-
 def open(txt):
     try:
         for line in os.popen(txt).readlines():
@@ -33,4 +31,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    obopen("tar zcf env.tar.gz env")
+    open("tar zcf env.tar.gz env")

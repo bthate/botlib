@@ -4,18 +4,22 @@ README
 Welcome to BOTLIB,
 
 BOTLIB is a pure python3 bot library you can use to program bots.
-BOTLIB uses a JSON in file database with a versioned readonly storage. It 
-reconstructs objects based on type information in the path and is a "dump 
-OOP and use OP" programming library where the methods are factored out into
-functions that use the object as the first argument. This to obtain a clean
-namespace object, which has no methods to clutter the namespace. A "clean",
-still has hidden methods, loadable from JSON object, that provides load/save
-methods to other classes derived from Object.
+BOTLIB uses a JSON in file database with a versioned readonly storage and
+reconstructs objects based on type information in the path.
+
+BOTLIB can be found on pypi, see http://pypi.org/project/botlib
 
 BOTLIB is placed in the Public Domain and has no COPYRIGHT and no LICENSE.
 
-OBJECT PROGRAMMING
-==================
+INSTALL
+=======
+
+installation is through pypi::
+
+ > sudo pip3 install botlib
+
+PROGRAMMING
+===========
 
 BOTLIB provides a "move all methods to functions" like this:
 
@@ -27,7 +31,7 @@ BOTLIB provides a "move all methods to functions" like this:
 
  not:
 
- >>> from bot.obj import Object
+ >>> from bot import Object
  >>> o = Object()
  >>> o.set("key", "value")
  >>> o.key
@@ -35,15 +39,42 @@ BOTLIB provides a "move all methods to functions" like this:
 
  but:
 
- >>> from bot.obj import Object, set
+ >>> from bot import Object, set
  >>> o = Object()
  >>> set(o, "key", "value")
  >>> o.key
  'value'
 
-it's a way of programming with objects, replacing OOP. Not object-oriented 
-programming, but object programming. If you are used to functional programming
-you'll like it (or not) ;]
+The bot module has the most basic object functions like get, set, update, load,
+save etc.
+
+A dict without methods in it is the reason to factor out methods from the base
+object, it is inheritable without adding methods in inherited classes. It also
+makes reading json from disk into a object easier because you don’t have any
+overloading taking place. Hidden methods are still available so it is not a 
+complete method less object, it is a pure object what __dict__ is concerned 
+(user defined data/methods):
+
+::
+
+ >>> from bot import Object
+ >>> o = Object()
+ >>> o.__dict__
+ {}
+
+COMMANDS
+========
+
+Programming your own commands is easy, open /mod/hlo.py and add the following
+code::
+
+    def hlo(event):
+        event.reply("hello %s" % event.origin)
+
+Now you can type the "hlo" command, showing hello <user> ::
+
+    $ botc hlo
+    hello root@console
 
 MODULES
 =======
@@ -54,32 +85,30 @@ BOTLIB provides the following modules:
     :toctree: 
     :template: module.rst
 
-    bot.clk          - clock/repeater
-    bot.cmd          - commands
-    bot.dbs          - databases
-    bot.hdl          - handler
-    bot.irc          - internet relay chat
-    bot.obj          - objects
-    bot.prs          - parser
-    bot.rss          - rich site syndicate
-    bot.tbl	     - tables
-    bot.thr          - threads
-    bot.trm          - terminal
-    bot.udp          - udp to irc relay
-    bot.usr	     - users
-    bot.utl	     - utilities
-
-INSTALL
-=======
-
-installation is through pypi::
-
- > sudo pip3 install botlib
+    bot 		- pure python3 bot library
+    bot.bus		- list of bots
+    bot.clk		- clock/repeater
+    bot.cmd.adm		- admin
+    bot.cmd.cfg		- configuration
+    bot.cmd.cmd		- list of commands
+    bot.cmd.fnd		- find
+    bot.csl		- console
+    bot.dbs		- databases
+    bot.evt		- events
+    bot.hdl		- handler
+    bot.irc		- internet relay chat
+    bot.itr		- introspection
+    bot.prs		- parser
+    bot.tbl		- tables
+    bot.thr		- threads
+    bot.usr		- users
+    bot.utl		- utilities
+    bot.ver		- version
 
 CONTACT
 =======
 
-"contributed back to society."
+"hf"
 
 you can contact me on IRC/freenode/#dunkbots or email me at bthate@dds.nl
 

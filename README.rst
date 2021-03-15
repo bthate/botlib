@@ -4,37 +4,22 @@ README
 Welcome to BOTLIB,
 
 BOTLIB is a pure python3 bot library you can use to program bots.
-BOTLIB uses a JSON in file database with a versioned readonly storage. It 
-reconstructs objects based on type information in the path and is a "dump 
-OOP and use OP" programming library where the methods are factored out into
-functions that use the object as the first argument. This to obtain a clean
-namespace object, which has no methods to clutter the namespace. A "clean",
-still has hidden methods, loadable from JSON object, that provides load/save
-methods to other classes derived from Object.
+BOTLIB uses a JSON in file database with a versioned readonly storage and
+reconstructs objects based on type information in the path.
+
+BOTLIB can be found on pypi, see http://pypi.org/project/botlib
 
 BOTLIB is placed in the Public Domain and has no COPYRIGHT and no LICENSE.
 
 INSTALL
 =======
 
-installation is through pypi:
-
-::
+installation is through pypi::
 
  > sudo pip3 install botlib
 
-if you have previous versions already installed and things fail try to force reinstall:
-
-::
-
- > sudo pip3 install botlib --upgrade --force-reinstall
-
-if this also doesn't work you'll need to remove all installed previous versions, so you can do a clean install.
-
-you can run directly from the tarball, see https://pypi.org/project/botlib/#files
-
-OBJECT PROGRAMMING
-==================
+PROGRAMMING
+===========
 
 BOTLIB provides a "move all methods to functions" like this:
 
@@ -46,7 +31,7 @@ BOTLIB provides a "move all methods to functions" like this:
 
  not:
 
- >>> from bot.obj import Object
+ >>> from bot import Object
  >>> o = Object()
  >>> o.set("key", "value")
  >>> o.key
@@ -54,157 +39,75 @@ BOTLIB provides a "move all methods to functions" like this:
 
  but:
 
- >>> from bot.obj import Object, set
+ >>> from bot import Object, set
  >>> o = Object()
  >>> set(o, "key", "value")
  >>> o.key
  'value'
 
-it's a way of programming with objects, replacing OOP. Not object-oriented 
-programming, but object programming. If you are used to functional programming
-you'll like it (or not) ;]
+The bot module has the most basic object functions like get, set, update, load,
+save etc.
+
+A dict without methods in it is the reason to factor out methods from the base
+object, it is inheritable without adding methods in inherited classes. It also
+makes reading json from disk into a object easier because you don’t have any
+overloading taking place. Hidden methods are still available so it is not a 
+complete method less object, it is a pure object what __dict__ is concerned 
+(user defined data/methods):
+
+::
+
+ >>> from bot import Object
+ >>> o = Object()
+ >>> o.__dict__
+ {}
+
+COMMANDS
+========
+
+Programming your own commands is easy, open /mod/hlo.py and add the following
+code::
+
+    def hlo(event):
+        event.reply("hello %s" % event.origin)
+
+Now you can type the "hlo" command, showing hello <user> ::
+
+    $ botc hlo
+    hello root@console
 
 MODULES
 =======
 
-BOTLIB provides the following modules:
+BOTLIB provides the following modules::
 
-::
-
-    bot.bus          - messaging
-    bot.clk          - clock/repeater
-    bot.cmd          - commands
-    bot.csl          - console
-    bot.dbs          - databases
-    bot.hdl          - handler
-    bot.irc          - internet relay chat
-    bot.obj          - objects
-    bot.ofn          - object functions
-    bot.prs          - parser
-    bot.rss          - rich site syndicate
-    bot.thr          - threads
-    bot.trm          - terminal
-    bot.udp          - udp to irc relay
-
-USAGE
-=====
-
-BOTLIB is a library and doesn't have it's own CLI, however a bot test
-program is provided with the tarball. you can run the bot command on the prompt, it will return with no response:
-
-:: 
-
- $ ./bin/bot
- $ 
-
-you can use bot <cmd> to run a command directly, use the cmd command to see a list of commands:
-
-::
-
- $ ./bin/bot cmd
- cfg,cmd,dne,dpl,fnd,ftc,log,mbx,rem,rss,tdo,tsk,udp,upt,ver
-
-BOTLIB also has it's own shell, use bot -s to start a bot shell:
-
-::
-
-  $ ./bin/bot -s
-  > cmd
-  cfg,cmd,dne,dpl,fnd,ftc,log,mbx,rem,rss,tdo,tsk,udp,upt,ver
-
-IRC
-===
-
-configuration is done with the cfg command:
-
-::
-
- $ ./bin/bot cfg
- channel=#botlib nick=botlib port=6667 server=localhost
-
-you can use setters to edit fields in a configuration:
-
-::
-
- $ ./bin/bot cfg server=irc.freenode.net channel=\#botlib nick=botlib
- channel=#botlib nick=botlib port=6667 server=irc.freenode.net
-
-to have the irc bot started use the mods=irc option at start:
-
-::
-
- $ ./bin/bot mods=irc
-
-RSS
-===
-
-BOTLIB provides with the use of feedparser the possibility to server rss
-feeds in your channel. BOTLIB itself doesn't depend, you need to install
-python3-feedparser first:
-
-::
-
- $ sudo apt install python3-feedparser
- $
-
-adding rss to mods= will load the rss module and start it's poller.
-
-::
-
- $ ./bin/bot mods=irc,rss
-
-to add an url use the rss command with an url:
-
-::
-
- $ ./bin/bot rss https://github.com/bthate/botlib/commits/master.atom
- ok 1
-
-run the rss command to see what urls are registered:
-
-::
-
- $ ./bin/bot fnd rss
- 0 https://github.com/bthate/botlib/commits/master.atom
-
-the ftc (fetch) command can be used to poll the added feeds:
-
-::
-
- $ ./bin/bot ftc
- fetched 20
-
-UDP
-===
-
-BOTLIB also has the possibility to serve as a UDP to IRC relay where you
-can send UDP packages to the bot and have txt displayed on the channel.
-
-use the 'bot udp' command to send text via the bot to the channel on the irc server:
-
-::
-
- $ tail -f /var/log/syslog | ./bin/bot udp
-
-output to the IRC channel can be done with the use python3 code to send a UDP packet 
-to botlib, it's unencrypted txt send to the bot and display on the joined channels.
-
-to send a udp packet to botlib in python3:
-
-::
-
- import socket
-
- def toudp(host=localhost, port=5500, txt=""):
-     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-     sock.sendto(bytes(txt.strip(), "utf-8"), host, port)
+    bot 		- pure python3 bot library
+    bot.bus		- list of bots
+    bot.clk		- clock/repeater
+    bot.cmd.adm		- admin
+    bot.cmd.cfg		- configuration
+    bot.cmd.cmd		- list of commands
+    bot.cmd.fnd		- find
+    bot.csl		- console
+    bot.dbs		- databases
+    bot.evt		- events
+    bot.hdl		- handler
+    bot.irc		- internet relay chat
+    bot.itr		- introspection
+    bot.prs		- parser
+    bot.tbl		- tables
+    bot.thr		- threads
+    bot.usr		- users
+    bot.utl		- utilities
+    bot.ver		- version
 
 CONTACT
 =======
 
-"contributed back to society."
+"hf"
 
 you can contact me on IRC/freenode/#dunkbots or email me at bthate@dds.nl
 
 | Bart Thate (bthate@dds.nl, thatebart@gmail.com)
 | botfather on #dunkbots irc.freenode.net
+
