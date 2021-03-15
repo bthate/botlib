@@ -5,7 +5,7 @@ from bot import cfg, e, j, op, os
 from bot.csl import Console, exec, parse
 
 def main():
-    cfg.wd = e("~/.ob")
+    cfg.wd = e("~/.bot")
     parse()
     s = Console()
     s.scandir(j(os.getcwd(), "mod"))

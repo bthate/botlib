@@ -39,16 +39,6 @@ class Shell(Core):
             self.put(e)
             e.wait()
 
-    def poll(self):
-        "override this"
-        e = Event()
-        e.cmd = "stop"
-        return e
-
-    def start(self):
-        super().start()
-        launch(self.input)
-
 class Console(Shell):
 
     def poll(self):

@@ -22,6 +22,6 @@ def fnd(event):
         for fn, o in find(otype, event.gets, event.index, event.timed):
             nr += 1
             txt = "%s %s" % (str(nr), format(o, keys(o), skip=event.skip))
-            if op("t"):
+            if "t" in event.opts:
                 txt = txt + " %s" % (elapsed(time.time() - fntime(fn)))
             event.reply(txt)
