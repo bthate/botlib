@@ -1,7 +1,7 @@
 # This file is in the Public Domain.
 
-from ob import Object, save
-from ob.dbs import find
+from bot import Object, save
+from bot.dbs import find
 
 class Todo(Object):
 
@@ -13,7 +13,7 @@ def dne(event):
     if not event.args:
         return
     selector = {"txt": event.args[0]}
-    for fn, o in find("obm.tdo.Todo", selector):
+    for fn, o in find("bot.tdo.Todo", selector):
         o._deleted = True
         save(o)
         event.reply("ok")

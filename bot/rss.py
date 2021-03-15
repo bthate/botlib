@@ -5,12 +5,12 @@ import html.parser
 import re
 import urllib
 
-from ob import Cfg, Default, Object, edit, get, save, update
-from ob.bus import Bus
-from ob.clk import Repeater
-from ob.dbs import all, find, last, last_match
-from ob.thr import launch
-from ob.utl import get_tinyurl, get_url, strip_html
+from . import Cfg, Default, Object, edit, get, save, update
+from .bus import Bus
+from .clk import Repeater
+from .dbs import all, find, last, last_match
+from .thr import launch
+from .utl import get_tinyurl, get_url, strip_html
 
 from urllib.error import HTTPError, URLError
 

@@ -1,6 +1,6 @@
 # This file is in the Public Domain.
 
-from ob import Object, save
+from bot import Object, save
 
 class Log(Object):
 

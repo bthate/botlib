@@ -1,7 +1,6 @@
 # This file is in the Public Domain.
 
 import atexit
-import ob
 import os
 import readline
 import sys

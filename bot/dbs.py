@@ -1,10 +1,7 @@
 # This file is placed in the Public Domain.
 
-import ob
-import os
-
 from . import cfg, hook, get_type, j, overlay, update
-from .utl import fntime
+from .utl import fntime, os
 
 def all(otype, selector=None, index=None, timed=None):
     nr = -1

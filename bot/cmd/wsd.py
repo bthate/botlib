@@ -2,7 +2,9 @@
 #
 # OTP-CR-117/19/001 otp.informationdesk@icc-cpi.int https://genocide.rtfd.io
 
-"""wijsheid, wijs !
+"wisdom (trip)"
+
+txt = """wijsheid, wijs !
 
 OVERDRACHT
 ==========
@@ -187,4 +189,4 @@ No Voice, No Description:
 import random
 
 def wsd(event):
-    event.reply(random.choice(__doc__.split("\n")).strip())
+    event.reply(random.choice(txt.split("\n"))[2:].strip())

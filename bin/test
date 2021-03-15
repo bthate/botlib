@@ -11,6 +11,9 @@ from bot.bus import Bus
 from bot.csl import Test, exec, parse
 
 import bot.utl
+import bot.rss
+
+import test.run
 
 def open(txt):
     try:
@@ -21,15 +24,16 @@ def open(txt):
 
 def main():
     cfg.wd = c(".test")
-    cfg.pkgs = "ob,obm,mod"
+    cfg.pkgs = "bot,bot.cmd"
     parse()
+    print(cfg)
     open("rm -fR %s" % cfg.wd)
     bot.utl.debug = True
     bot.rss.debug = True
     pat = "test_%s*" % cfg.cmd or "*"
-    print(cfg, pat)
     suite = unittest.loader.TestLoader().discover("test", pattern=pat)
     unittest.TextTestRunner(verbosity=3).run(suite)
-    Bus.wait(Test)
+    if not cfg.cmd:
+        Bus.wait(Test)
 
 exec(main)

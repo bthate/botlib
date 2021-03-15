@@ -1,19 +1,18 @@
 # This file is placed in the Public Domain.
 
 import inspect
-import ob
-import ob.hdl
 import os
 import sys
 import unittest
 
 sys.path.insert(0, os.getcwd())
 
-from ob import Object, cfg, get, get_name, mods, op
-from ob.csl import Test
-from ob.evt import Event
-from ob.hdl import Handler, cb_cmd
-from ob.utl import get_exception
+from bot import Object, cfg, get, get_name, mods, op
+from bot.csl import Test
+from bot.evt import Event
+from bot.hdl import Handler, cb_cmd
+from bot.usr import ENOUSER
+from bot.utl import get_exception
 
 from test.run import h, debug
 
@@ -34,7 +33,7 @@ values['hdrs'] = {}
 values['fp'] = "bla"
 values["addr"] = ("127.0.0.1", 6667)
 values["reason"] = "whyyyyy????"
-values["channel"] = "#ob"
+values["channel"] = "#bot"
 values["mn"] = "prs"
 values["cmd"] = "PRIVMSG"
 values["txt"] = "yoo2"
@@ -46,13 +45,13 @@ values["event"] = Event(**{"txt": "thr", "orig": repr(h), "error": "test"})
 values["pevent"] = Event(**{"txt": "thr", "orig": repr(h), "error": "test"})
 values["dccevent"] = Event(**{"txt": "thr", "orig": repr(h), "error": "test"})
 values["path"] = cfg.wd
-values["channel"] = "#ob"
+values["channel"] = "#bot"
 values["orig"] = repr(values["hdl"])
 values["obj"] = h
 values["rssobj"] = Object({"rss": "https://www.reddit.com/r/python/.rss"})
 values["value"] = 1
-values["pkgnames"] = "ob"
-values["name"] = "ob"
+values["pkgnames"] = "bot,bot.cmd"
+values["name"] = "bot"
 values["callback"] = cb
 values["e"] = Event({"txt": "thr", "orig": repr(h), "error": "test"})
 values["mod"] = cb_cmd
@@ -73,7 +72,7 @@ class Test_Fuzzer(unittest.TestCase):
 
     def test_fuzz(self):
         global exc
-        m = mods("ob")
+        m = mods("bot,bot.cmd")
         for x in range(cfg.index or 1):
             for mod in m:
                 fuzz(mod)
@@ -111,7 +110,7 @@ def fuzz(mod, *args, **kwargs):
                 res = meth(*args, **kwargs)
             except RuntimeError:
                 pass
-            except ob.irc.ENOUSER:
+            except ENOUSER:
                 continue
             except Exception as ex:
                 exc.append((get_name(meth), get_exception()))

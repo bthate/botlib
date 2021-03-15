@@ -1,6 +1,5 @@
 # This file is placed in the Public Domain.
 
-import ob
 import os
 import queue
 import socket
@@ -32,12 +31,12 @@ class ENOUSER(Exception):
 
 class Cfg(Cfg):
 
-    channel = "#ob"
-    nick = "ob"
+    channel = "#dunkbots"
+    nick = "botje"
     port = 6667
     server = "localhost"
     realname = "24/7 channel daemon"
-    username = "ob"
+    username = "botje"
 
     def __init__(self):
         super().__init__()

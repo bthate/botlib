@@ -1,6 +1,5 @@
 # This file is placed in the Public Domain.
 
-import ob
 import os
 import queue
 import sys
@@ -34,7 +33,7 @@ class Handler(Object):
         self.started = False
         self.stopped = False
         if not args:
-            from ob.tbl import tbl
+            from bot.tbl import tbl
         else:
             tbl = args[0]
         Handler.names.update(tbl["names"])

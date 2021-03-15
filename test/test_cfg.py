@@ -1,10 +1,9 @@
 # This file is placed in the Public Domain.
 
-import ob
 import unittest
 
-from ob import cfg, edit
-from ob.prs import parse
+from bot import cfg, edit
+from bot.prs import parse
 
 class Test_Cfg(unittest.TestCase):
 

@@ -4,7 +4,7 @@
 
 # imports
 
-import ob
+import bot
 import unittest
 
 # classes
@@ -12,8 +12,8 @@ import unittest
 class Test_JSON(unittest.TestCase):
 
     def test_json(self):
-        o = ob.O()
+        o = bot.O()
         o.test = "bla"
-        v = ob.json(o)
+        v = bot.json(o)
         self.assertEqual(str(o), v)
     

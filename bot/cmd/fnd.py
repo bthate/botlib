@@ -2,11 +2,11 @@
 
 import time
 
-from ob import cfg, format, keys, op
-from ob.bus import by_orig
-from ob.dbs import find, list_files
-from ob.prs import elapsed
-from ob.utl import fntime
+from bot import cfg, format, keys, op
+from bot.bus import by_orig
+from bot.dbs import find, list_files
+from bot.prs import elapsed
+from bot.utl import fntime
 
 def fnd(event):
     if not event.args:

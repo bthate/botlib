@@ -1,13 +1,12 @@
 # This file is in the Public Domain.
 
-import ob
 import threading
 import time
 
-from ob import Object, cfg, edit, format, get_name, save, starttime, update
-from ob.bus import Bus
-from ob.prs import elapsed
-from ob.itr import find_modules
+from bot import Object, cfg, edit, format, get_name, save, starttime, update
+from bot.bus import Bus
+from bot.prs import elapsed
+from bot.itr import find_modules
 
 def flt(event):
     try:

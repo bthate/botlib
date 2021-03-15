@@ -3,10 +3,10 @@
 import socket
 import time
 
-from ob import Cfg, Object
-from ob.bus import Bus
-from ob.dbs import last
-from ob.thr import launch
+from . import Cfg, Object
+from .bus import Bus
+from .dbs import last
+from .thr import launch
 
 def init(hdl):
     u = UDP()

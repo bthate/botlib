@@ -9,7 +9,7 @@ def cprint(txt):
 
 def main():
     last(cfg)
-    cprint("OB started at %s" % time.ctime(time.time()))
+    cprint("BOT started at %s" % time.ctime(time.time()))
     cprint(format(cfg))
     s = Shell()
     s.scandir(j(cfg.wd, "mod"))

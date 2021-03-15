@@ -2,9 +2,9 @@
 
 import unittest
 
-from ob import cfg
-from ob.evt import Command
-from ob.thr import  launch
+from bot import cfg
+from bot.evt import Command
+from bot.thr import  launch
 
 from test.prm import param
 from test.run import h

@@ -1,13 +1,12 @@
 # This file is in the Public Domain.
 
 import mailbox
-import ob
 import os
 import sys
 
-from ob import Object, save, update
-from ob.dbs import find
-from ob.evt import Event
+from bot import Object, save, update
+from bot.dbs import find
+from bot.evt import Event
 
 bdmonths = ['Bo', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
             'Sep', 'Oct', 'Nov', 'Dec']

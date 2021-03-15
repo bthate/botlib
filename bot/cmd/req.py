@@ -2,7 +2,9 @@
 #
 # OTP-CR-117/19/001 otp.informationdesk@icc-cpi.int https://genocide.rtfd.io
 
-"""| Information and Evidence Unit
+"request to the prosecutor"
+
+txt = """| Information and Evidence Unit
 | Office of the Prosecutor
 | Post Office Box 19519
 | 2500 CM The Hague
@@ -47,4 +49,4 @@ I hope you can stop the above mentioned crimes the king of the netherlands and h
 """
 
 def req(event):
-    event.reply(__doc__)
+    event.reply(txt)

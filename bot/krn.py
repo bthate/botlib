@@ -4,6 +4,6 @@ import os
 import sys
 import time
 
-from ob import cfg, j, format
-from ob.csl import Console, Shell, exec, parse
-from ob.dbs import last
+from . import cfg, j, format
+from .csl import Console, Shell, exec, parse
+from .dbs import last

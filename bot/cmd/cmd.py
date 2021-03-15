@@ -1,6 +1,6 @@
 # This file is in the Public Domain.
 
-from ob.bus import by_orig
+from bot.bus import by_orig
 
 def cmd(event):
     b = by_orig(event.orig)

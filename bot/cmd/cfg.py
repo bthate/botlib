@@ -1,8 +1,8 @@
 # This file is in the Public Domain.
 
-from ob import edit, format, save
-from ob.dbs import last
-from ob.irc import Cfg
+from bot import edit, format, save
+from bot.dbs import last
+from bot.irc import Cfg
 
 def cfg(event):
     c = Cfg()

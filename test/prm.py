@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
-from ob import Object
-from ob.evt import Command
+from bot import Object
+from bot.evt import Command
 
 param = Object()
 param.add = ["test@shell", "bart"]

@@ -1,11 +1,10 @@
 # This file is placed in the Public Domain.
 
-import ob
 import os
 import unittest
 
-from ob import O, Object, get_type, load, merge, save
-from ob.dbs import last
+from bot import O, Object, get_type, load, merge, save
+from bot.dbs import last
 
 class Test_Object(unittest.TestCase):
 
@@ -27,7 +26,7 @@ class Test_Object(unittest.TestCase):
 
     def test_json(self):
         o = Object()
-        self.assertTrue("<ob.Object object at" in repr(o))
+        self.assertTrue("<bot.Object object at" in repr(o))
 
     def test_intern4(self):
         o = Object()
@@ -115,8 +114,8 @@ class Test_Object(unittest.TestCase):
         o.o = Object()
         o.o.o = Object()
         o.o.o.test = "bla"
-        p = ob.save(o)
+        p = save(o)
         oo = Object()
-        ob.load(oo, p)
+        load(oo, p)
         self.assertEqual(o.o.o.test, "bla")
       

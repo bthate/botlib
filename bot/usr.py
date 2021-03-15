@@ -34,7 +34,7 @@ class Users(Object):
 
     def get_users(self, origin=""):
         s = {"user": origin}
-        return find("ob.usr.User", s)
+        return find("bot.usr.User", s)
 
     def get_user(self, origin):
         u = list(self.get_users(origin))
