@@ -1,21 +1,16 @@
-#!/usr/bin/python3
-
-"botlib unittests"
-
-# imports
+#!/usr/bin/env python3
+# This file is placed in the Public Domain.
 
 import os, sys ; sys.path.insert(0, os.getcwd())
 
 import time
 import unittest
 
-import bot.obj
-import bot.hdl
+from bot import c, cfg, op
+from bot.bus import Bus
+from bot.csl import Test, exec, parse
 
-from bot.trm import execute
-from bot.prs import parse_cli
-
-# functions
+import bot.utl
 
 def open(txt):
     try:
@@ -25,19 +20,16 @@ def open(txt):
         pass
 
 def main():
-    open("rm -fR ~/.test")
-    bot.obj.wd = os.path.expanduser("~/.test")
-    bot.hdl.debug = True
-    cfg = parse_cli()
-    test_path = os.getcwd() + os.sep + "test"
-    if cfg.txt:
-        pat = "test_%s*" % cfg.txt
-    else:
-        pat = "test*"
-    suite = unittest.loader.TestLoader().discover(test_path, pattern=pat)
+    cfg.wd = c(".test")
+    cfg.pkgs = "ob,obm,mod"
+    parse()
+    open("rm -fR %s" % cfg.wd)
+    bot.utl.debug = True
+    bot.rss.debug = True
+    pat = "test_%s*" % cfg.cmd or "*"
+    print(cfg, pat)
+    suite = unittest.loader.TestLoader().discover("test", pattern=pat)
     unittest.TextTestRunner(verbosity=3).run(suite)
+    Bus.wait(Test)
 
-# runtime
-   
-execute(main)
-os._exit(0)
+exec(main)
