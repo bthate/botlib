@@ -1,27 +1,12 @@
-# BOTD - 24/7 channel daemon (dbs.py)
-#
-# this file is placed in the public domain
+# This file is placed in the Public Domain.
 
-"database (dbs)"
-
-# imports
-
+import ob
 import os
-import time
-import bot.obj
 
-from bot.obj import get_type, hook, update, search
-from bot.utl import fntime
-
-# defines
-
-def __dir__():
-    return ("all", "deleted", "every", "find", "find_event", "last", "last_match", "last_type", "last_fn")
-
-# functions
+from . import cfg, hook, get_type, j, overlay, update
+from .utl import fntime
 
 def all(otype, selector=None, index=None, timed=None):
-    "matching objects"
     nr = -1
     if selector is None:
         selector = {}
@@ -37,7 +22,6 @@ def all(otype, selector=None, index=None, timed=None):
         yield fn, o
 
 def deleted(otype):
-    "deleted objects"
     for fn in fns(otype):
         o = hook(fn)
         if "_deleted" not in o or not o._deleted:
@@ -45,11 +29,10 @@ def deleted(otype):
         yield fn, o
 
 def every(selector=None, index=None, timed=None):
-    "subset from all objects"
     nr = -1
     if selector is None:
         selector = {}
-    for otype in os.listdir(os.path.join(bot.obj.wd, "store")):
+    for otype in os.listdir(j(cfg.wd, "store")):
         for fn in fns(otype, timed):
             o = hook(fn)
             if selector and not search(o, selector):
@@ -62,7 +45,6 @@ def every(selector=None, index=None, timed=None):
             yield fn, o
 
 def find(otype, selector=None, index=None, timed=None):
-    "objects"
     nr = -1
     if selector is None:
         selector = {}
@@ -75,11 +57,9 @@ def find(otype, selector=None, index=None, timed=None):
         nr += 1
         if index is not None and nr != index:
             continue
-        o.__type__ = otype
         yield fn, o
 
 def find_event(e):
-    "objects based on event"
     nr = -1
     for fn in fns(e.otype, e.timed):
         o = hook(fn)
@@ -92,30 +72,7 @@ def find_event(e):
             continue
         yield fn, o
 
-def fns(name, timed=None):
-    "filenames"
-    if not name:
-        return []
-    p = os.path.join(bot.obj.wd, "store", name) + os.sep
-    res = []
-    d = ""
-    for rootdir, dirs, _files in os.walk(p, topdown=False):
-        if dirs:
-            d = sorted(dirs)[-1]
-            if d.count("-") == 2:
-                dd = os.path.join(rootdir, d)
-                fls = sorted(os.listdir(dd))
-                if fls:
-                    p = os.path.join(dd, fls[-1])
-                    if timed and "from" in timed and timed["from"] and fntime(p) < timed["from"]:
-                        continue
-                    if timed and timed.to and fntime(p) > timed.to:
-                        continue
-                    res.append(p)
-    return sorted(res, key=fntime)
-
 def last(o):
-    "last o"
     path, l = last_fn(str(get_type(o)))
     if  l:
         update(o, l)
@@ -125,28 +82,66 @@ def last(o):
         return stp
 
 def last_match(otype, selector=None, index=None, timed=None):
-    "object with matched type"
     for fn, o in find(otype, selector, index, timed):
         yield fn, o
         break
 
 def last_type(otype):
-    "object of a type"
     fnn = fns(otype)
     if fnn:
         return hook(fnn[-1])
 
 def last_fn(otype):
-    "filename of last object of a type"
     fn = fns(otype)
     if fn:
         fnn = fn[-1]
         return (fnn, hook(fnn))
     return (None, None)
 
+def updatelast(o):
+    c = type(o)()
+    last(c)
+    overlay(c, o, skip=["mods"])
+    update(o, c)
+    update(o, cfg.sets)
+
+def fns(name, timed=None):
+    if not name:
+        return []
+    p = j(cfg.wd, "store", name) + os.sep
+    res = []
+    d = ""
+    for rootdir, dirs, _files in os.walk(p, topdown=False):
+        if dirs:
+            d = sorted(dirs)[-1]
+            if d.count("-") == 2:
+                dd = j(rootdir, d)
+                fls = sorted(os.listdir(dd))
+                if fls:
+                    p = j(dd, fls[-1])
+                    if timed and "from" in timed and timed["from"] and fntime(p) < timed["from"]:
+                        continue
+                    if timed and timed.to and fntime(p) > timed.to:
+                        continue
+                    res.append(p)
+    return sorted(res, key=fntime)
+
 def list_files(wd):
-    "files in directory"
-    path = os.path.join(wd, "store")
+    path = j(wd, "store")
     if not os.path.exists(path):
         return []
     return sorted(os.listdir(path))
+
+def search(o, s):
+    ok = False
+    try:
+        ss = vars(s)
+    except TypeError:
+        ss = s
+    for k, v in ss.items():
+        vv = getattr(o, k)
+        if v not in str(vv):
+            ok = False
+            break
+        ok = True
+    return ok

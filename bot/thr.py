@@ -1,32 +1,22 @@
-# BOTD - 24/7 channel daemon (thr.py)
-#
-# this file is placed in the public domain
+# This file is placed in the Public Domain.
 
-"threads (thr)"
-
-# imports
-
-import os
+import ob
 import queue
-import sys
 import threading
+import time
 
-from bot.obj import Default, Object, get_name
-
-# classes
+starttime = time.time()
 
 class Thr(threading.Thread):
 
-    "thread"
-
-    def __init__(self, func, *args, name="noname", daemon=True):
-        super().__init__(None, self.run, name, (), {}, daemon=daemon)
-        self._name = name
+    def __init__(self, func, *args, thrname="", daemon=True):
+        super().__init__(None, self.run, thrname, (), {}, daemon=daemon)
+        self._name = thrname or ob.get_name(func)
         self._result = None
         self._queue = queue.Queue()
-        self._queue.put((func, args))
+        self._queue.put_nowait((func, args))
         self.sleep = 0
-        self.state = Object()
+        self.state = ob.Object()
 
     def __iter__(self):
         return self
@@ -36,29 +26,28 @@ class Thr(threading.Thread):
             yield k
 
     def join(self, timeout=None):
-        "join thread and return result"
+        ""
         super().join(timeout)
         return self._result
 
     def run(self):
-        "run thread"
-        func, args = self._queue.get()
-        target = None
+        ""
+        func, args = self._queue.get_nowait()
         if args:
-            target = Default(vars(args[0]))
-        self.setName((target and target.txt and target.txt.split()[0]) or self._name)
+            try:
+                target = ob.Default(vars(args[0]))
+                self._name = (target and target.txt and target.txt.split()[0]) or self._name
+            except TypeError:
+                pass
+        self.setName(self._name)
         self._result = func(*args)
 
     def wait(self, timeout=None):
-        "wait for thread to finish"
         super().join(timeout)
         return self._result
 
-# functions
-
 def launch(func, *args, **kwargs):
-    "run a function in a thread"
-    name = kwargs.get("name", get_name(func))
-    t = Thr(func, *args, name=name, daemon=True)
+    name = kwargs.get("name", ob.get_name(func))
+    t = Thr(func, *args, thrname=name, daemon=True)
     t.start()
     return t

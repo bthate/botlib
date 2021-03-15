@@ -1,27 +1,25 @@
-# BOTD - 24/7 channel daemon (utl.py)
-#
-# this file is placed in the public domain
-
-"utilities (utl)"
-
-# imports
+# This file is placed in the Public Domain.
 
 import datetime
-import importlib
+import getpass
+import inspect
+import json
 import os
 import pwd
 import random
 import re
-import socket
 import sys
 import time
 import traceback
-import urllib
+import types
+import importlib
+import importlib.util
 
+import urllib
 from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
-# defines
+debug = False
 
 timestrings = [
     "%a, %d %b %Y %H:%M:%S %z",
@@ -41,44 +39,24 @@ timestrings = [
     "%d, %b %Y %H:%M:%S +0000"
 ]
 
-# exceptions
-
 class ENOCLASS(Exception):
 
-    "class not found"
-
-# functions
-
-def cdir(path):
-    "create directory"
-    if os.path.exists(path):
-        return
-    res = ""
-    path2, _fn = os.path.split(path)
-    for p in path2.split(os.sep):
-        res += "%s%s" % (p, os.sep)
-        padje = os.path.abspath(os.path.normpath(res))
-        try:
-            os.mkdir(padje)
-            os.chmod(padje, 0o700)
-        except (IsADirectoryError, NotADirectoryError, FileExistsError):
-            pass
+    pass
 
 def day():
-    "this day"
     return str(datetime.datetime.today()).split()[0]
 
 def direct(name, pname=''):
-    "load module"
     return importlib.import_module(name, pname)
 
+def e(p):
+    return os.path.expanduser(p)
+
 def file_time(timestamp):
-    "filename from timestramp"
     s = str(datetime.datetime.fromtimestamp(timestamp))
     return s.replace(" ", os.sep) + "." + str(random.randint(111111, 999999))
 
 def fntime(daystr):
-    "time from filename"
     daystr = daystr.replace("_", ":")
     datestr = " ".join(daystr.split(os.sep)[-2:])
     try:
@@ -93,20 +71,19 @@ def fntime(daystr):
         t = 0
     return t
 
-def get_cls(name):
-    "class"
+def get_args(f):
+    spec = inspect.signature(f)
+    return spec.parameters
+
+def get_cls(fullname):
     try:
-        modname, clsname = name.rsplit(".", 1)
+        modname, clsname = fullname.rsplit(".", 1)
     except Exception as ex:
-        raise ENOCLASS(name) from ex
-    if modname in sys.modules:
-        mod = sys.modules[modname]
-    else:
-        mod = importlib.import_module(modname)
+        raise ENOCLASS(fullname)
+    mod = importlib.import_module(modname)
     return getattr(mod, clsname)
 
 def get_exception(txt="", sep=" "):
-    "trace"
     exctype, excvalue, tb = sys.exc_info()
     trace = traceback.extract_tb(tb)
     result = []
@@ -115,23 +92,24 @@ def get_exception(txt="", sep=" "):
             continue
         res = []
         for x in elem[0].split(os.sep)[::-1]:
-            if x in ["bot"]:
-                break
             res.append(x)
+            if x in ["ok"]:
+                break
         result.append("%s:%s" % (os.sep.join(res[::-1]), elem[1]))
     res = "%s %s: %s %s" % (sep.join(result), exctype, excvalue, str(txt))
     del trace
     return res
 
 def get_tinyurl(url):
-    "tinyurl"
+    if debug:
+        return []
     postarray = [
         ('submit', 'submit'),
         ('url', url),
         ]
     postdata = urlencode(postarray, quote_via=quote_plus)
     req = Request('http://tinyurl.com/create.php', data=bytes(postdata, "UTF-8"))
-    req.add_header('User-agent', useragent())
+    req.add_header('User-agent', useragent(url))
     for txt in urlopen(req).readlines():
         line = txt.decode("UTF-8").strip()
         i = re.search('data-clipboard-text="(.*?)"', line, re.M)
@@ -140,16 +118,53 @@ def get_tinyurl(url):
     return []
 
 def get_url(url):
-    "http page"
+    if debug:
+        return
     url = urllib.parse.urlunparse(urllib.parse.urlparse(url))
     req = urllib.request.Request(url)
-    req.add_header('User-agent', useragent())
+    req.add_header('User-agent', useragent(url))
     response = urllib.request.urlopen(req)
     response.data = response.read()
     return response
 
+def has_mod(fqn):
+    try:
+        spec = importlib.util.find_spec(fqn)
+        if spec:
+            return True
+    except (ValueError, ModuleNotFoundError):
+        pass
+    return False
+
+def hook(hfn):
+    from . import load
+    if hfn.count(os.sep) > 3:
+        oname = hfn.split(os.sep)[-4:]
+    else:
+        oname = hfn.split(os.sep)
+    cname = oname[0]
+    fn = os.sep.join(oname)
+    cls = get_cls(cname)
+    o = cls()
+    load(o, fn)
+    return o
+
+def j(*args):
+    return os.path.join(*args)
+
+def locked2(l):
+    def lockeddec(func, *args, **kwargs):
+        l.acquire()
+        res = None
+        try:
+            res = func(*args, **kwargs)
+        finally:
+            l.release()
+        lockeddec.__wrapped__ = func
+        return res
+    return lockeddec
+
 def locked(l):
-    "lock descriptor"
     def lockeddec(func, *args, **kwargs):
         def lockedfunc(*args, **kwargs):
             l.acquire()
@@ -159,42 +174,47 @@ def locked(l):
             finally:
                 l.release()
             return res
-        lockeddec.__doc__ = func.__doc__
+        lockedfunc.__wrapped__ = func
         return lockedfunc
     return lockeddec
 
-def mods(mn, name="bot"):
-    "modules in a package"
-    mod = []
-    pkg = direct(mn)
-    path = pkg.__file__ or pkg.__path__[0]
-    for m in ["%s.%s" % (name, x.split(os.sep)[-1][:-3]) for x in os.listdir(path)
-              if x.endswith(".py")
-              and not x == "setup.py"]:
-        mod.append(direct(m))
-    return mod
+def opcheck(ops, cfg):
+    for o in ops:
+        if o in cfg.opts:
+            return True
+    return False
 
-def privilege(name):
-    "lower privileges"
+def privileges(name=None):
     if os.getuid() != 0:
         return
-    pwnam = pwd.getpwnam(name)
+    if name is None:
+        try:
+            name = getpass.getuser()
+        except KeyError:
+            pass
+    try:
+        pwnam = pwd.getpwnam(name)
+    except KeyError:
+        return False
     os.setgroups([])
     os.setgid(pwnam.pw_gid)
     os.setuid(pwnam.pw_uid)
     old_umask = os.umask(0o22)
+    return True
 
-def spl(txt):
-    "comma splitted values"
-    return iter([x for x in txt.split(",") if x])
+def root():
+    if os.geteuid() != 0:
+        return False
+    return True
 
 def strip_html(text):
-    "strip html from a page"
     clean = re.compile('<.*?>')
     return re.sub(clean, '', text)
 
+def tojson(d):
+    return json.dumps(d, indent=4, sort_keys=True)
+
 def to_time(daystr):
-    "timestring to unix timestamp"
     daystr = daystr.strip()
     if "," in daystr:
         daystr = " ".join(daystr.split(None)[1:7])
@@ -221,17 +241,18 @@ def to_time(daystr):
             break
     return res
 
-def toudp(host, port, txt):
-    "send text to the udp to irc relay"
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.sendto(bytes(txt.strip(), "utf-8"), (host, port))
-
 def unescape(text):
-    "unescape html codes"
     import html.parser
     txt = re.sub(r"\s+", " ", text)
     return html.parser.HTMLParser().unescape(txt)
 
-def useragent():
-    "useragent used when fetching http"
-    return 'Mozilla/5.0 (X11; Linux x86_64) BOTLIB +http://pypi.org/project/botlib)'
+def useragent(txt):
+    return 'Mozilla/5.0 (X11; Linux x86_64) ' + txt
+
+def xdir(o, skip=None):
+    res = []
+    for k in dir(o):
+        if skip is not None and skip in k:
+            continue
+        res.append(k)
+    return res

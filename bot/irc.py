@@ -1,63 +1,58 @@
-# BOTD - 24/7 channel daemon (irc.py)
-#
-# this file is placed in the public domain
+# This file is placed in the Public Domain.
 
-"internet relay chat (irc)"
-
-# imports
-
+import ob
 import os
 import queue
 import socket
 import textwrap
 import time
 import threading
-import _thread
+import  _thread
 
-from bot.dbs import find, last
-from bot.hdl import Event, Handler, cmd
-from bot.obj import Cfg, Object, format, get,  save, update
-from bot.prs import parse
-from bot.thr import launch
-from bot.usr import Users
-from bot.utl import locked
-
-# defines
-
-def __dir__():
-    return ("Cfg", "DCC", "Event", "IRC", "init")
+from . import Cfg, Object, cfg, edit, format, save
+from .bus import Bus
+from .dbs import find, last
+from .evt import Event
+from .hdl import Core, Handler, cb_cmd
+from .thr import launch
+from .usr import Users
+from .utl import locked
 
 def init(hdl):
-    "create a irc bot and return it"
     i = IRC()
     i.clone(hdl)
-    return launch(i.start)
-
-# locks
-
+    launch(i.start)
+    return i
+    
 saylock = _thread.allocate_lock()
 
-# classes
+class ENOUSER(Exception):
+
+    pass
 
 class Cfg(Cfg):
 
-    "configuration object"
+    channel = "#ob"
+    nick = "ob"
+    port = 6667
+    server = "localhost"
+    realname = "24/7 channel daemon"
+    username = "ob"
 
     def __init__(self):
         super().__init__()
-        self.channel = "#bot"
-        self.nick = "bot"
-        self.server = "localhost"
-        self.username = "bot"
-        self.realname = "bot"
+        self.channel = Cfg.channel
+        self.nick = Cfg.nick
+        self.port = Cfg.port
+        self.server = Cfg.server
+        self.realname = Cfg.realname
+        self.username = Cfg.username
 
 class Event(Event):
 
-    "irc event"
+    pass
 
 class TextWrap(textwrap.TextWrapper):
-
-    "text wrapper"
 
     def __init__(self):
         super().__init__()
@@ -69,8 +64,6 @@ class TextWrap(textwrap.TextWrapper):
         self.width = 450
 
 class IRC(Handler):
-
-    "irc bot"
 
     def __init__(self):
         super().__init__()
@@ -85,7 +78,7 @@ class IRC(Handler):
         self.cfg = Cfg()
         self.cmds = Object()
         self.channels = []
-        self.register("cmd", cmd)
+        self.register("cmd", cb_cmd)
         self.register("ERROR", self.ERROR)
         self.register("LOG", self.LOG)
         self.register("NOTICE", self.NOTICE)
@@ -103,34 +96,29 @@ class IRC(Handler):
         self.state.nrsend = 0
         self.state.pongcheck = False
         self.threaded = False
-        self.verbose = False
         self.users = Users()
+        Bus.add(self)
 
-    def _connect(self, server):
-        "connect (blocking) to irc server"
-        oldsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        oldsock.setblocking(1)
-        oldsock.settimeout(5.0)
-        try:
-            oldsock.connect((server, 6667))
-        except (OSError, ConnectionError):
-            time.sleep(2.0)
-            try:
-                oldsock.connect((server, 6667))
-            except (OSError, ConnectionError):
-                self._connected.set()
-                return False
-        oldsock.setblocking(1)
-        oldsock.settimeout(1200.0)
-        self._sock = oldsock
+    def _connect(self, server, port=6667):
+        if cfg.resume:
+            s = socket.fromfd(self.cfg.resume, socket.AF_INET, socket.SOCK_STREAM)
+            self.cfg.resume = s.fileno()
+            s.command('PING", ":RESUME %s' % str(time.time()))
+            s.connected.set()
+            self.say(self.cfg.channel, 'done')
+        else:
+            addr = socket.getaddrinfo(server, port, socket.AF_INET)[-1][-1]
+            s = socket.create_connection(addr)
+            self.cfg.resume = s.fileno()
+            os.set_inheritable(self.cfg.resume, os.O_RDWR)
+        s.setblocking(True)
+        s.settimeout(1200.0)
+        self._sock = s
         self._fsock = self._sock.makefile("r")
-        fileno = self._sock.fileno()
-        os.set_inheritable(fileno, os.O_RDWR)
         self._connected.set()
         return True
 
     def _parsing(self, txt):
-        "into an event"
         rawstr = str(txt)
         rawstr = rawstr.replace("\u0001", "")
         rawstr = rawstr.replace("\001", "")
@@ -189,7 +177,6 @@ class IRC(Handler):
 
     @locked(saylock)
     def _say(self, channel, txt):
-        "on a channel"
         wrapper = TextWrap()
         txt = str(txt).replace("\n", "")
         for t in wrapper.wrap(txt):
@@ -201,7 +188,6 @@ class IRC(Handler):
             self.state.last = time.time()
 
     def _some(self):
-        "blocking read"
         inbytes = self._sock.recv(512)
         txt = str(inbytes, "utf-8")
         if txt == "":
@@ -213,12 +199,10 @@ class IRC(Handler):
         self.state.lastline = splitted[-1]
 
     def announce(self, txt):
-        "annouce text"
         for channel in self.channels:
             self.say(channel, txt)
 
     def command(self, cmd, *args):
-        "send a command"
         if not args:
             self.raw(cmd)
             return
@@ -232,36 +216,33 @@ class IRC(Handler):
             self.raw("%s %s %s :%s" % (cmd.upper(), args[0], args[1], " ".join(args[2:])))
             return
 
-    def connect(self, server, nick):
-        "connect to server"
+    def connect(self, server, nick, port=6667):
         nr = 0
         while not self.stopped:
             self.state.nrconnect += 1
-            if self._connect(server):
+            if self._connect(server, port):
                 break
             time.sleep(10.0)
             nr += 1
         else:
             self._connected.set()
-        self._connected.wait()
-        self.logon(server, nick)
+        if self._sock:
+            self.logon(server, nick)
+
+    def doconnect(self):
+        if self.stopped:
+            return
+        super().start()
+        launch(self.input)
+        launch(self.output)
+        self.connect(self.cfg.server, self.cfg.nick, int(self.cfg.port) or 6667)
 
     def handle(self, event):
-        "invoke callback"
         if event.command in self.cbs:
             self.cbs[event.command](event)
 
-    def doconnect(self):
-        "start input/output tasks"
-        assert self.cfg.server
-        assert self.cfg.nick
-        super().start()
-        self.connect(self.cfg.server, self.cfg.nick)
-        launch(self.input)
-        launch(self.output)
-
     def input(self):
-        "loop for input"
+        self._connected.wait()
         while not self.stopped:
             try:
                 e = self.poll()
@@ -277,35 +258,29 @@ class IRC(Handler):
             self.handle(e)
 
     def joinall(self):
-        "all channels"
         for channel in self.channels:
             self.command("JOIN", channel)
 
     def logon(self, server, nick):
-        "do logon handshake"
-        self._connected.wait()
-        assert self.cfg.username
-        assert self.cfg.realname
         self.raw("NICK %s" % nick)
         self.raw("USER %s %s %s :%s" % (self.cfg.username, server, server, self.cfg.realname))
 
-    def output(self):
-        "loop for output"
-        while 1:
+    def output(self, once=False):
+        while not self.stopped:
             channel, txt = self._outqueue.get()
             if channel is None:
                 break
             if txt:
-                time.sleep(0.001)
                 self._say(channel, txt)
+            if once:
+                break
+            time.sleep(0.01)
 
     def poll(self):
-        "block on socket"
-        self._connected.wait()
         if not self._buffer:
             self._some()
         if not self._buffer:
-            return self._parsing("")
+            return
         e = self._parsing(self._buffer.pop(0))
         cmd = e.command
         if cmd == "PING":
@@ -323,17 +298,17 @@ class IRC(Handler):
         elif cmd == "433":
             nick = self.cfg.nick + "_"
             self.cfg.nick = nick
-            self.raw("NICK %s" % self.cfg.nick or "botd")
+            self.raw("NICK %s" % self.cfg.nick)
         return e
 
     def raw(self, txt):
-        "send on raw socket"
+        if not self._sock:
+            return
         txt = txt.rstrip()
         if not txt.endswith("\r\n"):
             txt += "\r\n"
         txt = txt[:512]
         txt = bytes(txt, "utf-8")
-        self._connected.wait()
         try:
             self._sock.send(txt)
         except (OSError, ConnectionResetError) as ex:
@@ -345,33 +320,31 @@ class IRC(Handler):
         self.state.nrsend += 1
 
     def say(self, channel, txt):
-        "forward to output loop"
-        self._outqueue.put_nowait((channel, txt))
+        if not self.stopped:
+            self._outqueue.put_nowait((channel, txt))
 
     def start(self, cfg=None):
-        "connect to server"
+        if self.stopped:
+            return
         if cfg is not None:
             self.cfg.update(cfg)
         else:
             last(self.cfg)
-        assert self.cfg.channel
-        assert self.cfg.server
         self.channels.append(self.cfg.channel)
         self._joined.clear()
         launch(self.doconnect)
         self._joined.wait()
 
     def stop(self):
-        "flush queues and shutdown sockets"
         super().stop()
         self._outqueue.put((None, None))
-        try:
-            self._sock.shutdown(2)
-        except OSError:
-            pass
+        if self._sock:
+            try:
+                self._sock.shutdown(2)
+            except OSError:
+                pass
 
     def ERROR(self, event):
-        "do stop/start on error"
         self.state.nrerror += 1
         self.state.error = event.error
         self._connected.clear()
@@ -379,47 +352,40 @@ class IRC(Handler):
         self.start()
 
     def JOINED(self, event):
-        "has joined all channels"
         self._joined.set()
 
     def LOG(self, event):
-        "log to console, override this"
+        pass
 
     def NOTICE(self, event):
-        "respond with version of the bot"
         if event.txt.startswith("VERSION"):
-            from bot.hdl import __version__
-            txt = "\001VERSION %s %s - %s\001" % ("BOTLIB", __version__, "pure python3 bot library")
+            txt = "\001VERSION %s %s - %s\001" % (self.cfg.nick.upper(), self.cfg.version or 1, self.cfg.username)
             self.command("NOTICE", event.channel, txt)
 
-    def PRIVMSG(self, event):
-        "forward dcc chat and check for commands"
-        if event.txt.startswith("DCC CHAT"):
-            if self.cfg.users and not self.users.allowed(event.origin, "USER"):
+    def PRIVMSG(self, pevent):
+        if pevent.txt.startswith("DCC CHAT"):
+            if not self.users.allowed(pevent.origin, "USER"):
                 return
             try:
                 dcc = DCC()
-                dcc.encoding = "utf-8"
                 dcc.clone(self)
-                launch(dcc.connect, event)
+                dcc.encoding = "utf-8"
+                launch(dcc.connect, pevent)
                 return
             except ConnectionError as ex:
                 return
-        if event.txt and event.txt[0] == self.cc:
-            if self.cfg.users and not self.users.allowed(event.origin, "USER"):
+        if pevent.txt and pevent.txt[0] == self.cc:
+            if not self.users.allowed(pevent.origin, "USER"):
                 return
-            event.type = "cmd"
-            event.txt = event.txt[1:]
-            super().dispatch(event)
+            pevent.type = "cmd"
+            pevent.txt = pevent.txt[1:]
+            super().dispatch(pevent)
 
     def QUIT(self, event):
-        "stop if self"
-        if self.cfg.server in event.orig:
+        if event.orig and self.cfg.server in event.orig:
             self.stop()
 
-class DCC(Handler):
-
-    "direct client to client (dcc)"
+class DCC(Core):
 
     def __init__(self):
         super().__init__()
@@ -428,61 +394,58 @@ class DCC(Handler):
         self._fsock = None
         self.encoding = "utf-8"
         self.origin = ""
+        self.stopped = False
 
     def raw(self, txt):
-        "send text on the dcc socket"
         self._fsock.write(str(txt).rstrip())
         self._fsock.write("\n")
         self._fsock.flush()
 
     def announce(self, txt):
-        "annouce to dcc console, overload this"
+        pass
 
-    def connect(self, event):
-        "connect to offering socket"
-        arguments = event.txt.split()
+    def connect(self, dccevent):
+        if self.stopped:
+            return
+        dccevent.parse()
+        arguments = dccevent.old.txt.split()
         addr = arguments[3]
-        port = arguments[4]
-        port = int(port)
+        port = int(arguments[4])
         if ':' in addr:
             s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
         else:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((addr, port))
+        try:
+            s.connect((addr, port))
+        except ConnectionRefusedError:
+            self._connected.set()
+            return
         s.setblocking(1)
-        #os.set_inheritable(s.fileno(), os.O_RDWR)
+        os.set_inheritable(s.fileno(), os.O_RDWR)
         self._sock = s
         self._fsock = self._sock.makefile("rw")
-        self.raw('Welcome %s' % event.nick)
-        self.origin = event.origin
+        self.raw('Welcome %s' % dccevent.origin)
+        self.origin = dccevent.origin
+        self._connected.set()
         launch(self.input)
         super().start()
-        self._connected.set()
 
     def input(self):
-        "loop for input"
-        while 1:
-            try:
-                e = self.poll()
-            except EOFError:
-                break
-            self.put(e)
+        self._connected.wait()
+        super().input()
 
     def poll(self):
-        "poll (blocking) for input and create an event for it"
-        self._connected.wait()
         e = Event()
         e.type = "cmd"
-        txt = self._fsock.readline()
-        txt = txt.rstrip()
-        parse(e, txt)
-        e._sock = self._sock
-        e._fsock = self._fsock
         e.channel = self.origin
         e.origin = self.origin or "root@dcc"
         e.orig = repr(self)
+        txt = self._fsock.readline()
+        e.txt = txt.rstrip()
+        e._sock = self._sock
+        e._fsock = self._fsock
         return e
 
     def say(self, channel, txt):
-        "skip channel and print on socket"
-        self.raw(txt)
+        if not self.stopped:
+            self.raw(txt)

@@ -1,23 +1,7 @@
-# BOTD - 24/7 channel daemon (prs.py)
-#
-# this file is placed in the public domain
+# This file is placed in the Public Domain.
 
-"parse (prs)"
-
-# imports
-
-import os
-import sys
-import time
-import bot.obj
-
-from bot.obj import Default, Object, update
-from bot.utl import day
-
-# defines
-
-def __dir__():
-    return ("elapsed", "parse", "parse_cli", "parse_time", "parse_ymd")
+from . import Default, Object, update
+from .utl import day, time
 
 year_formats = [
     "%b %H:%M",
@@ -41,19 +25,13 @@ year_formats = [
     "%H:%M"
 ]
 
-# classes
-
 class Token(Object):
-
-    "basic token"
 
     def __init__(self, txt):
         super().__init__()
         self.txt = txt
 
 class Option(Default):
-
-    "token that starts with -- or -"
 
     def __init__(self, txt):
         super().__init__()
@@ -63,8 +41,6 @@ class Option(Default):
             self.opt = txt[1:]
 
 class Getter(Object):
-
-    "contains =="
 
     def __init__(self, txt):
         super().__init__()
@@ -77,8 +53,6 @@ class Getter(Object):
 
 class Setter(Object):
 
-    "contains ="
-
     def __init__(self, txt):
         super().__init__()
         try:
@@ -89,8 +63,6 @@ class Setter(Object):
             self[pre] = post
 
 class Skip(Object):
-
-    "endswith -"
 
     def __init__(self, txt):
         super().__init__()
@@ -107,8 +79,6 @@ class Skip(Object):
             self[pre] = True
 
 class Timed(Object):
-
-    "is a time"
 
     def __init__(self, txt):
         super().__init__()
@@ -131,10 +101,60 @@ class Timed(Object):
         if vv:
             self["to"] = time.time() - vv
 
-# functions
+def parse(o, txt):
+    o.old = o.old or Default()
+    o.old.txt = txt
+    o.gets = o.gets or Default()
+    o.opts = o.opts or Default()
+    o.timed = o.timed or []
+    o.index = o.index or None
+    o.sets = o.sets or Default()
+    o.skip = o.skip or Default()
+    args = []
+    for token in [Token(txt) for txt in txt.split()]:
+        s = Skip(token.txt)
+        if s:
+            update(o.skip, s)
+            token.txt = token.txt[:-1]
+        t = Timed(token.txt)
+        if t:
+            update(o.timed, t)
+            continue
+        g = Getter(token.txt)
+        if g:
+            update(o.gets, g)
+            continue
+        s = Setter(token.txt)
+        if s:
+            update(o.sets, s)
+            continue
+        opt = Option(token.txt)
+        if opt:
+            try:
+                o.index = int(opt.opt)
+                continue
+            except ValueError:
+                pass
+            if len(opt.opt) > 1:
+                for op in opt.opt:
+                    o.opts[op] = True
+            else:
+                o.opts[opt.opt] = True
+            continue
+        args.append(token.txt)
+    if not args:
+        o.args = []
+        o.cmd = ""
+        o.rest = ""
+        o.txt = ""
+        return o
+    o.cmd = args[0]
+    o.args = args[1:]
+    o.txt = " ".join(args)
+    o.rest = " ".join(args[1:])
+    return o
 
 def elapsed(seconds, short=True):
-    "elapsed time"
     txt = ""
     nsec = float(seconds)
     year = 365*24*60*60
@@ -170,76 +190,12 @@ def elapsed(seconds, short=True):
         return txt
     if sec == 0:
         txt += "0s"
-    #elif sec < 1 or not short:
-    #    txt += "%.3fs" % sec
     else:
         txt += "%ss" % int(sec)
     txt = txt.strip()
     return txt
 
-def parse(o, txt):
-    "txt to object"
-    args = []
-    o.txt = txt
-    o.otxt = txt
-    o.gets = Default()
-    o.opts = Default()
-    o.sets = Default()
-    o.skip = Default()
-    o.timed = ()
-    o.index = None
-    for token in [Token(txt) for txt in txt.split()]:
-        s = Skip(token.txt)
-        if s:
-            update(o.skip, s)
-            token.txt = token.txt[:-1]
-        t = Timed(token.txt)
-        if t:
-            update(o.timed, t)
-            continue
-        g = Getter(token.txt)
-        if g:
-            update(o.gets, g)
-            continue
-        s = Setter(token.txt)
-        if s:
-            update(o.sets, s)
-            continue
-        opt = Option(token.txt)
-        if opt:
-            try:
-                o.index = int(opt.opt)
-                continue
-            except ValueError:
-                pass
-            o.opts[opt.opt] = True
-            continue
-        args.append(token.txt)
-    if not args:
-        o.args = []
-        o.cmd = ""
-        o.rest = ""
-        o.txt = ""
-        return o
-    o.cmd = args[0]
-    o.args = args[1:]
-    o.txt = " ".join(args)
-    o.rest = " ".join(args[1:])
-    return o
-
-def parse_cli(wd=None):
-    "commandline"
-    import bot.hdl
-    import bot.obj
-    cfg = Default()
-    parse(cfg, " ".join(sys.argv[1:]))
-    cfg.sets.wd = bot.obj.wd = cfg.sets.wd or bot.obj.wd or wd
-    assert bot.obj.wd
-    bot.hdl.md = os.path.join(bot.obj.wd, "mod")
-    return cfg
-
 def parse_time(daystring):
-    "time"
     line = ""
     daystr = str(daystring)
     for word in daystr.split():
@@ -257,7 +213,6 @@ def parse_time(daystring):
             pass
 
 def parse_ymd(daystr):
-    "ymdms time"
     if not any([c.isdigit() for c in daystr]):
         return 0
     valstr = ""

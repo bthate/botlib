@@ -1,27 +1,12 @@
-# BOTD - 24/7 channel daemon (clk.py)
-#
-# this file is placed in the public domain
-
-"clock functions (clk)"
-
-# imports
+# This file is in the Public Domain.
 
 import threading
 import time
 
-from bot.obj import Object
-from bot.thr import launch
-
-# defines
-
-def __dir__():
-    return ("Repeater", "Timer")
-
-# classes
+from . import Object, get_name
+from .thr import launch
 
 class Timer(Object):
-
-    "timer"
 
     def __init__(self, sleep, func, *args, **kwargs):
         super().__init__()
@@ -34,14 +19,12 @@ class Timer(Object):
         self.timer = None
 
     def run(self, *args, **kwargs):
-        "run"
         self.state.latest = time.time()
         launch(self.func, *self.args, **self.kwargs)
 
     def start(self):
-        "clock"
         if not self.name:
-            self.name = self.func.__func__.__qualname__
+            self.name = get_name(self.func)
         timer = threading.Timer(self.sleep, self.run, self.args, self.kwargs)
         timer.setName(self.name)
         timer.setDaemon(True)
@@ -55,16 +38,12 @@ class Timer(Object):
         return timer
 
     def stop(self):
-        "stop"
         if self.timer:
             self.timer.cancel()
 
 class Repeater(Timer):
 
-    "repeater class"
-
     def run(self, *args, **kwargs):
-        "run repeater"
         thr = launch(self.start, **kwargs)
         super().run(*args, **kwargs)
         return thr
