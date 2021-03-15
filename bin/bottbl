@@ -1,34 +1,26 @@
-#!/usr/bin/python3
-# BOTLIB - bottbl
-#
-# this file is placed in the public domain
-
-"bot program"
-
-# imports
+#!/usr/bin/env python3
+# This file is placed in the Public Domain.
 
 import os, sys ; sys.path.insert(0, os.getcwd())
 
-from bot.hdl import Handler
+import ob
 
-txt = """# BOTLIB - tbl.py
-#
-# this file is placed in the public domain
+from ob.itr import walk
 
-"tables (tbl)"
+if len(sys.argv) > 1:
+    a = sys.argv[1]
+else:
+    a = "bot"
 
-from bot.obj import Object, Ol, update
+tbl = walk(a)
+del tbl.pnames["__init__"]
 
-#:
-modnames = Object()
-
-#:
-names = Ol()
-"""
-
-h = Handler()
-h.walk("bot")
-print(txt)
-print("update(modnames, %s)" % h.modnames)
+print("# This file is placed in the Public Domain.")
 print("")
-print("update(names, %s)" % h.names)
+print("import bot")
+print("")
+print("tbl = bot.Default()")
+print("")
+print("bot.update(tbl, %s)" % tbl)
+sys.stdout.flush()
+sys.exit()

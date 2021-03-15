@@ -1,20 +1,18 @@
 #!/usr/bin/python3
-# BOTLIB - botudp
-#
-# this file is placed in the public domain
+# This file is placed in the Public Domain.
 
-import select, socket, sys
+import select
+import socket
+import sys
 
 host = "localhost"
 port = 5500
 
 def toudp(host, port, txt):
-    "send text over udp to the udp to irc relay server"
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(bytes(txt.strip(), "utf-8"), (host, port))
 
 def main():
-    "send text over udp to the bot"
     if len(sys.argv) > 1:
         txt = " ".join(sys.argv[1:])
         toudp(host, port, txt)
