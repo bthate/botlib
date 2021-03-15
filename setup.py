@@ -1,8 +1,4 @@
-# BOTLIB - pure python3 bot library
-#
-# this file is place in the public domain
-
-"library to program bots"
+# This file is place in the Public Domain.
 
 import os
 
