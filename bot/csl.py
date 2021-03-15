@@ -7,7 +7,7 @@ import sys
 import termios
 
 from . import cdir, cfg, j, op, update
-from .evt import Command
+from .evt import Command, Event
 from .hdl import Core
 from .prs import parse as myparse
 from .sel import Select
@@ -27,6 +27,27 @@ class Shell(Core):
     def direct(self, txt):
         if not self.stopped:
             print(txt)
+
+    def input(self):
+        while not self.stopped:
+            try:
+                e = self.poll()
+            except EOFError:
+                break
+            if e.cmd == "stop":
+                break
+            self.put(e)
+            e.wait()
+
+    def poll(self):
+        "override this"
+        e = Event()
+        e.cmd = "stop"
+        return e
+
+    def start(self):
+        super().start()
+        launch(self.input)
 
 class Console(Shell):
 

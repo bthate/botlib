@@ -11,7 +11,6 @@ from bot.bus import Bus
 from bot.csl import Test, exec, parse
 
 import bot.utl
-import bot.rss
 
 import test.run
 
@@ -26,10 +25,8 @@ def main():
     cfg.wd = c(".test")
     cfg.pkgs = "bot,bot.cmd"
     parse()
-    print(cfg)
     open("rm -fR %s" % cfg.wd)
     bot.utl.debug = True
-    bot.rss.debug = True
     pat = "test_%s*" % cfg.cmd or "*"
     suite = unittest.loader.TestLoader().discover("test", pattern=pat)
     unittest.TextTestRunner(verbosity=3).run(suite)

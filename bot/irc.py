@@ -8,11 +8,12 @@ import time
 import threading
 import  _thread
 
-from . import Cfg, Object, cfg, edit, format, save
+from . import Cfg, Object, cfg
 from .bus import Bus
-from .dbs import find, last
+from .csl import Shell
+from .dbs import last
 from .evt import Event
-from .hdl import Core, Handler, cb_cmd
+from .hdl import Handler, cb_cmd
 from .thr import launch
 from .usr import Users
 from .utl import locked
@@ -22,12 +23,8 @@ def init(hdl):
     i.clone(hdl)
     launch(i.start)
     return i
-    
+
 saylock = _thread.allocate_lock()
-
-class ENOUSER(Exception):
-
-    pass
 
 class Cfg(Cfg):
 
@@ -102,8 +99,8 @@ class IRC(Handler):
         if cfg.resume:
             s = socket.fromfd(self.cfg.resume, socket.AF_INET, socket.SOCK_STREAM)
             self.cfg.resume = s.fileno()
-            s.command('PING", ":RESUME %s' % str(time.time()))
-            s.connected.set()
+            self.command('PING", ":RESUME %s' % str(time.time()))
+            self._connected.set()
             self.say(self.cfg.channel, 'done')
         else:
             addr = socket.getaddrinfo(server, port, socket.AF_INET)[-1][-1]
@@ -384,7 +381,7 @@ class IRC(Handler):
         if event.orig and self.cfg.server in event.orig:
             self.stop()
 
-class DCC(Core):
+class DCC(Shell):
 
     def __init__(self):
         super().__init__()

@@ -1,10 +1,11 @@
 #!/usr/bin/python3
+# This file is placed in the Public Domain.
 
 import os
 
 old =  os.getcwd()
 
-def obopen(txt):
+def open(txt):
     try:
         for line in os.popen(txt).readlines():
             print(line.rstrip())
@@ -12,7 +13,7 @@ def obopen(txt):
         pass
 
 def main():
-    obopen("bin/clean")
+    open("bin/clean")
     try:
         shutil.rmtree("build")
     except:
@@ -27,9 +28,8 @@ def main():
         pass
     for line in os.popen("python3 setup.py sdist").readlines():
         print(line.strip())
-    #obopen("rm -fR ~/.cache/pip/")
-    obopen("python3 -mvirtualenv -p python3 --copies env")
-    obopen("env/bin/pip3 install botlib -f dist --upgrade --force-reinstall")
+    open("python3 -mvirtualenv -p python3 env")
+    open("env/bin/pip3 install botlib -f dist --upgrade --force-reinstall")
 
 if __name__ == "__main__":
     main()

@@ -7,17 +7,17 @@ import threading
 import time
 import _thread
 
-from . import Cfg, Object, ObjectList, cfg, direct, j, spl, update
+from . import Object, ObjectList, cfg, direct, j, spl, update
 from .bus import Bus
-from .evt import Command, Event
+from .evt import Command
 from .thr import launch
-from .itr import find_cmds, scan, walk
+from .itr import find_cmds, scan
 from .utl import locked, has_mod
 
 loadlock = _thread.allocate_lock()
 
 class Handler(Object):
- 
+
     table = Object()
     pnames = Object()
     modnames = Object()
@@ -43,7 +43,7 @@ class Handler(Object):
     def add(self, cmd, func):
         self.cmds[cmd] = func
         Handler.modnames[cmd] = func.__module__
-        
+
     def announce(self, txt):
         pass
 
@@ -88,15 +88,6 @@ class Handler(Object):
         for thr in thrs:
             result.append(thr.join())
         return result
-
-    def input(self):
-        while not self.stopped:
-            try:
-                e = self.poll()
-            except EOFError:
-                break
-            self.put(e)
-            e.wait()
 
     @locked(loadlock)
     def load(self, mn):

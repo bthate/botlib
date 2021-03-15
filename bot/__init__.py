@@ -14,19 +14,9 @@ import _thread
 savelock = _thread.allocate_lock()
 starttime = time.time()
 
-def locked(l):
-    def lockeddec(func, *args, **kwargs):
-        def lockedfunc(*args, **kwargs):
-            l.acquire()
-            res = None
-            try:
-                res = func(*args, **kwargs)
-            finally:
-                l.release()
-            return res
-        lockedfunc.__wrapped__ = func
-        return lockedfunc
-    return lockeddec
+class ENOCLASS(Exception):
+
+    pass
 
 class ENOFILENAME(Exception):
 
@@ -128,7 +118,7 @@ def direct(name, pname=''):
     if name in sys.modules:
         return sys.modules[name]
     return importlib.import_module(name, pname)
-            
+
 def e(p):
     return os.path.expanduser(p)
 
@@ -136,8 +126,7 @@ def get_cls(fullname):
     try:
         modname, clsname = fullname.rsplit(".", 1)
     except Exception as ex:
-        raise ENOCLASS(fullname)
-    import sys
+        raise ENOCLASS(fullname) from ex
     mod = importlib.import_module(modname)
     return getattr(mod, clsname)
 
@@ -151,6 +140,20 @@ def hook(hfn):
     o = get_cls(cname)()
     load(o, fn)
     return o
+
+def locked(l):
+    def lockeddec(func, *args, **kwargs):
+        def lockedfunc(*args, **kwargs):
+            l.acquire()
+            res = None
+            try:
+                res = func(*args, **kwargs)
+            finally:
+                l.release()
+            return res
+        lockedfunc.__wrapped__ = func
+        return lockedfunc
+    return lockeddec
 
 def mods(mn):
     mod = []
@@ -282,6 +285,7 @@ def json(o):
 def keys(o):
     return o.__dict__.keys()
 
+@locked(savelock)
 def load(o, opath):
     if opath.count(os.sep) != 3:
         raise ENOFILENAME(opath)
@@ -293,6 +297,7 @@ def load(o, opath):
             update(o, js.load(ofile, object_hook=Object))
         except js.decoder.JSONDecodeError as ex:
             return
+    o.__stp__ = stp
     return stp
 
 def merge(o, d):
@@ -300,13 +305,12 @@ def merge(o, d):
         if not v:
             continue
         if k in o:
-            if type(o[k]) == dict:
+            if isinstance(o[k], dict):
                 continue
             o[k] = o[k] + v
         else:
             o[k] = v
 
- 
 def overlay(o, d, keys=None, skip=None):
     for k, v in items(d):
         if keys and k not in keys:
@@ -326,6 +330,7 @@ def orepr(self):
         hex(id(self))
     )
 
+@locked(savelock)
 def save(o):
     prv = os.sep.join(o.__stp__.split(os.sep)[:2])
     o.__stp__ = j(prv, os.sep.join(str(datetime.datetime.now()).split()))

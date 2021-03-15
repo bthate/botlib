@@ -1,9 +1,5 @@
-# BOTLIB - MANIFEST.in
-#
-# this file is placed in the public domain
+# This file is placed in the Public Domain.
 
-include README.rst
-include MANIFEST.in
-include bin/bot
-include bin/botudp
+recursive-include bin *
 recursive-include docs *
+recursice-include mod *.py

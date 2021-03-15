@@ -213,8 +213,6 @@ def parse_time(daystring):
             pass
 
 def parse_ymd(daystr):
-    if not any([c.isdigit() for c in daystr]):
-        return 0
     valstr = ""
     val = 0
     total = 0

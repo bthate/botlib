@@ -68,4 +68,3 @@ def launch(func, *args, **kwargs):
     t = Thr(func, *args, thrname=name, daemon=True)
     t.start()
     return t
-

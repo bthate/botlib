@@ -4,8 +4,7 @@ import os
 import inspect
 import pkgutil
 
-from bot import Object, ObjectList, cfg, direct, spl, update
-
+from bot import Object, ObjectList, direct, mods, spl, update
 
 def find_cmds(mod):
     cmds = Object()

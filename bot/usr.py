@@ -3,6 +3,10 @@
 from . import Object, save
 from .dbs import find
 
+class ENOUSER(Exception):
+
+    pass
+
 class User(Object):
 
     def __init__(self):
@@ -75,7 +79,7 @@ def dlt(event):
     if not event.args:
         return
     selector = {"user": event.args[0]}
-    for fn, o in find("usr.User", selector):
+    for fn, o in find("bot.usr.User", selector):
         o._deleted = True
         save(o)
         event.reply("ok")

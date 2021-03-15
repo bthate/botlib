@@ -5,12 +5,12 @@ import html.parser
 import re
 import urllib
 
-from . import Cfg, Default, Object, edit, get, save, update
-from .bus import Bus
-from .clk import Repeater
-from .dbs import all, find, last, last_match
-from .thr import launch
-from .utl import get_tinyurl, get_url, strip_html
+from bot import Cfg, Default, Object, edit, get, save, update
+from bot.bus import Bus
+from bot.clk import Repeater
+from bot.dbs import all, find, last, last_match
+from bot.thr import launch
+from bot.utl import debug, get_tinyurl, get_url, strip_html
 
 from urllib.error import HTTPError, URLError
 
@@ -25,8 +25,6 @@ def init(hdl):
     launch(f.start)
     return f
     
-debug = False
-
 class Cfg(Cfg):
 
     def __init__(self):

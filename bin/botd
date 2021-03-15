@@ -1,7 +1,11 @@
 #!/usr/bin/env python3 
 # This file is placed in the Public Domain.
 
-from bot.krn import Shell, cfg, exec, format, j, last, sys, time
+import time
+
+from bot import cfg, format, j
+from bot.csl import Shell, exec, sys
+from bot.dbs import last
 
 def cprint(txt):
     sys.stdout.write(txt + "\n")

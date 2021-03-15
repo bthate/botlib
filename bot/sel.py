@@ -2,8 +2,6 @@
 
 import os
 import selectors
-import socket
-import time
 
 from . import get_name
 from .evt import Event

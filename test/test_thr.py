@@ -4,7 +4,7 @@ import unittest
 
 from bot import cfg
 from bot.evt import Command
-from bot.thr import  launch
+from bot.thr import launch
 
 from test.prm import param
 from test.run import h

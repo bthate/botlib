@@ -1,7 +1,8 @@
 #!/usr/bin/env python3 
 # This file is placed in the Public Domain.
 
-from bot.krn import Shell, cfg, exec, j, os, sys
+from bot import cfg, j
+from bot.csl import Shell, exec, os, sys
 
 def main():
     s = Shell()

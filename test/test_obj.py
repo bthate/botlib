@@ -83,6 +83,23 @@ class Test_Object(unittest.TestCase):
         last(oo)
         self.assertEqual(oo.bla, "test")
 
+    def test_last2(self):
+        o = Object()
+        save(o)
+        uuid1 = o.__stp__.split(os.sep)[1]
+        last(o)
+        uuid2 = o.__stp__.split(os.sep)[1]        
+        self.assertEqual(uuid1, uuid2)
+
+    def test_last3(self):
+        o = Object()
+        last(o)
+        s = o.__stp__
+        uuid1 = o.__stp__.split(os.sep)[1]
+        save(o)
+        uuid2 = o.__stp__.split(os.sep)[1]
+        self.assertEqual(uuid1, uuid2)
+
     def test_lastest(self):
         o = Object()
         o.bla = "test"
@@ -94,6 +111,7 @@ class Test_Object(unittest.TestCase):
         ooo = Object()
         last(ooo)
         self.assertEqual(ooo.bla, "mekker")
+
 
     def test_merge(self):
         o = Object()

@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 
-from . import Object
+from . import Object, save
 
 class Bus(Object):
 
@@ -34,7 +34,7 @@ class Bus(Object):
     @staticmethod
     def save():
         for o in Bus.objs:
-            ob.save(o)
+            save(o)
 
     @staticmethod
     def say(orig, channel, txt):
@@ -45,7 +45,7 @@ class Bus(Object):
     @staticmethod
     def wait(t=None, timeout=5.0):
         for h in Bus.objs:
-            if t and type(h) != t:
+            if t and not isinstance(t, h):
                 continue
             h.wait(timeout)
 

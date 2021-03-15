@@ -23,12 +23,6 @@ class Event(Default):
     def direct(self, txt):
         Bus.say(self.orig, self.channel, txt)
 
-    def is_ready(self):
-        for t in thrs:
-            if t.is_alive():
-                return False
-        return True
-
     def parse(self):
         myparse(self, self.txt)
 

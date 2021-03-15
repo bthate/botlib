@@ -11,7 +11,6 @@ import re
 import sys
 import time
 import traceback
-import types
 import importlib
 import importlib.util
 
@@ -79,7 +78,7 @@ def get_cls(fullname):
     try:
         modname, clsname = fullname.rsplit(".", 1)
     except Exception as ex:
-        raise ENOCLASS(fullname)
+        raise ENOCLASS(fullname) from ex
     mod = importlib.import_module(modname)
     return getattr(mod, clsname)
 
@@ -244,7 +243,7 @@ def to_time(daystr):
 def unescape(text):
     import html.parser
     txt = re.sub(r"\s+", " ", text)
-    return html.parser.HTMLParser().unescape(txt)
+    return html.unescape(txt)
 
 def useragent(txt):
     return 'Mozilla/5.0 (X11; Linux x86_64) ' + txt
