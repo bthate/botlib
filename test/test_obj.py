@@ -1,47 +1,41 @@
-# BOTLIB - test_object.py
-#
-# this file is placed in the public domain
+# This file is placed in the Public Domain.
 
-"test object functions"
-
-import types
+import ob
+import os
 import unittest
 
-from bot.dbs import last
-from bot.obj import O, Object, load, save
+from ob import O, Object, get_type, load, merge, save
+from ob.dbs import last
 
 class Test_Object(unittest.TestCase):
 
-    def testO(self):
+    def test_O(self):
         o = O()
         self.assertEqual(type(o), O)
 
-    def testObject(self):
+    def test_Object(self):
         o = Object()
         self.assertEqual(type(o), Object)
+
     def test_intern1(self):
         o = Object()
-        self.assertTrue(o.__type__)
+        self.assertTrue(o.__stp__)
 
     def test_intern2(self):
         o = Object()
         self.assertFalse(o)
-        
-    def test_intern3(self):
+
+    def test_json(self):
         o = Object()
-        self.assertTrue("<bot.obj.Object object at" in repr(o))
+        self.assertTrue("<ob.Object object at" in repr(o))
 
     def test_intern4(self):
         o = Object()
-        self.assertTrue(o.__type__ in str(type(o)))
-
-    def test_intern5(self):
-        o = Object()
-        self.assertTrue(o.__id__)
+        self.assertTrue(get_type(o) in o.__stp__)
 
     def test_empty(self):
         o = Object()
-        self.assertTrue(not o) 
+        self.assertTrue(not o)
 
     def test_final(self):
         o = Object()
@@ -52,7 +46,15 @@ class Test_Object(unittest.TestCase):
     def test_stamp(self):
         o = Object()
         save(o)
-        self.assertTrue(o.__type__)
+        self.assertTrue(o.__stp__)
+
+    def test_uuid(self):
+        o = Object()
+        p = save(o)
+        uuid1 = p.split(os.sep)[1]
+        p = save(o)
+        uuid2 = p.split(os.sep)[1]
+        self.assertEqual(uuid1, uuid2)        
 
     def test_attribute(self):
         o = Object()
@@ -93,3 +95,28 @@ class Test_Object(unittest.TestCase):
         ooo = Object()
         last(ooo)
         self.assertEqual(ooo.bla, "mekker")
+
+    def test_merge(self):
+        o = Object()
+        o.a = 1
+        o.b = "1"
+        o.c = ["1"]
+        o.d = {"a": 1}
+        oo = Object()
+        oo.a = 1
+        oo.b = "1"
+        oo.c = ["1"]
+        oo.d = {"a": 1}
+        merge(o, oo)
+        self.assertEqual(o.c, ["1", "1"])
+
+    def test_nested(self):
+        o = Object()
+        o.o = Object()
+        o.o.o = Object()
+        o.o.o.test = "bla"
+        p = ob.save(o)
+        oo = Object()
+        ob.load(oo, p)
+        self.assertEqual(o.o.o.test, "bla")
+      
