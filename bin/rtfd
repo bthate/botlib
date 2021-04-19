@@ -5,4 +5,5 @@
 
 bin/env
 env/bin/python3 env/bin/pip3 install sphinx --upgrade --force-reinstall
+env/bin/python3 env/bin/pip3 install Pygments --upgrade --force-reinstall
 env/bin/python3 env/bin/sphinx-build docs html
