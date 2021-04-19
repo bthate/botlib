@@ -174,4 +174,5 @@ have fun coding
     :hidden:
     :glob:
 
+    source
     *
