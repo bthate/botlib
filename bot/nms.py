@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 from .obj import Default, Object
-from .itr import findall, findcmds, findnames
+from .itr import findall, findcmds, findmods, findnames
 from .utl import direct
 
 class Names(Object):
@@ -232,5 +232,5 @@ class Names(Object):
             for k, v in findnames(mod).items():
                 if k not in Names.names:
                     Names.names[k] = []
-                if v not in Loader.names[k]:
+                if v not in Names.names[k]:
                     Names.names[k].append(v)
