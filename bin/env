@@ -21,7 +21,7 @@ def main():
     except:
         pass
     try:
-        shutil.rmtree("%s.egg-info" % genoclaim)
+        shutil.rmtree("botlib.egg-info")
     except:
         pass
     for line in os.popen("python3 setup.py sdist").readlines():
@@ -31,4 +31,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    open("tar zcf env.tar.gz env")

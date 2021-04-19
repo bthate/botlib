@@ -4,5 +4,5 @@
 #
 
 bin/env
-env/bin/python3 env/bin/pip3 install sphinx
+env/bin/python3 env/bin/pip3 install sphinx --upgrade --force-reinstall
 env/bin/python3 env/bin/sphinx-build docs html

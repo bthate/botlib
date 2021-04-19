@@ -1,17 +1,17 @@
-#!/usr/bin/python3
+# This file is placed in the Public Domain.
 # -*- coding: utf-8 -*-
-# BOTLIB - conf.py
-#
-# this file is placed in the public domain
 
 import unittest
 import doctest
 import sys
 import os
 
-sys.path.append(os.path.abspath("."))
+curdir = os.getcwd()
+sys.path.insert(0, curdir + os.sep)
+sys.path.insert(0, curdir + os.sep + '..' + os.sep)
+sys.path.insert(0, curdir + os.sep + '..' + os.sep + ".." + os.sep)
 
-__version__ = 1.0
+__version__ = 118
 
 needs_sphinx='1.1'
 nitpick_ignore=[
@@ -22,26 +22,24 @@ extensions=[
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
 ]
-
 autosummary_generate=True
-autodoc_default_flags=['members', 'undoc-members', "imported-members", "show-inheritence"]
-autodoc_member_order='bysource'
+autodoc_default_flags=['members', 'undoc-members', 'private-members', "imported-members", 'show-inheritance']
+autodoc_member_order='alphabetical'
+autodoc_member_order='groupwise'
 autodoc_docstring_signature=True
 autoclass_content="class"
 doctest_global_setup=""
 doctest_global_cleanup=""
 doctest_test_doctest_blocks="default"
 trim_doctest_flags=True
-doctest_default_flags=doctest.REPORT_NDIFF & doctest.ELLIPSIS
+doctest_flags=doctest.REPORT_UDIFF
 templates_path=['_templates',]
 source_suffix = '.rst'
 source_encoding = 'utf-8-sig'
 master_doc = 'index'
-project = "botlib"
-copyright = 'Public Domain'
+project = "BOTLIB"
 version = '%s' % __version__
 release = '%s' % __version__
 language = ''
@@ -56,13 +54,10 @@ pygments_style = 'sphinx'
 modindex_common_prefix = [""]
 keep_warnings = True
 html_theme = "haiku"
-#html_theme_options = {
-#     "nosidebar": True,
-#}
 html_theme_path = []
-#html_short_title = "BOTLIB %s" % __version__
-html_short_title = ""
-html_favicon = "blsmile.png"
+html_short_title = "python3 bot library"
+#html_short_title=""
+#html_favicon = "smile3.png"
 html_static_path = []
 html_extra_path = []
 html_last_updated_fmt = '%Y-%b-%d'
@@ -74,17 +69,11 @@ html_show_sourcelink = False
 html_show_sphinx = False
 html_show_copyright = False
 html_copy_source = False
-html_use_opensearch = 'http://botlib.rtfd.io'
+html_use_opensearch = 'http://botlib.rtfd.io/'
 html_file_suffix = '.html'
-rst_prolog = """.. image:: botlib2.png
-    :width: 100%
-    :height: 2.7cm
-
-.. title:: pure python3 bot library
-"""
-
 htmlhelp_basename = 'pydoc'
 intersphinx_mapping = {
-                       'python': ('https://docs.python.org/3', None),
+                       'python': ('https://docs.python.org/3', 'objects.inv'),
+                       'sphinx': ('http://sphinx.pocoo.org/', None),
                       }
 intersphinx_cache_limit=1
