@@ -1,5 +1,4 @@
 # This file is placed in the Public Domain.
-# -*- coding: utf-8 -*-
 
 __version__ = 118
 
