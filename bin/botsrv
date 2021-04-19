@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+# This file is placed in the Public Domain.
+
+import os, sys ; sys.path.insert(0, os.getcwd())
+
+from bot.bus import Bus
+from bot.evt import Command
+from bot.hdl import Client, cmd
+from bot.irc import Cfg
+from bot.nms import Names
+from bot.obj import boot, cfg
+from bot.trc import exception
+from bot.trm import exec
+from bot.zzz import os, sys
+
+__version__ = 1.0
+
+Cfg.channel = "#botlib"
+Cfg.nick = "botlib"
+
+class Console(Client):
+
+    prompt = True
+
+    def handle(self, e):
+        super().handle(e)
+        e.wait()
+
+    def poll(self):
+        if Console.prompt:
+            return input("> ")
+
+    def raw(self, txt):
+        sys.stdout.write(txt + "\n")
+        sys.stdout.flush()
+
+def ver(event):
+    event.reply("BOTLIB %s" % __version__)
+
+def main():
+    if "INVOCATION_ID" not in os.environ:
+        print("run this program under systemd.")
+        return
+    cfg.name = "botsrv"
+    Names.walk("bot")
+    c = Console()
+    c.boot("/var/lib/bot")
+    c.add("ver", ver)
+    c.scan("/var/lib/bot/mod")
+    cfg.mods = "irc,rss,udp"
+    if cfg.txt:
+        Console.prompt = False
+        e = c.event(cfg.otxt)
+        cmd(c, e)
+        e.wait()
+        return
+    c.start()
+    c.init(cfg.mods)
+    c.wait()
+
+exec(main)
