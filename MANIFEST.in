@@ -1,5 +1,10 @@
 # This file is placed in the Public Domain.
 
+include setup.py
+include README.rst
+include MANIFEST.in
+include botd.service
 recursive-include bin *
 recursive-include docs *
+recursive-include man *
 recursice-include mod *.py

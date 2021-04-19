@@ -15,8 +15,8 @@ from bot.zzz import os, sys
 
 __version__ = 1.0
 
-Cfg.channel = "#botlib"
-Cfg.nick = "botlib"
+Cfg.channel = "#botd"
+Cfg.nick = "botd"
 
 class Console(Client):
 
@@ -35,18 +35,18 @@ class Console(Client):
         sys.stdout.flush()
 
 def ver(event):
-    event.reply("BOTLIB %s" % __version__)
+    event.reply("BOTD %s" % __version__)
 
 def main():
     if "INVOCATION_ID" not in os.environ:
         print("run this program under systemd.")
         return
-    cfg.name = "botsrv"
+    cfg.name = "botd"
     Names.walk("bot")
     c = Console()
-    c.boot("/var/lib/bot")
+    c.boot("/var/lib/botd")
     c.add("ver", ver)
-    c.scan("/var/lib/bot/mod")
+    c.scan("/var/lib/botd/mod")
     cfg.mods = "irc,rss,udp"
     if cfg.txt:
         Console.prompt = False

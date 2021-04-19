@@ -2,6 +2,7 @@
 
 from .obj import Default, Object
 from .itr import findall, findcmds, findnames
+from .utl import direct
 
 class Names(Object):
 

@@ -13,10 +13,10 @@ from bot.trc import exception
 from bot.trm import exec
 from bot.zzz import os, sys
 
-__version__ = 31
+__version__ = 1.0
 
-Cfg.channel = "#botlib"
-Cfg.nick = "botlib"
+Cfg.channel = "#botd"
+Cfg.nick = "botd"
 
 class Console(Client):
 
@@ -35,11 +35,10 @@ class Console(Client):
         sys.stdout.flush()
 
 def ver(event):
-    event.reply("GENOCIDE %s" % __version__)
+    event.reply("BOT %s" % __version__)
 
 def main():
-    Names.walk("genocide")
-    cfg.name = "gcd"
+    cfg.name = "bot"
     c = Console()
     c.boot()
     c.add("ver", ver)
