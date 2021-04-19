@@ -17,12 +17,19 @@ class Test(Client):
         if opts("v"):
             print(txt)
 
+class FlushTest(Test):
+
+    def raw(self, txt):
+        if opts("v"):
+            sys.stdout.write(txt)
+            sys.stdout.write("\n")
+
 def main():
     if os.path.exists(".bot"):
         shutil.rmtree(".bot")
     bot.url.debug = True
     cfg.wd = ".bot"
-    c = Test()
+    c = FlushTest()
     c.boot()
     c.start()
     pat = "test_%s*" % "*"
