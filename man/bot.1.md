@@ -3,7 +3,7 @@
 % April 2021
 
 # NAME
-BOT - python3 IRC bot
+BOT - client version of botd
 
 # SYNOPSIS
 | bot \<cmd>\ 
@@ -11,7 +11,7 @@ BOT - python3 IRC bot
 | bot mods=csl,irc
 
 # DESCRIPTION
-BOT is the user client version of BOTLIB, it can be used in development of bot
+BOT is the user client version of BOTD, it can be used in development of bot
 commands. Uses ~/.bot as the work directory and ./mod as the modules
 directory.
 
@@ -47,8 +47,8 @@ The hlo command is now available:
 | >
 
 # SEE ALSO
-| botsrv
-| botcmd
+| botd
+| botctl
 | ~/.bot
 | ./mod
 
