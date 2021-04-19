@@ -30,5 +30,5 @@ def main():
     unittest.TextTestRunner(verbosity=3).run(suite)
 
 exec(main)
-for e in op.trc.exc:
+for e in bot.trc.exc:
     print(e)
