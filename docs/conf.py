@@ -11,7 +11,7 @@ import os
 
 sys.path.append(os.path.abspath("."))
 
-from bot.ver import __version__
+__version__ = 1.0
 
 needs_sphinx='1.1'
 nitpick_ignore=[
@@ -88,4 +88,3 @@ intersphinx_mapping = {
                        'python': ('https://docs.python.org/3', None),
                       }
 intersphinx_cache_limit=1
-[5~
