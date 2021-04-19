@@ -88,3 +88,4 @@ intersphinx_mapping = {
                        'python': ('https://docs.python.org/3', None),
                       }
 intersphinx_cache_limit=1
+[5~

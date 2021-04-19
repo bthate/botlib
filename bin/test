@@ -3,34 +3,32 @@
 
 import os, sys ; sys.path.insert(0, os.getcwd())
 
-import time
-import unittest
+from bot.hdl import Client
+from bot.obj import cfg, opts
+from bot.trm import exec
+from bot.zzz import shutil, unittest
 
-from bot import c, cfg, op
-from bot.bus import Bus
-from bot.csl import Test, exec, parse
+import bot.trc
+import bot.url
 
-import bot.utl
+class Test(Client):
 
-import test.run
-
-def open(txt):
-    try:
-        for line in os.popen(txt).readlines():
-            print(line.rstrip())
-    except:
-        pass
+    def raw(self, txt):
+        if opts("v"):
+            print(txt)
 
 def main():
-    cfg.wd = c(".test")
-    cfg.pkgs = "bot,bot.cmd"
-    parse()
-    open("rm -fR %s" % cfg.wd)
-    bot.utl.debug = True
-    pat = "test_%s*" % cfg.cmd or "*"
+    if os.path.exists(".bot"):
+        shutil.rmtree(".bot")
+    bot.url.debug = True
+    cfg.wd = ".bot"
+    c = Test()
+    c.boot()
+    c.start()
+    pat = "test_%s*" % "*"
     suite = unittest.loader.TestLoader().discover("test", pattern=pat)
     unittest.TextTestRunner(verbosity=3).run(suite)
-    if not cfg.cmd:
-        Bus.wait(Test)
 
 exec(main)
+for e in op.trc.exc:
+    print(e)
