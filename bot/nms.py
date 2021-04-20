@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 from .obj import Default, Object
-from .itr import findall, findmods, findnames
+from .itr import findmods, findnames
 from .utl import direct
 
 class Names(Object):
@@ -220,16 +220,3 @@ class Names(Object):
         Names.names.update(tbl["names"])
         Names.modules.update(tbl["modules"])
         Names.inits.update(tbl["inits"])
-
-    @staticmethod
-    def walk(names):
-        for mn in findall(names):
-            mod = direct(mn)
-            if "cmd" not in mn:
-                Names.inits[mn.split(".")[-1]] = mn
-            Names.modules.update(findmods(mod))
-            for k, v in findnames(mod).items():
-                if k not in Names.names:
-                    Names.names[k] = []
-                if v not in Names.names[k]:
-                    Names.names[k].append(v)
