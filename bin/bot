@@ -3,15 +3,10 @@
 
 import os, sys ; sys.path.insert(0, os.getcwd())
 
-from bot.bus import Bus
-from bot.evt import Command
-from bot.irc import Cfg
 from bot.hdl import Client, cmd
 from bot.obj import cfg
-from bot.nms import Names
-from bot.trc import exception
 from bot.trm import exec
-from bot.zzz import os, sys, time
+from bot.zzz import os, sys
 
 __version__ = 118
 

@@ -12,18 +12,6 @@ def open(txt):
 
 def main():
     open("bin/clean")
-    try:
-        shutil.rmtree("build")
-    except:
-        pass
-    try:
-        shutil.rmtree("dist")
-    except:
-        pass
-    try:
-        shutil.rmtree("botlib.egg-info")
-    except:
-        pass
     for line in os.popen("python3 setup.py sdist").readlines():
         print(line.strip())
     open("python3 -mvirtualenv -p python3 env")
