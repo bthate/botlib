@@ -1,10 +1,8 @@
 # This file is placed in the Public Domain.
 
-from .itr import scan as iscan
 from .obj import Object, cfg
 from .nms import Names
 from .prs import parseargs
-from .nms import Names
 from .utl import direct, spl
 from .zzz import os, sys
 
@@ -34,18 +32,3 @@ class Loader(Object):
             mod = self.load(m)
             if mod and "init" in dir(mod):
                 mod.init(self)
-
-    def scan(self, path, name=""):
-        if not os.path.exists(path):
-            return
-        if not name:
-            name = path.split(os.sep)[-1]
-        r = os.path.dirname(path)
-        sys.path.insert(0, r)
-        for mn in [x[:-3] for x in os.listdir(path)
-                   if x and x.endswith(".py")
-                   and not x.startswith("__")
-                   and not x == "setup.py"]:
-            fqn = "%s.%s" % (name, mn)
-            mod = self.load(fqn)
-            Names.scan(mod)

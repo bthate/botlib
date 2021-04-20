@@ -25,10 +25,10 @@ class FlushTest(Test):
             sys.stdout.write("\n")
 
 def main():
-    if os.path.exists(".bot"):
-        shutil.rmtree(".bot")
+    if os.path.exists(".test"):
+        shutil.rmtree(".test")
     bot.url.debug = True
-    cfg.wd = ".bot"
+    cfg.wd = ".test"
     c = FlushTest()
     c.boot()
     c.start()

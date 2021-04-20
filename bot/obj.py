@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 from .err import ENOCLASS, ENOFILENAME
-from .zzz import datetime, importlib, js, os, sys, time, types, uuid, _thread
+from .zzz import datetime, importlib, js, os, time, types, uuid, _thread
 
 savelock = _thread.allocate_lock()
 
@@ -145,15 +145,6 @@ class Cfg(Default):
 cfg = Cfg()
 
 starttime = time.time()
-
-def boot(wd=None):
-    from .prs import parseargs
-    if len(sys.argv) >= 1:
-        parseargs(cfg, " ".join(sys.argv[1:]))
-        cfg.update(cfg.sets)
-    cfg.name = sys.argv[0].split(os.sep)[-1]
-    cfg.wd = wd or cfg.wd or os.path.expanduser("~/.%s" % cfg.name)
-    return cfg
 
 def cdir(path):
     if os.path.exists(path):

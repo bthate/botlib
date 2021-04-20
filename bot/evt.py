@@ -12,6 +12,7 @@ class Event(Object):
         self.channel = ""
         self.done = threading.Event()
         self.exc = None
+        self.orig = None
         self.result = []
         self.thrs = []
         self.type = "event"

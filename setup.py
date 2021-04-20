@@ -17,7 +17,7 @@ setup(
     long_description=read(),
     license='Public Domain',
     packages=["bot"],
-    namespace_packages=["bot"],
+    namespace_package=["bot"],
     zip_safe=False,
     scripts=["bin/bot"],
     include_package_data=False,

@@ -11,9 +11,10 @@ from bot.obj import boot, cfg
 from bot.nms import Names
 from bot.trc import exception
 from bot.trm import exec
-from bot.zzz import os, sys
+from bot.zzz import os, sys, time
 
 __version__ = 118
+starttime = time.time()
 
 class Console(Client):
 
@@ -28,7 +29,9 @@ class Console(Client):
             return input("> ")
 
     def raw(self, txt):
-        print(txt)
+        sys.stdout.write(txt)
+        sys.stdout.write("\n")
+        sys.stdout.flush()
 
 def ver(event):
     event.reply("BOT %s" % __version__)
@@ -42,6 +45,7 @@ def main():
         e = c.event(cfg.otxt)
         cmd(c, e)
         e.wait()
+        return
     elif cfg.mods:
         c.start()
         c.init(cfg.mods)
