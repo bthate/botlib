@@ -1,8 +1,7 @@
 # This file is placed in the Public Domain.
 
-from .itr import findall, findcmds, findmods, findnames, hasmod
 from .itr import scan as iscan
-from .obj import Object, ObjectList, cfg, dorepr
+from .obj import Object, cfg
 from .prs import parseargs
 from .nms import Names
 from .utl import direct, spl

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 from .obj import Default, Object
-from .itr import findall, findcmds, findmods, findnames
+from .itr import findall, findmods, findnames
 from .utl import direct
 
 class Names(Object):

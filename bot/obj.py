@@ -1,8 +1,6 @@
 # This file is placed in the Public Domain.
 
 from .err import ENOCLASS, ENOFILENAME
-from .trc import where
-from .utl import locked
 from .zzz import datetime, importlib, js, os, sys, time, types, uuid, _thread
 
 savelock = _thread.allocate_lock()
@@ -131,7 +129,7 @@ class Default(Object):
 class Cfg(Default):
 
     mods = ""
-    opts = Default() 
+    opts = Default()
     name = ""
     version = None
     wd = ""
@@ -194,10 +192,7 @@ def hook(hfn):
     cname = oname[0]
     fn = os.sep.join(oname)
     o = getcls(cname)()
-    try:
-        o.load(fn)
-    except:
-        pass
+    o.load(fn)
     return o
 
 def opts(ops):

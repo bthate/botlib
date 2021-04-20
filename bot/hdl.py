@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 from .bus import Bus
-from .err import ENOMORE, ENOTIMPLEMENTED
+from .err import ENOMORE
 from .evt import Command, Event
 from .ldr import Loader
 from .itr import findcmds
@@ -9,7 +9,6 @@ from .obj import Object, dorepr
 from .nms import Names
 from .thr import launch
 from .trc import exception
-from .utl import locked
 from .zzz import queue, time, threading, _thread
 
 cblock = _thread.allocate_lock()
@@ -93,7 +92,7 @@ class Client(Handler):
 
     def addbus(self):
         Bus.add(self)
- 
+
     def announce(self, txt):
         self.raw(txt)
 
@@ -117,7 +116,7 @@ class Client(Handler):
         return self.cmds.get(cmd, None)
 
     def handle(self, e):
-        super().put(e)        
+        super().put(e)
 
     def initialize(self):
         self.addbus()

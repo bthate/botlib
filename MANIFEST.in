@@ -2,9 +2,9 @@
 
 include setup.py
 include README.rst
+include index.rst
 include MANIFEST.in
 include botd.service
 recursive-include bin *
-recursive-include docs *
 recursive-include man *
 recursice-include mod *.py

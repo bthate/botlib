@@ -12,8 +12,8 @@ def all(otype, selector=None, index=None, timed=None):
     if selector is None:
         selector = {}
     otypes = Names.getnames(otype, [otype,])
-    for otype in otypes:
-        for fn in fns(otype, timed):
+    for t in otypes:
+        for fn in fns(t, timed):
             o = hook(fn)
             if selector and not search(o, selector):
                 continue
@@ -26,8 +26,8 @@ def all(otype, selector=None, index=None, timed=None):
 
 def deleted(otype):
     otypes = Names.getnames(otype, [otype,])
-    for otype in otypes:
-        for fn in fns(otype):
+    for t in otypes:
+        for fn in fns(t):
             o = hook(fn)
             if "_deleted" not in o or not o._deleted:
                 continue
@@ -37,26 +37,7 @@ def every(selector=None, index=None, timed=None):
     nr = -1
     if selector is None:
         selector = {}
-    otypes = Names.getnames(otype, [otype,])
-    for otype in otypes:
-        for otype in os.listdir(os.path.join(cfg.wd, "store")):
-            for fn in fns(otype, timed):
-                o = hook(fn)
-                if selector and not search(o, selector):
-                    continue
-                if "_deleted" in o and o._deleted:
-                    continue
-                nr += 1
-                if index is not None and nr != index:
-                    continue
-                yield fn, o
-
-def find(otype, selector=None, index=None, timed=None):
-    nr = -1
-    if selector is None:
-        selector = {}
-    otypes = Names.getnames(otype, [otype,])
-    for otype in otypes:
+    for otype in os.listdir(os.path.join(cfg.wd, "store")):
         for fn in fns(otype, timed):
             o = hook(fn)
             if selector and not search(o, selector):
@@ -66,25 +47,27 @@ def find(otype, selector=None, index=None, timed=None):
             nr += 1
             if index is not None and nr != index:
                 continue
-            yield (fn, o)
-        else:
-            return (None, None)
+            yield fn, o
 
-def findevent(e):
-    nr = -1
+def find(otype, selector=None, index=None, timed=None):
+    if selector is None:
+        selector = {}
     otypes = Names.getnames(otype, [otype,])
-    for otype in otypes:
-        for fn in fns(e.otype, e.timed):
+    got = False
+    nr = -1
+    for t in otypes:
+        for fn in fns(t, timed):
             o = hook(fn)
-            if e.gets and not search(o, e.gets):
+            if selector and not search(o, selector):
                 continue
             if "_deleted" in o and o._deleted:
                 continue
             nr += 1
-            if e.index is not None and nr != e.index:
+            if index is not None and nr != index:
                 continue
-            yield fn, o
-    else:
+            got = True
+            yield (fn, o)
+    if not got:
         return (None, None)
 
 def last(o):
