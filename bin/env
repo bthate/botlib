@@ -4,11 +4,8 @@
 import os
 
 def open(txt):
-    try:
-        for line in os.popen(txt).readlines():
-            print(line.rstrip())
-    except:
-        pass
+    for line in os.popen(txt).readlines():
+        print(line.rstrip())
 
 def main():
     open("bin/clean")

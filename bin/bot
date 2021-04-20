@@ -31,15 +31,16 @@ def ver(event):
     event.reply("BOT %s" % __version__)
 
 def main():
+    cfg.version = __version__
     c = Console()
+    c.boot()
     c.add("ver", ver)
-    if len(sys.argv) > 1:
-        Console.prompt = False
-        e = c.event(" ".join(sys.argv[1:]))
+    if cfg.txt:
+        c.prompt = False
+        e = c.event(cfg.otxt)
         cmd(c, e)
         e.wait()
         return
-    c.boot()
     if cfg.mods:
         c.start()
         c.init(cfg.mods)
