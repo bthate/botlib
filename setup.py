@@ -24,7 +24,7 @@ setup(
     data_files=[('share/bot', ['botd.service']),
                 ('share/man/man1', ['man/bot.1.gz']),
                 ('share/man/man8', ['man/botctl.8.gz', 'man/botd.8.gz'])],
-    classifiers=['Development Status :: 5 - Production/Stable',
+    classifiers=['Development Status :: 4 - Beta',
                  'License :: Public Domain',
                  'Operating System :: Unix',
                  'Programming Language :: Python',
