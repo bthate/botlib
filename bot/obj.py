@@ -130,7 +130,7 @@ class Cfg(Default):
 
     mods = ""
     opts = Default()
-    name = ""
+    name = "bot"
     version = None
     wd = ""
 

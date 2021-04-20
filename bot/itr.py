@@ -131,7 +131,7 @@ def hasmod(fqn):
 
 def scan(h, mod):
     mn = mod.__name__
-    h.pnames[mn.split(".")[-1]] = mn
+    h.inits[mn.split(".")[-1]] = mn
     h.modnames.update(findmods(mod))
     h.names.update(findnames(mod))
 

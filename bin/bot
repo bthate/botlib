@@ -15,9 +15,6 @@ from bot.zzz import os, sys
 
 __version__ = 118
 
-Cfg.channel = "#botd"
-Cfg.nick = "botd"
-
 class Console(Client):
 
     prompt = True
@@ -31,18 +28,15 @@ class Console(Client):
             return input("> ")
 
     def raw(self, txt):
-        sys.stdout.write(txt + "\n")
-        sys.stdout.flush()
+        print(txt)
 
 def ver(event):
     event.reply("BOT %s" % __version__)
 
 def main():
-    cfg.name = "bot"
     c = Console()
     c.boot()
     c.add("ver", ver)
-    c.scan(os.path.join(os.getcwd(), "mod"))
     if cfg.txt:
         Console.prompt = False
         e = c.event(cfg.otxt)

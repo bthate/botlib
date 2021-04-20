@@ -2,6 +2,7 @@
 
 from .itr import scan as iscan
 from .obj import Object, cfg
+from .nms import Names
 from .prs import parseargs
 from .nms import Names
 from .utl import direct, spl
@@ -47,4 +48,4 @@ class Loader(Object):
                    and not x == "setup.py"]:
             fqn = "%s.%s" % (name, mn)
             mod = self.load(fqn)
-            iscan(self, mod)
+            Names.scan(mod)

@@ -190,7 +190,6 @@ class Names(Object):
         "opt": "bot.opt",
         "prs": "bot.prs",
         "rss": "bot.rss",
-        "tbl": "bot.tbl",
         "tdo": "bot.tdo",
         "thr": "bot.thr",
         "tms": "bot.tms",
