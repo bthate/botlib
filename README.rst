@@ -5,10 +5,8 @@ Welcome to BOTLIB,
 
 BOTLIB is a pure python3 bot library you can use to program bots, uses a JSON
 in file database with a versioned readonly storage and reconstructs objects
-based on type information in the path. BOTLIB can run from systemd to
-provide restart after reboot, to provide a 24/7 channel service on IRC.
-It can be used to display RSS feeds, act as a UDP to IRC relay and you can 
-program your own commands for it. 
+based on type information in the path. It can be used to display RSS feeds,
+act as a UDP to IRC relay and you can program your own commands for it. 
 
 BOTLIB is placed in the Public Domain and has no COPYRIGHT and no LICENSE.
 
@@ -20,6 +18,75 @@ BOTLIB can be found on pypi, see http://pypi.org/project/botlib
 installation is through pypi::
 
  > sudo pip3 install botlib
+
+CONFIGURE
+=========
+
+BOTLIB has it's own CLI, the bot program, you can run it on the shell prompt 
+and, as default, it won't do anything:: 
+
+ $ bot
+ $ 
+
+use bot <cmd> to run a command directly, e.g. the cmd command shows
+a list of commands::
+
+ $ bot cmd
+ cfg,cmd,dlt,dne,dpl,flt,fnd,ftc,krn,log,met,mod,rem,rss,thr,ver,upt
+
+configuration is done with the cfg command::
+
+ $ bot cfg server=irc.freenode.net channel=\#dunkbots nick=botje
+ ok
+
+users need to be added before they can give commands, use the met command::
+
+ $ bot met ~botfather@jsonbot/daddy
+ ok
+
+RSS
+===
+
+BOTLIB provides, with the use of feedparser, the possibility to serve rss
+feeds in your channel. Install python3-feedparser if you want to display 
+rss feeds in the channel:
+
+ $ sudo apt install python3-feedparser
+
+To add an url use the rss command with an url::
+
+ $ bot rss https://github.com/bthate/botd/commits/master.atom
+ ok
+
+run the fnd (find) command to see what urls are registered::
+
+ $ bot fnd rss
+ 0 https://github.com/bthate/botd/commits/master.atom
+
+the ftc (fetch) command can be used to poll the added feeds::
+
+ $ bot ftc
+ fetched 20
+
+adding rss to mods= will load the rss module and start it's poller::
+
+ $ bot krn mods=rss
+ ok
+
+UDP
+===
+
+BOTLIB also has the possibility to serve as a UDP to IRC relay where you
+can send UDP packages to the bot and have txt displayed in the channel.
+Output to the IRC channel is done with the use python3 code to send a UDP
+packet to BOTLIB, it's unencrypted txt send to the bot and displayed in the
+joined channels::
+
+ import socket
+
+ def toudp(host=localhost, port=5500, txt=""):
+     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+     sock.sendto(bytes(txt.strip(), "utf-8"), host, port)
 
 PROGRAMMING
 ===========
@@ -73,91 +140,6 @@ now you can type the "hlo" command, showing hello <user> ::
 
     $ bot hlo
     hello root@console
-
-CONFIGURE
-=========
-
-BOTLIB has it's own CLI, the bot program, you can run it on the shell prompt 
-and, as default, it won't do anything:: 
-
- $ bot
- $ 
-
-use bot <cmd> to run a command directly, e.g. the cmd command shows
-a list of commands::
-
- $ bot cmd
- cfg,cmd,dlt,dne,dpl,flt,fnd,ftc,krn,log,met,mod,rem,rss,thr,ver,upt
-
-configuration is done with the cfg command::
-
- $ bot cfg server=irc.freenode.net channel=\#dunkbots nick=botje
- ok
-
-users need to be added before they can give commands, use the met command::
-
- $ bot met ~botfather@jsonbot/daddy
- ok
-
-RSS
-===
-
-BOTLIB provides, with the use of feedparser, the possibility to serve rss
-feeds in your channel. Install python3-feedparser if you want to display 
-rss feeds in the channel:
-
- $ sudo apt install python3-feedparser
-
-
-To add an url use the rss command with an url::
-
- $ bot rss https://github.com/bthate/botd/commits/master.atom
- ok
-
-run the fnd (find) command to see what urls are registered::
-
- $ bot fnd rss
- 0 https://github.com/bthate/botd/commits/master.atom
-
-the ftc (fetch) command can be used to poll the added feeds::
-
- $ bot ftc
- fetched 20
-
-adding rss to mods= will load the rss module and start it's poller::
-
- $ bot krn mods=rss
- ok
-
-UDP
-===
-
-BOTLIB also has the possibility to serve as a UDP to IRC relay where you
-can send UDP packages to the bot and have txt displayed in the channel.
-Output to the IRC channel is done with the use python3 code to send a UDP
-packet to BOTLIB, it's unencrypted txt send to the bot and displayed in the
-joined channels::
-
- import socket
-
- def toudp(host=localhost, port=5500, txt=""):
-     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-     sock.sendto(bytes(txt.strip(), "utf-8"), host, port)
-
-24/7
-====
-
-to run BOTLIB 24/7 you need to enable the bot service under systemd (as root)::
-
- # cp /usr/local/share/bot/botd.service /etc/systemd/system
- # systemctl enable botd
- # systemctl daemon-reload
- # botcmd cfg server=irc.freenode.net channel=\#dunkbots
- # systemctl restart botd
-
-if you don't want botlib to startup at boot, remove the service file::
-
- # rm /etc/systemd/system/botd.service
 
 CONTACT
 =======
