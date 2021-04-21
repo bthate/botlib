@@ -139,9 +139,6 @@ class Client(Handler):
     def poll(self):
         return self.iqueue.get()
 
-    #def put(self, txt):
-    #    self.iqueue.put_nowait(txt)
-
     def raw(self, txt):
         pass
 

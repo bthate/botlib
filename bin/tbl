@@ -76,9 +76,9 @@ def main():
     if len(sys.argv) > 1:
         a = sys.argv[1]
     else:
-        a = "bot"
+        a = "bot,mod"
     tbl = walk(a)
-    print(pprint.pformat(tbl, indent=4))
+    print(json.dumps(tbl, indent=4))
 
 main()
 sys.stdout.flush()

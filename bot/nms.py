@@ -223,5 +223,9 @@ class Names(Object):
 
     @staticmethod
     def overload(fn):
-        t = js.loads(s)
-        self.tbl(t)
+        try:
+            with open(fn, "r") as ofile:
+                t = js.load(ofile)
+                Names.tbl(t)
+        except FileNotFoundError:
+            pass

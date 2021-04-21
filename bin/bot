@@ -4,6 +4,7 @@
 import os, sys ; sys.path.insert(0, os.getcwd())
 
 from bot.hdl import Client, cmd
+from bot.nms import Names
 from bot.obj import cfg
 from bot.trm import exec
 from bot.zzz import os, sys
@@ -31,6 +32,7 @@ def ver(event):
     event.reply("BOT %s" % __version__)
 
 def main():
+    Names.overload("table")
     cfg.version = __version__
     c = Console()
     c.boot()
