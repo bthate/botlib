@@ -15,19 +15,11 @@ def flt(event):
         pass
     event.reply(" ".join([getname(o) for o in Bus.objs]))
 
-def ech(event):
-    if event.rest:
-        event.reply(event.rest)
-
 def krn(event):
     if not event.sets:
         event.reply(fmt(cfg, skip=["opts", "sets", "old", "res"]))
         return
     edit(cfg, event.sets)
-    cfg.save()
-    event.reply("ok")
-
-def sve(event):
     cfg.save()
     event.reply("ok")
 

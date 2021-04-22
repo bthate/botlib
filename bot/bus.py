@@ -47,7 +47,7 @@ class Bus(Object):
     def say(orig, channel, txt):
         for o in Bus.objs:
             if dorepr(o) == orig:
-                o.dosay(channel, str(txt))
+                o.say(channel, txt)
 
 def first():
     if Bus.objs:

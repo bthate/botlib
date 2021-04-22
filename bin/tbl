@@ -4,10 +4,10 @@
 import os, sys ; sys.path.insert(0, os.getcwd())
 
 import pkgutil
-import pprint
 import importlib
 import inspect
 import json
+import sys
 
 def direct(name, pname=''):
     if name in sys.modules:
@@ -72,13 +72,36 @@ def walk(names):
                 o["names"][k].append(v)
     return o
 
+def default(o):
+    if isinstance(o, O):
+        return vars(o)
+    if isinstance(o, dict):
+        return o.items()
+    if isinstance(o, list):
+        return iter(o)
+    if isinstance(o, (type(str), type(True), type(False), type(int), type(float))):
+        return o
+    return dorepr(o)
+
+def dorepr(o):
+    return '<%s.%s object at %s>' % (
+        o.__class__.__module__,
+        o.__class__.__name__,
+        hex(id(o))
+    )
+
+def tojson(o):
+    return json.dumps(o, default=default, indent=4, sort_keys=True)
+
 def main():
     if len(sys.argv) > 1:
         a = sys.argv[1]
     else:
         a = "bot,mod"
     tbl = walk(a)
-    print(json.dumps(tbl, indent=4))
+    print("# This file is placed in the Public Domain.")
+    print("")
+    print("tbl = %s" % tojson(tbl))
 
 main()
 sys.stdout.flush()

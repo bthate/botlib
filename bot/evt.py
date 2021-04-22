@@ -2,6 +2,7 @@
 
 from .bus import Bus
 from .obj import Object
+from .opt import Output
 from .prs import parseargs
 from .zzz import threading
 
@@ -37,6 +38,11 @@ class Event(Object):
     def show(self):
         if self.exc:
             self.say(self.exc)
+        bot = self.bot()
+        if bot.speed == "slow" and len(self.result) > 3:
+            Output.append(self.channel, self.result)
+            self.say("%s lines in cache, use !mre" % len(self.result))
+            return
         for txt in self.result:
             self.say(txt)
 

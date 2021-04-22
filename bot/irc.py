@@ -69,6 +69,7 @@ class IRC(Client, Output):
         self.joined = threading.Event()
         self.keeprunning = False
         self.outqueue = queue.Queue()
+        self.speed = "slow"
         self.state = Object()
         self.state.needconnect = False
         self.state.error = ""
@@ -275,6 +276,9 @@ class IRC(Client, Output):
         self.stopped = False
         self.start()
 
+    def say(self, channel, txt):
+        self.oput(channel, txt)
+
     def some(self):
         self.connected.wait()
         inbytes = self.sock.recv(512)
@@ -324,6 +328,7 @@ class DCC(Client):
         self.encoding = "utf-8"
         self.origin = ""
         self.sock = None
+        self.speed = "fast"
         self.stopped = False
 
     def raw(self, txt):

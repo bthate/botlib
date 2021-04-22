@@ -20,6 +20,7 @@ class Handler(Loader):
         self.cbs = Object()
         self.queue = queue.Queue()
         self.ready = threading.Event()
+        self.speed = "normal"
         self.stopped = False
 
     def addbus(self):
@@ -99,9 +100,6 @@ class Client(Handler):
     def clone(self, clt):
         self.cmds.update(clt.cmds)
 
-    def dosay(self, channel, txt):
-        self.raw(txt)
-
     def event(self, txt):
         c = Command()
         c.txt = txt
@@ -146,6 +144,9 @@ class Client(Handler):
         self.stop()
         time.sleep(2.0)
         self.start()
+
+    def say(self, channel, txt):
+        self.raw(txt)
 
     def start(self):
         if self.running:

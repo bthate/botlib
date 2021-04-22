@@ -14,6 +14,7 @@ def all(otype, selector=None, index=None, timed=None):
     otypes = Names.getnames(otype, [otype,])
     for t in otypes:
         for fn in fns(t, timed):
+            print(fn)
             o = hook(fn)
             if selector and not search(o, selector):
                 continue
