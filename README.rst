@@ -55,13 +55,13 @@ rss feeds in the channel:
 
 To add an url use the rss command with an url::
 
- $ bot rss https://github.com/bthate/botd/commits/master.atom
+ $ bot rss https://github.com/bthate/botlib/commits/master.atom
  ok
 
 run the fnd (find) command to see what urls are registered::
 
  $ bot fnd rss
- 0 https://github.com/bthate/botd/commits/master.atom
+ 0 https://github.com/bthate/botlib/commits/master.atom
 
 the ftc (fetch) command can be used to poll the added feeds::
 
