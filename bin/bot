@@ -11,10 +11,10 @@ from bot.trm import exec
 from bot.zzz import os, sys
 from bot.tbl import tbl
 
-__version__ = 38
+__version__ = 118
 
-Cfg.channel = "#botl"
-Cfg.nick = "botl"
+Cfg.channel = "#botlib"
+Cfg.nick = "botlib"
 
 class Console(Client):
 
@@ -34,11 +34,11 @@ class Console(Client):
         sys.stdout.flush()
 
 def ver(event):
-    event.reply("BOTL %s" % __version__)
+    event.reply("BOTLIB %s" % __version__)
 
 def main():
     Names.tbl(tbl)
-    cfg.name = "botl"
+    cfg.name = "bot"
     cfg.version = __version__
     c = Console()
     c.boot()

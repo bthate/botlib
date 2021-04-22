@@ -21,6 +21,7 @@ def fnd(event):
         args.extend(event.args[1:])
     except IndexError:
         pass
+    got = False
     for otype in t:
         for fn, o in find(otype, event.gets, event.index, event.timed):
             nr += 1
@@ -29,4 +30,7 @@ def fnd(event):
                 if "Date" in o.keys():
                     fn = os.sep.join(to_date(o.Date).split())
                 txt = txt + " %s" % (elapsed(time.time() - fntime(fn)))
+            got = True
             event.reply(txt)
+    if not got:
+        event.reply("no result")
