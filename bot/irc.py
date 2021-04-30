@@ -492,7 +492,7 @@ def dlt(event):
         event.reply("dlt <username>")
         return
     selector = {"user": event.args[0]}
-    for fn, o in find("obot.usr.User", selector):
+    for fn, o in find("bot.irc.User", selector):
         o._deleted = True
         o.save()
         event.reply("ok")

@@ -99,7 +99,7 @@ and use a type in filename reconstruction.
 
 Basic usage is this:
 
- >>> from bot.obj import Object
+ >>> from obj import Object
  >>> o = Object()
  >>> o.set("key", "value")
  >>> o.key
@@ -112,16 +112,15 @@ methods like get, items, keys, register, set, update, values.
 The bot.obj module provides the basic methods like load and save as a object
 function using an obj as the first argument:
 
- >>> import bot.obj
- >>> bot.obj.wd = "data"
- >>> from bot.obj import Object, save, load
+ >>> from obj import Object, cfg
+ >>> cfg.wd = "data"
  >>> o = Object()
  >>> o["key"] = "value"
- >>> path = save(o)
- >>> path
- 'bot.obj.Object/4b58abe2-3757-48d4-986b-d0857208dd96/2021-04-12/21:15:33.734994
+ >>> p = o.save()
+ >>> p
+ 'obj.Object/4b58abe2-3757-48d4-986b-d0857208dd96/2021-04-12/21:15:33.734994
  >>> oo = Object()
- >>> load(oo, path)
+ >>> oo.load(p)
  >> oo.key
  'value'
 

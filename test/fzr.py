@@ -1,18 +1,22 @@
 # This file is placed in the Public Domain.
 
-import os, sys ; sys.path.insert(0, os.getcwd())
+import inspect
+import os
+import sys
+import unittest
 
-from bot.evt import Event
-from bot.hdl import Handler, cmd
-from bot.itr import getmods
-from bot.krn import cprint, debug, kernel, opts
-from bot.obj import Object, dorepr, getname
-from bot.rss import Feed
-from bot.tbl import tbl
-from bot.usr import ENOUSER
-from bot.trc import exception
-from bot.ver import ver
-from bot.zzz import inspect, os, sys, unittest
+sys.path.insert(0, "bot")
+
+from evt import Event
+from hdl import Handler, cmd
+from itr import getmods
+from krn import cprint, debug, kernel, opts
+from obj import Object, dorepr, getname
+from rss import Feed
+from tbl import tbl
+from usr import ENOUSER
+from trc import exception
+from ver import ver
 
 def cb():
     if opts("v") and debug:
@@ -32,7 +36,7 @@ values['fp'] = "bla"
 values["addr"] = ("127.0.0.1", 6667)
 values["reason"] = "whyyyyy????"
 values["channel"] = "#opbot"
-values["mn"] = "bot.obj"
+values["mn"] = "obj"
 values["cmd"] = ver
 values["txt"] = "yoo2"
 values["key"] = "txt"
@@ -52,7 +56,7 @@ values["name"] = "ver"
 values["callback"] = cb
 values["e"] = Event({"txt": "thr", "orig": repr(k), "error": "test"})
 values["mod"] = cmd
-values["mns"] = "irc,udp,rss"
+values["mns"] = "log,tdo,irc,udp,rss"
 values["sleep"] = 60.0
 values["func"] = cb
 values["origin"] = "test@shell"
@@ -71,7 +75,7 @@ values["v"] = values["value"]
 values["data"] = values["e"]
 values["typ"] = Object
 values["tbl"] = tbl
-values["mnn"] = "bot.obj"
+values["mnn"] = "obj"
 values["feed"] = Feed({"rss": "https://www.reddit.com/r/python/.rss"})
 values["val"] = {}
 

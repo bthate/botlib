@@ -133,7 +133,6 @@ class Object(Obj):
         except FileNotFoundError:
             pass
         self.__stp__ = stp
-        return self
 
     def save(self, tab=False):
         assert cfg.wd
