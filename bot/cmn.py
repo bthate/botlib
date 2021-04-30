@@ -11,7 +11,6 @@ def direct(name, pname=''):
         return sys.modules[name]
     return importlib.import_module(name, pname)
 
-
 def locked(l):
     def lockeddec(func, *args, **kwargs):
         def lockedfunc(*args, **kwargs):

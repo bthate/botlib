@@ -4,11 +4,9 @@
 __version__ = 120
 
 import importlib
-import bot
+#import bot
 import os
 import sys 
-
-sys.path.insert(0, "bot")
 
 from cmn import spl
 from hdl import Client, docmd
@@ -17,7 +15,7 @@ from nms import Names, findnames
 from prs import parseargs
 from trm import exec, termreset
 
-mods = "adm,fnd,irc,log,rss,tdo,udp"
+mods = "adm,fnd,irc,log,rss,slg,tdo,udp"
 
 class CLI(Client):
 

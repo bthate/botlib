@@ -197,7 +197,7 @@ starttime = time.time()
 
 def boot(wd=None):
     if len(sys.argv) >= 1:
-        from bot.prs import parseargs
+        from prs import parseargs
         parseargs(cfg, " ".join(sys.argv[1:]))
         cfg.update(cfg.sets)
 

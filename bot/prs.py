@@ -2,7 +2,7 @@
 
 import time
 
-from obj import Default, Object
+from obj import Default, Object, cfg
 from tms import parse_time
 
 class ENOTXT(Exception):
@@ -139,3 +139,9 @@ def parseargs(o, ptxt=None):
     o.txt = " ".join(args)
     o.rest = " ".join(args[1:])
     return o
+
+def boot(wd=None):
+    if len(sys.argv) >= 1:
+        from prs import parseargs
+        parseargs(cfg, " ".join(sys.argv[1:]))
+        cfg.update(cfg.sets)
