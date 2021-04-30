@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+# This file is placed in the Public Domain.
+
+import doctest
+
+flags = doctest.REPORT_NDIFF|doctest.FAIL_FAST|doctest.ELLIPSIS
+
+
+doctest.testfile("../test/doctest1.txt", optionflags=flags)
