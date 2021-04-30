@@ -8,7 +8,7 @@ from nms import Names
 from obj import cfg, fmt, opts
 from tms import elapsed, fntime, todate
 
-def reg():
+def register():
     Names.add(fnd)
 
 def fnd(event):

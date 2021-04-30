@@ -11,7 +11,7 @@ import sys
 sys.path.insert(0, "bot")
 
 from cmn import spl
-from hdl import Client, docmd, init
+from hdl import Client, docmd
 from obj import cfg, boot, opts
 from nms import Names, findnames
 from prs import parseargs
@@ -57,11 +57,11 @@ def main():
         csl = CLI()
     else:
         csl = Console()
-    csl.reg(cfg.mods or mods)
+    csl.mods(cfg.mods or mods)
     if cfg.txt:
         return csl.cmd(cfg.otxt)
     csl.start()
-    init(cfg.mods)
+    csl.init(cfg.mods)
     csl.wait()
 
 exec(main)

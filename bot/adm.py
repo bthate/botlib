@@ -10,7 +10,7 @@ from nms import Names
 from obj import Object, cfg, fmt, getname, starttime
 from tms import elapsed
 
-def reg():
+def register():
     Names.add(cmd)
     Names.add(flt)
     Names.add(krn)

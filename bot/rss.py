@@ -43,7 +43,7 @@ try:
 except ModuleNotFoundError:
     gotparser = False
 
-def reg():
+def register():
     Names.add(dpl)
     Names.add(ftc)
     Names.add(rem)

@@ -23,7 +23,7 @@ def init():
     i.start()
     return i
 
-def reg():
+def register():
     Names.add(cfg)
     Names.add(dlt)
     Names.add(met)

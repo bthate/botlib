@@ -72,12 +72,14 @@ class Handler(Object):
         self.queue.put_nowait(e)
 
     @staticmethod
-    def reg(mns):
-        import bot
+    def mods(mns):
         for mn in spl(mns):
-            mod = direct(mn)
-            if mod and "reg" in dir(mod):
-                mod.reg()
+            try:
+                mod = direct(mn)
+            except ModuleNotFoundError:
+                continue
+            if mod and "register" in dir(mod):
+                mod.register()
 
     def register(self, name, callback):
         self.cbs[name] = callback
@@ -128,11 +130,19 @@ class Client(Handler):
 
     def getcmd(self, cmd):
         mn = Names.getmodule(cmd)
-        mod = direct(mod)
-        return getattr(mod, cmd, None)
+        mod = sys.modules.get(mn, None)
+        if mod:
+            return getattr(mod, cmd, None)
 
     def handle(self, e):
         super().put(e)
+
+    @staticmethod
+    def init(mns):
+        for mn in spl(mns):
+            mod = sys.modules.get(mn, None)
+            if mod and "init" in dir(mod):
+                mod.init()
 
     def initialize(self):
         self.addbus()
@@ -174,11 +184,6 @@ class Client(Handler):
         super().stop()
         self.ready.set()
 
-def init(mns):
-    for mn in spl(mns):
-        mod = sys.modules.get(mn, None)
-        if mod and "init" in dir(mod):
-            mod.init()
 
 def docmd(hdl, obj):
     obj.parse()
