@@ -1,14 +1,19 @@
 # This file is placed in the Public Domain.
 
-from bot.bus import first
-from bot.evt import Command
-from bot.hdl import Client
-from bot.nms import Names
-from bot.obj import cfg, opts
-from bot.thr import launch
-from bot.zzz import random, unittest
+import random
+import sys
+import unittest
 
-from test.prm import param
+sys.path.insert(0, "test")
+
+from bus import first
+from evt import Command
+from hdl import Client
+from nms import Names
+from obj import cfg, opts
+from thr import launch
+
+from prm import param
 
 class Test(Client):
 

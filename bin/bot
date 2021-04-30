@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 
-__version__ = 120
-
-import importlib
-#import bot
 import os
 import sys 
 
 from cmn import spl
-from hdl import Client, docmd
-from obj import cfg, boot, opts
+from dbs import last
+from hdl import Client, docmd, __version__
+from obj import cfg, opts
 from nms import Names, findnames
-from prs import parseargs
+from prs import boot
+from tbl import table
 from trm import exec, termreset
 
-mods = "adm,fnd,irc,log,rss,slg,tdo,udp"
+mods = "adm,fnd,irc,log,rss,tdo,udp"
 
 class CLI(Client):
 
@@ -46,18 +44,22 @@ def daemon():
     os.dup2(se.fileno(), sys.stderr.fileno())
 
 def main():
+    Names.tbl(table)
     boot()
+    cfg.wd = cfg.wd or "/var/lib/bot/"
     cfg.name = "bot"
     cfg.version = __version__
-    cfg.wd = cfg.wd or "/var/lib/bot/"
+    if cfg.txt:
+        csl = CLI()
+        csl.mods(cfg.mods or mods)
+        return csl.cmd(cfg.otxt)
     if opts("d"):
         daemon()
-        csl = CLI()
-    else:
+    if opts("c"):
         csl = Console()
+    else:
+        csl = Client()
     csl.mods(cfg.mods or mods)
-    if cfg.txt:
-        return csl.cmd(cfg.otxt)
     csl.start()
     csl.init(cfg.mods)
     csl.wait()

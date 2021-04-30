@@ -1,11 +1,12 @@
 # This file is placed in the Public Domain.
 
-from bot.bus import Bus
-from bot.nms import Names
-from bot.obj import cfg
-from bot.zzz import unittest
+import unittest
 
-from test.prm import param
+from bus import Bus
+from nms import Names
+from obj import cfg
+
+from prm import param
 
 class Test_Cmd(unittest.TestCase):
 

@@ -31,10 +31,15 @@ def flt(event):
     event.reply(" | ".join([getname(o) for o in Bus.objs]))
 
 def krn(event):
-    if not event.sets:
+    s = Object(event.sets)
+    try:
+        del s["wd"]
+    except KeyError:
+        pass
+    if not s:
         event.reply(fmt(cfg, skip=["opts", "sets", "old", "res"]))
         return
-    edit(cfg, event.sets)
+    edit(cfg, s)
     cfg.save()
     event.reply("ok")
 

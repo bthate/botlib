@@ -509,6 +509,9 @@ def met(event):
     event.reply("ok")
 
 def mre(event):
+    if event.channel is None:
+        event.reply("channel is not set.")
+        return        
     if event.channel not in Output.cache:
         event.reply("no output in %s cache." % event.channel)
         return

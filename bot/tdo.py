@@ -4,7 +4,7 @@ from dbs import find
 from nms import Names
 from obj import Object
 
-def init():
+def register():
     Names.add(dne)
     Names.add(tdo)
 

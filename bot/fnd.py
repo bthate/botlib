@@ -19,6 +19,9 @@ def fnd(event):
         return
     name = event.args[0]
     t = Names.getnames(name)
+    if not t:
+        event.reply("no %s type found" % name)
+        return
     nr = -1
     args = list(event.gets)
     try:

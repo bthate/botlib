@@ -2,9 +2,9 @@
 
 import unittest
 
-from bot.edt import edit
-from bot.obj import Cfg, cfg
-from bot.prs import parseargs
+from edt import edit
+from obj import Cfg, cfg
+from prs import parseargs
 
 cfg = Cfg()
 

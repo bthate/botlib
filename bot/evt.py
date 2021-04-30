@@ -11,7 +11,7 @@ class Event(Object):
 
     def __init__(self):
         super().__init__()
-        self.channel = ""
+        self.channel = None
         self.done = threading.Event()
         self.exc = None
         self.orig = None

@@ -1,15 +1,24 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 
-import os, sys ; sys.path.insert(0, os.getcwd())
+import os
+import shutil
+import sys
+import unittest
 
-from bot.hdl import Client
-from bot.obj import cfg, opts
-from bot.trm import exec
-from bot.zzz import shutil, unittest
+sys.path.insert(0, "bot")
 
-import bot.trc
-import bot.url
+from hdl import Client
+from nms import Names
+from obj import cfg, opts
+from prs import boot
+from tbl import table
+from trm import exec
+
+import trc
+import url
+
+mods = "adm,fnd,irc,log,rss,tdo,udp"
 
 class Test(Client):
 
@@ -17,25 +26,20 @@ class Test(Client):
         if opts("v"):
             print(txt)
 
-class FlushTest(Test):
-
-    def raw(self, txt):
-        if opts("v"):
-            sys.stdout.write(txt)
-            sys.stdout.write("\n")
-
 def main():
     if os.path.exists(".test"):
         shutil.rmtree(".test")
-    bot.url.debug = True
+    Names.tbl(table)
+    boot()
+    url.debug = True
     cfg.wd = ".test"
-    c = FlushTest()
-    c.boot()
+    c = Test()
+    c.mods(mods)
     c.start()
     pat = "test_%s*" % "*"
     suite = unittest.loader.TestLoader().discover("test", pattern=pat)
     unittest.TextTestRunner(verbosity=3).run(suite)
 
 exec(main)
-for e in bot.trc.exc:
+for e in trc.exc:
     print(e)

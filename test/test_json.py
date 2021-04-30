@@ -1,7 +1,9 @@
 # This file is placed in the Public Domain.
 
-from bot.obj import O, Obj, Object, default
-from bot.zzz import js, unittest
+import json as js
+import unittest
+
+from obj import O, Obj, Object, default
 
 class Test_JSON(unittest.TestCase):
 

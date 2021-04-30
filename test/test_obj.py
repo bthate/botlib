@@ -1,9 +1,11 @@
 # This file is placed in the Public Domain.
 
-from bot.edt import merge
-from bot.dbs import last
-from bot.obj import O, Object, gettype, dorepr
-from bot.zzz import os, unittest
+import os
+import unittest
+
+from edt import merge
+from dbs import last
+from obj import O, Object, gettype, dorepr
 
 class Test_Object(unittest.TestCase):
 
@@ -25,7 +27,7 @@ class Test_Object(unittest.TestCase):
 
     def test_json(self):
         o = Object()
-        self.assertTrue("<bot.obj.Object" in dorepr(o))
+        self.assertTrue("<obj.Object" in dorepr(o))
 
     def test_intern4(self):
         o = Object()

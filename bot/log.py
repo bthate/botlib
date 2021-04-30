@@ -3,9 +3,9 @@
 from nms import Names
 from obj import Object
 
-def init():
+def register():
     Names.add(log)
-
+    
 class Log(Object):
 
     def __init__(self):
