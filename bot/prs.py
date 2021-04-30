@@ -1,5 +1,6 @@
 # This file is placed in the Public Domain.
 
+import sys
 import time
 
 from obj import Default, Object, cfg

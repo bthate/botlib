@@ -7,6 +7,9 @@ from obj import Default, Object
 
 class Names(Object):
 
+    inits = Object({
+    })
+
     names = Default({
     })
 
@@ -24,6 +27,12 @@ class Names(Object):
     @staticmethod
     def getmodule(mn):
         return Names.modules.get(mn, None)
+
+    @staticmethod
+    def tbl(tbl):
+        Names.inits.update(tbl["inits"])
+        Names.names.update(tbl["names"])
+        Names.modules.update(tbl["modules"])
 
 def findnames(mod):
     tps = Object()
