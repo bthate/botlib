@@ -2,8 +2,8 @@
 
 import time
 
-from bot.obj import Default, Object
-from bot.utl.tms import parse_time
+from obj import Default, Object
+from tms import parse_time
 
 class ENOTXT(Exception):
 

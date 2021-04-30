@@ -4,11 +4,11 @@ import sys
 import threading
 import time
 
-from bot.bus import Bus
-from bot.edt import edit
-from bot.nms import Names
-from bot.obj import Object, cfg, fmt, getname, starttime
-from bot.utl.tms import elapsed
+from bus import Bus
+from edt import edit
+from nms import Names
+from obj import Object, cfg, fmt, getname, starttime
+from tms import elapsed
 
 def reg():
     Names.add(cmd)

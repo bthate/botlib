@@ -3,8 +3,8 @@
 import os
 import _thread
 
-from bot.obj import cfg, gettype, hook
-from bot.utl.tms import fntime
+from obj import cfg, gettype, hook
+from tms import fntime
 
 dirlock = _thread.allocate_lock()
 

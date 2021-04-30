@@ -1,7 +1,7 @@
 # This file is in the Public Domain.
 
-from bot.nms import Names
-from bot.obj import Object
+from nms import Names
+from obj import Object
 
 def init():
     Names.add(log)

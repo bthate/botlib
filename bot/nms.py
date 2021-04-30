@@ -3,7 +3,7 @@
 import json as js
 import inspect
 
-from bot.obj import Default, Object
+from obj import Default, Object
 
 class Names(Object):
 

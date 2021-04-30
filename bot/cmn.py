@@ -1,8 +1,16 @@
 # This file is placed in the Public Domain.
 
 import getpass
+import importlib
 import os
 import pwd
+import sys
+
+def direct(name, pname=''):
+    if name in sys.modules:
+        return sys.modules[name]
+    return importlib.import_module(name, pname)
+
 
 def locked(l):
     def lockeddec(func, *args, **kwargs):

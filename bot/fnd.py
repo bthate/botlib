@@ -3,10 +3,10 @@
 import os
 import time
 
-from bot.dbs import find, listfiles
-from bot.nms import Names
-from bot.obj import cfg, fmt, opts
-from bot.utl.tms import elapsed, fntime, todate
+from dbs import find, listfiles
+from nms import Names
+from obj import cfg, fmt, opts
+from tms import elapsed, fntime, todate
 
 def reg():
     Names.add(fnd)

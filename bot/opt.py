@@ -2,8 +2,8 @@
 
 import queue
 
-from bot.obj import Object, ObjectList
-from bot.utl.thr import launch
+from obj import Object, ObjectList
+from thr import launch
 
 class Output(Object):
 

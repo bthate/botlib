@@ -9,14 +9,14 @@ import time
 import threading
 import _thread
 
-from bot.bus import Bus
-from bot.evt import Command, Event
-from bot.nms import Names
-from bot.obj import Object, cfg, dorepr
-from bot.prs import parseargs
-from bot.utl.cmn import spl
-from bot.utl.thr import launch
-from bot.utl.trc import exception
+from bus import Bus
+from cmn import direct, spl
+from evt import Command, Event
+from nms import Names
+from obj import Object, cfg, dorepr
+from prs import parseargs
+from thr import launch
+from trc import exception
 
 cblock = _thread.allocate_lock()
 
@@ -75,7 +75,7 @@ class Handler(Object):
     def reg(mns):
         import bot
         for mn in spl(mns):
-            mod = getattr(bot, mn)
+            mod = direct(mn)
             if mod and "reg" in dir(mod):
                 mod.reg()
 
@@ -128,7 +128,7 @@ class Client(Handler):
 
     def getcmd(self, cmd):
         mn = Names.getmodule(cmd)
-        mod = sys.modules.get(mn, None)
+        mod = direct(mod)
         return getattr(mod, cmd, None)
 
     def handle(self, e):

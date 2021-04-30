@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 
-from bot.obj import Object, dorepr
+from obj import Object, dorepr
 
 class Bus(Object):
 

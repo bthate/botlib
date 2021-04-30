@@ -2,10 +2,10 @@
 
 import threading
 
-from bot.bus import Bus
-from bot.obj import Object
-from bot.opt import Output
-from bot.prs import parseargs
+from bus import Bus
+from obj import Object
+from opt import Output
+from prs import parseargs
 
 class Event(Object):
 

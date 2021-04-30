@@ -1,8 +1,8 @@
 # This file is in the Public Domain.
 
-from bot.dbs import find
-from bot.nms import Names
-from bot.obj import Object
+from dbs import find
+from nms import Names
+from obj import Object
 
 def init():
     Names.add(dne)

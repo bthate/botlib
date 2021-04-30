@@ -8,15 +8,15 @@ import time
 import threading
 import _thread
 
-from bot.dbs import find, last
-from bot.edt import edit
-from bot.evt import Event
-from bot.nms import Names
-from bot.hdl import Handler, Client, docmd
-from bot.obj import Cfg, Object, dorepr, fmt
-from bot.opt import Output
-from bot.utl.cmn import locked
-from bot.utl.thr import launch
+from cmn import locked
+from dbs import find, last
+from edt import edit
+from evt import Event
+from nms import Names
+from hdl import Handler, Client, docmd
+from obj import Cfg, Object, dorepr, fmt
+from opt import Output
+from thr import launch
 
 def init():
     i = IRC()

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 """
-BOTLIB has the possibility to serve as a UDP to IRC relay where you
+udp.pyB has the possibility to serve as a UDP to IRC relay where you
 can send UDP packages to the bot and have txt displayed in the channel.
 
 to enable udp start the bot with the udp module enabled::
@@ -22,10 +22,10 @@ joined channels:
 import socket
 import time
 
-from bot.bus import Bus
-from bot.dbs import last
-from bot.obj import Cfg, Object
-from bot.utl.thr import launch
+from bus import Bus
+from dbs import last
+from obj import Cfg, Object
+from thr import launch
 
 def init():
     u = UDP()

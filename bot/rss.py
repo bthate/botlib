@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 """
-BOTLIB provides, with the use of feedparser, the possibility to serve rss
+rss.py provides, with the use of feedparser, the possibility to serve rss
 feeds in your channel. Install python3-feedparser if you want to display
 rss feeds in the channel::
 
@@ -26,14 +26,14 @@ the ftc (fetch) command can be used to poll the added feeds::
 import threading
 import urllib
 
-from bot.bus import Bus
-from bot.clk import Repeater
-from bot.dbs import all, find, last, lastmatch
-from bot.edt import edit
-from bot.obj import Cfg, Default, Object
-from bot.nms import Names
-from bot.utl.thr import launch
-from bot.utl.url import geturl, striphtml, unescape
+from bus import Bus
+from clk import Repeater
+from dbs import all, find, last, lastmatch
+from edt import edit
+from obj import Cfg, Default, Object
+from nms import Names
+from thr import launch
+from url import geturl, striphtml, unescape
 
 from urllib.error import HTTPError, URLError
 
