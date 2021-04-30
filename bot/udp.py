@@ -1,12 +1,33 @@
 # This file is placed in the Public Domain.
 
-from .bus import Bus
-from .dbs import last
-from .obj import Cfg, Object
-from .thr import launch
-from .zzz import socket, time
+"""
+BOTLIB has the possibility to serve as a UDP to IRC relay where you
+can send UDP packages to the bot and have txt displayed in the channel.
 
-def init(hdl):
+to enable udp start the bot with the udp module enabled::
+
+ $ bot mods=irc,udp
+
+output to the IRC channel is done with the use python3 code to send a UDP
+packet to BOTLIB, it's unencrypted txt send to the bot and displayed in the
+joined channels:
+
+ import socket
+
+ def toudp(host=localhost, port=5500, txt=""):
+     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+     sock.sendto(bytes(txt.strip(), "utf-8"), host, port)
+"""
+
+import socket
+import time
+
+from bot.bus import Bus
+from bot.dbs import last
+from bot.obj import Cfg, Object
+from bot.utl.thr import launch
+
+def init():
     u = UDP()
     u.start()
     return u

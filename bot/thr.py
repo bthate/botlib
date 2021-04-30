@@ -1,7 +1,8 @@
 # This file is placed in the Public Domain.
 
-from .obj import Default, getname
-from .zzz import queue, threading
+import queue
+import threading
+import types
 
 class Thr(threading.Thread):
 
@@ -30,12 +31,29 @@ class Thr(threading.Thread):
         func, args = self.queue.get_nowait()
         if args:
             try:
-                target = Default(vars(args[0]))
-                self.name = (target and target.txt and target.txt.split()[0]) or self.name
+                target = vars(args[0])
+                if target and "txt" in dir(target):
+                    self.name = target.txt.split()[0] or self.name
             except (IndexError, TypeError):
                 pass
         self.setName(self.name)
         self.result = func(*args)
+
+def getname(o):
+    t = type(o)
+    if t == types.ModuleType:
+        return o.__name__
+    try:
+        n = "%s.%s" % (o.__self__.__class__.__name__, o.__name__)
+    except AttributeError:
+        try:
+            n = "%s.%s" % (o.__class__.__name__, o.__name__)
+        except AttributeError:
+            try:
+                n = o.__class__.__name__
+            except AttributeError:
+                n = o.__name__
+    return n
 
 def launch(func, *args, **kwargs):
     name = kwargs.get("name", getname(func))

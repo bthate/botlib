@@ -1,10 +1,12 @@
 # This file is placed in the Public Domain.
 
-from .zzz import os, sys, traceback
+import os
+import sys
+import traceback
 
 exc = []
 skip = ["unittest"]
-stopmarkers = ["ob", "python3.9"]
+stopmarkers = ["python3.9",]
 
 def called(depth=0):
     frame = sys._getframe(depth)

@@ -1,33 +1,49 @@
 # This file is placed in the Public Domain.
 
-from .dbs import last
-from .edt import edit
-from .evt import Event
-from .opt import Output
-from .hdl import Handler, Client, cmd
-from .obj import Cfg, Object, dorepr, fmt
-from .thr import launch
-from .usr import Users
-from .utl import locked
-from .zzz import os, queue, socket, textwrap
-from .zzz import time, threading, _thread
+import os
+import queue
+import socket
+import textwrap
+import time
+import threading
+import _thread
 
-def init(hdl):
+from bot.dbs import find, last
+from bot.edt import edit
+from bot.evt import Event
+from bot.nms import Names
+from bot.hdl import Handler, Client, docmd
+from bot.obj import Cfg, Object, dorepr, fmt
+from bot.opt import Output
+from bot.utl.cmn import locked
+from bot.utl.thr import launch
+
+def init():
     i = IRC()
     i.start()
     return i
 
+def reg():
+    Names.add(cfg)
+    Names.add(dlt)
+    Names.add(met)
+    Names.add(mre)
+
 saylock = _thread.allocate_lock()
+
+class ENOUSER(Exception):
+
+    pass
 
 class Cfg(Cfg):
 
     cc = "!"
-    channel = "#bot"
-    nick = "bot"
+    channel = "#botlib"
+    nick = "botlib"
     port = 6667
     server = "localhost"
-    realname = "bot"
-    username = "bot"
+    realname = "botlib's bot"
+    username = "botlib"
 
     def __init__(self, val=None):
         super().__init__()
@@ -82,7 +98,7 @@ class IRC(Client, Output):
         self.threaded = False
         self.users = Users()
         self.zelf = ""
-        self.register("cmd", cmd)
+        self.register("cmd", docmd)
         self.register("ERROR", ERROR)
         self.register("LOG", LOG)
         self.register("NOTICE", NOTICE)
@@ -373,6 +389,56 @@ class DCC(Client):
     def poll(self):
         return str(self.sock.recv(512), "utf8")
 
+class User(Object):
+
+    def __init__(self, val=None):
+        super().__init__()
+        self.user = ""
+        self.perms = []
+        if val:
+            self.update(val)
+
+class Users(Object):
+
+    userhosts = Object()
+
+    def allowed(self, origin, perm):
+        perm = perm.upper()
+        origin = getattr(self.userhosts, origin, origin)
+        user = self.get_user(origin)
+        if user:
+            if perm in user.perms:
+                return True
+        return False
+
+    def delete(self, origin, perm):
+        for user in self.get_users(origin):
+            try:
+                user.perms.remove(perm)
+                user.save()
+                return True
+            except ValueError:
+                pass
+
+    def get_users(self, origin=""):
+        s = {"user": origin}
+        return find("user", s)
+
+    def get_user(self, origin):
+        u = list(self.get_users(origin))
+        if u:
+            return u[-1][-1]
+
+    def perm(self, origin, permission):
+        user = self.get_user(origin)
+        if not user:
+            raise ENOUSER(origin)
+        if permission.upper() not in user.perms:
+            user.perms.append(permission.upper())
+            user.save()
+        return user
+
+
 def ERROR(hdl, obj):
     hdl.state.nrerror += 1
     hdl.state.error = obj.error
@@ -420,3 +486,34 @@ def cfg(event):
     edit(c, event.sets)
     c.save()
     event.reply("ok")
+
+def dlt(event):
+    if not event.args:
+        event.reply("dlt <username>")
+        return
+    selector = {"user": event.args[0]}
+    for fn, o in find("obot.usr.User", selector):
+        o._deleted = True
+        o.save()
+        event.reply("ok")
+        break
+
+def met(event):
+    if not event.args:
+        event.reply("met <userhost>")
+        return
+    user = User()
+    user.user = event.rest
+    user.perms = ["USER"]
+    user.save()
+    event.reply("ok")
+
+def mre(event):
+    if event.channel not in Output.cache:
+        event.reply("no output in %s cache." % event.channel)
+        return
+    for txt in range(3):
+        txt = Output.cache[event.channel].pop(0)
+        if txt:
+            event.say(txt)
+    event.reply("(+%s more)" % Output.size(event.channel))

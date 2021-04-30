@@ -1,13 +1,39 @@
 # This file is placed in the Public Domain.
 
-from .bus import Bus
-from .edt import edit
-from .clk import Repeater
-from .dbs import all, find, last, lastmatch
-from .obj import Cfg, Default, Object
-from .thr import launch
-from .url import geturl, striphtml, unescape
-from .zzz import threading, urllib
+"""
+BOTLIB provides, with the use of feedparser, the possibility to serve rss
+feeds in your channel. Install python3-feedparser if you want to display
+rss feeds in the channel::
+
+ $ sudo apt install python3-feedparser
+
+To add an url use the rss command with an url::
+
+ $ bot rss https://github.com/bthate67/botlib/commits/master.atom
+ ok
+
+run the fnd (find) command to see what urls are registered::
+
+ $ bot fnd rss
+ 0 https://github.com/bthate67/botlib/commits/master.atom
+
+the ftc (fetch) command can be used to poll the added feeds::
+
+ $ bot ftc
+ fetched 20
+"""
+
+import threading
+import urllib
+
+from bot.bus import Bus
+from bot.clk import Repeater
+from bot.dbs import all, find, last, lastmatch
+from bot.edt import edit
+from bot.obj import Cfg, Default, Object
+from bot.nms import Names
+from bot.utl.thr import launch
+from bot.utl.url import geturl, striphtml, unescape
 
 from urllib.error import HTTPError, URLError
 
@@ -17,7 +43,13 @@ try:
 except ModuleNotFoundError:
     gotparser = False
 
-def init(hdl):
+def reg():
+    Names.add(dpl)
+    Names.add(ftc)
+    Names.add(rem)
+    Names.add(rss)
+
+def init():
     f = Fetcher()
     launch(f.start)
     return f
@@ -112,6 +144,7 @@ class Fetcher(Object):
     def run(self):
         thrs = []
         for fn, o in all("rss"):
+            print(type(o))
             thrs.append(launch(self.fetch, o))
         return thrs
 

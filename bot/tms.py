@@ -1,6 +1,27 @@
 # This file is placed in the Public Domain.
 
-from .zzz import datetime, os, random, time
+import datetime
+import os
+import random
+import time
+
+dmonths = ['Bo', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
+            'Sep', 'Oct', 'Nov', 'Dec']
+
+monthint = {
+    'Jan': 1,
+    'Feb': 2,
+    'Mar': 3,
+    'Apr': 4,
+    'May': 5,
+    'Jun': 6,
+    'Jul': 7,
+    'Aug': 8,
+    'Sep': 9,
+    'Oct': 10,
+    'Nov': 11,
+    'Dec': 12
+}
 
 timestrings = [
     "%a, %d %b %Y %H:%M:%S %z",
@@ -172,3 +193,37 @@ def parse_ymd(daystr):
             valstr += c
         total += val
     return total
+
+def todate(date):
+    res = date.split()
+    ddd = ""
+    try:
+        if "+" in res[3]:
+            raise ValueError
+        if "-" in res[3]:
+            raise ValueError
+        int(res[3])
+        ddd = "{:4}-{:#02}-{:#02} {:6}".format(res[3], monthint[res[2]], int(res[1]), res[4])
+    except (IndexError, KeyError, ValueError) as ex:
+        try:
+            if "+" in res[4]:
+                raise ValueError from ex
+            if "-" in res[4]:
+                raise ValueError from ex
+            int(res[4])
+            ddd = "{:4}-{:#02}-{:02} {:6}".format(res[4], monthint[res[1]], int(res[2]), res[3])
+        except (IndexError, KeyError, ValueError):
+            try:
+                ddd = "{:4}-{:#02}-{:02} {:6}".format(res[2], monthint[res[1]], int(res[0]), res[3])
+            except (IndexError, KeyError):
+                try:
+                    ddd = "{:4}-{:#02}-{:02}".format(res[2], monthint[res[1]], int(res[0]))
+                except (IndexError, KeyError):
+                    try:
+                        ddd = "{:4}-{:#02}".format(res[2], monthint[res[1]])
+                    except (IndexError, KeyError):
+                        try:
+                            ddd = "{:4}".format(res[2])
+                        except (IndexError, KeyError):
+                            ddd = ""
+    return ddd

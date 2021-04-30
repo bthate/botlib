@@ -1,19 +1,30 @@
 # This file is placed in the Public Domain.
 
-from .bus import Bus
-from .err import ENOMORE
-from .evt import Command, Event
-from .ldr import Loader
-from .itr import findcmds
-from .obj import Object, dorepr
-from .nms import Names
-from .thr import launch
-from .trc import exception
-from .zzz import queue, time, threading, _thread
+__version__ = 120
+
+import os
+import queue
+import sys
+import time
+import threading
+import _thread
+
+from bot.bus import Bus
+from bot.evt import Command, Event
+from bot.nms import Names
+from bot.obj import Object, cfg, dorepr
+from bot.prs import parseargs
+from bot.utl.cmn import spl
+from bot.utl.thr import launch
+from bot.utl.trc import exception
 
 cblock = _thread.allocate_lock()
 
-class Handler(Loader):
+class ENOMORE(Exception):
+
+    pass
+
+class Handler(Object):
 
     def __init__(self):
         super().__init__()
@@ -26,12 +37,18 @@ class Handler(Loader):
     def addbus(self):
         Bus.add(self)
 
-    #@locked(cblock)
     def callbacks(self, event):
         if event and event.type in self.cbs:
             self.cbs[event.type](self, event)
         else:
             event.ready()
+
+    def cmd(self, txt):
+        self.prompt = False
+        e = self.event(txt)
+        docmd(self, e)
+        e.wait()
+        return e
 
     def error(self, event):
         pass
@@ -48,11 +65,19 @@ class Handler(Loader):
                 e.ready()
                 ee = Event()
                 ee.trace = exception()
-                ee.ex = ex
+                ee.exc = ex
                 self.error(ee)
 
     def put(self, e):
         self.queue.put_nowait(e)
+
+    @staticmethod
+    def reg(mns):
+        import bot
+        for mn in spl(mns):
+            mod = getattr(bot, mn)
+            if mod and "reg" in dir(mod):
+                mod.reg()
 
     def register(self, name, callback):
         self.cbs[name] = callback
@@ -81,14 +106,12 @@ class Client(Handler):
 
     def __init__(self):
         super().__init__()
-        self.cmds = Object()
         self.iqueue = queue.Queue()
         self.stopped = False
         self.running = False
         self.initialize()
 
     def add(self, name, cmd):
-        self.cmds.register(name, cmd)
         Names.modules[name] = cmd.__module__
 
     def addbus(self):
@@ -97,9 +120,6 @@ class Client(Handler):
     def announce(self, txt):
         self.raw(txt)
 
-    def clone(self, clt):
-        self.cmds.update(clt.cmds)
-
     def event(self, txt):
         c = Command()
         c.txt = txt
@@ -107,28 +127,21 @@ class Client(Handler):
         return c
 
     def getcmd(self, cmd):
-        if cmd not in self.cmds:
-            mn = Names.getmodule(cmd)
-            if mn:
-                self.load(mn)
-        return self.cmds.get(cmd, None)
+        mn = Names.getmodule(cmd)
+        mod = sys.modules.get(mn, None)
+        return getattr(mod, cmd, None)
 
     def handle(self, e):
         super().put(e)
 
     def initialize(self):
         self.addbus()
-        self.register("cmd", cmd)
+        self.register("cmd", docmd)
 
     def input(self):
         while not self.stopped:
             e = self.once()
             self.handle(e)
-
-    def load(self, name):
-        mod = super().load(name)
-        self.cmds.update(findcmds(mod))
-        return mod
 
     def once(self):
         txt = self.poll()
@@ -161,7 +174,13 @@ class Client(Handler):
         super().stop()
         self.ready.set()
 
-def cmd(hdl, obj):
+def init(mns):
+    for mn in spl(mns):
+        mod = sys.modules.get(mn, None)
+        if mod and "init" in dir(mod):
+            mod.init()
+
+def docmd(hdl, obj):
     obj.parse()
     f = hdl.getcmd(obj.cmd)
     if f:

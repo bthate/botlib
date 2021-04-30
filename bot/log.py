@@ -1,6 +1,10 @@
 # This file is in the Public Domain.
 
-from .obj import Object
+from bot.nms import Names
+from bot.obj import Object
+
+def init():
+    Names.add(log)
 
 class Log(Object):
 

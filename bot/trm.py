@@ -1,6 +1,9 @@
 # This file is placed in the Public Domain.
 
-from .zzz import atexit, readline, sys, termios
+import atexit
+import readline
+import sys
+import termios
 
 cmds = []
 resume = {}

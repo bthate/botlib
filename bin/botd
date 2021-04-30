@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 
-__version__ = 120
-
-import importlib
-import bot
 import os
 import sys 
 
-from bot.hdl import Client, docmd, init
-from bot.obj import cfg, boot, opts
-from bot.nms import Names, findnames
-from bot.prs import parseargs
-from bot.utl.cmn import spl
-from bot.utl.trm import exec, termreset
+from botd.hdl import Client, docmd, init, __version__
+from botd.obj import cfg, opts
+from botd.nms import Names, findnames
+from botd.prs import parse_cli
+from botd.tbl import table
+from botd.utl.cmn import spl
+from botd.utl.trm import exec, termreset
 
 mods = "adm,fnd,irc,log,rss,tdo,udp"
 
@@ -46,18 +43,23 @@ def daemon():
     os.dup2(se.fileno(), sys.stderr.fileno())
 
 def main():
-    boot()
-    cfg.name = "bot"
+    Names.tbl(table)
+    parse_cli()
+    cfg.name = "botd"
     cfg.version = __version__
-    cfg.wd = cfg.wd or "/var/lib/bot/"
+    cfg.wd = cfg.wd or "/var/lib/botd/"
     if opts("d"):
         daemon()
-        csl = CLI()
-    else:
+        cfg.mods += ",irc"
+    if opts("c"):
         csl = Console()
-    csl.reg(cfg.mods or mods)
+    else:
+        csl = Client()
     if cfg.txt:
+        csl = CLI()
+        csl.reg(mods)
         return csl.cmd(cfg.otxt)
+    csl.reg(cfg.mods or mods)
     csl.start()
     init(cfg.mods)
     csl.wait()

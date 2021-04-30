@@ -1,7 +1,12 @@
 # This file is in the Public Domain.
 
-from .dbs import find
-from .obj import Object
+from bot.dbs import find
+from bot.nms import Names
+from bot.obj import Object
+
+def init():
+    Names.add(dne)
+    Names.add(tdo)
 
 class Todo(Object):
 

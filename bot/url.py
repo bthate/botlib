@@ -1,6 +1,7 @@
 # This file is placed in the Public Domain.
 
-from .zzz import re, urllib
+import re
+import urllib
 
 from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen

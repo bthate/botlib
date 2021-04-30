@@ -1,8 +1,10 @@
 # This file is in the Public Domain.
 
-from .obj import Object, getname
-from .thr import launch
-from .zzz import time, threading
+import time
+import threading
+
+from bot.obj import Object, getname
+from bot.utl.thr import launch
 
 class Timer(Object):
 

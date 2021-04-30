@@ -1,9 +1,10 @@
 # This file is placed in the Public Domain.
 
-from .obj import cfg, gettype, hook
-from .nms import Names
-from .tms import fntime
-from .zzz import os, _thread
+import os
+import _thread
+
+from bot.obj import cfg, gettype, hook
+from bot.utl.tms import fntime
 
 dirlock = _thread.allocate_lock()
 
@@ -11,28 +12,23 @@ def all(otype, selector=None, index=None, timed=None):
     nr = -1
     if selector is None:
         selector = {}
-    otypes = Names.getnames(otype, [otype,])
-    for t in otypes:
-        for fn in fns(t, timed):
-            print(fn)
-            o = hook(fn)
-            if selector and not search(o, selector):
-                continue
-            if "_deleted" in o and o._deleted:
-                continue
-            nr += 1
-            if index is not None and nr != index:
-                continue
-            yield fn, o
+    for fn in fns(otype, timed):
+        o = hook(fn)
+        if selector and not search(o, selector):
+            continue
+        if "_deleted" in o and o._deleted:
+            continue
+        nr += 1
+        if index is not None and nr != index:
+            continue
+        yield fn, o
 
 def deleted(otype):
-    otypes = Names.getnames(otype, [otype,])
-    for t in otypes:
-        for fn in fns(t):
-            o = hook(fn)
-            if "_deleted" not in o or not o._deleted:
-                continue
-            yield fn, o
+    for fn in fns(otype):
+        o = hook(fn)
+        if "_deleted" not in o or not o._deleted:
+            continue
+        yield fn, o
 
 def every(selector=None, index=None, timed=None):
     nr = -1
@@ -53,21 +49,19 @@ def every(selector=None, index=None, timed=None):
 def find(otype, selector=None, index=None, timed=None):
     if selector is None:
         selector = {}
-    otypes = Names.getnames(otype, [otype,])
     got = False
     nr = -1
-    for t in otypes:
-        for fn in fns(t, timed):
-            o = hook(fn)
-            if selector and not search(o, selector):
-                continue
-            if "_deleted" in o and o._deleted:
-                continue
-            nr += 1
-            if index is not None and nr != index:
-                continue
-            got = True
-            yield (fn, o)
+    for fn in fns(otype, timed):
+        o = hook(fn)
+        if selector and not search(o, selector):
+            continue
+        if "_deleted" in o and o._deleted:
+            continue
+        nr += 1
+        if index is not None and nr != index:
+            continue
+        got = True
+        yield (fn, o)
     if not got:
         return (None, None)
 

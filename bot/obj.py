@@ -1,12 +1,59 @@
 # This file is placed in the Public Domain.
 
-from .err import ENOCLASS, ENOFILENAME
-from .zzz import datetime, importlib, js, os, time, types, uuid, _thread
+"""
+obj.py is a library you can use to program objects under python3.
+It  provides a basic BigO Object, that mimics a dict while using attribute
+access and provides a save/load to/from json files on disk. Objects can be
+searched with a little database module, provides read-only files to improve
+persistence and use a type in filename reconstruction.
+
+Basic usage is this:
+
+ >>> from obj import Object
+ >>> o = Object()
+ >>> o.key = "value"
+ >>> o.key
+ 'value'
+ >>> o
+ {"key": "value"}
+
+Objects can be saved and loaded to JSON files:
+
+ >>> from obj import Object, cfg
+ >>> cfg.wd = "data"
+ >>> o = Object()
+ >>> o.key = "value"
+ >>> path = o.save()
+ >>> oo = Object().load(path)
+ >>> oo.key
+ 'value'
+
+Objects try to mimic a dictionary while trying to be an object with normal
+attribute access as well. Hidden methods are provided as are the basic
+methods like get, items, keys, register, set, update, values.
+"""
+
+import datetime
+import json as js
+import os
+import sys
+import time
+import types
+import uuid
+import _thread
 
 savelock = _thread.allocate_lock()
 
 def gettype(o):
     return str(type(o)).split()[-1][1:-2]
+
+class ENOCLASS(Exception):
+
+    pass
+
+class ENOFILENAME(Exception):
+
+    pass
 
 class O:
 
@@ -69,6 +116,9 @@ class Obj(O):
 
 class Object(Obj):
 
+    def json(self):
+        return repr(self)
+
     def load(self, opath):
         assert cfg.wd
         if opath.count(os.sep) != 3:
@@ -83,9 +133,8 @@ class Object(Obj):
         except FileNotFoundError:
             pass
         self.__stp__ = stp
-        return stp
+        return self
 
-    #@locked(savelock)
     def save(self, tab=False):
         assert cfg.wd
         prv = os.sep.join(self.__stp__.split(os.sep)[:2])
@@ -130,7 +179,7 @@ class Cfg(Default):
 
     mods = ""
     opts = Default()
-    name = "bot"
+    name = ""
     version = None
     wd = ""
 
@@ -145,6 +194,12 @@ class Cfg(Default):
 cfg = Cfg()
 
 starttime = time.time()
+
+def boot(wd=None):
+    if len(sys.argv) >= 1:
+        from bot.prs import parseargs
+        parseargs(cfg, " ".join(sys.argv[1:]))
+        cfg.update(cfg.sets)
 
 def cdir(path):
     if os.path.exists(path):
@@ -172,8 +227,8 @@ def getcls(fullname):
         modname, clsname = fullname.rsplit(".", 1)
     except Exception as ex:
         raise ENOCLASS(fullname) from ex
-    mod = importlib.import_module(modname)
-    return getattr(mod, clsname)
+    mod = sys.modules.get(modname, None)
+    return getattr(mod, clsname, None)
 
 def hook(hfn):
     if hfn.count(os.sep) > 3:
@@ -187,7 +242,6 @@ def hook(hfn):
     return o
 
 def opts(ops):
-    global cfg
     for opt in ops:
         if opt in cfg.opts:
             return True

@@ -1,9 +1,9 @@
 # This file is placed in the Public Domain.
 
-from .err import ENOTIMPLEMENTED
-from .obj import Object, ObjectList
-from .thr import launch
-from .zzz import queue, time
+import queue
+
+from bot.obj import Object, ObjectList
+from bot.utl.thr import launch
 
 class Output(Object):
 
@@ -20,7 +20,7 @@ class Output(Object):
         Output.cache[channel].extend(txtlist)
 
     def dosay(self, channel, txt):
-        raise ENOTIMPLEMENTED("dosay")
+        pass
 
     def oput(self, channel, txt):
         self.oqueue.put_nowait((channel, txt))
@@ -46,13 +46,3 @@ class Output(Object):
     def stop(self):
         self.stopped = True
         self.oqueue.put_nowait((None, None))
-
-def mre(event):
-    if event.channel not in Output.cache:
-        event.reply("no output in %s cache." % event.channel)
-        return
-    for txt in range(3):
-        txt = Output.cache[event.channel].pop(0)
-        if txt:
-            event.say(txt)
-    event.reply("(+%s more)" % Output.size(event.channel))

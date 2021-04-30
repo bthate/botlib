@@ -1,10 +1,25 @@
 # This file is in the Public Domain.
 
-from .bus import Bus
-from .edt import edit
-from .obj import Object, cfg, fmt, getname, starttime
-from .tms import elapsed
-from .zzz import threading, time
+import sys
+import threading
+import time
+
+from bot.bus import Bus
+from bot.edt import edit
+from bot.nms import Names
+from bot.obj import Object, cfg, fmt, getname, starttime
+from bot.utl.tms import elapsed
+
+def reg():
+    Names.add(cmd)
+    Names.add(flt)
+    Names.add(krn)
+    Names.add(thr)
+    Names.add(upt)
+    Names.add(ver)
+
+def cmd(event):
+    event.reply(",".join(sorted(Names.modules)))
 
 def flt(event):
     try:
@@ -48,3 +63,6 @@ def thr(event):
 
 def upt(event):
     event.reply("uptime is %s" % elapsed(time.time() - starttime))
+
+def ver(event):
+    event.reply("%s %s" % (cfg.name.upper(), cfg.version))

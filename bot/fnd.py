@@ -1,11 +1,15 @@
 # This file is placed in the Public Domain.
 
-from .dbs import find, listfiles
-from .mbx import to_date
-from .nms import Names
-from .obj import cfg, fmt, opts
-from .tms import elapsed, fntime
-from .zzz import os, time
+import os
+import time
+
+from bot.dbs import find, listfiles
+from bot.nms import Names
+from bot.obj import cfg, fmt, opts
+from bot.utl.tms import elapsed, fntime, todate
+
+def reg():
+    Names.add(fnd)
 
 def fnd(event):
     if not event.args:
@@ -28,7 +32,7 @@ def fnd(event):
             txt = "%s %s" % (str(nr), fmt(o, args or o.keys(), skip=event.skip.keys()))
             if opts("t") or "t" in event.opts:
                 if "Date" in o.keys():
-                    fn = os.sep.join(to_date(o.Date).split())
+                    fn = os.sep.join(todate(o.Date).split())
                 txt = txt + " %s" % (elapsed(time.time() - fntime(fn)))
             got = True
             event.reply(txt)

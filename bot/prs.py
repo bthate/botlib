@@ -1,9 +1,13 @@
 # This file is placed in the Public Domain.
 
-from .err import ENOTXT
-from .obj import Default, Object
-from .tms import parse_time
-from .zzz import time
+import time
+
+from bot.obj import Default, Object
+from bot.utl.tms import parse_time
+
+class ENOTXT(Exception):
+
+    pass
 
 class Token(Object):
 

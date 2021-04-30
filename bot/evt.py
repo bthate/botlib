@@ -1,10 +1,11 @@
 # This file is in the Public Domain.
 
-from .bus import Bus
-from .obj import Object
-from .opt import Output
-from .prs import parseargs
-from .zzz import threading
+import threading
+
+from bot.bus import Bus
+from bot.obj import Object
+from bot.opt import Output
+from bot.prs import parseargs
 
 class Event(Object):
 
@@ -23,7 +24,7 @@ class Event(Object):
         return Bus.byorig(self.orig)
 
     def parse(self):
-        if self.txt:
+        if self.txt is not None:
             parseargs(self, self.txt)
 
     def ready(self):
