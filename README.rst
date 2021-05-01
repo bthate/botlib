@@ -17,7 +17,7 @@ BOTLIB can be found on pypi, see http://pypi.org/project/botlib
 
 installation is through pypi::
 
- > sudo pip3 install botlib
+ > sudo pip3 install botlib --upgrade --force-reinstall
 
 CONFIGURE
 =========
@@ -129,34 +129,34 @@ great for giving objects peristence by having their state stored in files.
 MODULES
 =======
 
-BOTLIB provides the following modules:
+BOTLIB provides the following modules::
 
-    adm		- admin
-    bus		- listeners
-    cmn		- common
-    dpt		- dispatch
-    evt		- event
-    hdl		- handler
-    irc		- bot
-    nms		- names
-    opt		- output
-    rss		- feeds
-    tdo		- todo
-    tms		- times
-    trm		- terminal
-    url		- http
-    all		- all
-    clk		- clock
-    dbs		- databases
-    edt		- edit
-    fnd		- find
-    log		- log
-    obj		- object
-    prs		- parse
-    tbl		- table
-    thr		- threads
-    trc		- trace
-    udp		- relay
+ adm		- admin
+ bus		- listeners
+ cmn		- common
+ dpt		- dispatch
+ evt		- event
+ hdl		- handler
+ irc		- bot
+ nms		- names
+ opt		- output
+ rss		- feeds
+ tdo		- todo
+ tms		- times
+ trm		- terminal
+ url		- http
+ all		- all
+ clk		- clock
+ dbs		- databases
+ edt		- edit
+ fnd		- find
+ log		- log
+ obj		- object
+ prs		- parse
+ tbl		- table
+ thr		- threads
+ trc		- trace
+ udp		- relay
 
 COMMANDS
 ========

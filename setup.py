@@ -12,7 +12,7 @@ setup(
     version='120',
     url='https://github.com/bthate/botlib',
     author='Bart Thate',
-    author_email='bthate@dds.nl', 
+    author_email='bthate67@gmail.com', 
     description="python3 bot library",
     long_description=read(),
     license='Public Domain',
