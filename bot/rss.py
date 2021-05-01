@@ -1,28 +1,5 @@
 # This file is placed in the Public Domain.
 
-"""
-rss.py provides, with the use of feedparser, the possibility to serve rss
-feeds in your channel. Install python3-feedparser if you want to display
-rss feeds in the channel::
-
- $ sudo apt install python3-feedparser
-
-To add an url use the rss command with an url::
-
- $ bot rss https://github.com/bthate67/botlib/commits/master.atom
- ok
-
-run the fnd (find) command to see what urls are registered::
-
- $ bot fnd rss
- 0 https://github.com/bthate67/botlib/commits/master.atom
-
-the ftc (fetch) command can be used to poll the added feeds::
-
- $ bot ftc
- fetched 20
-"""
-
 import threading
 import urllib
 

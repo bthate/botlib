@@ -1,38 +1,5 @@
 # This file is placed in the Public Domain.
 
-"""
-obj.py is a library you can use to program objects under python3.
-It  provides a basic BigO Object, that mimics a dict while using attribute
-access and provides a save/load to/from json files on disk. Objects can be
-searched with a little database module, provides read-only files to improve
-persistence and use a type in filename reconstruction.
-
-Basic usage is this:
-
- >>> from obj import Object
- >>> o = Object()
- >>> o.key = "value"
- >>> o.key
- 'value'
- >>> o
- {"key": "value"}
-
-Objects can be saved and loaded to JSON files:
-
- >>> from obj import Object, cfg
- >>> cfg.wd = "data"
- >>> o = Object()
- >>> o.key = "value"
- >>> path = o.save()
- >>> oo = Object().load(path)
- >>> oo.key
- 'value'
-
-Objects try to mimic a dictionary while trying to be an object with normal
-attribute access as well. Hidden methods are provided as are the basic
-methods like get, items, keys, register, set, update, values.
-"""
-
 import datetime
 import json as js
 import os

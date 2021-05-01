@@ -131,10 +131,6 @@ MODULES
 
 BOTLIB provides the following modules:
 
-.. autosummary::
-    :toctree: 
-    :template: module.rst
-
     adm		- admin
     bus		- listeners
     cmn		- common
@@ -183,9 +179,3 @@ have fun coding
 
 | Bart Thate (bthate@dds.nl, thatebart@gmail.com)
 | botfather on #dunkbots irc.freenode.net
-
-.. toctree::
-    :hidden:
-    :glob:
-
-    *
