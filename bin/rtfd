@@ -1,0 +1,6 @@
+#!/bin/bash
+# This file is placed in the Public Domain.
+
+bin/env
+env/bin/python3 env/bin/pip3 install sphinx 
+env/bin/python3 env/bin/sphinx-build docs html
