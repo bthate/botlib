@@ -20,7 +20,7 @@ from thr import launch
 
 def init():
     i = IRC()
-    i.start()
+    launch(i.start)
     return i
 
 def register():

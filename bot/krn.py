@@ -4,16 +4,16 @@ import os
 import sys
 
 from cmn import spl
-from obj import Object, cfg
+from dbs import last
+from obj import Default, Object, cfg
 from nms import Names
 from prs import parseargs
 from thr import launch
 
-all = ["bus", "clk", "dbs", "edt", "evt", "hdl", "irc", "nms", "obj", "opt", "prs", "adm", "fnd", "log", "tdo", "rss", "udp"]
-
 import adm
 import bus
 import clk
+import csl
 import dbs
 import edt
 import evt
@@ -36,6 +36,7 @@ class Kernel(Object):
     table.adm = adm
     table.bus = bus
     table.clk = clk
+    table.csl = csl
     table.dbs = dbs
     table.edt = edt
     table.evt = evt
@@ -52,15 +53,14 @@ class Kernel(Object):
     table.tdo = tdo
     table.udp = udp
 
-    @staticmethod
-    def boot(wd=None, tbl=None):
-        if tbl:
-            Names.tbl(tbl)
-        if len(sys.argv) >= 1:
-            parseargs(cfg, " ".join(sys.argv[1:]))
-            cfg.update(cfg.sets)
-        cfg.name = sys.argv[0].split(os.sep)[-1]
-        cfg.wd = wd or cfg.wd or os.path.expanduser("~/.%s" % cfg.name)
+    def boot(self):
+        last(cfg)
+        if len(sys.argv) > 1:
+            d = Default()
+            parseargs(d, " ".join(sys.argv[1:]))
+            if d.sets:
+                cfg.update(d.sets)
+        self.regs(cfg.mods)
 
     def cmd(self, txt):
         self.prompt = False
