@@ -59,13 +59,13 @@ def main():
         daemon()
     if cfg.mods:
         k.inits(cfg.mods)
-    if opts("s"):
+    if opts("c"):
+        csl = Console()
+        csl.start()
+    if opts("w"):
         c = Client()
         c.start()
-    if opts("c"):
-        c = Console()
-        c.start()
-    if opts("wcs"):
+    if opts("cw"):
         c.wait()
 
 exec(main)
