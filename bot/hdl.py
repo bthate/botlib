@@ -11,7 +11,6 @@ import _thread
 
 from bus import Bus
 from cmn import spl
-from dpt import cmd
 from evt import Command, Event
 from nms import Names
 from obj import Object, cfg, dorepr
@@ -52,6 +51,11 @@ class Handler(Object):
 
     def error(self, event):
         pass
+
+    @staticmethod
+    def getcmd(cmd):
+        from krn import Kernel
+        return Kernel.getcmd(cmd)
 
     def handler(self):
         while not self.stopped:
@@ -158,7 +162,7 @@ class Client(Handler):
 
 def docmd(hdl, obj):
     obj.parse()
-    f = cmd(obj.cmd)
+    f = hdl.getcmd(obj.cmd)
     if f:
         f(obj)
         obj.show()

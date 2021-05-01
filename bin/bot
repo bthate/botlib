@@ -4,12 +4,13 @@
 import os
 import sys 
 
-import bot.all
+sys.path.insert(0, "bot")
+
 
 from cmn import spl
 from dbs import last
-from dpt import init, register
 from hdl import Client, docmd, __version__
+from krn import Kernel
 from obj import cfg, opts
 from nms import Names, findnames
 from prs import boot
@@ -48,27 +49,26 @@ def daemon():
 
 def main():
     Names.tbl(table)
-    boot()
+    k = Kernel()
+    k.boot()
     cfg.wd = cfg.wd or "/var/lib/bot/"
     cfg.name = "bot"
     cfg.version = __version__
+    k.regs(mods+cfg.mods)
     if cfg.txt:
-        csl = CLI()
-        register(mods+cfg.mods)
-        return csl.cmd(cfg.otxt)
+        c = CLI()
+        return c.cmd(cfg.otxt)
     if opts("d"):
         daemon()
-    if opts("s"):
-        csl = Client()
-        register(mods+cfg.mods)
-        csl.start()
-        init(cfg.mods)
-        csl.wait()
     if cfg.mods:
-        csl = Console()
-        register(mods+cfg.mods)
-        csl.start()
-        init(cfg.mods)
-        csl.wait()
+        k.inits(cfg.mods)
+    if opts("s"):
+        c = Client()
+        c.start()
+    if opts("c") or cfg.mods:
+        c = Console()
+        c.start()
+    if opts("wcs"):
+        c.wait()
 
 exec(main)

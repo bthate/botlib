@@ -126,6 +126,42 @@ function using an obj as the first argument:
 
 great for giving objects peristence by having their state stored in files.
 
+MODULES
+=======
+
+BOTLIB provides the following modules:
+
+.. autosummary::
+    :toctree: 
+    :template: module.rst
+
+    adm		- admin
+    bus		- listeners
+    cmn		- common
+    dpt		- dispatch
+    evt		- event
+    hdl		- handler
+    irc		- bot
+    nms		- names
+    opt		- output
+    rss		- feeds
+    tdo		- todo
+    tms		- times
+    trm		- terminal
+    url		- http
+    all		- all
+    clk		- clock
+    dbs		- databases
+    edt		- edit
+    fnd		- find
+    log		- log
+    obj		- object
+    prs		- parse
+    tbl		- table
+    thr		- threads
+    trc		- trace
+    udp		- relay
+
 COMMANDS
 ========
 
@@ -147,3 +183,9 @@ have fun coding
 
 | Bart Thate (bthate@dds.nl, thatebart@gmail.com)
 | botfather on #dunkbots irc.freenode.net
+
+.. toctree::
+    :hidden:
+    :glob:
+
+    *
