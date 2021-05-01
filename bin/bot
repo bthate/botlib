@@ -6,7 +6,6 @@ import sys
 
 sys.path.insert(0, "bot")
 
-
 from cmn import spl
 from dbs import last
 from hdl import Client, docmd, __version__
@@ -14,10 +13,9 @@ from krn import Kernel
 from obj import cfg, opts
 from nms import Names, findnames
 from prs import boot
-from tbl import table
 from trm import exec, termreset
 
-mods = "adm,fnd,log,tdo,"
+mods = "adm,fnd,log,tdo,irc,rss,slg,udp"
 
 class CLI(Client):
 
@@ -48,13 +46,12 @@ def daemon():
     os.dup2(se.fileno(), sys.stderr.fileno())
 
 def main():
-    Names.tbl(table)
     k = Kernel()
     k.boot()
     cfg.wd = cfg.wd or "/var/lib/bot/"
     cfg.name = "bot"
     cfg.version = __version__
-    k.regs(mods+cfg.mods)
+    k.regs(cfg.mods or mods)
     if cfg.txt:
         c = CLI()
         return c.cmd(cfg.otxt)
@@ -65,7 +62,7 @@ def main():
     if opts("s"):
         c = Client()
         c.start()
-    if opts("c") or cfg.mods:
+    if opts("c"):
         c = Console()
         c.start()
     if opts("wcs"):

@@ -7,7 +7,7 @@ DynamicUser=True
 StateDirectory=bot
 LogsDirectory=bot
 CacheDirectory=bot
-ExecStart=/usr/local/bin/bot
+ExecStart=/usr/local/bin/bot -w
 CapabilityBoundingSet=CAP_NET_RAW
 
 [Install]

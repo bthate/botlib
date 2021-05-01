@@ -13,13 +13,12 @@ from krn import Kernel
 from nms import Names
 from obj import cfg, opts
 from prs import boot
-from tbl import table
 from trm import exec
 
 import trc
 import url
 
-mods = "adm,fnd,irc,log,rss,tdo,udp"
+mods = "adm,fnd,irc,log,rss,slg,tdo,udp"
 
 class Test(Client):
 
@@ -30,13 +29,12 @@ class Test(Client):
 def main():
     if os.path.exists(".test"):
         shutil.rmtree(".test")
-    Names.tbl(table)
-    k = Kernel()
-    k.boot()
     url.debug = True
     cfg.wd = ".test"
-    c = Test()
+    k = Kernel()
+    k.boot()
     k.regs(mods)
+    c = Test()
     c.start()
     pat = "test_%s*" % "*"
     suite = unittest.loader.TestLoader().discover("test", pattern=pat)

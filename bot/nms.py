@@ -32,12 +32,6 @@ class Names(Object):
     def getmodule(mn):
         return Names.modules.get(mn, None)
 
-    @staticmethod
-    def tbl(tbl):
-        Names.inits.update(tbl["inits"])
-        Names.names.update(tbl["names"])
-        Names.modules.update(tbl["modules"])
-
 def findnames(mod):
     tps = Object()
     for _key, o in inspect.getmembers(mod, inspect.isclass):
