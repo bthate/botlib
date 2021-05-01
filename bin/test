@@ -9,6 +9,7 @@ import unittest
 sys.path.insert(0, "bot")
 
 from hdl import Client
+from krn import Kernel
 from nms import Names
 from obj import cfg, opts
 from prs import boot
@@ -30,11 +31,12 @@ def main():
     if os.path.exists(".test"):
         shutil.rmtree(".test")
     Names.tbl(table)
-    boot()
+    k = Kernel()
+    k.boot()
     url.debug = True
     cfg.wd = ".test"
     c = Test()
-    c.mods(mods)
+    k.regs(mods)
     c.start()
     pat = "test_%s*" % "*"
     suite = unittest.loader.TestLoader().discover("test", pattern=pat)

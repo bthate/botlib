@@ -20,8 +20,6 @@ from trc import exception
 
 cblock = _thread.allocate_lock()
 
-import bot
-
 class ENOMORE(Exception):
 
     pass
