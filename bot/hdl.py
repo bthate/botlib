@@ -10,7 +10,8 @@ import threading
 import _thread
 
 from bus import Bus
-from cmn import direct, spl
+from cmn import spl
+from dpt import cmd
 from evt import Command, Event
 from nms import Names
 from obj import Object, cfg, dorepr
@@ -19,6 +20,8 @@ from thr import launch
 from trc import exception
 
 cblock = _thread.allocate_lock()
+
+import bot
 
 class ENOMORE(Exception):
 
@@ -33,9 +36,6 @@ class Handler(Object):
         self.ready = threading.Event()
         self.speed = "normal"
         self.stopped = False
-
-    def addbus(self):
-        Bus.add(self)
 
     def callbacks(self, event):
         if event and event.type in self.cbs:
@@ -68,18 +68,12 @@ class Handler(Object):
                 ee.exc = ex
                 self.error(ee)
 
+    def initialize(self):
+        Bus.add(self)
+        self.register("cmd", docmd)
+
     def put(self, e):
         self.queue.put_nowait(e)
-
-    @staticmethod
-    def mods(mns):
-        for mn in spl(mns):
-            try:
-                mod = direct(mn)
-            except ModuleNotFoundError:
-                continue
-            if mod and "register" in dir(mod):
-                mod.register()
 
     def register(self, name, callback):
         self.cbs[name] = callback
@@ -113,12 +107,6 @@ class Client(Handler):
         self.running = False
         self.initialize()
 
-    def add(self, name, cmd):
-        Names.modules[name] = cmd.__module__
-
-    def addbus(self):
-        Bus.add(self)
-
     def announce(self, txt):
         self.raw(txt)
 
@@ -128,25 +116,8 @@ class Client(Handler):
         c.orig = dorepr(self)
         return c
 
-    def getcmd(self, cmd):
-        mn = Names.getmodule(cmd)
-        mod = sys.modules.get(mn, None)
-        if mod:
-            return getattr(mod, cmd, None)
-
     def handle(self, e):
         super().put(e)
-
-    @staticmethod
-    def init(mns):
-        for mn in spl(mns):
-            mod = sys.modules.get(mn, None)
-            if mod and "init" in dir(mod):
-                mod.init()
-
-    def initialize(self):
-        self.addbus()
-        self.register("cmd", docmd)
 
     def input(self):
         while not self.stopped:
@@ -187,7 +158,7 @@ class Client(Handler):
 
 def docmd(hdl, obj):
     obj.parse()
-    f = hdl.getcmd(obj.cmd)
+    f = cmd(obj.cmd)
     if f:
         f(obj)
         obj.show()

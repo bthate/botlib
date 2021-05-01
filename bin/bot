@@ -4,8 +4,11 @@
 import os
 import sys 
 
+import bot.all
+
 from cmn import spl
 from dbs import last
+from dpt import init, register
 from hdl import Client, docmd, __version__
 from obj import cfg, opts
 from nms import Names, findnames
@@ -13,7 +16,7 @@ from prs import boot
 from tbl import table
 from trm import exec, termreset
 
-mods = "adm,fnd,irc,log,rss,tdo,udp"
+mods = "adm,fnd,log,tdo,"
 
 class CLI(Client):
 
@@ -51,17 +54,21 @@ def main():
     cfg.version = __version__
     if cfg.txt:
         csl = CLI()
-        csl.mods(cfg.mods or mods)
+        register(mods+cfg.mods)
         return csl.cmd(cfg.otxt)
     if opts("d"):
         daemon()
-    if opts("c"):
-        csl = Console()
-    else:
+    if opts("s"):
         csl = Client()
-    csl.mods(cfg.mods or mods)
-    csl.start()
-    csl.init(cfg.mods)
-    csl.wait()
+        register(mods+cfg.mods)
+        csl.start()
+        init(cfg.mods)
+        csl.wait()
+    if cfg.mods:
+        csl = Console()
+        register(mods+cfg.mods)
+        csl.start()
+        init(cfg.mods)
+        csl.wait()
 
 exec(main)

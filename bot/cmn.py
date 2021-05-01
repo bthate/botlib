@@ -6,11 +6,6 @@ import os
 import pwd
 import sys
 
-def direct(name, pname=''):
-    if name in sys.modules:
-        return sys.modules[name]
-    return importlib.import_module(name, pname)
-
 def locked(l):
     def lockeddec(func, *args, **kwargs):
         def lockedfunc(*args, **kwargs):

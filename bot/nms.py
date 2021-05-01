@@ -21,6 +21,10 @@ class Names(Object):
         Names.modules[func.__name__] = func.__module__
 
     @staticmethod
+    def getinit(nm, dft=None):
+        return Names.inits.get(nm, dft)
+
+    @staticmethod
     def getnames(nm, dft=None):
         return Names.names.get(nm, dft)
 
