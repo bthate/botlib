@@ -15,11 +15,8 @@ from trm import exec
 mods = "adm,fnd,log,tdo,irc,rss,slg,udp"
 
 def main():
-    cfg.wd = "/var/lib/bot/"
-    cfg.name = "bot"
-    cfg.version = __version__
     k = Kernel()
-    k.boot()
+    k.boot("bot", __version__, "/var/lib/bot/")
     cfg.mods = cfg.mods or mods
     if cfg.txt:
         c = CLI()

@@ -55,9 +55,12 @@ class Kernel(Object):
     table.tdo = tdo
     table.udp = udp
 
-    def boot(self):
-        print(cfg)
+    def boot(self, name, version, wd):
+        cfg.name = name
+        cfg.version = version
+        cfg.wd = wd
         last(cfg)
+        print(cfg)
         if len(sys.argv) > 1:
             d = Default()
             parseargs(d, " ".join(sys.argv[1:]))
