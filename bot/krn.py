@@ -3,6 +3,8 @@
 import os
 import sys
 
+#sys.path.insert(0, "bot")
+
 from cmn import spl
 from dbs import last
 from obj import Default, Object, cfg
@@ -54,6 +56,7 @@ class Kernel(Object):
     table.udp = udp
 
     def boot(self):
+        print(cfg)
         last(cfg)
         if len(sys.argv) > 1:
             d = Default()
