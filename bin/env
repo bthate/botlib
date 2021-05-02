@@ -11,7 +11,7 @@ def main():
     open("bin/clean")
     for line in os.popen("python3 setup.py sdist").readlines():
         print(line.strip())
-    open("python3 -mvirtualenv -p python3 env")
+    open("python3 -mvenv env")
     open("env/bin/pip3 install botlib -f dist --upgrade --force-reinstall")
 
 if __name__ == "__main__":
