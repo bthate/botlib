@@ -25,8 +25,6 @@ def init():
 
 def register():
     Names.add(cfg)
-    Names.add(dlt)
-    Names.add(met)
     Names.add(mre)
 
 saylock = _thread.allocate_lock()

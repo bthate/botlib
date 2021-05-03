@@ -9,7 +9,8 @@ from bot.krn import Kernel
 from bot.obj import cfg, opts
 from bot.trm import exec
 
-mods = "adm,fnd,log,tdo,irc,rss,slg,udp"
+all = "adm,fnd,log,tdo,irc,rss,slg,udp"
+min = "adm,irc"
 
 class CLI(Client):
 
@@ -28,7 +29,7 @@ class Console(CLI):
 def main():
     k = Kernel()
     k.boot("bot", __version__, os.path.expanduser("~/.bot"))
-    cfg.mods = cfg.mods or mods
+    cfg.mods = cfg.mods + min
     k.regs(cfg.mods)
     if cfg.txt:
         c = CLI()
