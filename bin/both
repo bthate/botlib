@@ -1,0 +1,3 @@
+systemctl stop bot
+systemctl start bot
+systemctl status bot

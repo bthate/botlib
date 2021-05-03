@@ -7,12 +7,10 @@ import sys
 
 from cmn import spl
 from dbs import last
-from obj import Default, Object, cfg, fmt
+from obj import Default, Object, fmt
 from nms import Names
 from prs import parseargs
 from thr import launch
-
-import bot.obj
 
 import adm
 import bus
@@ -35,6 +33,8 @@ import udp
 
 class Kernel(Object):
 
+    kernels = []
+
     table = Object()
     table.adm = adm
     table.bus = bus
@@ -55,14 +55,26 @@ class Kernel(Object):
     table.tdo = tdo
     table.udp = udp
 
+    def __init__(self):
+        super().__init__()
+        self.kernels.append(self)
+
     def boot(self, name, version, wd):
         from obj import cfg
+        cfg.wd = wd
+        last(cfg)
         cfg.name = name
         cfg.version = version
-        cfg.wd = wd
         if len(sys.argv) > 1:
-            parseargs(bot.obj.cfg, " ".join(sys.argv[1:]))
-            cfg.update(cfg.sets)
+            parseargs(cfg, " ".join(sys.argv[1:]))
+            if cfg.sets:
+                cfg.changed = True
+                cfg.update(cfg.sets)
+            if cfg.opts:
+                cfg.changed = True
+                cfg.opts.update(cfg.opts)
+        print(fmt(cfg))
+        self.regs(cfg.mods)
 
     def cmd(self, txt):
         self.prompt = False
@@ -91,3 +103,7 @@ class Kernel(Object):
             mod = self.mod(mn)
             if mod and "register" in dir(mod):
                 mod.register()
+
+    def first(self):
+        if Kernel.kernels:
+            return Kernel.kernels[0]

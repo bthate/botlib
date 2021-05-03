@@ -7,7 +7,7 @@ import time
 from bus import Bus
 from edt import edit
 from nms import Names
-from obj import Object, cfg, fmt, getname, starttime
+from obj import Object, fmt, getname, starttime
 from tms import elapsed
 
 def register():
@@ -31,16 +31,13 @@ def flt(event):
     event.reply(" | ".join([getname(o) for o in Bus.objs]))
 
 def krn(event):
-    s = Object(event.sets)
-    try:
-        del s["wd"]
-    except KeyError:
-        pass
-    if not s:
+    from obj import cfg
+    if not event.args:
         event.reply(fmt(cfg, skip=["opts", "sets", "old", "res"]))
         return
     edit(cfg, s)
-    cfg.save()
+    p = cfg.save()
+    print(p)
     event.reply("ok")
 
 def thr(event):
@@ -70,4 +67,5 @@ def upt(event):
     event.reply("uptime is %s" % elapsed(time.time() - starttime))
 
 def ver(event):
+    from obj import cfg
     event.reply("%s %s" % (cfg.name.upper(), cfg.version))

@@ -72,6 +72,11 @@ class Obj(O):
     def items(self):
         return self.__dict__.items()
 
+    def merge(self, o):
+        for k, v in self.items():
+            if not o.get(k, None):
+                o[k] = v            
+
     def register(self, key, value):
         self[str(key)] = value
 

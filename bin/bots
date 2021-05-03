@@ -4,12 +4,16 @@
 import os
 import sys 
 
+sys.path.insert(0, os.getcwd())
+
+from bot.dbs import merge
 from bot.hdl import Client, docmd, __version__
 from bot.krn import Kernel
 from bot.obj import cfg, opts
 from bot.trm import exec
 
-mods = "adm,fnd,log,tdo,irc,rss,slg,udp"
+all = ",adm,fnd,log,tdo,irc,rss,slg,udp"
+min = ",adm,irc"
 
 class CLI(Client):
 
@@ -25,14 +29,17 @@ class Console(CLI):
     def poll(self):
         return input("> ")
 
+def cmd(event):
+    event.reply(",".join(sorted(Names.modules)))
+
 def main():
+    Names.add(cmd)
     k = Kernel()
     k.boot("bots", __version__, "/var/lib/bot/")
-    cfg.mods = cfg.mods or mods
     k.regs(cfg.mods)
     if cfg.txt:
         c = CLI()
-        return c.cmd(cfg.txt)
+        return c.cmd(cfg.otxt)
     if opts("c"):
         c = Console()
     else:

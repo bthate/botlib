@@ -4,13 +4,17 @@
 import os
 import sys 
 
+sys.path.insert(0, os.getcwd())
+
+from bot.edt import overlay
 from bot.hdl import Client, docmd, __version__
 from bot.krn import Kernel
-from bot.obj import cfg, opts
+from bot.nms import Names
+from bot.obj import Cfg, cfg, opts
 from bot.trm import exec
 
-all = "adm,fnd,log,tdo,irc,rss,slg,udp"
-min = "adm,irc"
+all = ",adm,fnd,log,tdo,irc,rss,slg,udp"
+min = ",adm,irc"
 
 class CLI(Client):
 
@@ -26,14 +30,16 @@ class Console(CLI):
     def poll(self):
         return input("> ")
 
+def cmd(event):
+    event.reply(",".join(sorted(Names.modules)))
+
 def main():
+    Names.add(cmd)
     k = Kernel()
     k.boot("bot", __version__, os.path.expanduser("~/.bot"))
-    cfg.mods = cfg.mods + min
-    k.regs(cfg.mods)
     if cfg.txt:
         c = CLI()
-        return c.cmd(cfg.txt)
+        return c.cmd(cfg.otxt)
     c = Console()
     if cfg.mods:     
         k.inits(cfg.mods)

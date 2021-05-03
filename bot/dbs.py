@@ -74,6 +74,16 @@ def last(o):
         stp = os.sep.join(spl[-4:])
         return stp
 
+def merge(o):
+    path, l = lastfn(str(gettype(o)))
+    if  l:
+        o.merge(l)
+        o.save()
+    if path:
+        spl = path.split(os.sep)
+        stp = os.sep.join(spl[-4:])
+        return stp
+
 def lastmatch(otype, selector=None, index=None, timed=None):
     res = sorted(find(otype, selector, index, timed), key=lambda x: fntime(x[0]))
     if res:

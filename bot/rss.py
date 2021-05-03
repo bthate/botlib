@@ -157,7 +157,7 @@ def dpl(event):
         event.reply("dpl <stringinurl> <item1,item2>")
         return
     setter = {"display_list": event.args[1]}
-    fn, o = lastmatch("rss", {"rss": event.args[0]})
+    fn, o = lastmatch("bot.rss.Rss", {"rss": event.args[0]})
     if o:
         edit(o, setter)
         o.save()
@@ -182,7 +182,7 @@ def rem(event):
     selector = {"rss": event.args[0]}
     nr = 0
     got = []
-    for fn, o in find("rss", selector):
+    for fn, o in find("bot.rss.Rss", selector):
         nr += 1
         o._deleted = True
         got.append(o)
@@ -195,7 +195,7 @@ def rss(event):
         event.reply("rss <url>")
         return
     url = event.args[0]
-    res = list(find("rss", {"rss": url}))
+    res = list(find("bot.rss.Rss", {"rss": url}))
     if res:
         return
     o = Rss()
