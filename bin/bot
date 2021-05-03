@@ -18,11 +18,12 @@ def main():
     k = Kernel()
     k.boot("bot", __version__, "/var/lib/bot/")
     cfg.mods = cfg.mods or mods
+    k.regs(cfg.mods)
     if cfg.txt:
         c = CLI()
         return c.cmd(cfg.txt)
-    if opts("w"):
-        k.inits(mods)
+    if cfg.mods or opts("w"):
+        k.inits(cfg.mods)
         c = Client()
         c.start()
         c.wait()

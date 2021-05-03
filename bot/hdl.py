@@ -160,6 +160,7 @@ class Client(Handler):
 
 def docmd(hdl, obj):
     obj.parse()
+    print(obj)
     f = hdl.getcmd(obj.cmd)
     if f:
         f(obj)

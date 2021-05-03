@@ -7,7 +7,7 @@ import sys
 
 from cmn import spl
 from dbs import last
-from obj import Default, Object, cfg
+from obj import Default, Object, cfg, fmt
 from nms import Names
 from prs import parseargs
 from thr import launch
@@ -60,13 +60,13 @@ class Kernel(Object):
         cfg.version = version
         cfg.wd = wd
         last(cfg)
-        print(cfg)
         if len(sys.argv) > 1:
             d = Default()
             parseargs(d, " ".join(sys.argv[1:]))
             if d.sets:
                 cfg.update(d.sets)
-        self.regs(cfg.mods)
+                #cfg.save()
+            cfg.txt = d.txt
 
     def cmd(self, txt):
         self.prompt = False
@@ -77,7 +77,9 @@ class Kernel(Object):
             
     @staticmethod
     def getcmd(c):
+        print(Names.modules)
         mn = Names.getmodule(c)
+        print(mn)
         mod = Kernel.table.get(mn, None)
         return getattr(mod, c, None)
 
