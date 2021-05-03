@@ -4,27 +4,38 @@
 import os
 import sys 
 
-sys.path.insert(0, "bot")
-
-from csl import CLI
-from hdl import Client, docmd, __version__
-from krn import Kernel
-from obj import cfg, opts
-from trm import exec
+from bot.hdl import Client, docmd, __version__
+from bot.krn import Kernel
+from bot.obj import cfg, opts
+from bot.trm import exec
 
 mods = "adm,fnd,log,tdo,irc,rss,slg,udp"
 
+class CLI(Client):
+
+    def handle(self, e):
+        super().handle(e)
+        e.wait()
+
+    def raw(self, txt):
+        print(txt)
+
+class Console(CLI):
+
+    def poll(self):
+        return input("> ")
+
 def main():
     k = Kernel()
-    k.boot("bot", __version__, "/var/lib/bot/")
+    k.boot("bot", __version__, os.path.expanduser("~/.bot"))
     cfg.mods = cfg.mods or mods
     k.regs(cfg.mods)
     if cfg.txt:
         c = CLI()
         return c.cmd(cfg.txt)
-    if cfg.mods or opts("w"):
+    c = Console()
+    if cfg.mods:     
         k.inits(cfg.mods)
-        c = Client()
         c.start()
         c.wait()
 

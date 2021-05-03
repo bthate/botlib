@@ -68,9 +68,7 @@ def find(otype, selector=None, index=None, timed=None):
 def last(o):
     path, l = lastfn(str(gettype(o)))
     if  l:
-        print(l)
         o.update(l)
-        print(o)
     if path:
         spl = path.split(os.sep)
         stp = os.sep.join(spl[-4:])

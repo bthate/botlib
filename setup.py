@@ -17,7 +17,7 @@ setup(
     long_description=read(),
     license='Public Domain',
     packages=["bot"],
-    scripts=["bin/bot", "bin/botc"],
+    scripts=["bin/bot", "bin/botc", "bin/bots"],
     classifiers=['Development Status :: 4 - Beta',
                  'License :: Public Domain',
                  'Operating System :: Unix',

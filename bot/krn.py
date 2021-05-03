@@ -12,10 +12,11 @@ from nms import Names
 from prs import parseargs
 from thr import launch
 
+import bot.obj
+
 import adm
 import bus
 import clk
-import csl
 import dbs
 import edt
 import evt
@@ -38,7 +39,6 @@ class Kernel(Object):
     table.adm = adm
     table.bus = bus
     table.clk = clk
-    table.csl = csl
     table.dbs = dbs
     table.edt = edt
     table.evt = evt
@@ -56,17 +56,13 @@ class Kernel(Object):
     table.udp = udp
 
     def boot(self, name, version, wd):
+        from obj import cfg
         cfg.name = name
         cfg.version = version
         cfg.wd = wd
-        last(cfg)
         if len(sys.argv) > 1:
-            d = Default()
-            parseargs(d, " ".join(sys.argv[1:]))
-            if d.sets:
-                cfg.update(d.sets)
-                #cfg.save()
-            cfg.txt = d.txt
+            parseargs(bot.obj.cfg, " ".join(sys.argv[1:]))
+            cfg.update(cfg.sets)
 
     def cmd(self, txt):
         self.prompt = False
@@ -77,9 +73,7 @@ class Kernel(Object):
             
     @staticmethod
     def getcmd(c):
-        print(Names.modules)
         mn = Names.getmodule(c)
-        print(mn)
         mod = Kernel.table.get(mn, None)
         return getattr(mod, c, None)
 

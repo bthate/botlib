@@ -53,6 +53,9 @@ class O:
     def __repr__(self):
         return js.dumps(self.__dict__, default=default, sort_keys=True)
 
+    def __str__(self):
+        return str(self.__dict__)
+
 class Obj(O):
 
     def __init__(self, *args, **kwargs):
