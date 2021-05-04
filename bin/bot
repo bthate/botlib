@@ -6,6 +6,7 @@ import sys
 
 sys.path.insert(0, "bot")
 
+import bot.int
 import obj
 
 from hdl import Client
