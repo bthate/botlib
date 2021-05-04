@@ -1,5 +1,6 @@
 # This file is placed in the Public Domain.
 
+import random
 import unittest
 
 from hdl import Bus
@@ -33,7 +34,8 @@ def consume():
 
 def exec():
     c = Bus.objs[0]
-    l = sorted(Names.modules)
+    l = list(Names.modules)
+    random.shuffle(l)
     for cmd in l:
         for ex in getattr(param, cmd, [""]):
             e = c.event(cmd + " " + ex)

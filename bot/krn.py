@@ -49,6 +49,7 @@ class Kernel(Loader):
     def __init__(self):
         super().__init__()
         self.cfg = Cfg()
+        self.starttime = time.time()
         kernels.append(self)
 
     def boot(self, name, version):

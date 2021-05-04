@@ -50,7 +50,8 @@ def consume():
 
 def exec():
     c = first()
-    l = sorted(Names.modules)
+    l = list(Names.modules)
+    random.shuffle(l)
     for cmd in l:
         for ex in getattr(param, cmd, [""]):
             e = c.event(cmd + " " + ex)
