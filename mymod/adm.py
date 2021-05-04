@@ -20,7 +20,7 @@ def register():
 def flt(event):
     try:
         index = int(event.args[0])
-        event.reply(str(Bus.objs[index]))
+        event.reply(fmt(Bus.objs[index], skip=["queue", "ready", "iqueue"]))
         return
     except (TypeError, IndexError):
         pass
@@ -36,6 +36,7 @@ def krn(event):
     event.reply("ok")
 
 def thr(event):
+    k = kernel()
     psformat = "%s %s"
     result = []
     for thr in sorted(threading.enumerate(), key=lambda x: x.getName()):
@@ -46,7 +47,7 @@ def thr(event):
         if o.get("sleep", None):
             up = o.sleep - int(time.time() - o.state.latest)
         else:
-            up = int(time.time() - starttime)
+            up = int(time.time() - k.starttime)
         thrname = thr.getName()
         if not thrname:
             continue
