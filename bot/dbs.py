@@ -1,9 +1,10 @@
 # This file is placed in the Public Domain.
 
+import obj
 import os
 import _thread
 
-from obj import cfg, gettype, hook
+from obj import gettype, hook
 from tms import fntime
 
 dirlock = _thread.allocate_lock()
@@ -34,7 +35,7 @@ def every(selector=None, index=None, timed=None):
     nr = -1
     if selector is None:
         selector = {}
-    for otype in os.listdir(os.path.join(cfg.wd, "store")):
+    for otype in os.listdir(os.path.join(obj.wd, "store")):
         for fn in fns(otype, timed):
             o = hook(fn)
             if selector and not search(o, selector):
@@ -106,8 +107,8 @@ def lastfn(otype):
 def fns(name, timed=None):
     if not name:
         return []
-    assert cfg.wd
-    p = os.path.join(cfg.wd, "store", name) + os.sep
+    assert obj.wd
+    p = os.path.join(obj.wd, "store", name) + os.sep
     res = []
     d = ""
     for rootdir, dirs, _files in os.walk(p, topdown=False):

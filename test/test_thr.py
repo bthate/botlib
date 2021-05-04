@@ -10,7 +10,7 @@ from bus import first
 from evt import Command
 from hdl import Client
 from nms import Names
-from obj import cfg, opts
+from run import kernel, opts
 from thr import launch
 
 from prm import param
@@ -24,8 +24,10 @@ class Test(Client):
 class Test_Threaded(unittest.TestCase):
 
     def test_thrs(self):
+        k = kernel()
         thrs = []
-        for x in range(cfg.index or 1):
+        print(k.cfg)
+        for x in range(k.cfg.index or 1):
             thr = launch(exec)
             thrs.append(thr)
         for thr in thrs:

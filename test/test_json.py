@@ -11,13 +11,13 @@ class Test_JSON(unittest.TestCase):
         o = O()
         o.test = "bla"
         v = js.dumps(o, default=default)
-        self.assertTrue(str(o) == v)
+        self.assertTrue(repr(o) == v)
 
     def test_jsonObject(self):
         o = Object()
         o.test = "bla"
         v = js.dumps(o, default=default)
-        self.assertEqual(str(o),v)
+        self.assertEqual(repr(o),v)
 
     def test_jsonreconstructO(self):
         o = O()

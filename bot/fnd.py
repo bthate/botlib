@@ -5,7 +5,8 @@ import time
 
 from dbs import find, listfiles
 from nms import Names
-from obj import cfg, fmt, opts
+from obj import fmt, wd
+from run import opts
 from tms import elapsed, fntime, todate
 
 def register():
@@ -13,7 +14,7 @@ def register():
 
 def fnd(event):
     if not event.args:
-        fls = listfiles(cfg.wd)
+        fls = listfiles(wd)
         if fls:
             event.reply(" | ".join([x for x in fls]))
         return

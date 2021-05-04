@@ -10,6 +10,7 @@ import uuid
 import _thread
 
 savelock = _thread.allocate_lock()
+wd = ""
 
 def gettype(o):
     return str(type(o)).split()[-1][1:-2]
@@ -95,12 +96,12 @@ class Object(Obj):
         return repr(self)
 
     def load(self, opath):
-        assert cfg.wd
+        assert wd
         if opath.count(os.sep) != 3:
             raise ENOFILENAME(opath)
         spl = opath.split(os.sep)
         stp = os.sep.join(spl[-4:])
-        lpath = os.path.join(cfg.wd, "store", stp)
+        lpath = os.path.join(wd, "store", stp)
         try:
             with open(lpath, "r") as ofile:
                 d = js.load(ofile, object_hook=Obj)
@@ -110,10 +111,10 @@ class Object(Obj):
         self.__stp__ = stp
 
     def save(self, tab=False):
-        assert cfg.wd
+        assert wd
         prv = os.sep.join(self.__stp__.split(os.sep)[:2])
         self.__stp__ = os.path.join(prv, os.sep.join(str(datetime.datetime.now()).split()))
-        opath = os.path.join(cfg.wd, "store", self.__stp__)
+        opath = os.path.join(wd, "store", self.__stp__)
         cdir(opath)
         with open(opath, "w") as ofile:
             js.dump(self, ofile, default=default, indent=4, sort_keys=True)
@@ -151,23 +152,7 @@ class Default(Object):
 
 class Cfg(Default):
 
-    mods = ""
-    opts = Default()
-    name = ""
-    version = None
-    wd = ""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.mods = Cfg.mods
-        self.opts = Cfg.opts
-        self.name = Cfg.name
-        self.version = Cfg.version
-        self.wd = Cfg.wd
-
-cfg = Cfg()
-
-starttime = time.time()
+    pass
 
 def cdir(path):
     if os.path.exists(path):
@@ -208,12 +193,6 @@ def hook(hfn):
     o = getcls(cname)()
     o.load(fn)
     return o
-
-def opts(ops):
-    for opt in ops:
-        if opt in cfg.opts:
-            return True
-    return False
 
 def default(o):
     if isinstance(o, O):

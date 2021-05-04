@@ -1,7 +1,5 @@
 # This file is placed in the Public Domain.
 
-__version__ = 120
-
 import os
 import queue
 import sys
@@ -13,8 +11,9 @@ from bus import Bus
 from cmn import spl
 from evt import Command, Event
 from nms import Names
-from obj import Object, cfg, dorepr
+from obj import Object, dorepr
 from prs import parseargs
+from run import kernel
 from thr import launch
 from trc import exception
 
@@ -40,20 +39,13 @@ class Handler(Object):
         else:
             event.ready()
 
-    def cmd(self, txt):
-        self.prompt = False
-        e = self.event(txt)
-        docmd(self, e)
-        e.wait()
-        return e
-
     def error(self, event):
         pass
 
     @staticmethod
     def getcmd(cmd):
-        from krn import Kernel
-        return Kernel.getcmd(cmd)
+        k = kernel()
+        return k.getcmd(cmd)
 
     def handler(self):
         while not self.stopped:
@@ -111,6 +103,18 @@ class Client(Handler):
 
     def announce(self, txt):
         self.raw(txt)
+
+    def cmd(self, txt):
+        self.prompt = False
+        e = self.event(txt)
+        docmd(self, e)
+        e.wait()
+        return e
+
+    @staticmethod
+    def getcmd(cmd):
+        k = kernel()
+        return k.getcmd(cmd)
 
     def event(self, txt):
         c = Command()

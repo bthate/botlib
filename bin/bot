@@ -4,45 +4,40 @@
 import os
 import sys 
 
-sys.path.insert(0, os.getcwd())
+sys.path.insert(0, "bot")
 
-from bot.edt import overlay
-from bot.hdl import Client, docmd, __version__
-from bot.krn import Kernel
-from bot.nms import Names
-from bot.obj import Cfg, cfg, opts
-from bot.trm import exec
+import obj
 
-all = ",adm,fnd,log,tdo,irc,rss,slg,udp"
-min = ",adm,irc"
+from hdl import Client
+from krn import Kernel
+from obj import fmt, opts
+from trm import exec
+from ver import __version__
 
 class CLI(Client):
-
-    def handle(self, e):
-        super().handle(e)
-        e.wait()
 
     def raw(self, txt):
         print(txt)
 
 class Console(CLI):
 
+    def handle(self, e):
+        super().handle(e)
+        e.wait()
+
     def poll(self):
         return input("> ")
 
-def cmd(event):
-    event.reply(",".join(sorted(Names.modules)))
-
 def main():
-    Names.add(cmd)
+    obj.wd = os.path.expanduser("~/.bot")
     k = Kernel()
-    k.boot("bot", __version__, os.path.expanduser("~/.bot"))
-    if cfg.txt:
+    k.boot("bot", __version__)
+    if k.cfg.txt:
         c = CLI()
-        return c.cmd(cfg.otxt)
+        return c.cmd(k.cfg.otxt)
     c = Console()
-    if cfg.mods:     
-        k.inits(cfg.mods)
+    if k.cfg.mods:     
+        k.inits(k.cfg.mods)
         c.start()
         c.wait()
 

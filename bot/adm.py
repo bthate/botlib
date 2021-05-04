@@ -7,19 +7,15 @@ import time
 from bus import Bus
 from edt import edit
 from nms import Names
-from obj import Object, fmt, getname, starttime
+from obj import Object, fmt, getname
+from run import kernel
 from tms import elapsed
 
 def register():
-    Names.add(cmd)
     Names.add(flt)
     Names.add(krn)
     Names.add(thr)
     Names.add(upt)
-    Names.add(ver)
-
-def cmd(event):
-    event.reply(",".join(sorted(Names.modules)))
 
 def flt(event):
     try:
@@ -31,13 +27,12 @@ def flt(event):
     event.reply(" | ".join([getname(o) for o in Bus.objs]))
 
 def krn(event):
-    from obj import cfg
+    k = kernel() 
     if not event.args:
-        event.reply(fmt(cfg, skip=["opts", "sets", "old", "res"]))
+        event.reply(fmt(k.cfg, skip=["opts", "sets", "old", "res"]))
         return
-    edit(cfg, s)
-    p = cfg.save()
-    print(p)
+    edit(k.cfg, event.sets)
+    p = k.cfg.save()
     event.reply("ok")
 
 def thr(event):
@@ -64,8 +59,5 @@ def thr(event):
         event.reply(" | ".join(res))
 
 def upt(event):
-    event.reply("uptime is %s" % elapsed(time.time() - starttime))
-
-def ver(event):
-    from obj import cfg
-    event.reply("%s %s" % (cfg.name.upper(), cfg.version))
+    k = kernel()
+    event.reply("uptime is %s" % elapsed(time.time() - k.cfg.starttime))

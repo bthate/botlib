@@ -8,17 +8,17 @@ import unittest
 
 sys.path.insert(0, "bot")
 
+import obj
+
 from hdl import Client
 from krn import Kernel
 from nms import Names
-from obj import cfg, opts
-from prs import boot
 from trm import exec
+from run import opts
+from ver import __version__
 
 import trc
 import url
-
-mods = "adm,fnd,irc,log,rss,slg,tdo,udp"
 
 class Test(Client):
 
@@ -29,11 +29,10 @@ class Test(Client):
 def main():
     if os.path.exists(".test"):
         shutil.rmtree(".test")
+    obj.wd = ".test"
     url.debug = True
-    cfg.wd = ".test"
     k = Kernel()
-    k.boot()
-    k.regs(mods)
+    k.boot("test", __version__)
     c = Test()
     c.start()
     pat = "test_%s*" % "*"

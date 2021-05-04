@@ -4,14 +4,15 @@ import unittest
 
 from bus import Bus
 from nms import Names
-from obj import cfg
+from run import kernel
 
 from prm import param
 
 class Test_Cmd(unittest.TestCase):
 
     def test_cmds(self):
-        for x in range(cfg.index or 1):
+        k = kernel()
+        for x in range(k.cfg.index or 1):
             exec()
         consume()
 
@@ -28,8 +29,6 @@ def consume():
             events.remove(f)
         except ValueError:
             continue
-    #for e in events:
-    #    print(e)
     return res
 
 def exec():
