@@ -7,8 +7,7 @@ import unittest
 sys.path.insert(0, "test")
 
 from bus import first
-from evt import Command
-from hdl import Client
+from hdl import Client, Command
 from nms import Names
 from run import kernel, opts
 from thr import launch
