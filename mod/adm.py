@@ -4,8 +4,8 @@ import sys
 import threading
 import time
 
-from bus import Bus
 from edt import edit
+from hdl import Bus
 from nms import Names
 from obj import Object, fmt, getname
 from run import kernel

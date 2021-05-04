@@ -1,8 +1,7 @@
 # This file is in the Public Domain.
 
-from dbs import find
 from nms import Names
-from obj import Object
+from obj import Object, find
 
 def register():
     Names.add(dne)

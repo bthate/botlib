@@ -1,30 +1,106 @@
 # This file is placed in the Public Domain.
 
+import datetime
+import json as js
 import os
 import queue
 import sys
 import time
 import threading
+import types
+import uuid
 import _thread
 
-from bus import Bus
-from cmn import spl
-from nms import Names
-from obj import Object, dorepr
-from opt import Output
-from prs import parseargs
+from obj import Object, ObjectList, dorepr
+from prs import parse_txt
 from run import kernel
 from thr import launch
 from trc import exception
 
 def __dir__():
-    return ("Client", "Command", "Event", "Hamdler", "docmd") 
+    return ("Bus", "Client", "Command", "Event", "Handler", "Output", "docmd", "first") 
+
+year_formats = [
+    "%b %H:%M",
+    "%b %H:%M:%S",
+    "%a %H:%M %Y",
+    "%a %H:%M",
+    "%a %H:%M:%S",
+    "%Y-%m-%d",
+    "%d-%m-%Y",
+    "%d-%m",
+    "%m-%d",
+    "%Y-%m-%d %H:%M:%S",
+    "%d-%m-%Y %H:%M:%S",
+    "%d-%m %H:%M:%S",
+    "%m-%d %H:%M:%S",
+    "%Y-%m-%d %H:%M",
+    "%d-%m-%Y %H:%M",
+    "%d-%m %H:%M",
+    "%m-%d %H:%M",
+    "%H:%M:%S",
+    "%H:%M"
+]
+
+def spl(txt):
+    return [x for x in txt.split(",") if x]
 
 cblock = _thread.allocate_lock()
 
 class ENOMORE(Exception):
 
     pass
+
+class ENOTXT(Exception):
+
+    pass
+
+class Bus(Object):
+
+    objs = []
+
+    def __iter__(self):
+        return iter(Bus.objs)
+
+    @staticmethod
+    def add(obj):
+        if obj not in Bus.objs:
+            Bus.objs.append(obj)
+
+    @staticmethod
+    def announce(txt):
+        for h in Bus.objs:
+            if "announce" in dir(h):
+                h.announce(txt)
+
+    @staticmethod
+    def byorig(orig):
+        for o in Bus.objs:
+            if dorepr(o) == orig:
+                return o
+
+    @staticmethod
+    def byfd(fd):
+        for o in Bus.objs:
+            if o.fd and o.fd == fd:
+                return o
+
+    @staticmethod
+    def bytype(typ):
+        for o in Bus.objs:
+            if isinstance(o, type):
+                return o
+
+    @staticmethod
+    def resume():
+        for o in Bus.objs:
+            o.resume()
+
+    @staticmethod
+    def say(orig, channel, txt):
+        for o in Bus.objs:
+            if dorepr(o) == orig:
+                o.say(channel, txt)
 
 class Event(Object):
 
@@ -44,7 +120,7 @@ class Event(Object):
 
     def parse(self):
         if self.txt is not None:
-            parseargs(self, self.txt)
+            parse_txt(self, self.txt)
 
     def ready(self):
         self.done.set()
@@ -214,6 +290,48 @@ class Client(Handler):
         self.stopped = True
         super().stop()
         self.ready.set()
+
+class Output(Object):
+
+    cache = ObjectList()
+
+    def __init__(self):
+        super().__init__()
+        self.oqueue = queue.Queue()
+
+    @staticmethod
+    def append(channel, txtlist):
+        if channel not in Output.cache:
+            Output.cache[channel] = []
+        Output.cache[channel].extend(txtlist)
+
+    def dosay(self, channel, txt):
+        pass
+
+    def oput(self, channel, txt):
+        self.oqueue.put_nowait((channel, txt))
+
+    def output(self):
+        while not self.stopped:
+            (channel, txt) = self.oqueue.get()
+            if self.stopped:
+                break
+            self.dosay(channel, txt)
+
+    @staticmethod
+    def size(name):
+        if name in Output.cache:
+            return len(Output.cache[name])
+        return 0
+
+    def start(self):
+        self.stopped = False
+        launch(self.output)
+        return self
+
+    def stop(self):
+        self.stopped = True
+        self.oqueue.put_nowait((None, None))
 
 def docmd(hdl, obj):
     obj.parse()

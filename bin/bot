@@ -6,7 +6,6 @@ import sys
 
 sys.path.insert(0, "bot")
 
-import bot.int
 import obj
 
 from hdl import Client
@@ -34,10 +33,11 @@ def main():
     obj.wd = os.path.expanduser("~/.bot")
     k = Kernel()
     k.boot("bot", __version__)
+    k.scan("mod")
     if k.cfg.txt:
         c = CLI()
         return c.cmd(k.cfg.otxt)
-    if opts("c"):
+    if k.cfg.mods or opts("c"):
         c = Console()
         k.inits(k.cfg.mods)
         c.start()

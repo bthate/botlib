@@ -3,9 +3,8 @@
 import os
 import time
 
-from dbs import find, listfiles
 from nms import Names
-from obj import fmt, wd
+from obj import fmt, find, listfiles, wd
 from run import opts
 from tms import elapsed, fntime, todate
 

@@ -86,7 +86,7 @@ class Timed(Object):
         if vv:
             self["to"] = time.time() - vv
 
-def parseargs(o, ptxt=None):
+def parse_txt(o, ptxt=None):
     if ptxt is None:
         raise ENOTXT(o)
     o.txt = ptxt

@@ -3,11 +3,10 @@
 import threading
 import urllib
 
-from bus import Bus
 from clk import Repeater
-from dbs import all, find, last, lastmatch
 from edt import edit
-from obj import Cfg, Default, Object
+from hdl import Bus
+from obj import Cfg, Default, Object, all, find, last, lastmatch
 from nms import Names
 from thr import launch
 from url import geturl, striphtml, unescape

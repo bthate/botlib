@@ -2,65 +2,46 @@
 
 import obj
 import os
+import importlib
+import importlib.util
 import sys
 import time
 
-from cmn import spl
-from dbs import last
-from obj import Cfg, Default, Object, fmt
+from obj import Cfg, Default, Object, fmt, last
 from nms import Names
-from prs import parseargs
+from prs import parse_txt
 from run import kernels
 from thr import launch
 
+import clk
+import edt
+import hdl
+import irc
+import nms
+import obj
+import prs
+import ver
+
 all = "adm,fnd,log,tdo,irc,rss,slg,udp"
 min = "cms,irc,slg"
+
+def spl(txt):
+    return [x for x in txt.split(",") if x]
 
 class Cfg(Cfg):
 
     pass
 
-import adm
-import bus
-import clk
-import cms
-import dbs
-import edt
-import fnd
-import hdl
-import irc
-import log
-import nms
-import obj
-import opt
-import prs
-import rss
-import slg
-import tdo
-import udp
-import ver
-
 class Loader(Object):
 
     table = Object()
-    table.adm = adm
-    table.bus = bus
     table.clk = clk
-    table.cms = cms
-    table.dbs = dbs
     table.edt = edt
-    table.fnd = fnd
     table.hdl = hdl
     table.irc = irc
-    table.log = log
     table.nms = nms
     table.obj = obj
-    table.opt = opt
     table.prs = prs
-    table.slg = slg
-    table.rss = rss
-    table.tdo = tdo
-    table.udp = udp
     table.ver = ver
 
 class Kernel(Loader):
@@ -76,7 +57,7 @@ class Kernel(Loader):
         self.starttime = time.time()
         self.cfg.name = name
         self.cfg.version = version
-        parseargs(self.cfg, " ".join(sys.argv[1:]))
+        parse_txt(self.cfg, " ".join(sys.argv[1:]))
         if self.cfg.sets:
             self.cfg.update(self.cfg.sets)
         self.cfg.save()
@@ -113,3 +94,69 @@ class Kernel(Loader):
             mod = self.mod(mn)
             if mod and "register" in dir(mod):
                 mod.register()
+
+    def scan(self, path, name=""):
+        if not os.path.exists(path):
+            return
+        if not name:
+            name = path.split(os.sep)[-1]
+        r = os.path.dirname(path)
+        if r not in sys.path:
+            sys.path.insert(0, r)
+        for mn in [x[:-3] for x in os.listdir(path)
+                   if x and x.endswith(".py")
+                   and not x.startswith("__")
+                   and not x == "setup.py"]:
+            fqn = "%s.%s" % (name, mn)
+            if not hasmod(fqn):
+                continue
+            self.load(fqn)
+            
+    def load(self, name):
+        mod = importlib.import_module(name)
+        Loader.table[name] = mod
+        if "register" in dir(mod):
+            mod.register()
+
+def hasmod(fqn):
+    try:
+        spec = importlib.util.find_spec(fqn)
+        if spec:
+            return True
+    except (ValueError, ModuleNotFoundError):
+        pass
+    return False
+
+def mods(name):
+    res = []
+    if os.path.exists(name):
+        for p in os.listdir(name):
+            if p.startswith("__"):
+                continue
+            if p.endswith(".py"):
+                res.append(p[:-3])
+    return ",".join(res)
+
+def privileges(name=None):
+    if os.getuid() != 0:
+        return
+    if name is None:
+        try:
+            name = getpass.getuser()
+        except KeyError:
+            pass
+    try:
+        pwnam = pwd.getpwnam(name)
+    except KeyError:
+        return False
+    os.setgroups([])
+    os.setgid(pwnam.pw_gid)
+    os.setuid(pwnam.pw_uid)
+    old_umask = os.umask(0o22)
+    return True
+
+def root():
+    if os.geteuid() != 0:
+        return False
+    return True
+

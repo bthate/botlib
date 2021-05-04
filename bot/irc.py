@@ -8,13 +8,10 @@ import time
 import threading
 import _thread
 
-from cmn import locked
-from dbs import find, last
 from edt import edit
 from nms import Names
-from hdl import Handler, Event, Client, docmd
-from obj import Cfg, Object, dorepr, fmt
-from opt import Output
+from hdl import Handler, Event, Client, Output, docmd
+from obj import Cfg, Object, dorepr, fmt, find, last, locked
 from thr import launch
 
 def init():
