@@ -2,7 +2,7 @@
 
 import unittest
 
-from bus import Bus
+from hdl import Bus
 from nms import Names
 from run import kernel
 

@@ -4,8 +4,7 @@ import os
 import unittest
 
 from edt import merge
-from dbs import last
-from obj import O, Object, gettype, dorepr
+from obj import O, Object, gettype, last, dorepr
 
 class Test_Object(unittest.TestCase):
 

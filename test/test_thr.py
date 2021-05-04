@@ -6,12 +6,10 @@ import unittest
 
 sys.path.insert(0, "test")
 
-from bus import first
-from hdl import Client, Command
+from hdl import Client, Command, first
 from nms import Names
 from run import kernel, opts
 from thr import launch
-
 from prm import param
 
 class Test(Client):

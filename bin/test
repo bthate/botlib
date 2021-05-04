@@ -33,6 +33,7 @@ def main():
     url.debug = True
     k = Kernel()
     k.boot("test", __version__)
+    k.scan(os.path.join(os.getcwd(), "mod"))
     c = Test()
     c.start()
     pat = "test_%s*" % "*"

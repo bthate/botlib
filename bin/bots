@@ -6,12 +6,14 @@ import sys
 
 sys.path.insert(0, "bot")
 
-from dbs import merge
 from hdl import Client, docmd
 from krn import Kernel
-from obj import cfg, opts
+from obj import merge
+from run import opts
 from trm import exec
 from ver import __version__
+
+import obj
 
 class CLI(Client):
 
@@ -28,17 +30,19 @@ class Console(CLI):
         return input("> ")
 
 def main():
+    obj.wd = "/var/lib/bot"
     k = Kernel()
-    k.boot("bots", __version__, "/var/lib/bot/")
-    if cfg.txt:
+    k.boot("bots", __version__)
+    k.scan(os.path.join(obj.wd, "mod"))
+    if k.cfg.txt:
         c = CLI()
-        return c.cmd(cfg.otxt)
+        return c.cmd(k.cfg.otxt)
     if opts("c"):
         c = Console()
     else:
         c = Client()
-    if cfg.mods:     
-        k.inits(cfg.mods)
+    if k.cfg.mods:     
+        k.inits(k.cfg.mods)
         c.start()
         c.wait()
 

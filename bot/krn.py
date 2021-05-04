@@ -22,8 +22,8 @@ import obj
 import prs
 import ver
 
-all = "adm,fnd,log,tdo,irc,rss,slg,udp"
-min = "cms,irc,slg"
+all = "adm,fnd,log,tdo,irc,rss,slg,udp,ver"
+min = "cms,irc,slg,ver"
 
 def spl(txt):
     return [x for x in txt.split(",") if x]

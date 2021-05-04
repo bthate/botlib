@@ -340,3 +340,7 @@ def docmd(hdl, obj):
         f(obj)
         obj.show()
     obj.ready()
+
+def first():
+    if Bus.objs:
+        return Bus.objs[0]
