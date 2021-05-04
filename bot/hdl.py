@@ -9,19 +9,73 @@ import _thread
 
 from bus import Bus
 from cmn import spl
-from evt import Command, Event
 from nms import Names
 from obj import Object, dorepr
+from opt import Output
 from prs import parseargs
 from run import kernel
 from thr import launch
 from trc import exception
+
+def __dir__():
+    return ("Client", "Command", "Event", "Hamdler", "docmd") 
 
 cblock = _thread.allocate_lock()
 
 class ENOMORE(Exception):
 
     pass
+
+class Event(Object):
+
+    def __init__(self):
+        super().__init__()
+        self.channel = None
+        self.done = threading.Event()
+        self.exc = None
+        self.orig = None
+        self.result = []
+        self.thrs = []
+        self.type = "event"
+        self.txt = None
+
+    def bot(self):
+        return Bus.byorig(self.orig)
+
+    def parse(self):
+        if self.txt is not None:
+            parseargs(self, self.txt)
+
+    def ready(self):
+        self.done.set()
+
+    def reply(self, txt):
+        self.result.append(txt)
+
+    def say(self, txt):
+        Bus.say(self.orig, self.channel, txt.rstrip())
+
+    def show(self):
+        if self.exc:
+            self.say(self.exc)
+        bot = self.bot()
+        if bot.speed == "slow" and len(self.result) > 3:
+            Output.append(self.channel, self.result)
+            self.say("%s lines in cache, use !mre" % len(self.result))
+            return
+        for txt in self.result:
+            self.say(txt)
+
+    def wait(self, timeout=1.0):
+        self.done.wait(timeout)
+        for thr in self.thrs:
+            thr.join(timeout)
+
+class Command(Event):
+
+    def __init__(self):
+        super().__init__()
+        self.type = "cmd"
 
 class Handler(Object):
 
@@ -161,7 +215,6 @@ class Client(Handler):
         super().stop()
         self.ready.set()
 
-
 def docmd(hdl, obj):
     obj.parse()
     f = hdl.getcmd(obj.cmd)
@@ -169,6 +222,3 @@ def docmd(hdl, obj):
         f(obj)
         obj.show()
     obj.ready()
-
-def end(hdl, obj):
-    raise ENOMORE("bye!")

@@ -11,9 +11,8 @@ import _thread
 from cmn import locked
 from dbs import find, last
 from edt import edit
-from evt import Event
 from nms import Names
-from hdl import Handler, Client, docmd
+from hdl import Handler, Event, Client, docmd
 from obj import Cfg, Object, dorepr, fmt
 from opt import Output
 from thr import launch

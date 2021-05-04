@@ -7,7 +7,6 @@ import time
 
 from cmn import spl
 from dbs import last
-from ldr import Loader
 from obj import Cfg, Default, Object, fmt
 from nms import Names
 from prs import parseargs
@@ -15,11 +14,54 @@ from run import kernels
 from thr import launch
 
 all = "adm,fnd,log,tdo,irc,rss,slg,udp"
-min = "cms,irc"
+min = "cms,irc,slg"
 
 class Cfg(Cfg):
 
     pass
+
+import adm
+import bus
+import clk
+import cms
+import dbs
+import edt
+import fnd
+import hdl
+import irc
+import log
+import nms
+import obj
+import opt
+import prs
+import rss
+import slg
+import tdo
+import udp
+import ver
+
+class Loader(Object):
+
+    table = Object()
+    table.adm = adm
+    table.bus = bus
+    table.clk = clk
+    table.cms = cms
+    table.dbs = dbs
+    table.edt = edt
+    table.fnd = fnd
+    table.hdl = hdl
+    table.irc = irc
+    table.log = log
+    table.nms = nms
+    table.obj = obj
+    table.opt = opt
+    table.prs = prs
+    table.slg = slg
+    table.rss = rss
+    table.tdo = tdo
+    table.udp = udp
+    table.ver = ver
 
 class Kernel(Loader):
 
