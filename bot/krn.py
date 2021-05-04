@@ -35,11 +35,13 @@ class Kernel(Loader):
         self.cfg.name = name
         self.cfg.version = version
         parseargs(self.cfg, " ".join(sys.argv[1:]))
+        if self.cfg.sets:
+            self.cfg.update(self.cfg.sets)
         self.cfg.save()
         if "all" in self.cfg.mods:
             m = all
         else:
-            m = self.cfg.mods + min
+            m = self.cfg.mods + "," + min
         self.regs(m)
 
     def cmd(self, txt):
@@ -62,7 +64,7 @@ class Kernel(Loader):
                 launch(mod.init)
 
     def mod(self, mn):
-        return self.table.get(mn, None)
+        return Loader.table.get(mn, None)
 
     def regs(self, mns):
         for mn in spl(mns):

@@ -60,4 +60,4 @@ def thr(event):
 
 def upt(event):
     k = kernel()
-    event.reply("uptime is %s" % elapsed(time.time() - k.cfg.starttime))
+    event.reply("uptime is %s" % elapsed(time.time() - k.starttime))

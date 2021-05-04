@@ -36,8 +36,8 @@ def main():
     if k.cfg.txt:
         c = CLI()
         return c.cmd(k.cfg.otxt)
-    c = Console()
     if opts("c"):
+        c = Console()
         k.inits(k.cfg.mods)
         c.start()
         c.wait()
