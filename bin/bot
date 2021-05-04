@@ -10,7 +10,8 @@ import obj
 
 from hdl import Client
 from krn import Kernel
-from obj import fmt, opts
+from obj import fmt
+from run import opts
 from trm import exec
 from ver import __version__
 
@@ -36,7 +37,7 @@ def main():
         c = CLI()
         return c.cmd(k.cfg.otxt)
     c = Console()
-    if k.cfg.mods:     
+    if opts("c"):
         k.inits(k.cfg.mods)
         c.start()
         c.wait()
