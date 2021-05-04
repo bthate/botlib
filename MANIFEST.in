@@ -1,4 +1,4 @@
 include setup.py
 include README.rst
 recursive-include files *
-recursive-include mod *.py
+recursive-include mymod *.py
