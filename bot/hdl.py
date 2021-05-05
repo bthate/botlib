@@ -14,8 +14,7 @@ import _thread
 from obj import Object, ObjectList, dorepr
 from prs import parse_txt
 from run import kernel
-from thr import launch
-from trc import exception
+from utl import exception, launch
 
 def __dir__():
     return ("Bus", "Client", "Command", "Event", "Handler", "Output", "docmd", "first") 

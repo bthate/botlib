@@ -10,18 +10,14 @@ import time
 from obj import Cfg, Default, Names, Object, fmt, last
 from prs import parse_txt
 from run import kernels
-from thr import launch
+from utl import launch
 
 import clk
-import edt
 import hdl
 import irc
 import obj
 import prs
-import ver
-
-all = "adm,fnd,log,tdo,irc,rss,slg,udp,ver"
-min = "cms,irc,slg,ver"
+import utl
 
 def spl(txt):
     return [x for x in txt.split(",") if x]
@@ -34,12 +30,10 @@ class Loader(Object):
 
     table = Object()
     table.clk = clk
-    table.edt = edt
     table.hdl = hdl
     table.irc = irc
     table.obj = obj
     table.prs = prs
-    table.ver = ver
 
 class Kernel(Loader):
 
@@ -59,11 +53,7 @@ class Kernel(Loader):
         if self.cfg.sets:
             self.cfg.update(self.cfg.sets)
         self.cfg.save()
-        if "all" in self.cfg.mods:
-            m = all
-        else:
-            m = self.cfg.mods + "," + min
-        self.regs(m)
+        self.regs(self.cfg.mods)
 
     def cmd(self, txt):
         self.prompt = False

@@ -5,7 +5,7 @@ import time
 
 from hdl import Bus
 from obj import Cfg, Object, last
-from thr import launch
+from utl import launch
 
 def init():
     u = UDP()

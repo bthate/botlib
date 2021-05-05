@@ -4,7 +4,7 @@ import time
 import threading
 
 from obj import Object, getname
-from thr import launch
+from utl import launch
 
 class Timer(Object):
 

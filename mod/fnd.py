@@ -5,7 +5,7 @@ import time
 
 from obj import Names, fmt, find, listfiles, wd
 from run import opts
-from tms import elapsed, fntime, todate
+from utl import elapsed, fntime, todate
 
 def register():
     Names.add(fnd)

@@ -4,7 +4,7 @@ import sys
 import time
 
 from obj import Default, Object
-from tms import parse_time
+from utl import parse_time
 
 class ENOTXT(Exception):
 

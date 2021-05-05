@@ -10,7 +10,7 @@ import _thread
 
 from hdl import Handler, Event, Client, Output, docmd
 from obj import Cfg, Names, Object, dorepr, edit, fmt, find, last, locked
-from thr import launch
+from utl import launch
 
 def init():
     i = IRC()

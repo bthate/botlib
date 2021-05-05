@@ -7,7 +7,7 @@ import time
 from hdl import Bus
 from obj import Object, Names, edit, fmt, getname
 from run import kernel
-from tms import elapsed
+from utl import elapsed
 
 def register():
     Names.add(flt)
