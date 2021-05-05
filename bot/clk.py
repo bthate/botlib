@@ -3,8 +3,8 @@
 import time
 import threading
 
-from obj import Object, getname
-from utl import launch
+from bot.obj import Object, getname
+from bot.utl import launch
 
 class Timer(Object):
 

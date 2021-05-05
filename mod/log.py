@@ -1,6 +1,6 @@
 # This file is in the Public Domain.
 
-from obj import Names, Object
+from bot.obj import Names, Object
 
 def register():
     Names.add(log)

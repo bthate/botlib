@@ -3,10 +3,10 @@
 import threading
 import urllib
 
-from clk import Repeater
-from hdl import Bus
-from obj import Cfg, Default, Names, Object, all, edit, find, last, lastmatch
-from utl import geturl, launch, striphtml, unescape
+from bot.clk import Repeater
+from bot.hdl import Bus
+from bot.obj import Cfg, Default, Names, Object, all, edit, find, last, lastmatch
+from bot.utl import geturl, launch, striphtml, unescape
 
 from urllib.error import HTTPError, URLError
 

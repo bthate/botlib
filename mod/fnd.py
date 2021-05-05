@@ -3,9 +3,9 @@
 import os
 import time
 
-from obj import Names, fmt, find, listfiles, wd
-from run import opts
-from utl import elapsed, fntime, todate
+from bot.obj import Names, fmt, find, listfiles, wd
+from bot.run import opts
+from bot.utl import elapsed, fntime, todate
 
 def register():
     Names.add(fnd)

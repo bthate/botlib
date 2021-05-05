@@ -3,9 +3,9 @@
 import socket
 import time
 
-from hdl import Bus
-from obj import Cfg, Object, last
-from utl import launch
+from bot.hdl import Bus
+from bot.obj import Cfg, Object, last
+from bot.utl import launch
 
 def init():
     u = UDP()

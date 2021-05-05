@@ -1,23 +1,15 @@
 # This file is placed in the Public Domain.
 
-import obj
 import os
 import importlib
 import importlib.util
 import sys
 import time
 
-from obj import Cfg, Default, Names, Object, fmt, last
-from prs import parse_txt
-from run import kernels
-from utl import launch
-
-import clk
-import hdl
-import irc
-import obj
-import prs
-import utl
+from .obj import Cfg, Default, Names, Object, fmt, last
+from .prs import parse_txt
+from .run import kernels
+from .utl import launch
 
 def spl(txt):
     return [x for x in txt.split(",") if x]
@@ -29,11 +21,6 @@ class Cfg(Cfg):
 class Loader(Object):
 
     table = Object()
-    table.clk = clk
-    table.hdl = hdl
-    table.irc = irc
-    table.obj = obj
-    table.prs = prs
 
 class Kernel(Loader):
 

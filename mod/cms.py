@@ -1,6 +1,6 @@
 # This is file is placed in Public Domain.
 
-from obj import Names
+from bot.obj import Names
 
 def register():
     Names.add(cmd)

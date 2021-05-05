@@ -2,8 +2,8 @@
 
 __version__ = 120
 
-from obj import Names
-from run import kernel
+from bot.obj import Names
+from bot.run import kernel
 
 def register():
     Names.add(ver)

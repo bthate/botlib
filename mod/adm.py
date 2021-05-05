@@ -4,10 +4,10 @@ import sys
 import threading
 import time
 
-from hdl import Bus
-from obj import Object, Names, edit, fmt, getname
-from run import kernel
-from utl import elapsed
+from bot.hdl import Bus
+from bot.obj import Object, Names, edit, fmt, getname
+from bot.run import kernel
+from bot.utl import elapsed
 
 def register():
     Names.add(flt)

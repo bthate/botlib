@@ -1,28 +1,25 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 
-__version__  = 120
+__version__ = 120
 
 ## IMPORT ##
 
 import atexit
-
 import os
 import readline
 import sys
 import termios
 import sys 
 
-sys.path.insert(0, "bot")
-sys.path.insert(0, "mod")
+sys.path.insert(0, os.getcwd())
 
-import obj
+from bot.hdl import Client
+from bot.krn import Kernel
+from bot.obj import Names, fmt
+from bot.run import opts
 
-from hdl import Client
-from krn import Kernel
-from obj import Names, fmt
-from run import opts
-from ver import __version__
+import bot
 
 ## TERMINAL ##
 
@@ -90,7 +87,7 @@ class Console(CLI):
         return input("> ")
 
 def main():
-    obj.wd = os.path.expanduser("~/.bot")
+    bot.obj.wd = os.path.expanduser("~/.bot")
     k = Kernel()
     k.boot("bot", __version__)
     k.scan("mod")

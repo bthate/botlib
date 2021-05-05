@@ -1,6 +1,6 @@
 # This file is in the Public Domain.
 
-from obj import Names, Object, find
+from bot.obj import Names, Object, find
 
 def register():
     Names.add(dne)

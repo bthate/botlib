@@ -3,8 +3,8 @@
 import sys
 import time
 
-from obj import Default, Object
-from utl import parse_time
+from .obj import Default, Object
+from .utl import parse_time
 
 class ENOTXT(Exception):
 

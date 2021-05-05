@@ -11,10 +11,10 @@ import types
 import uuid
 import _thread
 
-from obj import Object, ObjectList, dorepr
-from prs import parse_txt
-from run import kernel
-from utl import exception, launch
+from .obj import Object, ObjectList, dorepr
+from .prs import parse_txt
+from .run import kernel
+from .utl import exception, launch
 
 def __dir__():
     return ("Bus", "Client", "Command", "Event", "Handler", "Output", "docmd", "first") 
