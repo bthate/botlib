@@ -34,7 +34,7 @@ def main():
     obj.wd = os.path.expanduser("~/.bot")
     k = Kernel()
     k.boot("bot", __version__)
-    k.scan(os.path.join(obj.wd, "mod"))
+    k.scan("mod")
     if k.cfg.txt:
         c = CLI()
         return c.cmd(k.cfg.otxt)

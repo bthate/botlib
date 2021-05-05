@@ -14,7 +14,7 @@ def fnd(event):
     if not event.args:
         fls = listfiles(wd)
         if fls:
-            event.reply(" | ".join([x for x in fls]))
+            event.reply(",".join([x.split(".")[-1].lower() for x in fls]))
         return
     name = event.args[0]
     nr = -1
