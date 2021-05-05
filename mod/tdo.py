@@ -1,11 +1,11 @@
 # This file is in the Public Domain.
 
-from nms import Names
-from obj import Object, find
+from obj import Names, Object, find
 
 def register():
     Names.add(dne)
     Names.add(tdo)
+    Names.cls(Todo)
 
 class Todo(Object):
 

@@ -7,8 +7,7 @@ import importlib.util
 import sys
 import time
 
-from obj import Cfg, Default, Object, fmt, last
-from nms import Names
+from obj import Cfg, Default, Names, Object, fmt, last
 from prs import parse_txt
 from run import kernels
 from thr import launch
@@ -17,7 +16,6 @@ import clk
 import edt
 import hdl
 import irc
-import nms
 import obj
 import prs
 import ver
@@ -39,7 +37,6 @@ class Loader(Object):
     table.edt = edt
     table.hdl = hdl
     table.irc = irc
-    table.nms = nms
     table.obj = obj
     table.prs = prs
     table.ver = ver

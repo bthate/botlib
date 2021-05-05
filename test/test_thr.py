@@ -7,7 +7,7 @@ import unittest
 sys.path.insert(0, "test")
 
 from hdl import Client, Command, first
-from nms import Names
+from obj import Names
 from run import kernel, opts
 from thr import launch
 from prm import param

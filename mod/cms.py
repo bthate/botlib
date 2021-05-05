@@ -1,6 +1,6 @@
 # This is file is placed in Public Domain.
 
-from nms import Names
+from obj import Names
 
 def register():
     Names.add(cmd)

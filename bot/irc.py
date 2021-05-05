@@ -9,9 +9,8 @@ import threading
 import _thread
 
 from edt import edit
-from nms import Names
 from hdl import Handler, Event, Client, Output, docmd
-from obj import Cfg, Object, dorepr, fmt, find, last, locked
+from obj import Cfg, Names, Object, dorepr, fmt, find, last, locked
 from thr import launch
 
 def init():
@@ -22,6 +21,7 @@ def init():
 def register():
     Names.add(cfg)
     Names.add(mre)
+    Names.cls(Cfg)
 
 saylock = _thread.allocate_lock()
 

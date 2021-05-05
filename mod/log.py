@@ -1,10 +1,10 @@
 # This file is in the Public Domain.
 
-from nms import Names
-from obj import Object
+from obj import Names, Object
 
 def register():
     Names.add(log)
+    Names.cls(Log)
     
 class Log(Object):
 

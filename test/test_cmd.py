@@ -4,7 +4,7 @@ import random
 import unittest
 
 from hdl import Bus
-from nms import Names
+from obj import Names
 from run import kernel
 
 from prm import param

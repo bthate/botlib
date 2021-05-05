@@ -2,7 +2,7 @@
 
 __version__ = 120
 
-from nms import Names
+from obj import Names
 from run import kernel
 
 def register():

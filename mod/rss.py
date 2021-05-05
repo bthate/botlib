@@ -6,8 +6,7 @@ import urllib
 from clk import Repeater
 from edt import edit
 from hdl import Bus
-from obj import Cfg, Default, Object, all, find, last, lastmatch
-from nms import Names
+from obj import Cfg, Default, Names, Object, all, find, last, lastmatch
 from thr import launch
 from url import geturl, striphtml, unescape
 
@@ -24,6 +23,9 @@ def register():
     Names.add(ftc)
     Names.add(rem)
     Names.add(rss)
+    Names.cls(Feed)
+    Names.cls(Rss)
+    Names.cls(Seen)
 
 def init():
     f = Fetcher()

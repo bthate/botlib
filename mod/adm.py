@@ -6,8 +6,7 @@ import time
 
 from edt import edit
 from hdl import Bus
-from nms import Names
-from obj import Object, fmt, getname
+from obj import Object, Names, fmt, getname
 from run import kernel
 from tms import elapsed
 

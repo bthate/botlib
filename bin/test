@@ -12,7 +12,7 @@ import obj
 
 from hdl import Client
 from krn import Kernel
-from nms import Names
+from obj import Names
 from trm import exec
 from run import opts
 from ver import __version__

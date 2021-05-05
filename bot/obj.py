@@ -5,6 +5,7 @@ __version__ = 120
 ## imports ##
 
 import datetime
+import inspect
 import json as js
 import os
 import sys
@@ -177,6 +178,40 @@ class Cfg(Default):
 
     pass
 
+class Names(Object):
+
+    inits = Object({
+    })
+
+    names = Default({
+    })
+
+    modules = Object({
+    })
+
+    @staticmethod
+    def add(func):
+        Names.modules[func.__name__] = func.__module__
+
+    @staticmethod
+    def cls(cls):
+        n = cls.__name__.lower()
+        if n not in Names.names:
+            Names.names[n] = []
+        Names.names[n].append("%s.%s" % (cls.__module__, cls.__name__))
+
+    @staticmethod
+    def getinit(nm, dft=None):
+        return Names.inits.get(nm, dft)
+
+    @staticmethod
+    def getnames(nm, dft=None):
+        return Names.names.get(nm, dft)
+
+    @staticmethod
+    def getmodule(mn):
+        return Names.modules.get(mn, None)
+
 ## functions ##
 
 def cdir(path):
@@ -271,6 +306,15 @@ def getname(o):
             except AttributeError:
                 n = o.__name__
     return n
+
+def findnames(mod):
+    tps = Object()
+    for _key, o in inspect.getmembers(mod, inspect.isclass):
+        if issubclass(o, Object):
+            t = "%s.%s" % (o.__module__, o.__name__)
+            if t not in tps:
+                tps[o.__name__.lower()] = t
+    return tps
 
 def fntime(daystr):
     daystr = daystr.replace("_", ":")

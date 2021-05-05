@@ -1,6 +1,6 @@
 # This file is in the Public Domain.
 
-from nms import Names
+from obj import Names
 
 def register():
     Names.add(slg)

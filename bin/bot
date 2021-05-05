@@ -5,6 +5,7 @@ import os
 import sys 
 
 sys.path.insert(0, "bot")
+sys.path.insert(0, "mod")
 
 import obj
 
