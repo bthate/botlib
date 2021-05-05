@@ -7,7 +7,7 @@ import sys
 import time
 
 from .obj import Cfg, Default, Names, Object, fmt, last
-from .prs import parse_txt
+from .hdl import parse_txt
 from .run import kernels
 from .utl import launch
 

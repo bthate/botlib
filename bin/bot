@@ -90,7 +90,7 @@ def main():
     bot.obj.wd = os.path.expanduser("~/.bot")
     k = Kernel()
     k.boot("bot", __version__)
-    k.scan("mod")
+    k.scan(os.path.expanduser("~/mod"))
     if k.cfg.txt:
         c = CLI()
         setcompleter(Names.modules)

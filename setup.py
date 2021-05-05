@@ -10,8 +10,8 @@ def mods(name):
         for p in os.listdir(name):
             if p.startswith("__"):
                 continue
-            if p.endswith(".py"):
-                res.append(p[:-3])
+            if p.endswith("%.py"):
+                res.append(name + os.sep + p)
     return res
 
 def read():
@@ -30,7 +30,9 @@ setup(
     namespace_packages=["bot"],
     scripts=["bin/bot", "bin/botc", "bin/bots"],
     zip_safe=False,
+    include_package_data=True,
     data_files=[('share/bot', ['files/bot.service', "files/bot.1.md"]),
+                ('mods', mods("mod")),
                 ('share/man/man1', ['files/bot.1.gz'])],
     classifiers=['Development Status :: 4 - Beta',
                  'License :: Public Domain',
