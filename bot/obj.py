@@ -97,10 +97,16 @@ class Obj(O):
     def items(self):
         return self.__dict__.items()
 
-    def merge(self, o):
-        for k, v in self.items():
-            if not o.get(k, None):
-                o[k] = v            
+    def merge(self, d):
+        for k, v in d.items():
+            if not v:
+                continue
+            if k in self:
+                if isinstance(self[k], dict):
+                    continue
+                self[k] = self[k] + v
+            else:
+                self[k] = v
 
     def register(self, key, value):
         self[str(key)] = value
@@ -402,15 +408,6 @@ def last(o):
         stp = os.sep.join(spl[-4:])
         return stp
 
-def merge(o):
-    path, l = lastfn(str(gettype(o)))
-    if  l:
-        o.merge(l)
-        o.save()
-    if path:
-        spl = path.split(os.sep)
-        stp = os.sep.join(spl[-4:])
-        return stp
 
 def lastmatch(otype, selector=None, index=None, timed=None):
     res = sorted(find(otype, selector, index, timed), key=lambda x: fntime(x[0]))
@@ -456,6 +453,48 @@ def listfiles(wd):
     if not os.path.exists(path):
         return []
     return sorted(os.listdir(path))
+
+## OBJECT FUNCTIONS ##
+
+def edit(o, setter, skip=False):
+    try:
+        setter = vars(setter)
+    except (TypeError, ValueError):
+        pass
+    if not setter:
+        setter = {}
+    count = 0
+    for key, v in setter.items():
+        if skip and v == "":
+            continue
+        count += 1
+        if v in ["True", "true"]:
+            o[key] = True
+        elif v in ["False", "false"]:
+            o[key] = False
+        else:
+            o[key] = v
+    return count
+
+def merge(o):
+    path, l = lastfn(str(gettype(o)))
+    if  l:
+        o.merge(l)
+        o.save()
+    if path:
+        spl = path.split(os.sep)
+        stp = os.sep.join(spl[-4:])
+        return stp
+
+
+def overlay(o, d, keys=None, skip=None):
+    for k, v in d.items():
+        if keys and k not in keys:
+            continue
+        if skip and k in skip:
+            continue
+        if v:
+            o[k] = v
 
 def search(o, s):
     ok = False

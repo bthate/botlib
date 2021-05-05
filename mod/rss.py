@@ -4,9 +4,8 @@ import threading
 import urllib
 
 from clk import Repeater
-from edt import edit
 from hdl import Bus
-from obj import Cfg, Default, Names, Object, all, find, last, lastmatch
+from obj import Cfg, Default, Names, Object, all, edit, find, last, lastmatch
 from thr import launch
 from url import geturl, striphtml, unescape
 

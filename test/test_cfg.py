@@ -2,8 +2,7 @@
 
 import unittest
 
-from edt import edit
-from obj import Cfg
+from obj import Cfg, edit
 from prs import parse_txt
 from run import kernel
 

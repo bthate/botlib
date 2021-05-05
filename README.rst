@@ -148,7 +148,6 @@ BOTLIB provides the following modules::
  all		- all
  clk		- clock
  dbs		- databases
- edt		- edit
  fnd		- find
  log		- log
  obj		- object
