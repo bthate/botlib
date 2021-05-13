@@ -3,16 +3,21 @@
 import os
 import time
 
-from bot.obj import Names, fmt, find, listfiles, wd
-from bot.run import opts
-from bot.utl import elapsed, fntime, todate
+from .krn import Kernel, find, fntime, listfiles
+from .hdl import elapsed
+from .obj import cfg, fmt
 
-def register():
-    Names.add(fnd)
+import bot.obj
+
+def __dir__():
+    return ("fnd", "register")
+
+def register(k):
+    k.addcmd(fnd)
 
 def fnd(event):
     if not event.args:
-        fls = listfiles(wd)
+        fls = listfiles(cfg.wd)
         if fls:
             event.reply(",".join([x.split(".")[-1].lower() for x in fls]))
         return
@@ -24,14 +29,12 @@ def fnd(event):
     except IndexError:
         pass
     got = False
-    otypes = Names.getnames(name, [])
+    otypes = Kernel.getnames(name, [])
     for t in otypes:
         for fn, o in find(t, event.gets, event.index, event.timed):
             nr += 1
             txt = "%s %s" % (str(nr), fmt(o, args or o.keys(), skip=event.skip.keys()))
-            if opts("t") or "t" in event.opts:
-                if "Date" in o.keys():
-                    fn = os.sep.join(todate(o.Date).split())
+            if "t" in event.opts:
                 txt = txt + " %s" % (elapsed(time.time() - fntime(fn)))
             got = True
             event.reply(txt)

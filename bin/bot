@@ -3,27 +3,21 @@
 
 __version__ = 120
 
-## IMPORT ##
-
 import atexit
 import os
 import readline
 import sys
 import termios
-import sys 
 
 sys.path.insert(0, os.getcwd())
 
-from bot.hdl import Client
-from bot.krn import Kernel
-from bot.obj import Names, fmt
-from bot.run import opts
+from bot.hdl import ENOMORE, Client, Event, first
+from bot.krn import Kernel, kcmd
+from bot.obj import cfg
 
-import bot
+import bot.all
 
-## TERMINAL ##
-
-cmds = []
+all = "adm,cms,fnd,irc,krn,log,rss,tdo,udp"
 resume = {}
 
 def termsetup(fd):
@@ -44,38 +38,14 @@ def termsave():
     except termios.error:
         pass
 
-def complete(text, state):
-    matches = []
-    if text:
-        matches = [s for s in cmds if s and s.startswith(text)]
-    else:
-        matches = cmds[:]
-    try:
-        return matches[state]
-    except IndexError:
-        return None
-
-def exec(main):
-    termsave()
-    try:
-        main()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        termreset()
-
-def setcompleter(commands):
-    cmds.extend(commands)
-    readline.set_completer(complete)
-    readline.parse_and_bind("tab: complete")
-    atexit.register(lambda: readline.set_completer(None))
-
-## MAIN ##
-
 class CLI(Client):
 
     def raw(self, txt):
         print(txt)
+
+    def start(self):
+        super().start()
+        self.initialize(kcmd)
 
 class Console(CLI):
 
@@ -86,19 +56,41 @@ class Console(CLI):
     def poll(self):
         return input("> ")
 
+def rse(event):
+    c = first()
+    c.restart()
+
+def ver(event):
+    event.reply("BOT %s" % __version__)
+
 def main():
-    bot.obj.wd = os.path.expanduser("~/.bot")
+    cfg.wd = os.path.expanduser("~/.bot")
     k = Kernel()
-    k.boot("bot", __version__)
-    k.scan(os.path.expanduser("~/mod"))
+    k.addcmd(rse)
+    k.addcmd(ver)
+    k.boot("bot", all)
     if k.cfg.txt:
         c = CLI()
-        setcompleter(Names.modules)
-        return c.cmd(k.cfg.otxt)
-    if k.cfg.mods or opts("c"):
+        c.initialize()
+        e = c.event(k.cfg.otxt)
+        kcmd(c, e)
+        e.wait()
+        return 
+    c = Client()
+    k.init(k.cfg.mods)
+    if k.opts("c"):
         c = Console()
-        k.inits(k.cfg.mods)
+    if k.opts("cd"):
         c.start()
         c.wait()
+
+def exec(main):
+    termsave()
+    try:
+         main()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        termreset()
 
 exec(main)

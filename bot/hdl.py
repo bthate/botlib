@@ -1,5 +1,7 @@
 # This file is placed in the Public Domain.
 
+"object handler"
+
 import datetime
 import json as js
 import os
@@ -8,15 +10,17 @@ import sys
 import time
 import threading
 import types
+import urllib
+import urllib.parse
 import uuid
 import _thread
 
-from .obj import Default, Object, ObjectList, dorepr
-from .run import kernel
-from .utl import exception, launch, parse_time
+from .obj import Default, Object, ObjectList, getname
 
 def __dir__():
-    return ("Bus", "Client", "Command", "Event", "Handler", "Output", "docmd", "first") 
+    return ("ENOMORE", "ENOTXT", "Bus", "Client", "Command", "Event", "Handler", "Output", "day", "docmd",
+            "elapsed", "first", "launch", "parse_txt",
+            "parse_ymd")
 
 year_formats = [
     "%b %H:%M",
@@ -40,9 +44,6 @@ year_formats = [
     "%H:%M"
 ]
 
-def spl(txt):
-    return [x for x in txt.split(",") if x]
-
 cblock = _thread.allocate_lock()
 
 class ENOMORE(Exception):
@@ -52,6 +53,220 @@ class ENOMORE(Exception):
 class ENOTXT(Exception):
 
     pass
+
+class Token(Object):
+
+    def __init__(self, txt):
+        super().__init__()
+        self.txt = txt
+
+class Option(Default):
+
+    def __init__(self, txt):
+        super().__init__()
+        if txt.startswith("--"):
+            self.opt = txt[2:]
+        if txt.startswith("-"):
+            self.opt = txt[1:]
+
+class Getter(Object):
+
+    def __init__(self, txt):
+        super().__init__()
+        if "==" in txt:
+            pre, post = txt.split("==", 1)
+        else:
+            pre = post = ""
+        if pre:
+            self[pre] = post
+
+class Setter(Object):
+
+    def __init__(self, txt):
+        super().__init__()
+        if "=" in txt:
+            pre, post = txt.split("=")
+        else:
+            pre = post = ""
+        if pre:
+            self[pre] = post
+
+class Skip(Object):
+
+    def __init__(self, txt):
+        super().__init__()
+        pre = ""
+        if txt.endswith("-"):
+            if "=" in txt:
+                pre, _post = txt.split("=", 1)
+            elif "==" in txt:
+                pre, _post = txt.split("==", 1)
+            else:
+                pre = txt
+        if pre:
+            self[pre] = True
+
+class Url(Object):
+
+    def __init__(self, txt):
+        super().__init__()
+        if txt.startswith("http"):
+           self["url"] = txt
+
+def day():
+    return str(datetime.datetime.today()).split()[0]
+
+def elapsed(seconds, short=True):
+    txt = ""
+    nsec = float(seconds)
+    year = 365*24*60*60
+    week = 7*24*60*60
+    nday = 24*60*60
+    hour = 60*60
+    minute = 60
+    years = int(nsec/year)
+    nsec -= years*year
+    weeks = int(nsec/week)
+    nsec -= weeks*week
+    nrdays = int(nsec/nday)
+    nsec -= nrdays*nday
+    hours = int(nsec/hour)
+    nsec -= hours*hour
+    minutes = int(nsec/minute)
+    sec = nsec - minutes*minute
+    if years:
+        txt += "%sy" % years
+    if weeks:
+        nrdays += weeks * 7
+    if nrdays:
+        txt += "%sd" % nrdays
+    if years and short and txt:
+        return txt
+    if hours:
+        txt += "%sh" % hours
+    if nrdays and short and txt:
+        return txt
+    if minutes:
+        txt += "%sm" % minutes
+    if hours and short and txt:
+        return txt
+    if sec == 0:
+        txt += "0s"
+    else:
+        txt += "%ss" % int(sec)
+    txt = txt.strip()
+    return txt
+
+def parse_txt(o, ptxt=None):
+    if ptxt is None:
+        raise ENOTXT(o)
+    o.txt = ptxt
+    o.otxt = ptxt
+    o.gets = Default()
+    o.opts = Default()
+    o.timed = []
+    o.index = None
+    o.sets = Default()
+    o.skip = Default()
+    args = []
+    for token in [Token(txt) for txt in ptxt.split()]:
+        u = Url(token.txt)
+        if u:
+            args.append(u.url)
+            continue
+        s = Skip(token.txt)
+        if s:
+            o.skip.update(s)
+            token.txt = token.txt[:-1]
+        g = Getter(token.txt)
+        if g:
+            o.gets.update(g)
+            continue
+        s = Setter(token.txt)
+        if s:
+            o.sets.update(s)
+            continue
+        opt = Option(token.txt)
+        if opt:
+            try:
+                o.index = int(opt.opt)
+                continue
+            except ValueError:
+                pass
+            if len(opt.opt) > 1:
+                for op in opt.opt:
+                    o.opts[op] = True
+            else:
+                o.opts[opt.opt] = True
+            continue
+        args.append(token.txt)
+    if not args:
+        o.args = []
+        o.cmd = ""
+        o.rest = ""
+        o.txt = ""
+        return o
+    o.cmd = args[0]
+    o.args = args[1:]
+    o.txt = " ".join(args)
+    o.rest = " ".join(args[1:])
+    return o
+
+def parse_ymd(daystr):
+    valstr = ""
+    val = 0
+    total = 0
+    for c in daystr:
+        if c in "1234567890":
+            vv = int(valstr)
+        else:
+            vv = 0
+        if c == "y":
+            val = vv * 3600*24*365
+        if c == "w":
+            val = vv * 3600*24*7
+        elif c == "d":
+            val = vv * 3600*24
+        elif c == "h":
+            val = vv * 3600
+        elif c == "m":
+            val = vv * 60
+        else:
+            valstr += c
+        total += val
+    return total
+
+class Thr(threading.Thread):
+
+    def __init__(self, func, *args, thrname="", daemon=True):
+        super().__init__(None, self.run, thrname, (), {}, daemon=daemon)
+        self.name = thrname or getname(func)
+        self.result = None
+        self.queue = queue.Queue()
+        self.queue.put_nowait((func, args))
+        self.sleep = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        for k in dir(self):
+            yield k
+
+    def join(self, timeout=None):
+        ""
+        super().join(timeout)
+        return self.result
+
+    def run(self):
+        ""
+        func, args = self.queue.get_nowait()
+        if args:
+            target = vars(args[0])
+            if target and "txt" in dir(target):
+                self.name = target.txt.split()[0]
+        self.setName(self.name)
+        self.result = func(*args)
 
 class Bus(Object):
 
@@ -74,7 +289,7 @@ class Bus(Object):
     @staticmethod
     def byorig(orig):
         for o in Bus.objs:
-            if dorepr(o) == orig:
+            if o.__dorepr__() == orig:
                 return o
 
     @staticmethod
@@ -97,7 +312,7 @@ class Bus(Object):
     @staticmethod
     def say(orig, channel, txt):
         for o in Bus.objs:
-            if dorepr(o) == orig:
+            if o.__dorepr__() == orig:
                 o.say(channel, txt)
 
 class Event(Object):
@@ -170,11 +385,6 @@ class Handler(Object):
     def error(self, event):
         pass
 
-    @staticmethod
-    def getcmd(cmd):
-        k = kernel()
-        return k.getcmd(cmd)
-
     def handler(self):
         while not self.stopped:
             e = self.queue.get()
@@ -183,16 +393,10 @@ class Handler(Object):
             except ENOMORE:
                 e.ready()
                 break
-            except Exception as ex:
-                e.ready()
-                ee = Event()
-                ee.trace = exception()
-                ee.exc = ex
-                self.error(ee)
 
-    def initialize(self):
+    def initialize(self, hdl=None):
+        self.register("end", end)
         Bus.add(self)
-        self.register("cmd", docmd)
 
     def put(self, e):
         self.queue.put_nowait(e)
@@ -215,7 +419,6 @@ class Handler(Object):
         e = Event()
         e.type = "end"
         self.queue.put(e)
-        self.ready.set()
 
     def wait(self):
         self.ready.wait()
@@ -227,31 +430,22 @@ class Client(Handler):
         self.iqueue = queue.Queue()
         self.stopped = False
         self.running = False
-        self.initialize()
 
     def announce(self, txt):
         self.raw(txt)
 
-    def cmd(self, txt):
-        self.prompt = False
-        e = self.event(txt)
-        docmd(self, e)
-        e.wait()
-        return e
-
-    @staticmethod
-    def getcmd(cmd):
-        k = kernel()
-        return k.getcmd(cmd)
-
     def event(self, txt):
         c = Command()
         c.txt = txt
-        c.orig = dorepr(self)
+        c.orig = self.__dorepr__()
         return c
 
     def handle(self, e):
         super().put(e)
+
+    def initialize(self, hdl=None):
+        super().initialize(hdl)
+        self.register("cmd", hdl or docmd)
 
     def input(self):
         while not self.stopped:
@@ -279,6 +473,7 @@ class Client(Handler):
     def start(self):
         if self.running:
             return
+        self.stopped = False
         self.running = True
         super().start()
         launch(self.input)
@@ -287,7 +482,7 @@ class Client(Handler):
         self.running = False
         self.stopped = True
         super().stop()
-        self.ready.set()
+        #self.ready.set()
 
 class Output(Object):
 
@@ -339,147 +534,21 @@ def docmd(hdl, obj):
         obj.show()
     obj.ready()
 
-def first():
+def end(hdl, obj):
+    raise ENOMORE
+
+def first(otype=None):
     if Bus.objs:
-        return Bus.objs[0]
+        if not otype:
+            return Bus.objs[0]
+        for o in Bus.objs:
+            if otype in str(type(o)):
+                return o
 
-## PARSE ##
+def launch(func, *args, **kwargs):
+    name = kwargs.get("name", getname(func))
+    t = Thr(func, *args, thrname=name, daemon=True)
+    t.start()
+    return t
 
-import sys
-import time
 
-
-class ENOTXT(Exception):
-
-    pass
-
-class Token(Object):
-
-    def __init__(self, txt):
-        super().__init__()
-        self.txt = txt
-
-class Option(Default):
-
-    def __init__(self, txt):
-        super().__init__()
-        if txt.startswith("--"):
-            self.opt = txt[2:]
-        if txt.startswith("-"):
-            self.opt = txt[1:]
-
-class Getter(Object):
-
-    def __init__(self, txt):
-        super().__init__()
-        try:
-            pre, post = txt.split("==")
-        except ValueError:
-            pre = post = ""
-        if pre:
-            self[pre] = post
-
-class Setter(Object):
-
-    def __init__(self, txt):
-        super().__init__()
-        try:
-            pre, post = txt.split("=")
-        except ValueError:
-            pre = post = ""
-        if pre:
-            self[pre] = post
-
-class Skip(Object):
-
-    def __init__(self, txt):
-        super().__init__()
-        pre = ""
-        if txt.endswith("-"):
-            try:
-                pre, _post = txt.split("=")
-            except ValueError:
-                try:
-                    pre, _post = txt.split("==")
-                except ValueError:
-                    pre = txt
-        if pre:
-            self[pre] = True
-
-class Timed(Object):
-
-    def __init__(self, txt):
-        super().__init__()
-        v = 0
-        vv = 0
-        try:
-            pre, post = txt.split("-")
-            v = parse_time(pre)
-            vv = parse_time(post)
-        except ValueError:
-            pass
-        if not v or not vv:
-            try:
-                vv = parse_time(txt)
-            except ValueError:
-                vv = 0
-            v = 0
-        if v:
-            self["from"] = time.time() - v
-        if vv:
-            self["to"] = time.time() - vv
-
-def parse_txt(o, ptxt=None):
-    if ptxt is None:
-        raise ENOTXT(o)
-    o.txt = ptxt
-    o.otxt = ptxt
-    o.gets = Default()
-    o.opts = Default()
-    o.timed = []
-    o.index = None
-    o.sets = Default()
-    o.skip = Default()
-    args = []
-    for token in [Token(txt) for txt in ptxt.split()]:
-        s = Skip(token.txt)
-        if s:
-            o.skip.update(s)
-            token.txt = token.txt[:-1]
-        t = Timed(token.txt)
-        if t:
-            o.timed.append(t)
-            continue
-        g = Getter(token.txt)
-        if g:
-            o.gets.update(g)
-            continue
-        s = Setter(token.txt)
-        if s:
-            o.sets.update(s)
-            continue
-        opt = Option(token.txt)
-        if opt:
-            try:
-                o.index = int(opt.opt)
-                continue
-            except ValueError:
-                pass
-            if len(opt.opt) > 1:
-                for op in opt.opt:
-                    o.opts[op] = True
-            else:
-                o.opts[opt.opt] = True
-            continue
-        args.append(token.txt)
-    if not args:
-        o.args = []
-        o.cmd = ""
-        o.rest = ""
-        o.txt = ""
-        return o
-    o.cmd = args[0]
-    o.args = args[1:]
-    o.txt = " ".join(args)
-    o.rest = " ".join(args[1:])
-    return o

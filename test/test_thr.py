@@ -4,27 +4,16 @@ import random
 import sys
 import unittest
 
-sys.path.insert(0, "test")
+from bot.hdl import Client, Command, first, launch
+from bot.krn import Kernel
 
-from hdl import Client, Command, first
-from obj import Names
-from run import kernel, opts
-from thr import launch
 from prm import param
-
-class Test(Client):
-
-    def raw(self, txt):
-        if opts("v"):
-            print(txt)
 
 class Test_Threaded(unittest.TestCase):
 
     def test_thrs(self):
-        k = kernel()
         thrs = []
-        print(k.cfg)
-        for x in range(k.cfg.index or 1):
+        for x in range(Kernel.cfg.index or 1):
             thr = launch(exec)
             thrs.append(thr)
         for thr in thrs:
@@ -44,13 +33,11 @@ def consume():
             events.remove(f)
         except ValueError:
             continue
-    for e in events:
-        print(e)
     return res
 
 def exec():
     c = first()
-    l = list(Names.modules)
+    l = list(Kernel.modules)
     random.shuffle(l)
     for cmd in l:
         for ex in getattr(param, cmd, [""]):

@@ -1,4 +1,4 @@
 # This file is placed in the Public Domain.
 
 rm -fR ~/.cache/pip
-rm -fR mod/*~ mod/__pycache__ bot/botlib.egg-info data .test test/*~ test/__pycache__ build *~ botlib.egg-info bot/*~ bot/__pycache__ run run.tar.gz env env.tar.gz .data build dist MANIFEST bin/*~ *~
+rm -fR files/*~ lib/*~ lib/__pycache__ bot/botlib.egg-info data .test test/*~ test/__pycache__ build *~ botlib.egg-info bot/*~ bot/__pycache__ run run.tar.gz env env.tar.gz .data build dist MANIFEST bin/*~ *~

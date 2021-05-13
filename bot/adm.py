@@ -4,16 +4,20 @@ import sys
 import threading
 import time
 
-from bot.hdl import Bus
-from bot.obj import Object, Names, edit, fmt, getname
-from bot.run import kernel
-from bot.utl import elapsed
+from .hdl import Bus, elapsed
+from .krn import Kernel, last
+from .obj import Object, edit, fmt, getname
 
-def register():
-    Names.add(flt)
-    Names.add(krn)
-    Names.add(thr)
-    Names.add(upt)
+def __dir__():
+    return ("flt", "krn", "register", "thr", "upt")
+
+starttime = time.time()
+
+def register(k):
+    k.addcmd(flt)
+    k.addcmd(krn)
+    k.addcmd(thr)
+    k.addcmd(upt)
 
 def flt(event):
     try:
@@ -25,16 +29,14 @@ def flt(event):
     event.reply(" | ".join([getname(o) for o in Bus.objs]))
 
 def krn(event):
-    k = kernel() 
     if not event.args:
-        event.reply(fmt(k.cfg, skip=["opts", "sets", "old", "res"]))
+        event.reply(fmt(Kernel.cfg, skip=["otxt", "opts", "sets", "old", "res"]))
         return
-    edit(k.cfg, event.sets)
-    p = k.cfg.save()
+    edit(Kernel.cfg, event.sets)
+    Kernel.cfg.save()
     event.reply("ok")
 
 def thr(event):
-    k = kernel()
     psformat = "%s %s"
     result = []
     for thr in sorted(threading.enumerate(), key=lambda x: x.getName()):
@@ -45,7 +47,7 @@ def thr(event):
         if o.get("sleep", None):
             up = o.sleep - int(time.time() - o.state.latest)
         else:
-            up = int(time.time() - k.starttime)
+            up = int(time.time() - starttime)
         thrname = thr.getName()
         if not thrname:
             continue
@@ -58,5 +60,4 @@ def thr(event):
         event.reply(" | ".join(res))
 
 def upt(event):
-    k = kernel()
-    event.reply("uptime is %s" % elapsed(time.time() - k.starttime))
+    event.reply("uptime is %s" % elapsed(time.time() - starttime))

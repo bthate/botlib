@@ -129,33 +129,17 @@ great for giving objects peristence by having their state stored in files.
 MODULES
 =======
 
-BOTLIB provides the following modules:
+BOTLIB provides the following modules::
 
- adm		- admin
- bus		- listeners
- cmn		- common
- dpt		- dispatch
- evt		- event
- hdl		- handler
- irc		- bot
- nms		- names
- opt		- output
- rss		- feeds
- tdo		- todo
- tms		- times
- trm		- terminal
- url		- http
- all		- all
- clk		- clock
- dbs		- databases
- fnd		- find
- log		- log
- obj		- object
- prs		- parse
- tbl		- table
- thr		- threads
- trc		- trace
- udp		- relay
+| adm		- admin
+| all		- load modules
+| cmn		- common
+| irc		- bot
+| rss		- feeds
+| tdo		- todo
+| fnd		- find
+| log		- log
+| udp		- relay
 
 COMMANDS
 ========

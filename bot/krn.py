@@ -1,137 +1,322 @@
 # This file is placed in the Public Domain.
 
+"database,timer and tables"
+
+import datetime
 import os
-import importlib
-import importlib.util
+import queue
 import sys
 import time
+import threading
+import types
 
-from .obj import Cfg, Default, Names, Object, fmt, last
-from .hdl import parse_txt
-from .run import kernels
-from .utl import launch
+from .hdl import launch, parse_txt
+from .obj import Default, Object, cfg, spl, getname, gettype, search
 
-def spl(txt):
-    return [x for x in txt.split(",") if x]
+def __dir__():
+    return ('Cfg', 'Kernel', 'Repeater', 'Timer', 'all', 'debug', 'deleted',
+            'every', 'find', 'fns', 'fntime', 'hook', 'last', 'lastfn',
+            'lastmatch', 'lasttype', 'listfiles')
 
-class Cfg(Cfg):
+class ENOTYPE(Exception):
 
     pass
 
-class Loader(Object):
+class Cfg(Default):
 
+    pass
+
+class Kernel(Object):
+
+    cfg = Cfg()
+    cmds = Object()
+    fulls = Object()
+    names = Default()
+    modules = Object()
     table = Object()
 
-class Kernel(Loader):
+    @staticmethod
+    def addcmd(func):
+        n = func.__name__
+        Kernel.modules[n] = func.__module__
+        Kernel.cmds[n] = func
 
-    def __init__(self):
-        super().__init__()
-        self.cfg = Cfg()
-        self.starttime = time.time()
-        kernels.append(self)
+    @staticmethod
+    def addcls(cls):
+        n = cls.__name__.lower()
+        if n not in Kernel.names:
+            Kernel.names[n] = []
+        nn = "%s.%s" % (cls.__module__, cls.__name__)
+        if nn not in Kernel.names[n]:
+            Kernel.names[n].append(nn)
 
-    def boot(self, name, version):
+    @staticmethod
+    def addmod(mod):
+        n = mod.__spec__.name
+        Kernel.fulls[n.split(".")[-1]] = n
+        Kernel.table[n] = mod
+
+    @staticmethod
+    def boot(name, mods=None):
         if len(sys.argv) <= 1:
             return
-        self.starttime = time.time()
-        self.cfg.name = name
-        self.cfg.version = version
-        parse_txt(self.cfg, " ".join(sys.argv[1:]))
-        if self.cfg.sets:
-            self.cfg.update(self.cfg.sets)
-        self.cfg.save()
-        self.regs(self.cfg.mods)
+        if mods is None:
+            mods = ""
+        Kernel.cfg.name = name
+        parse_txt(Kernel.cfg, " ".join(sys.argv[1:]))
+        if Kernel.cfg.sets:
+            Kernel.cfg.update(Kernel.cfg.sets)
+        Kernel.cfg.save()
+        Kernel.regs(Kernel.cfg.mods + "," + mods)
 
-    def cmd(self, txt):
-        self.prompt = False
-        e = self.event(txt)
-        docmd(self, e)
-        e.wait()
-        return e
-            
+    @staticmethod
+    def getcls(name):
+        if "." in name:
+            mn, clsn = name.rsplit(".", 1)
+        else:
+            raise ENOCLASS(fullname) from ex
+        mod = Kernel.getmod(mn)
+        return getattr(mod, clsn, None)
+
     @staticmethod
     def getcmd(c):
-        mn = Names.getmodule(c)
-        mod = Loader.table.get(mn, None)
-        return getattr(mod, c, None)
+        return Kernel.cmds.get(c, None)
 
-    def inits(self, mns):
+    @staticmethod
+    def getfull(c):
+        return Kernel.fulls.get(c, None)
+
+    @staticmethod
+    def getmod(mn):
+        return Kernel.table.get(mn, None)
+
+    @staticmethod
+    def getnames(nm, dft=None):
+        return Kernel.names.get(nm, dft)
+
+    @staticmethod
+    def getmodule(mn, dft):
+        return Kernel.modules.get(mn ,dft)
+
+    @staticmethod
+    def init(mns):
         for mn in spl(mns):
-            mod = self.mod(mn)
-            if mod and "init" in dir(mod):
+            mnn = Kernel.getfull(mn)
+            mod = Kernel.getmod(mnn)
+            if "init" in dir(mod):
                 launch(mod.init)
 
-    def mod(self, mn):
-        return Loader.table.get(mn, None)
+    @staticmethod
+    def opts(ops):
+        for opt in ops:
+            if opt in Kernel.cfg.opts:
+                return True
+        return False
 
-    def regs(self, mns):
+    @staticmethod
+    def regs(mns):
         for mn in spl(mns):
-            mod = self.mod(mn)
-            if mod and "register" in dir(mod):
-                mod.register()
+            mnn = Kernel.getfull(mn)
+            mod = Kernel.getmod(mnn)
+            if "register" in dir(mod):
+                mod.register(Kernel)
 
-    def scan(self, path, name=""):
-        if not os.path.exists(path):
-            return
-        if not name:
-            name = path.split(os.sep)[-1]
-        r = os.path.dirname(path)
-        if r not in sys.path:
-            sys.path.insert(0, r)
-        for mn in [x[:-3] for x in os.listdir(path)
-                   if x and x.endswith(".py")
-                   and not x.startswith("__")
-                   and not x == "setup.py"]:
-            fqn = "%s.%s" % (name, mn)
-            if not hasmod(fqn):
+    @staticmethod
+    def wait():
+        while 1:
+            time.sleep(5.0)
+
+def kcmd(hdl, obj):
+    obj.parse()
+    f = Kernel.getcmd(obj.cmd)
+    if f:
+        f(obj)
+        obj.show()
+    obj.ready()
+
+# timer
+
+class Timer(Object):
+
+    def __init__(self, sleep, func, *args, name=None):
+        super().__init__()
+        self.args = args
+        self.func = func
+        self.sleep = sleep
+        self.name = name or  ""
+        self.state = Object()
+        self.timer = None
+
+    def run(self):
+        self.state.latest = time.time()
+        launch(self.func, *self.args)
+
+    def start(self):
+        if not self.name:
+            self.name = getname(self.func)
+        timer = threading.Timer(self.sleep, self.run)
+        timer.setName(self.name)
+        timer.setDaemon(True)
+        timer.sleep = self.sleep
+        timer.state = self.state
+        timer.state.starttime = time.time()
+        timer.state.latest = time.time()
+        timer.func = self.func
+        timer.start()
+        self.timer = timer
+        return timer
+
+    def stop(self):
+        if self.timer:
+            self.timer.cancel()
+
+class Repeater(Timer):
+
+    def run(self):
+        thr = launch(self.start)
+        super().run()
+        return thr
+
+# database
+
+def all(otype, selector=None, index=None, timed=None):
+    nr = -1
+    if selector is None:
+        selector = {}
+    for fn in fns(otype, timed):
+        o = hook(fn)
+        if selector and not search(o, selector):
+            continue
+        if "_deleted" in o and o._deleted:
+            continue
+        nr += 1
+        if index is not None and nr != index:
+            continue
+        yield fn, o
+
+def deleted(otype):
+    for fn in fns(otype):
+        o = hook(fn)
+        if "_deleted" not in o or not o._deleted:
+            continue
+        yield fn, o
+
+def every(selector=None, index=None, timed=None):
+    nr = -1
+    if selector is None:
+        selector = {}
+    for otype in os.listdir(os.path.join(cfg.wd, "store")):
+        for fn in fns(otype, timed):
+            o = hook(fn)
+            if selector and not search(o, selector):
                 continue
-            self.load(fqn)
-            
-    def load(self, name):
-        mod = importlib.import_module(name)
-        Loader.table[name] = mod
-        if "register" in dir(mod):
-            mod.register()
+            if "_deleted" in o and o._deleted:
+                continue
+            nr += 1
+            if index is not None and nr != index:
+                continue
+            yield fn, o
 
-def hasmod(fqn):
-    try:
-        spec = importlib.util.find_spec(fqn)
-        if spec:
-            return True
-    except (ValueError, ModuleNotFoundError):
-        pass
-    return False
+def find(otype, selector=None, index=None, timed=None):
+    if selector is None:
+        selector = {}
+    got = False
+    nr = -1
+    for fn in fns(otype, timed):
+        o = hook(fn)
+        if selector and not search(o, selector):
+            continue
+        if "_deleted" in o and o._deleted:
+            continue
+        nr += 1
+        if index is not None and nr != index:
+            continue
+        got = True
+        yield (fn, o)
+    if not got:
+        return (None, None)
 
-def mods(name):
+def last(o):
+    path, l = lastfn(str(gettype(o)))
+    if  l:
+        o.update(l)
+    if path:
+        spl = path.split(os.sep)
+        stp = os.sep.join(spl[-4:])
+        return stp
+
+def lastmatch(otype, selector=None, index=None, timed=None):
+    res = sorted(find(otype, selector, index, timed), key=lambda x: fntime(x[0]))
+    if res:
+        return res[-1]
+    return (None, None)
+
+def lasttype(otype):
+    fnn = fns(otype)
+    if fnn:
+        return hook(fnn[-1])
+
+def lastfn(otype):
+    fn = fns(otype)
+    if fn:
+        fnn = fn[-1]
+        return (fnn, hook(fnn))
+    return (None, None)
+
+def fns(name, timed=None):
+    if not name:
+        return []
+    p = os.path.join(cfg.wd, "store", name) + os.sep
     res = []
-    if os.path.exists(name):
-        for p in os.listdir(name):
-            if p.startswith("__"):
-                continue
-            if p.endswith(".py"):
-                res.append(p[:-3])
-    return ",".join(res)
+    d = ""
+    for rootdir, dirs, _files in os.walk(p, topdown=False):
+        if dirs:
+            d = sorted(dirs)[-1]
+            if d.count("-") == 2:
+                dd = os.path.join(rootdir, d)
+                fls = sorted(os.listdir(dd))
+                if fls:
+                    p = os.path.join(dd, fls[-1])
+                    if timed and "from" in timed and timed["from"] and fntime(p) < timed["from"]:
+                        continue
+                    if timed and timed.to and fntime(p) > timed.to:
+                        continue
+                    res.append(p)
+    return sorted(res, key=fntime)
 
-def privileges(name=None):
-    if os.getuid() != 0:
-        return
-    if name is None:
-        try:
-            name = getpass.getuser()
-        except KeyError:
-            pass
-    try:
-        pwnam = pwd.getpwnam(name)
-    except KeyError:
-        return False
-    os.setgroups([])
-    os.setgid(pwnam.pw_gid)
-    os.setuid(pwnam.pw_uid)
-    old_umask = os.umask(0o22)
-    return True
+def fntime(daystr):
+    daystr = daystr.replace("_", ":")
+    datestr = " ".join(daystr.split(os.sep)[-2:])
+    if "." in datestr:
+        datestr, rest = datestr.rsplit(".", 1)
+    else:
+        rest = ""
+    t = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
+    if rest:
+        t += float("." + rest)
+    else:
+        t = 0
+    return t
 
-def root():
-    if os.geteuid() != 0:
-        return False
-    return True
+def hook(hfn):
+    if hfn.count(os.sep) > 3:
+        oname = hfn.split(os.sep)[-4:]
+    else:
+        oname = hfn.split(os.sep)
+    cname = oname[0]
+    fn = os.sep.join(oname)
+    t = Kernel.getcls(cname)
+    if not t:
+        raise ENOTYPE(cname)
+    if fn:
+        o = t()
+        o.load(fn)
+        return o
+    else:
+        raise ENOTYPE(cname)
 
+def listfiles(wd):
+    path = os.path.join(wd, "store")
+    if not os.path.exists(path):
+        return []
+    return sorted(os.listdir(path))

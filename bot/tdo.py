@@ -1,11 +1,15 @@
 # This file is in the Public Domain.
 
-from bot.obj import Names, Object, find
+from .krn import find
+from .obj import Object
 
-def register():
-    Names.add(dne)
-    Names.add(tdo)
-    Names.cls(Todo)
+def __dir__():
+    return ("Todo", "dne", "register", "tdo")
+
+def register(k):
+    k.addcmd(dne)
+    k.addcmd(tdo)
+    k.addcls(Todo)
 
 class Todo(Object):
 

@@ -3,16 +3,19 @@
 import socket
 import time
 
-from bot.hdl import Bus
-from bot.obj import Cfg, Object, last
-from bot.utl import launch
+from .hdl import Bus, launch
+from .krn import last
+from .obj import Default, Object
+
+def __dir__():
+    return ("Cfg", "UDP", "init", "toudp")
 
 def init():
     u = UDP()
     u.start()
     return u
 
-class Cfg(Cfg):
+class Cfg(Default):
 
     host = "localhost"
     port = 5500

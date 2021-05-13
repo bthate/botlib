@@ -1,14 +1,19 @@
 # This file is placed in the Public Domain.
 
+import re
 import threading
 import urllib
 
-from bot.clk import Repeater
-from bot.hdl import Bus
-from bot.obj import Cfg, Default, Names, Object, all, edit, find, last, lastmatch
-from bot.utl import geturl, launch, striphtml, unescape
+from .hdl import Bus, launch
+from .krn import Repeater, all, cfg, find, last, lastmatch
+from .obj import Default, Obj, Object, edit
 
 from urllib.error import HTTPError, URLError
+from urllib.parse import quote_plus, urlencode
+from urllib.request import Request, urlopen
+
+def __dir__():
+    return ("Cfg", "Feed", "Rss", "Seen", "Fetcher", "dpl", "ftc", "init", "register", "rem", "rss")
 
 try:
     import feedparser
@@ -16,21 +21,21 @@ try:
 except ModuleNotFoundError:
     gotparser = False
 
-def register():
-    Names.add(dpl)
-    Names.add(ftc)
-    Names.add(rem)
-    Names.add(rss)
-    Names.cls(Feed)
-    Names.cls(Rss)
-    Names.cls(Seen)
+def register(k):
+    k.addcmd(dpl)
+    k.addcmd(ftc)
+    k.addcmd(rem)
+    k.addcmd(rss)
+    k.addcls(Feed)
+    k.addcls(Rss)
+    k.addcls(Seen)
 
 def init():
     f = Fetcher()
     launch(f.start)
     return f
 
-class Cfg(Cfg):
+class Cfg(Default):
 
     def __init__(self):
         super().__init__()
@@ -90,14 +95,9 @@ class Fetcher(Object):
     def fetch(self, feed):
         counter = 0
         objs = []
-        if not feed.rss:
-            return 0
         for o in reversed(list(getfeed(feed.rss))):
-            if not o:
-                continue
-            f = Feed()
+            f = Feed(dict(o))
             f.update(feed)
-            f.update(dict(o))
             u = urllib.parse.urlparse(f.link)
             if u.path and not u.path == "/":
                 url = "%s://%s/%s" % (u.scheme, u.netloc, u.path)
@@ -108,8 +108,7 @@ class Fetcher(Object):
             Fetcher.seen.urls.append(url)
             counter += 1
             objs.append(f)
-            if self.cfg.dosave:
-                f.save()
+            f.save()
         if objs:
             Fetcher.seen.save()
         for o in objs:
@@ -119,7 +118,7 @@ class Fetcher(Object):
 
     def run(self):
         thrs = []
-        for fn, o in all("rss"):
+        for fn, o in all("bot.rss.Rss"):
             thrs.append(launch(self.fetch, o))
         return thrs
 
@@ -138,25 +137,64 @@ def getfeed(url):
     if gotparser:
         try:
             result = geturl(url)
-            if not result:
-                got = False
-            else:
-                result = feedparser.parse(result.data)
-                if result and "entries" in result:
-                    got = True
-                    for entry in result["entries"]:
-                        yield entry
-        except (ValueError, HTTPError, URLError):
-            pass
+        except (ValueError, HTTPError, URLError) as ex:
+            return [Object(), Object()]
+        if not result:
+            got = False
+        else:
+            result = feedparser.parse(result.data)
+            if result and "entries" in result:
+                got = True
+                for entry in result["entries"]:
+                    yield entry
     if not got:
         return [Object(), Object()]
+
+def gettinyurl(url):
+    if cfg.debug:
+        return []
+    postarray = [
+        ('submit', 'submit'),
+        ('url', url),
+        ]
+    postdata = urlencode(postarray, quote_via=quote_plus)
+    req = Request('http://tinyurl.com/create.php', data=bytes(postdata, "UTF-8"))
+    req.add_header('User-agent', useragent(url))
+    for txt in urlopen(req).readlines():
+        line = txt.decode("UTF-8").strip()
+        i = re.search('data-clipboard-text="(.*?)"', line, re.M)
+        if i:
+            return i.groups()
+    return []
+
+def geturl(url):
+    if cfg.debug:
+        return
+    url = urllib.parse.urlunparse(urllib.parse.urlparse(url))
+    req = urllib.request.Request(url)
+    req.add_header('User-agent', useragent("BOTLIB"))
+    response = urllib.request.urlopen(req)
+    response.data = response.read()
+    return response
+
+def striphtml(text):
+    clean = re.compile('<.*?>')
+    return re.sub(clean, '', text)
+
+def unescape(text):
+    import html.parser
+    txt = re.sub(r"\s+", " ", text)
+    return html.unescape(txt)
+
+def useragent(txt):
+    return 'Mozilla/5.0 (X11; Linux x86_64) ' + txt
 
 def dpl(event):
     if len(event.args) < 2:
         event.reply("dpl <stringinurl> <item1,item2>")
         return
     setter = {"display_list": event.args[1]}
-    fn, o = lastmatch("rss.Rss", {"rss": event.args[0]})
+    fn, o = lastmatch("bot.rss.Rss", {"rss": event.args[0]})
     if o:
         edit(o, setter)
         o.save()
@@ -173,6 +211,7 @@ def ftc(event):
     if res:
         event.reply("fetched %s" % ",".join([str(x) for x in res]))
         return
+    event.reply("no result")
 
 def rem(event):
     if not event.args:
@@ -181,7 +220,7 @@ def rem(event):
     selector = {"rss": event.args[0]}
     nr = 0
     got = []
-    for fn, o in find("rss.Rss", selector):
+    for fn, o in find("bot.rss.Rss", selector):
         nr += 1
         o._deleted = True
         got.append(o)
@@ -194,7 +233,7 @@ def rss(event):
         event.reply("rss <url>")
         return
     url = event.args[0]
-    res = list(find("rss.Rss", {"rss": url}))
+    res = list(find("bot.rss.Rss", {"rss": url}))
     if res:
         return
     o = Rss()

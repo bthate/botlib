@@ -3,17 +3,15 @@
 import random
 import unittest
 
-from hdl import Bus
-from obj import Names
-from run import kernel
+from bot.hdl import Bus, first
+from bot.krn import Kernel
 
 from prm import param
 
 class Test_Cmd(unittest.TestCase):
 
     def test_cmds(self):
-        k = kernel()
-        for x in range(k.cfg.index or 1):
+        for x in range(Kernel.cfg.index or 1):
             exec()
         consume()
 
@@ -33,8 +31,8 @@ def consume():
     return res
 
 def exec():
-    c = Bus.objs[0]
-    l = list(Names.modules)
+    c = first()
+    l = list(Kernel.modules)
     random.shuffle(l)
     for cmd in l:
         for ex in getattr(param, cmd, [""]):

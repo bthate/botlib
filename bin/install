@@ -1,0 +1,13 @@
+if test -f "/etc/systemd/system/botd.service"; then
+    echo "service file already installed";
+else
+    {
+     cp files/botd.service /etc/systemd/system/botd.service;
+     systemctl enable botd.service;
+     systemctl daemon-reload;
+     echo "installed /etc/systemd/system/botd.service";
+    }
+fi
+cp bin/botd /usr/local/bin/botd
+cp bin/botctl /usr/local/bin/botctl
+cp bin/bot /usr/local/bin/bot

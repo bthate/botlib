@@ -1,45 +1,66 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 
+__version__ = 120
+
+import atexit
+import doctest
+import importlib
 import os
 import shutil
 import sys
+import termios
 import unittest
 
-sys.path.insert(0, "bot")
+sys.path.insert(0, os.getcwd())
 
-import obj
+from bot.hdl import Bus, Client
+from bot.krn import Kernel
+from bot.obj import cfg
 
-from hdl import Client
-from krn import Kernel
-from obj import Names
-from trm import exec
-from run import opts
-from ver import __version__
+import bot.all
 
-import trc
-import url
+all = "adm,cmd,fnd,irc,log,rss,tdo"
+
+flags = doctest.REPORT_NDIFF|doctest.FAIL_FAST|doctest.ELLIPSIS
 
 class Test(Client):
 
+    def __init__(self):
+        super().__init__()
+        self.initialize()
+
     def raw(self, txt):
-        if opts("v"):
+        if Kernel.opts("v"):
             print(txt)
+
+def docmd(hdl, o):
+    o.parse()
+    f = Kernel.getcmd(o.cmd)
+    if f:
+        f(o)
+        o.show()
+    o.ready()
+
+def exec(main):
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
 
 def main():
     if os.path.exists(".test"):
         shutil.rmtree(".test")
-    obj.wd = ".test"
-    url.debug = True
+    cfg.debug = True
+    cfg.wd = ".test"
     k = Kernel()
-    k.boot("test", __version__)
-    k.scan(os.path.join(os.getcwd(), "mod"))
+    k.boot("test", all)
     c = Test()
+    c.register("cmd", docmd)
     c.start()
     pat = "test_%s*" % "*"
     suite = unittest.loader.TestLoader().discover("test", pattern=pat)
     unittest.TextTestRunner(verbosity=3).run(suite)
+    doctest.testfile("../test/test1.txt", optionflags=flags, report=False, verbose=False)
 
 exec(main)
-for e in trc.exc:
-    print(e)

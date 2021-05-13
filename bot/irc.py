@@ -1,26 +1,46 @@
 # This file is placed in the Public Domain.
 
+"irc bot"
+
 import os
 import queue
 import socket
+import sys
 import textwrap
 import time
 import threading
 import _thread
 
-from hdl import Handler, Event, Client, Output, docmd
-from obj import Cfg, Names, Object, dorepr, edit, fmt, find, last, locked
-from utl import launch
+from .hdl import Bus, Handler, Event, Client, Output, launch
+from .krn import Kernel, find, kcmd, last
+from .obj import Default, Object, edit, fmt
+
+def __dir__():
+    return ("ENOUSER", "Cfg", "DCC", "Event", "IRC", "User", "Users", "cfg", "dlt", "init", "locked", "met", "mre", "register")
 
 def init():
     i = IRC()
     launch(i.start)
     return i
 
-def register():
-    Names.add(cfg)
-    Names.add(mre)
-    Names.cls(Cfg)
+def register(k):
+    k.addcmd(cfg)
+    k.addcmd(mre)
+    k.addcls(Cfg)
+
+def locked(l):
+    def lockeddec(func, *args, **kwargs):
+        def lockedfunc(*args, **kwargs):
+            l.acquire()
+            res = None
+            try:
+                res = func(*args, **kwargs)
+            finally:
+                l.release()
+            return res
+        lockedfunc.__wrapped__ = func
+        return lockedfunc
+    return lockeddec
 
 saylock = _thread.allocate_lock()
 
@@ -28,14 +48,14 @@ class ENOUSER(Exception):
 
     pass
 
-class Cfg(Cfg):
+class Cfg(Default):
 
     cc = "!"
     channel = "#botlib"
     nick = "botlib"
     port = 6667
     server = "localhost"
-    realname = "botlib's bot"
+    realname = "python3 bot library"
     username = "botlib"
 
     def __init__(self, val=None):
@@ -91,7 +111,7 @@ class IRC(Client, Output):
         self.threaded = False
         self.users = Users()
         self.zelf = ""
-        self.register("cmd", docmd)
+        self.register("cmd", kcmd)
         self.register("ERROR", ERROR)
         self.register("LOG", LOG)
         self.register("NOTICE", NOTICE)
@@ -102,20 +122,19 @@ class IRC(Client, Output):
         for channel in self.channels:
             self.say(channel, txt)
 
+    @locked(saylock)
     def command(self, cmd, *args):
-        self.connected.wait()
         if not args:
             self.raw(cmd)
-            return
-        if len(args) == 1:
+        elif len(args) == 1:
             self.raw("%s %s" % (cmd.upper(), args[0]))
-            return
-        if len(args) == 2:
+        elif len(args) == 2:
             self.raw("%s %s :%s" % (cmd.upper(), args[0], " ".join(args[1:])))
-            return
-        if len(args) >= 3:
+        elif len(args) >= 3:
             self.raw("%s %s %s :%s" % (cmd.upper(), args[0], args[1], " ".join(args[2:])))
-            return
+        if (time.time() - self.state.last) < 4.0:
+            time.sleep(4.0)
+        self.state.last = time.time()
 
     def connect(self, server, port=6667):
         addr = socket.getaddrinfo(server, port, socket.AF_INET)[-1][-1]
@@ -138,7 +157,6 @@ class IRC(Client, Output):
             time.sleep(10.0 * self.state.nrconnect)
         self.logon(server, nick)
 
-    @locked(saylock)
     def dosay(self, channel, txt):
         wrapper = TextWrap()
         txt = str(txt).replace("\n", "")
@@ -146,9 +164,6 @@ class IRC(Client, Output):
             if not t:
                 continue
             self.command("PRIVMSG", channel, t)
-            if (time.time() - self.state.last) < 4.0:
-                time.sleep(4.0)
-            self.state.last = time.time()
 
     def event(self, txt):
         if not txt:
@@ -192,7 +207,7 @@ class IRC(Client, Output):
             time.sleep(60)
             self.state.pongcheck = True
             self.command("PING", self.cfg.server)
-            time.sleep(5.0)
+            time.sleep(10.0)
             if self.state.pongcheck:
                 self.keeprunning = False
                 try:
@@ -211,7 +226,7 @@ class IRC(Client, Output):
         rawstr = rawstr.replace("\001", "")
         o = Event()
         o.rawstr = rawstr
-        o.orig = dorepr(self)
+        o.orig = self.__dorepr__()
         o.command = ""
         o.arguments = []
         arguments = rawstr.split()
@@ -313,6 +328,7 @@ class IRC(Client, Output):
                        int(self.cfg.port))
         Client.start(self)
         Output.start(self)
+        Bus.add(self)
         if not self.keeprunning:
             launch(self.keep)
         self.wait()
@@ -339,6 +355,7 @@ class DCC(Client):
         self.sock = None
         self.speed = "fast"
         self.stopped = False
+        self.register("cmd", kcmd)
 
     def raw(self, txt):
         self.sock.send(bytes("%s\n" % txt.rstrip(), self.encoding))
@@ -374,7 +391,7 @@ class DCC(Client):
         e.type = "cmd"
         e.channel = self.origin
         e.origin = self.origin or "root@dcc"
-        e.orig = dorepr(self)
+        e.orig = self.__dorepr__()
         e.txt = txt.rstrip()
         e.sock = self.sock
         return e
@@ -430,7 +447,6 @@ class Users(Object):
             user.perms.append(permission.upper())
             user.save()
         return user
-
 
 def ERROR(hdl, obj):
     hdl.state.nrerror += 1

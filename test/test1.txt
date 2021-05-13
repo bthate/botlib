@@ -1,0 +1,29 @@
+# basic set
+
+>>> from bot.obj import Object
+>>> o = Object()
+>>> o.set("key", "value")
+>>> o.key
+'value'
+
+# attribute set
+
+>>> from bot.obj import Object
+>>> o = Object()
+>>> o.key = "value"
+>>> o.key
+'value'
+
+# save/load
+
+>>> import bot.obj
+>>> bot.obj.wd = ".test"
+>>> o = bot.obj.Object()
+>>> o["key"] = "value"
+>>> p = o.save()
+>>> p
+'bot.obj.Object/...
+>>> oo = bot.obj.Object()
+>>> oo.load(p)
+>>> oo.key
+'value'

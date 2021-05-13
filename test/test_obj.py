@@ -3,8 +3,8 @@
 import os
 import unittest
 
-from edt import merge
-from obj import O, Object, gettype, last, dorepr
+from bot.krn import last
+from bot.obj import O, Object, gettype, merge
 
 class Test_Object(unittest.TestCase):
 
@@ -26,7 +26,7 @@ class Test_Object(unittest.TestCase):
 
     def test_json(self):
         o = Object()
-        self.assertTrue("<obj.Object" in dorepr(o))
+        self.assertTrue("<bot.obj.Object" in o.__dorepr__())
 
     def test_intern4(self):
         o = Object()
@@ -123,8 +123,8 @@ class Test_Object(unittest.TestCase):
         oo.b = "1"
         oo.c = ["1"]
         oo.d = {"a": 1}
-        merge(o, oo)
-        self.assertEqual(o.c, ["1", "1"])
+        oo.merge(o)
+        self.assertEqual(o.c, ["1"])
 
     def test_nested(self):
         o = Object()
