@@ -15,8 +15,6 @@ from bot.hdl import ENOMORE, Client, Event, first
 from bot.krn import Kernel, kcmd
 from bot.obj import cfg
 
-import bot.all
-
 all = "adm,cms,fnd,irc,krn,log,rss,tdo,udp"
 resume = {}
 

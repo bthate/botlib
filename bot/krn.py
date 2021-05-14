@@ -18,6 +18,8 @@ def __dir__():
             'every', 'find', 'fns', 'fntime', 'hook', 'last', 'lastfn',
             'lastmatch', 'lasttype', 'listfiles')
 
+all = "adm,cms,fnd,irc,krn,log,rss,tdo"
+
 class ENOTYPE(Exception):
 
     pass
@@ -58,8 +60,6 @@ class Kernel(Object):
 
     @staticmethod
     def boot(name, mods=None):
-        if len(sys.argv) <= 1:
-            return
         if mods is None:
             mods = ""
         Kernel.cfg.name = name
@@ -67,7 +67,7 @@ class Kernel(Object):
         if Kernel.cfg.sets:
             Kernel.cfg.update(Kernel.cfg.sets)
         Kernel.cfg.save()
-        Kernel.regs(Kernel.cfg.mods + "," + mods)
+        Kernel.regs(mods or "irc,adm")
 
     @staticmethod
     def getcls(name):
@@ -132,6 +132,7 @@ def kcmd(hdl, obj):
     if f:
         f(obj)
         obj.show()
+    sys.stdout.flush()
     obj.ready()
 
 # timer

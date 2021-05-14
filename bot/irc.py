@@ -20,6 +20,7 @@ def __dir__():
 
 def init():
     i = IRC()
+    i.initialize(kcmd)
     launch(i.start)
     return i
 
@@ -218,7 +219,7 @@ class IRC(Client, Output):
 
     def logon(self, server, nick):
         self.raw("NICK %s" % nick)
-        self.raw("USER %s %s %s :%s" % (self.cfg.username or "obt", server, server, self.cfg.realname or "write your own commands."))
+        self.raw("USER %s %s %s :%s" % (self.cfg.username or "bot", server, server, self.cfg.realname or "24/7 channel daemon"))
 
     def parsing(self, txt):
         rawstr = str(txt)
