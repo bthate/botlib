@@ -22,26 +22,26 @@ installation is through pypi::
 CONFIGURE
 =========
 
-BOTLIB has it's own CLI, the bot program, you can run it on the shell prompt 
+BOTLIB has it's own CLI, the bt program, you can run it on the shell prompt 
 and, as default, it won't do anything:: 
 
- $ bot
+ $ bt
  $ 
 
-use bot <cmd> to run a command directly, e.g. the cmd command shows
+use bt <cmd> to run a command directly, e.g. the cmd command shows
 a list of commands::
 
- $ bot cmd
+ $ bt cmd
  cfg,cmd,dlt,dne,dpl,flt,fnd,ftc,krn,log,met,mod,rem,rss,thr,ver,upt
 
 configuration is done with the cfg command::
 
- $ bot cfg server=irc.freenode.net channel=\#dunkbots nick=botje
+ $ bt cfg server=irc.freenode.net channel=\#dunkbots nick=botje
  ok
 
 users need to be added before they can give commands, use the met command::
 
- $ bot met ~botfather@jsonbot/daddy
+ $ bt met ~botfather@jsonbot/daddy
  ok
 
 RSS
@@ -55,22 +55,22 @@ rss feeds in the channel:
 
 To add an url use the rss command with an url::
 
- $ bot rss https://github.com/bthate/botlib/commits/master.atom
+ $ bt rss https://github.com/bthate/botlib/commits/master.atom
  ok
 
 run the fnd (find) command to see what urls are registered::
 
- $ bot fnd rss
+ $ bt fnd rss
  0 https://github.com/bthate/botlib/commits/master.atom
 
 the ftc (fetch) command can be used to poll the added feeds::
 
- $ bot ftc
+ $ bt ftc
  fetched 20
 
 adding rss to mods= will load the rss module and start it's poller::
 
- $ bot krn mods=rss
+ $ bt krn mods=rss
  ok
 
 UDP
@@ -99,7 +99,7 @@ and use a type in filename reconstruction.
 
 Basic usage is this:
 
- >>> from obj import Object
+ >>> from bt.obj import Object
  >>> o = Object()
  >>> o.set("key", "value")
  >>> o.key
@@ -112,13 +112,13 @@ methods like get, items, keys, register, set, update, values.
 The bot.obj module provides the basic methods like load and save as a object
 function using an obj as the first argument:
 
- >>> import obj
- >>> obj.wd = "data"
- >>> o = obj.Object()
+ >>> import bt.obj
+ >>> bt.obj.wd = "data"
+ >>> o = bt.obj.Object()
  >>> o["key"] = "value"
  >>> p = o.save()
  >>> p
- 'obj.Object/4b58abe2-3757-48d4-986b-d0857208dd96/2021-04-12/21:15:33.734994
+ 'bt.obj.Object/4b58abe2-3757-48d4-986b-d0857208dd96/2021-04-12/21:15:33.734994
  >>> oo = obj.Object()
  >>> oo.load(p)
  >> oo.key
@@ -168,7 +168,7 @@ code::
 
 now you can type the "hlo" command, showing hello <user> ::
 
-    $ bot hlo
+    $ bt hlo
     hello root@console
 
 CONTACT

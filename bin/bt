@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 
-__version__ = 120
+__version__ = 121
 
 import atexit
 import os
@@ -11,9 +11,11 @@ import termios
 
 sys.path.insert(0, os.getcwd())
 
-from bot.hdl import ENOMORE, Client, Event, first
-from bot.krn import Kernel, kcmd
-from bot.obj import cfg
+from bt.hdl import ENOMORE, Client, Event, first
+from bt.krn import Kernel, kcmd
+from bt.obj import cfg
+
+import bt.all
 
 all = "adm,cms,fnd,irc,krn,log,rss,tdo,udp"
 resume = {}
@@ -59,14 +61,14 @@ def rse(event):
     c.restart()
 
 def ver(event):
-    event.reply("BOT %s" % __version__)
+    event.reply("BT %s" % __version__)
 
 def main():
-    cfg.wd = os.path.expanduser("~/.bot")
+    cfg.wd = os.path.expanduser("~/.bt")
     k = Kernel()
     k.addcmd(rse)
     k.addcmd(ver)
-    k.boot("bot", all)
+    k.boot("bt", all)
     if k.cfg.txt:
         c = CLI()
         c.initialize()
