@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 
-__version__ = 120
+__version__ = 121
 
 import os, sys
 
@@ -22,16 +22,16 @@ class CLI(Client):
         print(txt)
 
 def ver(event):
-    event.reply("BOTD %s" % __version__)
+    event.reply("BOT %s" % __version__)
 
 def main():
     if "INVOCATION_ID" not in os.environ:
         print("run this program under systemd.")
         return
-    cfg.wd = "/var/lib/botd"
+    cfg.wd = "/var/lib/bot/"
     k = Kernel()
     k.addcmd(ver)
-    k.boot("bot", "adm,cms,fnd,irc,rss")
+    k.boot("bd", "adm,cms,fnd,irc,rss")
     if k.cfg.txt:
         c = CLI()
         e = c.event(k.cfg.otxt)

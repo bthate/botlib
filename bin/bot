@@ -11,11 +11,11 @@ import termios
 
 sys.path.insert(0, os.getcwd())
 
-from bt.hdl import ENOMORE, Client, Event, first
-from bt.krn import Kernel, kcmd
-from bt.obj import cfg
+from bot.hdl import ENOMORE, Client, Event, first
+from bot.krn import Kernel, kcmd
+from bot.obj import cfg
 
-import bt.all
+import bot.all
 
 all = "adm,cms,fnd,irc,krn,log,rss,tdo,udp"
 resume = {}
@@ -61,10 +61,10 @@ def rse(event):
     c.restart()
 
 def ver(event):
-    event.reply("BT %s" % __version__)
+    event.reply("BOT %s" % __version__)
 
 def main():
-    cfg.wd = os.path.expanduser("~/.bt")
+    cfg.wd = os.path.expanduser("~/.bot")
     k = Kernel()
     k.addcmd(rse)
     k.addcmd(ver)

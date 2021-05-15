@@ -52,12 +52,12 @@ class ENOUSER(Exception):
 class Cfg(Default):
 
     cc = "!"
-    channel = "#bt"
-    nick = "bt"
+    channel = "#bot"
+    nick = "bot"
     port = 6667
     server = "localhost"
     realname = "python3 IRC bot"
-    username = "bt"
+    username = "bot"
 
     def __init__(self, val=None):
         super().__init__()
@@ -219,7 +219,7 @@ class IRC(Client, Output):
 
     def logon(self, server, nick):
         self.raw("NICK %s" % nick)
-        self.raw("USER %s %s %s :%s" % (self.cfg.username or "bt", server, server, self.cfg.realname or "24/7 channel daemon"))
+        self.raw("USER %s %s %s :%s" % (self.cfg.username or "bot", server, server, self.cfg.realname or "24/7 channel daemon"))
 
     def parsing(self, txt):
         rawstr = str(txt)
@@ -502,7 +502,7 @@ def dlt(event):
         event.reply("dlt <username>")
         return
     selector = {"user": event.args[0]}
-    for fn, o in find("bt.irc.User", selector):
+    for fn, o in find("bot.irc.User", selector):
         o._deleted = True
         o.save()
         event.reply("ok")
