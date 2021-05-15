@@ -7,7 +7,7 @@ from .krn import Kernel, find, fntime, listfiles
 from .hdl import elapsed
 from .obj import cfg, fmt
 
-import bot.obj
+import bt.obj
 
 def __dir__():
     return ("fnd", "register")
