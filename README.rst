@@ -86,7 +86,7 @@ great for giving objects peristence by having their state stored in files.
 MODULES
 =======
 
-BOTLIB provides the following modules:
+BOTLIB provides the following modules::
 
  all		- all modules
  cms		- commands
