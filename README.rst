@@ -22,7 +22,7 @@ installation is through pip::
 CONFIGURE
 =========
 
-BOTLIB is a library and doesn't include binaries in tis install. It does
+BOTLIB is a library and doesn't include binaries in its install. It does
 have examples in the tar ball such as the bot program, you can run it on the
 shell prompt and, as default, it won't do anything:: 
 
@@ -33,7 +33,7 @@ use bot <cmd> to run a command directly, e.g. the cmd command shows
 a list of commands::
 
  $ ./bin/bot cmd
- cfg,cmd,dlt,fnd,met,mre,ver
+ cfg,cmd,dlt,fnd,log,met,mre,ver
 
 configuration is done with the cfg command::
 
@@ -94,6 +94,7 @@ BOTLIB provides the following modules::
  hdl		- handler
  irc		- bot
  krn		- tables
+ log		- log text
  obj		- object
 
 COMMANDS

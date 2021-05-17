@@ -63,8 +63,9 @@ def main():
     cfg.wd = os.path.expanduser("~/.bot")
     k = Kernel()
     k.addcmd(ver)
-    k.boot("bot", all)
+    k.boot("bot", "cms")
     if k.cfg.txt:
+        k.regs(all)
         c = CLI()
         c.initialize()
         e = c.event(k.cfg.otxt)
@@ -72,10 +73,11 @@ def main():
         e.wait()
         return 
     c = Client()
-    k.init(k.cfg.mods)
     if k.opts("c"):
         c = Console()
     if k.opts("cd"):
+        k.regs(k.cfg.mods)
+        k.init(k.cfg.mods)
         c.start()
         c.wait()
 
