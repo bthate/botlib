@@ -45,6 +45,16 @@ users need to be added before they can give commands, use the met command::
  $ ./bin/bot met ~botfather@jsonbot/daddy
  ok
 
+use the -c option to start a shell::
+
+ $ ./bin/bot -c
+ >
+
+and use  the mods= setter to start modules::
+
+ $ ./bin/bot -c mods=irc,cms,log
+ >
+
 PROGRAMMING
 ===========
 
