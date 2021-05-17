@@ -31,7 +31,7 @@ def main():
     cfg.wd = "/var/lib/botd/"
     k = Kernel()
     k.addcmd(ver)
-    k.boot("bd", "adm,cms,fnd,irc,rss,udp")
+    k.boot("botd", "adm,cms,fnd,irc,rss,udp")
     if k.cfg.txt:
         c = CLI()
         e = c.event(k.cfg.otxt)

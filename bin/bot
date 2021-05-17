@@ -11,9 +11,9 @@ import termios
 
 sys.path.insert(0, os.getcwd())
 
-from botl.hdl import ENOMORE, Client, Event, first
-from botl.krn import Kernel, kcmd
-from botl.obj import cfg
+from bot.hdl import ENOMORE, Client, Event, first
+from bot.krn import Kernel, kcmd
+from bot.obj import cfg
 
 import bot.all
 
@@ -68,7 +68,7 @@ def main():
     k = Kernel()
     k.addcmd(rse)
     k.addcmd(ver)
-    k.boot("bt", all)
+    k.boot("bot", all)
     if k.cfg.txt:
         c = CLI()
         c.initialize()
