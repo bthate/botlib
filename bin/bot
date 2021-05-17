@@ -56,17 +56,12 @@ class Console(CLI):
     def poll(self):
         return input("> ")
 
-def rse(event):
-    c = first()
-    c.restart()
-
 def ver(event):
     event.reply("BOT %s" % __version__)
 
 def main():
     cfg.wd = os.path.expanduser("~/.bot")
     k = Kernel()
-    k.addcmd(rse)
     k.addcmd(ver)
     k.boot("bot", all)
     if k.cfg.txt:

@@ -2,7 +2,7 @@
 
 "commands"
 
-from botl.krn import Kernel
+from .krn import Kernel
 
 def __dir__():
     return ("cmd", "register")

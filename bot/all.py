@@ -2,16 +2,18 @@
 
 "all modules"
 
-from botl.krn import Kernel
+from bot.krn import Kernel
 
-import botl.cms
-import botl.hdl
-import botl.irc
-import botl.krn
-import botl.obj
+import bot.cms
+import bot.fnd
+import bot.hdl
+import bot.irc
+import bot.krn
+import bot.obj
 
-Kernel.addmod(botl.cms)
-Kernel.addmod(botl.hdl)
-Kernel.addmod(botl.irc)
-Kernel.addmod(botl.krn)
-Kernel.addmod(botl.obj)
+Kernel.addmod(bot.cms)
+Kernel.addmod(bot.fnd)
+Kernel.addmod(bot.hdl)
+Kernel.addmod(bot.irc)
+Kernel.addmod(bot.krn)
+Kernel.addmod(bot.obj)
