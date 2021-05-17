@@ -48,12 +48,14 @@ users need to be added before they can give commands, use the met command::
 use the -c option to start a shell::
 
  $ ./bin/bot -c
- >
+ > cmd
+ cmd,ver
 
 and use  the mods= setter to start modules::
 
  $ ./bin/bot -c mods=irc,cms,log
- >
+ > cmd
+ cfg,cmd,dlt,fnd,log,met,mre,ver
 
 PROGRAMMING
 ===========
@@ -124,13 +126,9 @@ add the command in the bot/all.py module::
 
     Kernel.addmod(bot.hlo)
 
-install the bot on the system with install::
-
- $ sudo python3 setup.py install
-
 now you can type the "hlo" command, showing hello <user>::
 
- $ bot hlo
+ $ ./bin/bot hlo
  hello root@console
 
 24/7
