@@ -15,78 +15,35 @@ INSTALL
 
 BOTLIB can be found on pypi, see http://pypi.org/project/botlib
 
-installation is through pypi::
+installation is through pip::
 
  > sudo pip3 install botlib --upgrade --force-reinstall
 
 CONFIGURE
 =========
 
-BOTLIB has it's own CLI, the bt program, you can run it on the shell prompt 
-and, as default, it won't do anything:: 
+BOTLIB is a library and doesn't include binaries in tis install. It does
+have examples in the tar ball such as the bot program, you can run it on the
+shell prompt and, as default, it won't do anything:: 
 
- $ bot
+ $ ./bin/bot
  $ 
 
-use bt <cmd> to run a command directly, e.g. the cmd command shows
+use bot <cmd> to run a command directly, e.g. the cmd command shows
 a list of commands::
 
- $ bot cmd
- cfg,cmd,dlt,dne,dpl,flt,fnd,ftc,krn,log,met,mod,rem,rss,thr,ver,upt
+ $ ./bin/bot cmd
+ cfg,cmd,dlt,fnd,met,mre,ver
 
 configuration is done with the cfg command::
 
- $ bot cfg server=irc.freenode.net channel=\#dunkbots nick=botje
+ $ ./bin/bot cfg server=irc.freenode.net channel=\#dunkbots nick=botje
  ok
 
 users need to be added before they can give commands, use the met command::
 
- $ bot met ~botfather@jsonbot/daddy
+ $ ./bin/bot met ~botfather@jsonbot/daddy
  ok
-
-RSS
-===
-
-BOTLIB provides, with the use of feedparser, the possibility to serve rss
-feeds in your channel. Install python3-feedparser if you want to display 
-rss feeds in the channel:
-
- $ sudo apt install python3-feedparser
-
-To add an url use the rss command with an url::
-
- $ bot rss https://github.com/bthate/botlib/commits/master.atom
- ok
-
-run the fnd (find) command to see what urls are registered::
-
- $ bot fnd rss
- 0 https://github.com/bthate/botlib/commits/master.atom
-
-the ftc (fetch) command can be used to poll the added feeds::
-
- $ bot ftc
- fetched 20
-
-adding rss to mods= will load the rss module and start it's poller::
-
- $ bot krn mods=rss
- ok
-
-UDP
-===
-
-BOTLIB also has the possibility to serve as a UDP to IRC relay where you
-can send UDP packages to the bot and have txt displayed in the channel.
-Output to the IRC channel is done with the use python3 code to send a UDP
-packet to BOTLIB, it's unencrypted txt send to the bot and displayed in the
-joined channels::
-
- import socket
-
- def toudp(host=localhost, port=5500, txt=""):
-     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-     sock.sendto(bytes(txt.strip(), "utf-8"), host, port)
 
 PROGRAMMING
 ===========
@@ -94,22 +51,22 @@ PROGRAMMING
 BOTLIB provides a library you can use to program objects under python3. It 
 provides a basic BigO Object, that mimics a dict while using attribute access
 and provides a save/load to/from json files on disk. Objects can be searched
-with a little database module, provides read-only files to improve persistence
-and use a type in filename reconstruction.
+with a little database module, it uses read-only files to improve persistence
+and a type in filename for reconstruction.
 
 Basic usage is this:
 
  >>> from bot.obj import Object
  >>> o = Object()
- >>> o.set("key", "value")
+ >>> o.key = "value"
  >>> o.key
  'value'
 
-objects try to mimic a dictionary while trying to be an object with normal
+Objects try to mimic a dictionary while trying to be an object with normal
 attribute access as well. Hidden methods are provided as are the basic
 methods like get, items, keys, register, set, update, values.
 
-The bot.obj module provides the basic methods like load and save as a object
+The bot.obj module has the basic methods like load and save as a object
 function using an obj as the first argument:
 
  >>> import bot.obj
@@ -131,50 +88,79 @@ MODULES
 
 BOTLIB provides the following modules:
 
- adm		- admin
- bus		- listeners
- cmn		- common
- dpt		- dispatch
- evt		- event
+ all		- all modules
+ cms		- commands
+ fnd		- find
  hdl		- handler
  irc		- bot
- nms		- names
- opt		- output
- rss		- feeds
- tdo		- todo
- tms		- times
- trm		- terminal
- url		- http
- all		- all
- clk		- clock
- dbs		- databases
- fnd		- find
- log		- log
+ krn		- tables
  obj		- object
- prs		- parse
- tbl		- table
- thr		- threads
- trc		- trace
- udp		- relay
 
 COMMANDS
 ========
 
-programming your own commands is easy, open mod/hlo.py and add the following
-code::
+to program your own commands, open bot/hlo.py and add the following code::
+
+    def register(k):
+        k.regcmd(hlo)
 
     def hlo(event):
         event.reply("hello %s" % event.origin)
 
-now you can type the "hlo" command, showing hello <user> ::
+add the command in the bot/all.py module::
 
-    $ bot hlo
-    hello root@console
+    import bot.hlo
+
+    Kernel.addmod(bot.hlo)
+
+install the bot on the system with install::
+
+ $ sudo python3 setup.py install
+
+now you can type the "hlo" command, showing hello <user>::
+
+ $ bot hlo
+ hello root@console
+
+24/7
+====
+
+to run BOTLIB 24/7 you need to enable the botd service under systemd, edit 
+/etc/systemd/system/botd.service and add the following txt::
+
+ [Unit]
+ Description=BOTD - 24/7 channel daemon
+ After=multi-user.target
+
+ [Service]
+ DynamicUser=True
+ StateDirectory=botd
+ LogsDirectory=botd
+ CacheDirectory=botd
+ ExecStart=/usr/local/bin/botd
+ CapabilityBoundingSet=CAP_NET_RAW
+
+ [Install]
+ WantedBy=multi-user.target
+
+copy the botd and botctl binaries to /usr/local/bin/::
+
+ $ sudo cp bin/botd bin/botctl /usr/local/bin/
+
+then enable the bot with::
+
+ $ sudo systemctl enable botd
+ $ sudo systemctl daemon-reload
+ $ sudo systemctl restart botd
+
+disable botd to start at boot with removing the service file::
+
+ $ sudo rm /etc/systemd/system/botd.service
 
 CONTACT
 =======
 
-have fun coding
+"contributed back"
 
 | Bart Thate (bthate@dds.nl, thatebart@gmail.com)
 | botfather on #dunkbots irc.freenode.net
