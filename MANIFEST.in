@@ -1,0 +1,3 @@
+include bin/bot
+include bin/botctl
+include bin/botd
