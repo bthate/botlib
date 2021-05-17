@@ -184,23 +184,27 @@ def all(otype, selector=None, index=None, timed=None):
     nr = -1
     if selector is None:
         selector = {}
-    for fn in fns(otype, timed):
-        o = hook(fn)
-        if selector and not search(o, selector):
-            continue
-        if "_deleted" in o and o._deleted:
-            continue
-        nr += 1
-        if index is not None and nr != index:
-            continue
-        yield fn, o
+    otypes = Kernel.getnames(otype, [])
+    for t in otypes:
+        for fn in fns(t, timed):
+            o = hook(fn)
+            if selector and not search(o, selector):
+                continue
+            if "_deleted" in o and o._deleted:
+                continue
+            nr += 1
+            if index is not None and nr != index:
+                continue
+            yield fn, o
 
 def deleted(otype):
-    for fn in fns(otype):
-        o = hook(fn)
-        if "_deleted" not in o or not o._deleted:
-            continue
-        yield fn, o
+    otypes = Kernel.getnames(otype, [])
+    for t in otypes:
+        for fn in fns(t):
+            o = hook(fn)
+            if "_deleted" not in o or not o._deleted:
+                continue
+            yield fn, o
 
 def every(selector=None, index=None, timed=None):
     nr = -1
@@ -223,17 +227,19 @@ def find(otype, selector=None, index=None, timed=None):
         selector = {}
     got = False
     nr = -1
-    for fn in fns(otype, timed):
-        o = hook(fn)
-        if selector and not search(o, selector):
-            continue
-        if "_deleted" in o and o._deleted:
-            continue
-        nr += 1
-        if index is not None and nr != index:
-            continue
-        got = True
-        yield (fn, o)
+    otypes = Kernel.getnames(otype, [])
+    for t in otypes:
+        for fn in fns(t, timed):
+            o = hook(fn)
+            if selector and not search(o, selector):
+                continue
+            if "_deleted" in o and o._deleted:
+                continue
+            nr += 1
+            if index is not None and nr != index:
+                continue
+            got = True
+            yield (fn, o)
     if not got:
         return (None, None)
 

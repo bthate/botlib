@@ -11,13 +11,13 @@ import termios
 
 sys.path.insert(0, os.getcwd())
 
-from bot.hdl import ENOMORE, Client, Event, first
-from bot.krn import Kernel, kcmd
-from bot.obj import cfg
+from botl.hdl import ENOMORE, Client, Event, first
+from botl.krn import Kernel, kcmd
+from botl.obj import cfg
 
 import bot.all
 
-all = "adm,cms,fnd,irc,krn,log,rss,tdo,udp"
+all = "cms,fnd,irc"
 resume = {}
 
 def termsetup(fd):

@@ -1,6 +1,8 @@
 # This is file is placed in Public Domain.
 
-from .krn import Kernel
+"commands"
+
+from botl.krn import Kernel
 
 def __dir__():
     return ("cmd", "register")

@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 
-__version__ = 121
+__version__ = 40
 
 import os, sys
 
-from bot.hdl import Client
-from bot.krn import Kernel, kcmd
-from bot.obj import cfg
+from botl.hdl import Client
+from botl.krn import Kernel, kcmd
+from botl.obj import cfg
 
-import bot.all
-import bot
+import botd.all
+import botl.all
 
 class CLI(Client):
 
@@ -22,23 +22,23 @@ class CLI(Client):
         print(txt)
 
 def ver(event):
-    event.reply("BOT %s" % __version__)
+    event.reply("BOTD %s" % __version__)
 
 def main():
     if "INVOCATION_ID" not in os.environ:
         print("run this program under systemd.")
         return
-    cfg.wd = "/var/lib/bot/"
+    cfg.wd = "/var/lib/botd/"
     k = Kernel()
     k.addcmd(ver)
-    k.boot("bd", "adm,cms,fnd,irc,rss")
+    k.boot("bd", "adm,cms,fnd,irc,rss,udp")
     if k.cfg.txt:
         c = CLI()
         e = c.event(k.cfg.otxt)
         kcmd(c, e)
         e.wait()
         return 
-    k.init("adm,cms,fnd,irc,rss")
+    k.init("adm,cms,fnd,irc,rss,udp")
     k.wait()
 
 if __name__ == "__main__":

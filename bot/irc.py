@@ -26,8 +26,11 @@ def init():
 
 def register(k):
     k.addcmd(cfg)
+    k.addcmd(dlt)
+    k.addcmd(met)
     k.addcmd(mre)
     k.addcls(Cfg)
+    k.addcls(User)
 
 def locked(l):
     def lockeddec(func, *args, **kwargs):
@@ -52,12 +55,13 @@ class ENOUSER(Exception):
 class Cfg(Default):
 
     cc = "!"
-    channel = "#bot"
-    nick = "bot"
+    channel = "#botd"
+    nick = "botd"
     port = 6667
     server = "localhost"
-    realname = "python3 IRC bot"
-    username = "bot"
+    realname = "24/7 channel daemon"
+    username = "botd"
+    users = True
 
     def __init__(self, val=None):
         super().__init__()
@@ -68,6 +72,7 @@ class Cfg(Default):
         self.server = Cfg.server
         self.realname = Cfg.realname
         self.username = Cfg.username
+        self.users = Cfg.users
         if val:
             self.update(val)
 
@@ -219,7 +224,7 @@ class IRC(Client, Output):
 
     def logon(self, server, nick):
         self.raw("NICK %s" % nick)
-        self.raw("USER %s %s %s :%s" % (self.cfg.username or "bot", server, server, self.cfg.realname or "24/7 channel daemon"))
+        self.raw("USER %s %s %s :%s" % (self.cfg.username or "botd", server, server, self.cfg.realname or "24/7 channel daemon"))
 
     def parsing(self, txt):
         rawstr = str(txt)
@@ -356,7 +361,7 @@ class DCC(Client):
         self.sock = None
         self.speed = "fast"
         self.stopped = False
-        self.register("cmd", kcmd)
+        self.initialize(kcmd)
 
     def raw(self, txt):
         self.sock.send(bytes("%s\n" % txt.rstrip(), self.encoding))
@@ -502,7 +507,7 @@ def dlt(event):
         event.reply("dlt <username>")
         return
     selector = {"user": event.args[0]}
-    for fn, o in find("bot.irc.User", selector):
+    for fn, o in find("user", selector):
         o._deleted = True
         o.save()
         event.reply("ok")
