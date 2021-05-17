@@ -5,11 +5,9 @@
 import os
 import time
 
-from botl.krn import Kernel, find, fntime, listfiles
-from botl.hdl import elapsed
-from botl.obj import cfg, fmt
-
-import botl.obj
+from .krn import Kernel, find, fntime, listfiles
+from .hdl import elapsed
+from .obj import cfg, fmt
 
 def __dir__():
     return ("fnd", "register")

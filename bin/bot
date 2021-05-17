@@ -17,7 +17,7 @@ from bot.obj import cfg
 
 import bot.all
 
-all = "cms,fnd,irc"
+all = "cms,fnd,log,irc"
 resume = {}
 
 def termsetup(fd):
