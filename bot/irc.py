@@ -12,8 +12,8 @@ import threading
 import _thread
 
 from .hdl import Bus, Handler, Event, Client, Output, launch
-from .krn import Kernel, find, kcmd, last
-from .obj import Default, Object, edit, fmt
+from .krn import kcmd
+from .obj import Default, Object, edit, find, fmt, last
 
 def __dir__():
     return ("ENOUSER", "Cfg", "DCC", "Event", "IRC", "User", "Users", "cfg", "dlt", "init", "locked", "met", "mre", "register")

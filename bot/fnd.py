@@ -5,9 +5,8 @@
 import os
 import time
 
-from .krn import Kernel, find, fntime, listfiles
 from .hdl import elapsed
-from .obj import cfg, fmt
+from .obj import cfg, find, fmt, fntime,  listfiles
 
 def __dir__():
     return ("fnd", "register")
