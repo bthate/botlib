@@ -19,7 +19,7 @@ def read():
 
 setup(
     name='botlib',
-    version='121',
+    version='122',
     url='https://github.com/bthate/botlib',
     author='Bart Thate',
     author_email='bthategmail.com', 
@@ -27,7 +27,6 @@ setup(
     long_description=read(),
     license='Public Domain',
     packages=["bot"],
-    scripts=["bin/bot", "bin/botc", "bin/bots"],
     zip_safe=True,
     classifiers=['Development Status :: 4 - Beta',
                  'License :: Public Domain',

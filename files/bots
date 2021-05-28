@@ -5,4 +5,4 @@ daemon="/usr/local/bin/bots"
 
 . /etc/rc.d/rc.subr
 
-rc_cmd $1 &
+rc_cmd $1
