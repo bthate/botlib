@@ -2,7 +2,7 @@
 
 "logging"
 
-from botl.obj import Object
+from bot.obj import Object
 
 def __dir__():
     return ("Log", "log", "register")
