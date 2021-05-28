@@ -3,8 +3,8 @@
 import random
 import unittest
 
-from bot.hdl import Bus, first
-from bot.krn import Kernel
+from botl.bus import Bus, first
+from botl.krn import Kernel
 
 from prm import param
 

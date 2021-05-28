@@ -4,8 +4,11 @@ import random
 import sys
 import unittest
 
-from bot.hdl import Client, Command, first, launch
-from bot.krn import Kernel
+from botl.bus import first
+from botl.cmd import Command
+from botl.clt import Client
+from botl.thr import launch
+from botl.krn import Kernel
 
 from prm import param
 

@@ -1,6 +1,6 @@
 # This file is placed in the Public Domain.
 
-from bot.obj import Object
+from botl.obj import Object
 
 param = Object()
 param.add = ["test@shell", "bart", ""]
