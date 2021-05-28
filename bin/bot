@@ -70,6 +70,7 @@ def main():
     k.addcmd(rse)
     k.addcmd(ver)
     k.boot(name, all)
+    mods = k.cfg.mods
     if k.cfg.txt:
         c = CLI()
         c.initialize()
@@ -78,10 +79,10 @@ def main():
         e.wait()
         return
     c = Client()
-    k.init(k.cfg.mods)
-    if k.opts("c"):
+    k.init(mods)
+    if k.opts("c") or mods:
         c = Console()
-    if k.opts("cd"):
+    if k.opts("cd") or mods:
         c.start()
         c.wait()
 

@@ -1,13 +1,13 @@
 [Unit]
-Description=BOTD - 24/7 channel daemon
+Description=BOTS - 24/7 channel daemon
 After=multi-user.target
 
 [Service]
 DynamicUser=True
-StateDirectory=botd
-LogsDirectory=botd
-CacheDirectory=botd
-ExecStart=/usr/local/bin/botd -d mods=irc,rss
+StateDirectory=bots
+LogsDirectory=bots
+CacheDirectory=bots
+ExecStart=/usr/local/bin/bots
 CapabilityBoundingSet=CAP_NET_RAW
 
 [Install]

@@ -57,9 +57,9 @@ def thr(event):
             result.append((up, thrname))
     res = []
     for up, txt in sorted(result, key=lambda x: x[0]):
-        res.append("%s %s" % (txt, elapsed(up)))
+        res.append("%s(%s)" % (txt, elapsed(up)))
     if res:
-        event.reply(" | ".join(res))
+        event.reply(" ".join(res))
 
 def upt(event):
     event.reply("uptime is %s" % elapsed(time.time() - starttime))

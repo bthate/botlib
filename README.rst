@@ -19,6 +19,37 @@ installation is through pip::
 
  > sudo pip3 install botlib --upgrade --force-reinstall
 
+MODULES
+=======
+
+BOTLIB provides the following modules::
+
+    all            - all modules
+    bus            - list of bots
+    cfg            - configuration
+    clk            - clock/repeater
+    clt            - client
+    cmd            - command
+    cms            - commands
+    dbs            - database
+    dft            - default
+    evt            - event
+    hdl            - handler
+    irc            - internet relay chat
+    krn            - kernel
+    lst            - dict of lists
+    obj            - objects
+    opt            - output
+    prs            - parsing
+    thr            - threads
+    adm            - administrator
+    fnd            - find
+    log            - log items
+    rss            - rich site syndicate
+    slg            - slogan
+    tdo            - todo items
+    udp            - UDP to IRC relay
+
 CONFIGURE
 =========
 
@@ -26,36 +57,37 @@ BOTLIB is a library and doesn't include binaries in its install. It does
 have examples in the tar ball such as the bot program, you can run it on the
 shell prompt and, as default, it won't do anything:: 
 
- $ ./bin/bot
+ $ bot
  $ 
 
 use bot <cmd> to run a command directly, e.g. the cmd command shows
 a list of commands::
 
- $ ./bin/bot cmd
- cfg,cmd,dlt,fnd,log,met,mre,ver
+ $ botc cmd
+ cfg,cmd,dlt,dne,dpl,flt,fnd,ftc,krn,log,met,mre,rem,rse,rss,slg,tdo,thr,upt,ver
 
 configuration is done with the cfg command::
 
- $ ./bin/bot cfg server=irc.freenode.net channel=\#dunkbots nick=botje
+ $ bot cfg server=botd.openbsd.amsterdam 
  ok
 
-users need to be added before they can give commands, use the met command::
+when user is enabled in the irc config users need to be added before they can
+give commands, use the met command::
 
- $ ./bin/bot met ~botfather@jsonbot/daddy
+ $ bot met ~bart@botd.openbsd.amsterdam
  ok
 
 use the -c option to start a shell::
 
- $ ./bin/bot -c
+ $ bot -c
  > cmd
- cmd,ver
+ cfg,cmd,dlt,dne,dpl,flt,fnd,ftc,krn,log,met,mre,rem,rse,rss,slg,tdo,thr,upt,ver
 
 and use  the mods= setter to start modules::
 
- $ ./bin/bot -c mods=irc,cms,log
- > cmd
- cfg,cmd,dlt,fnd,log,met,mre,ver
+ $ bot mods=irc
+ > thr
+ Console.handler(1s) Console.input(1s) IRC.handler(1s) IRC.input(1s) IRC.keep(1s) IRC.output(1s) IRC.start(1s)
 
 PROGRAMMING
 ===========
@@ -95,19 +127,44 @@ function using an obj as the first argument:
 
 great for giving objects peristence by having their state stored in files.
 
-MODULES
-=======
 
-BOTLIB provides the following modules::
+RSS
+===
 
- all		- all modules
- cms		- commands
- fnd		- find
- hdl		- handler
- irc		- bot
- krn		- tables
- log		- log text
- obj		- object
+BOTLIB provides, with the use of feedparser, the possibility to serve rss
+feeds in your channel::
+
+ $ sudo apt install python3-feedparser
+
+to add an url use the rss command with an url::
+
+ $ bot rss https://github.com/bthate/botd/commits/master.atom
+ ok
+
+run the fnd (find) command to see what urls are registered::
+
+ $ bot fnd rss
+ 0 https://github.com/bthate/botlib/commits/master.atom
+
+the ftc (fetch) command can be used to poll the added feeds::
+
+ $ bot ftc
+ fetched 20
+
+UDP
+===
+
+BOTLIB also has the possibility to serve as a UDP to IRC relay where you
+can send UDP packages to the bot and have txt displayed in the channel.
+output to the IRC channel is done with the use python3 code to send a UDP
+packet to BOTLIB, it's unencrypted txt send to the bot and displayed in the
+joined channels::
+
+ import socket
+
+ def toudp(host=localhost, port=5500, txt=""):
+     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+     sock.sendto(bytes(txt.strip(), "utf-8"), host, port)
 
 COMMANDS
 ========
@@ -126,45 +183,30 @@ add the command in the bot/all.py module::
 
     Kernel.addmod(bot.hlo)
 
+edit the list of modules to load in bin/bot or bin/bots:
+
+    all = "adm,cms,fnd,hlo,irc,krn,log,rss,tdo,udp"
+
+install the bot on the system with install::
+
+ $ sudo python3 setup.py install
+
 now you can type the "hlo" command, showing hello <user>::
 
- $ ./bin/bot hlo
+ $ bot hlo
  hello root@console
 
-24/7
+RC.D
 ====
 
-to run BOTLIB 24/7 you need to enable the botd service under systemd, edit 
-/etc/systemd/system/botd.service and add the following txt::
+to run botlib under rc.d::
 
- [Unit]
- Description=BOTD - 24/7 channel daemon
- After=multi-user.target
-
- [Service]
- DynamicUser=True
- StateDirectory=botd
- LogsDirectory=botd
- CacheDirectory=botd
- ExecStart=/usr/local/bin/botd
- CapabilityBoundingSet=CAP_NET_RAW
-
- [Install]
- WantedBy=multi-user.target
-
-copy the botd and botctl binaries to /usr/local/bin/::
-
- $ sudo cp bin/botd bin/botctl /usr/local/bin/
-
-then enable the bot with::
-
- $ sudo systemctl enable botd
- $ sudo systemctl daemon-reload
- $ sudo systemctl restart botd
-
-disable botd to start at boot with removing the service file::
-
- $ sudo rm /etc/systemd/system/botd.service
+ # cp files/bots /etc/rc.d/bots
+ # groupadd _bots
+ # useradd -b /var/lib -d bots -g _bots
+ # chown -R botd:_botd /var/lib/botd
+ # rcctl enable bots
+ # rcctl start bots
 
 CONTACT
 =======
@@ -172,4 +214,4 @@ CONTACT
 "contributed back"
 
 | Bart Thate (bthate@dds.nl, thatebart@gmail.com)
-| botfather on #dunkbots irc.freenode.net
+| botfather on #dunkbots irc.freenode.net/botd.openbsd.amsterdam
