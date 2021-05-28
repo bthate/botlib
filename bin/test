@@ -1,27 +1,23 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 
-__version__ = 120
+__version__ = 41
 
-import atexit
+
+import os, sys ; sys.path.insert(0, os.getcwd())
+
+from botl.clt import Client
+from botl.krn import Kernel
+from botl.obj import cfg
+
+import botl.all
+import botd.all
+
 import doctest
-import importlib
-import os
 import shutil
-import sys
-import termios
 import unittest
 
-sys.path.insert(0, os.getcwd())
-
-from bot.hdl import Bus, Client
-from bot.krn import Kernel
-from bot.obj import cfg
-
-import bot.all
-
-all = "adm,cmd,fnd,irc,log,rss,tdo"
-
+all = "adm,cms,fnd,irc,log,rss,tdo,udp"
 flags = doctest.REPORT_NDIFF|doctest.FAIL_FAST|doctest.ELLIPSIS
 
 class Test(Client):
