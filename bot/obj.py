@@ -3,27 +3,21 @@
 "object library"
 
 import datetime
-import inspect
 import json as js
 import os
 import pathlib
-import queue
-import sys
-import threading
-import time
 import types
-import _thread
 import uuid
 
 def __dir__():
-    return ('Default', 'ENOCLASS', 'ENOFILENAME', 'ENOTYPE', 'O', 'Obj',
-            'Object', 'ObjectList', 'cdir', 'edit', 'fmt', 'get', 'getname',
+    return ('ENOCLASS', 'ENOFILENAME', 'ENOTYPE', 'O', 'Obj',
+            'Object', 'cdir', 'edit', 'fmt', 'get', 'getname',
             'gettype', 'items', 'keys', 'load', 'merge', 'overlay', 'register',
             'save', 'search', 'set', 'spl', 'update', 'values', 'wd')
 
 def cdir(path):
     path2 = os.path.dirname(path)
-    pathlib.Path(path2).mkdir(parents=True, exist_ok=True) 
+    pathlib.Path(path2).mkdir(parents=True, exist_ok=True)
 
 def gettype(o):
     return str(type(o)).split()[-1][1:-2]
@@ -135,6 +129,9 @@ class Obj(O):
 
 class Object(Obj):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     def json(self):
         return repr(self)
 
@@ -162,38 +159,8 @@ class Object(Obj):
         os.chmod(opath, 0o444)
         return self.__stp__
 
-class ObjectList(Object):
-
-    def append(self, key, value):
-        if key not in self:
-            self[key] = []
-        if value in self[key]:
-            return
-        if isinstance(value, list):
-            self[key].extend(value)
-        else:
-            self[key].append(value)
-
-    def update(self, d):
-        for k, v in d.items():
-            self.append(k, v)
-
-class Default(Object):
-
-    default = ""
-
-    def __getattr__(self, k):
-        if k in self:
-            return super().__getattribute__(k)
-        if k in super().__dict__:
-            return super().__getitem__(k)
-        return self.default
-
-class Cfg(Default):
-
-    pass
-
-cfg = Cfg()
+cfg = Object()
+cfg.debug = False
 cfg.wd = ""
 
 def edit(o, setter, skip=False):
@@ -302,7 +269,7 @@ def save(o, tab=False):
     opath = os.path.join(cfg.wd, "store", o.__stp__)
     cdir(opath)
     with open(opath, "w") as ofile:
-        js.dump(o, ofile, default=default, indent=4, sort_keys=True)
+        js.dump(o, ofile, default=o.__default__, indent=4, sort_keys=True)
     os.chmod(opath, 0o444)
     return o.__stp__
 
@@ -324,151 +291,3 @@ def update(o, data):
 
 def values(o):
     return o.__dict__.values()
-
-def all(otype, selector=None, index=None, timed=None):
-    nr = -1
-    if selector is None:
-        selector = {}
-    otypes = Kernel.getnames(otype, [])
-    for t in otypes:
-        for fn in fns(t, timed):
-            o = hook(fn)
-            if selector and not search(o, selector):
-                continue
-            if "_deleted" in o and o._deleted:
-                continue
-            nr += 1
-            if index is not None and nr != index:
-                continue
-            yield fn, o
-
-def deleted(otype):
-    otypes = Kernel.getnames(otype, [])
-    for t in otypes:
-        for fn in fns(t):
-            o = hook(fn)
-            if "_deleted" not in o or not o._deleted:
-                continue
-            yield fn, o
-
-def every(selector=None, index=None, timed=None):
-    nr = -1
-    if selector is None:
-        selector = {}
-    for otype in os.listdir(os.path.join(cfg.wd, "store")):
-        for fn in fns(otype, timed):
-            o = hook(fn)
-            if selector and not search(o, selector):
-                continue
-            if "_deleted" in o and o._deleted:
-                continue
-            nr += 1
-            if index is not None and nr != index:
-                continue
-            yield fn, o
-
-def find(otype, selector=None, index=None, timed=None):
-    if selector is None:
-        selector = {}
-    got = False
-    nr = -1
-    otypes = Kernel.getnames(otype, [])
-    for t in otypes:
-        for fn in fns(t, timed):
-            o = hook(fn)
-            if selector and not search(o, selector):
-                continue
-            if "_deleted" in o and o._deleted:
-                continue
-            nr += 1
-            if index is not None and nr != index:
-                continue
-            got = True
-            yield (fn, o)
-    if not got:
-        return (None, None)
-
-def last(o):
-    path, l = lastfn(str(gettype(o)))
-    if  l:
-        o.update(l)
-    if path:
-        spl = path.split(os.sep)
-        stp = os.sep.join(spl[-4:])
-        return stp
-
-def lastmatch(otype, selector=None, index=None, timed=None):
-    res = sorted(find(otype, selector, index, timed), key=lambda x: fntime(x[0]))
-    if res:
-        return res[-1]
-    return (None, None)
-
-def lasttype(otype):
-    fnn = fns(otype)
-    if fnn:
-        return hook(fnn[-1])
-
-def lastfn(otype):
-    fn = fns(otype)
-    if fn:
-        fnn = fn[-1]
-        return (fnn, hook(fnn))
-    return (None, None)
-
-def fns(name, timed=None):
-    if not name:
-        return []
-    p = os.path.join(cfg.wd, "store", name) + os.sep
-    res = []
-    d = ""
-    for rootdir, dirs, _files in os.walk(p, topdown=False):
-        if dirs:
-            d = sorted(dirs)[-1]
-            if d.count("-") == 2:
-                dd = os.path.join(rootdir, d)
-                fls = sorted(os.listdir(dd))
-                if fls:
-                    p = os.path.join(dd, fls[-1])
-                    if timed and "from" in timed and timed["from"] and fntime(p) < timed["from"]:
-                        continue
-                    if timed and timed.to and fntime(p) > timed.to:
-                        continue
-                    res.append(p)
-    return sorted(res, key=fntime)
-
-def fntime(daystr):
-    daystr = daystr.replace("_", ":")
-    datestr = " ".join(daystr.split(os.sep)[-2:])
-    if "." in datestr:
-        datestr, rest = datestr.rsplit(".", 1)
-    else:
-        rest = ""
-    t = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
-    if rest:
-        t += float("." + rest)
-    else:
-        t = 0
-    return t
-
-def hook(hfn):
-    if hfn.count(os.sep) > 3:
-        oname = hfn.split(os.sep)[-4:]
-    else:
-        oname = hfn.split(os.sep)
-    cname = oname[0]
-    fn = os.sep.join(oname)
-    t = Kernel.getcls(cname)
-    if not t:
-        raise ENOTYPE(cname)
-    if fn:
-        o = t()
-        o.load(fn)
-        return o
-    else:
-        raise ENOTYPE(cname)
-
-def listfiles(wd):
-    path = os.path.join(wd, "store")
-    if not os.path.exists(path):
-        return []
-    return sorted(os.listdir(path))

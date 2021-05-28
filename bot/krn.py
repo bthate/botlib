@@ -2,32 +2,27 @@
 
 "database,timer and tables"
 
-import datetime
+import getpass
 import os
-import queue
+import pwd
 import sys
 import time
-import threading
-import types
 
-from .hdl import launch, parse_txt
-from .obj import Default, Object, cfg, spl, getname, gettype, search
+from .dft import Default
+from .obj import Object, spl
+from .prs import parse_txt
+from .thr import launch
 
 def __dir__():
     return ('Cfg', 'Kernel', 'Repeater', 'Timer', 'all', 'debug', 'deleted',
             'every', 'find', 'fns', 'fntime', 'hook', 'last', 'lastfn',
             'lastmatch', 'lasttype', 'listfiles')
 
-def kcmd(hdl, obj):
-    obj.parse()
-    f = Kernel.getcmd(obj.cmd)
-    if f:
-        f(obj)
-        obj.show()
-    sys.stdout.flush()
-    obj.ready()
-
 all = "adm,cms,fnd,irc,krn,log,rss,tdo"
+
+class ENOCLASS(Exception):
+
+    pass
 
 class ENOTYPE(Exception):
 
@@ -53,11 +48,11 @@ class Kernel(Object):
         Kernel.cmds[n] = func
 
     @staticmethod
-    def addcls(cls):
-        n = cls.__name__.lower()
+    def addcls(clz):
+        n = clz.__name__.lower()
         if n not in Kernel.names:
             Kernel.names[n] = []
-        nn = "%s.%s" % (cls.__module__, cls.__name__)
+        nn = "%s.%s" % (clz.__module__, clz.__name__)
         if nn not in Kernel.names[n]:
             Kernel.names[n].append(nn)
 
@@ -83,7 +78,7 @@ class Kernel(Object):
         if "." in name:
             mn, clsn = name.rsplit(".", 1)
         else:
-            raise ENOCLASS(fullname) from ex
+            raise ENOCLASS(name)
         mod = Kernel.getmod(mn)
         return getattr(mod, clsn, None)
 
@@ -105,7 +100,7 @@ class Kernel(Object):
 
     @staticmethod
     def getmodule(mn, dft):
-        return Kernel.modules.get(mn ,dft)
+        return Kernel.modules.get(mn, dft)
 
     @staticmethod
     def init(mns):
@@ -135,43 +130,52 @@ class Kernel(Object):
         while 1:
             time.sleep(5.0)
 
-class Timer(Object):
+def kcmd(hdl, obj):
+    obj.parse()
+    f = Kernel.getcmd(obj.cmd)
+    if f:
+        f(obj)
+        obj.show()
+    sys.stdout.flush()
+    obj.ready()
 
-    def __init__(self, sleep, func, *args, name=None):
-        super().__init__()
-        self.args = args
-        self.func = func
-        self.sleep = sleep
-        self.name = name or  ""
-        self.state = Object()
-        self.timer = None
+def hook(hfn):
+    if hfn.count(os.sep) > 3:
+        oname = hfn.split(os.sep)[-4:]
+    else:
+        oname = hfn.split(os.sep)
+    cname = oname[0]
+    fn = os.sep.join(oname)
+    t = Kernel.getcls(cname)
+    if not t:
+        raise ENOTYPE(cname)
+    if fn:
+        o = t()
+        o.load(fn)
+        return o
+    raise ENOTYPE(cname)
 
-    def run(self):
-        self.state.latest = time.time()
-        launch(self.func, *self.args)
+def privileges(name=None):
+    if os.getuid() != 0:
+        return
+    if name is None:
+        try:
+            name = getpass.getuser()
+        except KeyError:
+            pass
+    try:
+        pwnam = pwd.getpwnam(name)
+    except KeyError:
+        return False
+    print("drop privileges to %s(%s) group %s dir %s" % (pwnam.pw_name, pwnam.pw_uid, pwnam.pw_gid, pwnam.pw_dir))
+    sys.stdout.flush()
+    os.setgroups([])
+    os.setgid(pwnam.pw_gid)
+    os.setuid(pwnam.pw_uid)
+    old_umask = os.umask(0o22)
+    return True
 
-    def start(self):
-        if not self.name:
-            self.name = getname(self.func)
-        timer = threading.Timer(self.sleep, self.run)
-        timer.setName(self.name)
-        timer.setDaemon(True)
-        timer.sleep = self.sleep
-        timer.state = self.state
-        timer.state.starttime = time.time()
-        timer.state.latest = time.time()
-        timer.func = self.func
-        timer.start()
-        self.timer = timer
-        return timer
-
-    def stop(self):
-        if self.timer:
-            self.timer.cancel()
-
-class Repeater(Timer):
-
-    def run(self):
-        thr = launch(self.start)
-        super().run()
-        return thr
+def root():
+    if os.geteuid() != 0:
+        return False
+    return True

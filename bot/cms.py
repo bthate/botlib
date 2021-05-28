@@ -9,6 +9,6 @@ def __dir__():
 
 def register(k):
     k.addcmd(cmd)
-    
+
 def cmd(event):
     event.reply(",".join(sorted(Kernel.modules)))

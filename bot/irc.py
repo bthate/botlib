@@ -5,15 +5,21 @@
 import os
 import queue
 import socket
-import sys
 import textwrap
 import time
 import threading
 import _thread
 
-from .hdl import Bus, Handler, Event, Client, Output, launch
+from .bus import Bus
+from .dbs import find, last
+from .dft import Default
+from .evt import Event
+from .hdl import end
+from .clt import Client
+from .opt import Output
+from .thr import launch
 from .krn import kcmd
-from .obj import Default, Object, edit, find, fmt, last
+from .obj import Object, edit, fmt
 
 def __dir__():
     return ("ENOUSER", "Cfg", "DCC", "Event", "IRC", "User", "Users", "cfg", "dlt", "init", "locked", "met", "mre", "register")
@@ -55,13 +61,13 @@ class ENOUSER(Exception):
 class Cfg(Default):
 
     cc = "!"
-    channel = "#botd"
-    nick = "botd"
+    channel = "#botlib"
+    nick = "botlib"
     port = 6667
     server = "localhost"
     realname = "24/7 channel daemon"
-    username = "botd"
-    users = True
+    username = "botlib"
+    users = False
 
     def __init__(self, val=None):
         super().__init__()
@@ -118,6 +124,7 @@ class IRC(Client, Output):
         self.users = Users()
         self.zelf = ""
         self.register("cmd", kcmd)
+        self.register("end", end)
         self.register("ERROR", ERROR)
         self.register("LOG", LOG)
         self.register("NOTICE", NOTICE)
@@ -217,14 +224,14 @@ class IRC(Client, Output):
             if self.state.pongcheck:
                 self.keeprunning = False
                 try:
-                    self.reconnect()
+                    self.restart()
                 except ConnectionResetError:
                     continue
                 break
 
     def logon(self, server, nick):
         self.raw("NICK %s" % nick)
-        self.raw("USER %s %s %s :%s" % (self.cfg.username or "botd", server, server, self.cfg.realname or "24/7 channel daemon"))
+        self.raw("USER %s %s %s :%s" % (self.cfg.username or "botlib", server, server, self.cfg.realname or "24/7 channel daemon"))
 
     def parsing(self, txt):
         rawstr = str(txt)
@@ -300,10 +307,9 @@ class IRC(Client, Output):
         self.state.last = time.time()
         self.state.nrsend += 1
 
-    def reconnect(self):
+    def restart(self):
         self.stop()
         time.sleep(5.0)
-        self.stopped = False
         self.start()
 
     def say(self, channel, txt):
@@ -347,7 +353,6 @@ class IRC(Client, Output):
             pass
         Output.stop(self)
         Client.stop(self)
-        Handler.start(self)
 
     def wait(self):
         self.joined.wait()
@@ -526,7 +531,7 @@ def met(event):
 def mre(event):
     if event.channel is None:
         event.reply("channel is not set.")
-        return        
+        return
     if event.channel not in Output.cache:
         event.reply("no output in %s cache." % event.channel)
         return
