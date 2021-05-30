@@ -1,5 +1,7 @@
-README
-######
+.. _programmer:
+
+PROGRAMMER
+##########
 
 Welcome to BOTLIB,
 
@@ -18,6 +20,8 @@ BOTLIB can be found on pypi, see http://pypi.org/project/botlib
 installation is through pip::
 
  > sudo pip3 install botlib --upgrade --force-reinstall
+
+BOTLIB is placed in the Public Domain and has no COPYRIGHT and no LICENSE. 
 
 MODULES
 =======
@@ -50,44 +54,40 @@ BOTLIB provides the following modules::
     tdo            - todo items
     udp            - UDP to IRC relay
 
-CONFIGURE
-=========
+COMMANDS
+========
 
-BOTLIB is a library and doesn't include binaries in its install. It does
-have examples in the tar ball such as the bot program, you can run it on the
-shell prompt and, as default, it won't do anything:: 
+BOTLIB, on purpose, doesn't read modules from a directory, instead you must
+include your own written commands with a updated version fo the code.
 
- $ bot
- $ 
+Use the repository at github to get the latest repo and install setuptools::
 
-use bot <cmd> to run a command directly, e.g. the cmd command shows
-a list of commands::
+ $ git clone http://github.com/bthate/botlib
+ $ cd botlib
+ $ sudo apt install python3-setuptools
+ 
+to program your own commands, open bot/hlo.py and add the following code::
 
- $ botc cmd
- cfg,cmd,dlt,dne,dpl,flt,fnd,ftc,krn,log,met,mre,rem,rse,rss,slg,tdo,thr,upt,ver
+    def register(k):
+        k.regcmd(hlo)
 
-configuration is done with the cfg command::
+    def hlo(event):
+        event.reply("hello %s" % event.origin)
 
- $ bot cfg server=botd.openbsd.amsterdam 
- ok
+add the command in the bot/all.py module::
 
-when user is enabled in the irc config users need to be added before they can
-give commands, use the met command::
+    import bot.hlo
 
- $ bot met ~bart@botd.openbsd.amsterdam
- ok
+    Kernel.addmod(bot.hlo)
 
-use the -c option to start a shell::
+edit the list of modules to load in bin/bot:::
 
- $ bot -c
- > cmd
- cfg,cmd,dlt,dne,dpl,flt,fnd,ftc,krn,log,met,mre,rem,rse,rss,slg,tdo,thr,upt,ver
+    all = "adm,cms,fnd,irc,krn,log,rss,tdo,hlo"
 
-and use  the mods= setter to start modules::
+now you can type the "hlo" command, showing hello <user>::
 
- $ bot mods=irc
- > thr
- Console.handler(1s) Console.input(1s) IRC.handler(1s) IRC.input(1s) IRC.keep(1s) IRC.output(1s) IRC.start(1s)
+ $ ./bin/bot hlo
+ hello root@console
 
 PROGRAMMING
 ===========
@@ -127,37 +127,13 @@ function using an obj as the first argument:
 
 great for giving objects peristence by having their state stored in files.
 
-
-RSS
-===
-
-BOTLIB provides, with the use of feedparser, the possibility to serve rss
-feeds in your channel::
-
- $ sudo apt install python3-feedparser
-
-to add an url use the rss command with an url::
-
- $ bot rss https://github.com/bthate/botd/commits/master.atom
- ok
-
-run the fnd (find) command to see what urls are registered::
-
- $ bot fnd rss
- 0 https://github.com/bthate/botlib/commits/master.atom
-
-the ftc (fetch) command can be used to poll the added feeds::
-
- $ bot ftc
- fetched 20
-
 UDP
 ===
 
-BOTLIB also has the possibility to serve as a UDP to IRC relay where you
+BOTD also has the possibility to serve as a UDP to IRC relay where you
 can send UDP packages to the bot and have txt displayed in the channel.
 output to the IRC channel is done with the use python3 code to send a UDP
-packet to BOTLIB, it's unencrypted txt send to the bot and displayed in the
+packet to BOTD, it's unencrypted txt send to the bot and displayed in the
 joined channels::
 
  import socket
@@ -166,52 +142,10 @@ joined channels::
      sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
      sock.sendto(bytes(txt.strip(), "utf-8"), host, port)
 
-COMMANDS
-========
-
-to program your own commands, open bot/hlo.py and add the following code::
-
-    def register(k):
-        k.regcmd(hlo)
-
-    def hlo(event):
-        event.reply("hello %s" % event.origin)
-
-add the command in the bot/all.py module::
-
-    import bot.hlo
-
-    Kernel.addmod(bot.hlo)
-
-edit the list of modules to load in bin/bot or bin/bots:
-
-    all = "adm,cms,fnd,hlo,irc,krn,log,rss,tdo,udp"
-
-install the bot on the system with install::
-
- $ sudo python3 setup.py install
-
-now you can type the "hlo" command, showing hello <user>::
-
- $ bot hlo
- hello root@console
-
-RC.D
-====
-
-to run botlib under rc.d::
-
- # cp files/bots /etc/rc.d/bots
- # groupadd _bots
- # useradd -b /var/lib -d bots -g _bots
- # chown -R botd:_botd /var/lib/botd
- # rcctl enable bots
- # rcctl start bots
-
 CONTACT
 =======
 
 "contributed back"
 
 | Bart Thate (bthate@dds.nl, thatebart@gmail.com)
-| botfather on #dunkbots irc.freenode.net/botd.openbsd.amsterdam
+| botfather on #dunkbots irc.freenode.net
