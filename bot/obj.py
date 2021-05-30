@@ -16,8 +16,11 @@ def __dir__():
             'save', 'search', 'set', 'spl', 'update', 'values', 'wd')
 
 def cdir(path):
-    path2 = os.path.dirname(path)
-    pathlib.Path(path2).mkdir(parents=True, exist_ok=True)
+    if os.path.exists(path):
+        return
+    if path.split(os.sep)[-1].count(":") == 2:
+        path = os.path.dirname(path)
+    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
 
 def gettype(o):
     return str(type(o)).split()[-1][1:-2]

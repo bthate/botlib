@@ -9,7 +9,7 @@ import sys
 import time
 
 from .dft import Default
-from .obj import Object, spl
+from .obj import Object, cdir, cfg, spl
 from .prs import parse_txt
 from .thr import launch
 
@@ -63,15 +63,23 @@ class Kernel(Object):
         Kernel.table[n] = mod
 
     @staticmethod
-    def boot(name, mods=None):
-        if mods is None:
-            mods = ""
+    def boot(name, version, mns=""):
         Kernel.cfg.name = name
-        parse_txt(Kernel.cfg, " ".join(sys.argv[1:]))
-        if Kernel.cfg.sets:
-            Kernel.cfg.update(Kernel.cfg.sets)
-        Kernel.cfg.save()
-        Kernel.regs(mods or "irc,adm")
+        Kernel.cfg.mods += "," + mns
+        Kernel.cfg.version = version
+        Kernel.cfg.update(Kernel.cfg.sets)
+        Kernel.cfg.wd = cfg.wd = Kernel.cfg.wd or cfg.wd
+        cdir(Kernel.cfg.wd + os.sep)
+        try:
+            pwn = pwd.getpwnam(name)
+        except KeyError:
+            name = getpass.getuser()
+            pwn = pwd.getpwnam(name)
+        try:
+            os.chown(Kernel.cfg.wd, pwn.pw_uid, pwn.pw_gid)
+        except PermissionError:
+            pass
+        privileges()
 
     @staticmethod
     def getcls(name):
@@ -118,7 +126,13 @@ class Kernel(Object):
         return False
 
     @staticmethod
+    def parse():
+        parse_txt(Kernel.cfg, " ".join(sys.argv[1:]))
+
+    @staticmethod
     def regs(mns):
+        if mns is None:
+            return
         for mn in spl(mns):
             mnn = Kernel.getfull(mn)
             mod = Kernel.getmod(mnn)
@@ -167,8 +181,6 @@ def privileges(name=None):
         pwnam = pwd.getpwnam(name)
     except KeyError:
         return False
-    print("drop privileges to %s(%s) group %s dir %s" % (pwnam.pw_name, pwnam.pw_uid, pwnam.pw_gid, pwnam.pw_dir))
-    sys.stdout.flush()
     os.setgroups([])
     os.setgid(pwnam.pw_gid)
     os.setuid(pwnam.pw_uid)

@@ -23,15 +23,14 @@ import bot.adm
 import bot.fnd
 import bot.log
 import bot.rss
-import bot.slg
 import bot.tdo
 import bot.udp
+import bot.ver
 
 Kernel.addmod(bot.adm)
 Kernel.addmod(bot.fnd)
 Kernel.addmod(bot.log)
 Kernel.addmod(bot.rss)
-Kernel.addmod(bot.slg)
 Kernel.addmod(bot.tdo)
 Kernel.addmod(bot.udp)
 Kernel.addmod(bot.bus)
@@ -50,3 +49,4 @@ Kernel.addmod(bot.obj)
 Kernel.addmod(bot.opt)
 Kernel.addmod(bot.prs)
 Kernel.addmod(bot.thr)
+Kernel.addmod(bot.ver)

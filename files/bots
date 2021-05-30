@@ -1,8 +1,0 @@
-#!/bin/ksh
-# This file is placed in the Public Domain.
-
-daemon="/usr/local/bin/bots"
-
-. /etc/rc.d/rc.subr
-
-rc_cmd $1

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 
-__version__ = 122
+__version__ = 42
 
 import atexit
 import os
@@ -17,7 +17,7 @@ from bot.obj import cfg
 
 import bot.all
 
-all = "adm,cms,fnd,irc,krn,log,rss,slg,tdo,udp"
+all = "adm,cms,fnd,irc,krn,log,rss,tdo,ver"
 name = "bot"
 resume = {}
 
@@ -57,21 +57,13 @@ class Console(CLI):
     def poll(self):
         return input("> ")
 
-def rse(event):
-    c = first()
-    c.restart()
-
-def ver(event):
-    event.reply("%s %s" % (name.upper(), __version__))
-
 def main():
     cfg.wd = os.path.expanduser("~/.%s" % name)
     k = Kernel()
-    k.addcmd(rse)
-    k.addcmd(ver)
-    k.boot(name, all)
-    mods = k.cfg.mods
+    k.parse()
+    k.boot(name, __version__)
     if k.cfg.txt:
+        k.regs(all)
         c = CLI()
         c.initialize()
         e = c.event(k.cfg.otxt)
@@ -79,10 +71,12 @@ def main():
         e.wait()
         return
     c = Client()
-    k.init(mods)
-    if k.opts("c") or mods:
+    if k.opts("c"):
         c = Console()
-    if k.opts("cd") or mods:
+        k.cfg.mods += ",cms"
+    k.regs(k.cfg.mods)
+    k.init(k.cfg.mods)
+    if k.opts("cd"):
         c.start()
         c.wait()
 
