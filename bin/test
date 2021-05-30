@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 # This file is placed in the Public Domain.
 
-__version__ = 41
-
+__version__ = 42
 
 import os, sys ; sys.path.insert(0, os.getcwd())
 
-from botl.clt import Client
-from botl.krn import Kernel
-from botl.obj import cfg
+from bot.clt import Client
+from bot.krn import Kernel
+from bot.obj import cfg
 
-import botl.all
-import botd.all
+import bot.all
 
 import doctest
 import shutil
@@ -50,7 +48,9 @@ def main():
     cfg.debug = True
     cfg.wd = ".test"
     k = Kernel()
-    k.boot("test", all)
+    k.parse()
+    k.boot("test", __version__)
+    k.regs(all)
     c = Test()
     c.register("cmd", docmd)
     c.start()

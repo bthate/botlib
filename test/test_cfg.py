@@ -2,9 +2,9 @@
 
 import unittest
 
-from botl.dft import Default
-from botl.obj import edit
-from botl.prs import parse_txt
+from bot.dft import Default
+from bot.obj import edit
+from bot.prs import parse_txt
 
 cfg = Default()
 

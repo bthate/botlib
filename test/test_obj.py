@@ -3,8 +3,8 @@
 import os
 import unittest
 
-from botl.dbs import find, last
-from botl.obj import O, Object, gettype, merge
+from bot.dbs import find, last
+from bot.obj import O, Object, gettype, merge
 
 class Test_Object(unittest.TestCase):
 
@@ -26,7 +26,7 @@ class Test_Object(unittest.TestCase):
 
     def test_json(self):
         o = Object()
-        self.assertTrue("<botl.obj.Object" in o.__dorepr__())
+        self.assertTrue("<bot.obj.Object" in o.__dorepr__())
 
     def test_intern4(self):
         o = Object()

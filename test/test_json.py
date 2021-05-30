@@ -3,7 +3,7 @@
 import json as js
 import unittest
 
-from botl.obj import O, Obj, Object
+from bot.obj import O, Obj, Object
 
 class Test_JSON(unittest.TestCase):
 
