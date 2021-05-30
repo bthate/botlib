@@ -1,5 +1,7 @@
 # This file is placed in the Public Domain.
 
+__version__ = 123
+
 from .krn import Kernel
 
 def register(k):
