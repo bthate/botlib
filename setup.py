@@ -1,18 +1,6 @@
 # This file is place in the Public Domain.
 
-import os
-
 from setuptools import setup
-
-def mods(name):
-    res = []
-    if os.path.exists(name):
-        for p in os.listdir(name):
-            if p.startswith("__"):
-                continue
-            if p.endswith("%.py"):
-                res.append(name + os.sep + p)
-    return res
 
 def read():
     return open("README.rst", "r").read()
