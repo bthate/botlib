@@ -1,41 +1,37 @@
 # This file is placed in the Public Domain.
 
-import random
+import ob
 import unittest
 
-from bot.bus import Bus, first
-from bot.krn import Kernel
-
-from prm import param
-
-class Test_Cmd(unittest.TestCase):
-
-    def test_cmds(self):
-        for x in range(Kernel.cfg.index or 1):
-            exec()
-        consume()
+from ob import Object, Bus, kernel
 
 events = []
+k = kernel()
 
-def consume():
-    fixed = []
-    res = []
-    for e in events:
-        e.wait()
-        fixed.append(e)
-    for f in fixed:
-        try:
-            events.remove(f)
-        except ValueError:
-            continue
-    return res
+param = Object()
+param.add = ["test@shell", "bart", ""]
+param.cfg = ["cfg server=localhost", "cfg", ""]
+param.dne = ["test4", ""]
+param.rm = ["reddit", ""]
+param.dpl = ["reddit title,summary,link", ""]
+param.log = ["test1", ""]
+param.flt = ["0", ""]
+param.fnd = ["om.irc.Cfg",
+             "om.log.Log",
+             "om.tdo.Todo",
+             "om.rss.Rss",
+             "om.irc.Cfg server==localhost",
+             "om.rss.Rss rss==reddit rss"]
+param.rss = ["https://www.reddit.com/r/python/.rss"]
+param.tdo = ["test4", ""]
 
-def exec():
-    c = first()
-    l = list(Kernel.modules)
-    random.shuffle(l)
-    for cmd in l:
-        for ex in getattr(param, cmd, [""]):
-            e = c.event(cmd + " " + ex)
-            c.put(e)
-            events.append(e)
+class Test_Commands(unittest.TestCase):
+
+    def test_commands(self):
+        c = Bus.first()
+        l = list(k.cmds)
+        for cmd in l:
+            for ex in getattr(param, cmd, [""]):
+                e = c.event(cmd + " " + ex)
+                k.dispatch(e)
+                events.append(e)

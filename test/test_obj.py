@@ -1,12 +1,17 @@
 # This file is placed in the Public Domain.
 
+import ob
 import os
 import unittest
 
-from bot.dbs import find, last
-from bot.obj import O, Object, gettype, merge
+from ob import Db, O, Object, gettype, kernel
+
+k = kernel()
 
 class Test_Object(unittest.TestCase):
+
+    def setUp(self):
+        ob.wd = ".test"
 
     def test_O(self):
         o = O()
@@ -26,7 +31,7 @@ class Test_Object(unittest.TestCase):
 
     def test_json(self):
         o = Object()
-        self.assertTrue("<bot.obj.Object" in o.__dorepr__())
+        self.assertTrue("<ob.Object" in Object.__dorepr__(o))
 
     def test_intern4(self):
         o = Object()
@@ -38,9 +43,9 @@ class Test_Object(unittest.TestCase):
 
     def test_final(self):
         o = Object()
-        o.last = "bla"
-        last(o)
-        self.assertEqual(o.last, "bla")
+        o.test = "bla"
+        o.last()
+        self.assertEqual(o.test, "bla")
 
     def test_stamp(self):
         o = Object()
@@ -80,20 +85,20 @@ class Test_Object(unittest.TestCase):
         o.bla = "test"
         o.save()
         oo = Object()
-        last(oo)
+        oo.last()
         self.assertEqual(oo.bla, "test")
 
     def test_last2(self):
         o = Object()
         o.save()
         uuid1 = o.__stp__.split(os.sep)[1]
-        last(o)
+        o.last()
         uuid2 = o.__stp__.split(os.sep)[1]
         self.assertEqual(uuid1, uuid2)
 
     def test_last3(self):
         o = Object()
-        last(o)
+        o.last()
         s = o.__stp__
         uuid1 = o.__stp__.split(os.sep)[1]
         o.save()
@@ -105,11 +110,11 @@ class Test_Object(unittest.TestCase):
         o.bla = "test"
         o.save()
         oo = Object()
-        last(oo)
+        p = oo.last()
         oo.bla = "mekker"
         oo.save()
         ooo = Object()
-        last(ooo)
+        p = ooo.last()
         self.assertEqual(ooo.bla, "mekker")
 
     def test_merge(self):

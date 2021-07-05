@@ -1,29 +1,41 @@
 # This file is placed in the Public Domain.
 
+import ob
 import random
-import sys
 import unittest
 
-from bot.bus import first
-from bot.cmd import Command
-from bot.clt import Client
-from bot.thr import launch
-from bot.krn import Kernel
+from ob import Bus, kernel
 
-from prm import param
+events = []
+k = kernel()
+
+param = ob.Object()
+param.add = ["test@shell", "bart", ""]
+param.cfg = ["cfg server=localhost", "cfg", ""]
+param.dne = ["test4", ""]
+param.rm = ["reddit", ""]
+param.dpl = ["reddit title,summary,link", ""]
+param.log = ["test1", ""]
+param.flt = ["0", ""]
+param.fnd = ["om.irc.Cfg",
+             "om.log.Log",
+             "om.tdo.Todo",
+             "om.rss.Rss",
+             "om.irc.Cfg server==localhost",
+             "om.rss.Rss rss==reddit rss"]
+param.rss = ["https://www.reddit.com/r/python/.rss"]
+param.tdo = ["test4", ""]
 
 class Test_Threaded(unittest.TestCase):
 
     def test_thrs(self):
         thrs = []
-        for x in range(Kernel.cfg.index or 1):
-            thr = launch(exec)
+        for x in range(k.cfg.index or 1):
+            thr = ob.launch(exec)
             thrs.append(thr)
         for thr in thrs:
             thr.join()
         consume()
-
-events = []
 
 def consume():
     fixed = []
@@ -39,11 +51,11 @@ def consume():
     return res
 
 def exec():
-    c = first()
-    l = list(Kernel.modules)
+    c = Bus.first()
+    l = list(k.cmds)
     random.shuffle(l)
     for cmd in l:
         for ex in getattr(param, cmd, [""]):
             e = c.event(cmd + " " + ex)
-            c.put(e)
+            k.dispatch(e)
             events.append(e)

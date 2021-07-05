@@ -1,6 +1,6 @@
 # basic set
 
->>> from bot.obj import Object
+>>> from ob import Object
 >>> o = Object()
 >>> o.set("key", "value")
 >>> o.key
@@ -8,7 +8,7 @@
 
 # attribute set
 
->>> from bot.obj import Object
+>>> from ob import Object
 >>> o = Object()
 >>> o.key = "value"
 >>> o.key
@@ -16,14 +16,15 @@
 
 # save/load
 
->>> import bot.obj
->>> bot.obj.wd = ".test"
->>> o = bot.obj.Object()
+>>> import ob
+>>> ob.wd = ".test"
+>>> o = ob.Object()
 >>> o["key"] = "value"
 >>> p = o.save()
 >>> p
-'bot.obj.Object/...
->>> oo = bot.obj.Object()
+'ob.Object/...
+>>> oo = Object()
 >>> oo.load(p)
+{"key": "value"}
 >>> oo.key
 'value'
