@@ -87,7 +87,7 @@ def main():
     if k.cfg.txt:
        cli = CLI()
        return k.cmd(cli, k.cfg.otxt)
-    if k.cfg.m:
+    if k.cfg.m or k.opts("c"):
        csl = Console()
        csl.start()
        k.wait()
