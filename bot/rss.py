@@ -1,40 +1,27 @@
 # This file is placed in the Public Domain.
 
-"rich site syndicate"
-
+import ob
 import re
 import threading
 import urllib
 
-from .bus import Bus
-from .clk import Repeater
-from .dbs import all, find, last, lastmatch
-from .dft import Default
-from .thr import launch
-from .obj import Object, cfg, edit
+from ob import Bus, Repeater, kernel
 
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 from urllib.request import Request, urlopen
 
 def __dir__():
-    return ("Cfg", "Feed", "Rss", "Seen", "Fetcher", "dpl", "ftc", "init", "register", "rem", "rss")
+    return ("Cfg", "Feed", "Rss", "Seen", "Fetcher", "dpl", "ftc", "init", "rem", "rss")
 
-def register(k):
-    k.addcmd(dpl)
-    k.addcmd(ftc)
-    k.addcmd(rem)
-    k.addcmd(rss)
-    k.addcls(Feed)
-    k.addcls(Rss)
-    k.addcls(Seen)
-
-def init():
+def init(k):
     f = Fetcher()
-    launch(f.start)
+    ob.launch(f.start)
     return f
 
-class Cfg(Default):
+k = kernel()
+
+class Cfg(ob.Default):
 
     def __init__(self):
         super().__init__()
@@ -42,23 +29,23 @@ class Cfg(Default):
         self.display_list = "title,link"
         self.tinyurl = False
 
-class Feed(Default):
+class Feed(ob.Default):
 
     pass
 
-class Rss(Object):
+class Rss(ob.Object):
 
     def __init__(self):
         super().__init__()
         self.rss = ""
 
-class Seen(Object):
+class Seen(ob.Object):
 
     def __init__(self):
         super().__init__()
         self.urls = []
 
-class Fetcher(Object):
+class Fetcher(ob.Object):
 
     cfg = Cfg()
     seen = Seen()
@@ -116,14 +103,15 @@ class Fetcher(Object):
         return counter
 
     def run(self):
+        db = ob.Db()
         thrs = []
-        for fn, o in all("rss"):
-            thrs.append(launch(self.fetch, o))
+        for fn, o in db.all("om.rss.Rss"):
+            thrs.append(ob.launch(self.fetch, o))
         return thrs
 
     def start(self, repeat=True):
-        last(Fetcher.cfg)
-        last(Fetcher.seen)
+        Fetcher.cfg.last()
+        Fetcher.seen.last()
         if repeat:
             repeater = Repeater(300.0, self.run)
             repeater.start()
@@ -135,13 +123,13 @@ def getfeed(url):
     try:
         import feedparser
     except ModuleNotFoundError:
-        return [Object(), Object()]
+        return [ob.Object(), ob.Object()]
     try:
         result = geturl(url)
     except (ValueError, HTTPError, URLError) as ex:
-        return [Object(), Object()]
+        return [ob.Object(), ob.Object()]
     if not result:
-        return [Object(), Object()]
+        return [ob.Object(), ob.Object()]
     else:
         result = feedparser.parse(result.data)
         if result and "entries" in result:
@@ -149,7 +137,7 @@ def getfeed(url):
                 yield entry
 
 def gettinyurl(url):
-    if cfg.debug:
+    if k.cfg.debug:
         return []
     postarray = [
         ('submit', 'submit'),
@@ -166,7 +154,7 @@ def gettinyurl(url):
     return []
 
 def geturl(url):
-    if cfg.debug:
+    if k.cfg.debug:
         return
     url = urllib.parse.urlunparse(urllib.parse.urlparse(url))
     req = urllib.request.Request(url)
@@ -191,10 +179,11 @@ def dpl(event):
     if len(event.args) < 2:
         event.reply("dpl <stringinurl> <item1,item2>")
         return
+    db = ob.Db()
     setter = {"display_list": event.args[1]}
-    fn, o = lastmatch("rss", {"rss": event.args[0]})
+    fn, o = db.lastmatch("om.rss.Rss", {"rss": event.args[0]})
     if o:
-        edit(o, setter)
+        o.edit(setter)
         o.save()
         event.reply("ok")
 
@@ -215,10 +204,11 @@ def rem(event):
     if not event.args:
         event.reply("rem <stringinurl>")
         return
+    db = ob.Db()
     selector = {"rss": event.args[0]}
     nr = 0
     got = []
-    for fn, o in find("rss", selector):
+    for fn, o in db.find("om.rss.Rss", selector):
         nr += 1
         o._deleted = True
         got.append(o)
@@ -230,8 +220,9 @@ def rss(event):
     if not event.args:
         event.reply("rss <url>")
         return
+    db = ob.Db()
     url = event.args[0]
-    res = list(find("rss", {"rss": url}))
+    res = list(db.find("om.rss.Rss", {"rss": url}))
     if res:
         return
     o = Rss()

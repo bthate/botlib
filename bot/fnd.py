@@ -1,23 +1,16 @@
 # This file is placed in the Public Domain.
 
-"find"
-
+import ob
 import time
 
-from .dbs import find, listfiles, fntime
-from .krn import Kernel
-from .prs import elapsed
-from .obj import cfg, fmt
+from ob import elapsed, kernel
 
 def __dir__():
-    return ("fnd", "register")
-
-def register(k):
-    k.addcmd(fnd)
+    return ("fnd",)
 
 def fnd(event):
     if not event.args:
-        fls = listfiles(cfg.wd)
+        fls = ob.listfiles(ob.wd)
         if fls:
             event.reply(",".join([x.split(".")[-1].lower() for x in fls]))
         return
@@ -29,12 +22,13 @@ def fnd(event):
     except IndexError:
         pass
     got = False
-    otypes = Kernel.getnames(otype, [otype,])
-    for fn, o in find(otypes, event.gets, event.index, event.timed):
+    k = kernel()
+    db = ob.Db()
+    for fn, o in db.find(otype, event.gets, event.index, event.timed):
         nr += 1
-        txt = "%s %s" % (str(nr), fmt(o, args or o.keys(), skip=event.skip.keys()))
+        txt = "%s %s" % (str(nr), ob.fmt(o, args or o.keys(), skip=event.skip.keys()))
         if "t" in event.opts:
-            txt = txt + " %s" % (elapsed(time.time() - fntime(fn)))
+            txt = txt + " %s" % (ob.elapsed(time.time() - ob.fntime(fn)))
         got = True
         event.reply(txt)
     if not got:

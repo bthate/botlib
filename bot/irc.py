@@ -1,7 +1,6 @@
 # This file is placed in the Public Domain.
 
-"irc bot"
-
+import ob
 import os
 import queue
 import socket
@@ -10,33 +9,17 @@ import time
 import threading
 import _thread
 
-from .bus import Bus
-from .dbs import find, last
-from .dft import Default
-from .evt import Event
-from .hdl import end
-from .clt import Client
-from .opt import Output
-from .thr import launch
-from .krn import kcmd
-from .obj import Object, edit, fmt
+from ob import Bus, Default, Dispatcher, Event, Handler, Object, Output, kernel, launch, fmt
 
 def __dir__():
-    return ("ENOUSER", "Cfg", "DCC", "Event", "IRC", "User", "Users", "cfg", "dlt", "init", "locked", "met", "mre", "register")
+    return ("Cfg", "DCC", "Event", "IRC", "User", "Users", "cfg", "dlt", "init", "locked", "met", "mre")
 
-def init():
+def init(k):
     i = IRC()
-    i.initialize(kcmd)
     launch(i.start)
     return i
 
-def register(k):
-    k.addcmd(cfg)
-    k.addcmd(dlt)
-    k.addcmd(met)
-    k.addcmd(mre)
-    k.addcls(Cfg)
-    k.addcls(User)
+k = kernel()
 
 def locked(l):
     def lockeddec(func, *args, **kwargs):
@@ -53,10 +36,6 @@ def locked(l):
     return lockeddec
 
 saylock = _thread.allocate_lock()
-
-class ENOUSER(Exception):
-
-    pass
 
 class Cfg(Default):
 
@@ -97,10 +76,10 @@ class TextWrap(textwrap.TextWrapper):
         self.tabsize = 4
         self.width = 450
 
-class IRC(Client, Output):
+class IRC(Output, Handler):
 
     def __init__(self):
-        Client.__init__(self)
+        Handler.__init__(self)
         Output.__init__(self)
         self.buffer = []
         self.cfg = Cfg()
@@ -123,8 +102,6 @@ class IRC(Client, Output):
         self.threaded = False
         self.users = Users()
         self.zelf = ""
-        self.register("cmd", kcmd)
-        self.register("end", end)
         self.register("ERROR", ERROR)
         self.register("LOG", LOG)
         self.register("NOTICE", NOTICE)
@@ -160,13 +137,10 @@ class IRC(Client, Output):
 
     def doconnect(self, server, nick, port=6667):
         self.state.nrconnect = 0
-        while not self.stopped:
+        while not self.stopped.isSet():
             self.state.nrconnect += 1
-            try:
-                if self.connect(server, port):
-                    break
-            except (ConnectionResetError, OSError):
-                pass
+            if self.connect(server, port):
+                break
             time.sleep(10.0 * self.state.nrconnect)
         self.logon(server, nick)
 
@@ -207,15 +181,18 @@ class IRC(Client, Output):
     def fileno(self):
         return self.sock.fileno()
 
-    def handle(self, e):
+    def do(self, e):
         super().callbacks(e)
 
     def joinall(self):
         for channel in self.channels:
             self.command("JOIN", channel)
 
+    def handle(self, e):
+        self.dispatch(e)
+
     def keep(self):
-        while not self.stopped:
+        while not self.stopped.isSet():
             self.keeprunning = True
             time.sleep(60)
             self.state.pongcheck = True
@@ -231,7 +208,7 @@ class IRC(Client, Output):
 
     def logon(self, server, nick):
         self.raw("NICK %s" % nick)
-        self.raw("USER %s %s %s :%s" % (self.cfg.username or "botlib", server, server, self.cfg.realname or "24/7 channel daemon"))
+        self.raw("USER %s %s %s :%s" % (self.cfg.username or "ob", server, server, self.cfg.realname or "python3 object library"))
 
     def parsing(self, txt):
         rawstr = str(txt)
@@ -239,7 +216,7 @@ class IRC(Client, Output):
         rawstr = rawstr.replace("\001", "")
         o = Event()
         o.rawstr = rawstr
-        o.orig = self.__dorepr__()
+        o.orig = Object.__dorepr__(self)
         o.command = ""
         o.arguments = []
         arguments = rawstr.split()
@@ -307,11 +284,6 @@ class IRC(Client, Output):
         self.state.last = time.time()
         self.state.nrsend += 1
 
-    def restart(self):
-        self.stop()
-        time.sleep(5.0)
-        self.start()
-
     def say(self, channel, txt):
         self.oput(channel, txt)
 
@@ -328,17 +300,18 @@ class IRC(Client, Output):
         self.state.lastline = splitted[-1]
 
     def start(self):
-        last(self.cfg)
+        self.cfg.last()
         if self.cfg.channel not in self.channels:
             self.channels.append(self.cfg.channel)
-        self.stopped = False
+        self.stopped.clear()
         self.connected.clear()
         self.joined.clear()
         self.sock = None
         self.doconnect(self.cfg.server,
                        self.cfg.nick,
                        int(self.cfg.port))
-        Client.start(self)
+        self.connected.wait()
+        Handler.start(self)
         Output.start(self)
         Bus.add(self)
         if not self.keeprunning:
@@ -346,18 +319,18 @@ class IRC(Client, Output):
         self.wait()
 
     def stop(self):
-        self.stopped = True
+        self.stopped.set()
         try:
             self.sock.shutdown(2)
         except OSError:
             pass
+        Handler.stop(self)
         Output.stop(self)
-        Client.stop(self)
 
     def wait(self):
         self.joined.wait()
 
-class DCC(Client):
+class DCC(Handler):
 
     def __init__(self):
         super().__init__()
@@ -365,8 +338,6 @@ class DCC(Client):
         self.origin = ""
         self.sock = None
         self.speed = "fast"
-        self.stopped = False
-        self.initialize(kcmd)
 
     def raw(self, txt):
         self.sock.send(bytes("%s\n" % txt.rstrip(), self.encoding))
@@ -392,7 +363,7 @@ class DCC(Client):
         self.fd = self.sock.fileno()
         self.raw('Welcome %s' % dccevent.origin)
         self.origin = dccevent.origin
-        super().start()
+        self.start()
 
     def dosay(self, channel, txt):
         self.raw(txt)
@@ -402,10 +373,13 @@ class DCC(Client):
         e.type = "cmd"
         e.channel = self.origin
         e.origin = self.origin or "root@dcc"
-        e.orig = self.__dorepr__()
+        e.orig = Object.__dorepr__(self)
         e.txt = txt.rstrip()
         e.sock = self.sock
         return e
+
+    def handle(self, e):
+        k.dispatch(e)
 
     def poll(self):
         return str(self.sock.recv(512), "utf8")
@@ -442,8 +416,9 @@ class Users(Object):
                 pass
 
     def get_users(self, origin=""):
+        db = Db()
         s = {"user": origin}
-        return find("user", s)
+        return db.find("om.irc.User", s)
 
     def get_user(self, origin):
         u = list(self.get_users(origin))
@@ -453,30 +428,30 @@ class Users(Object):
     def perm(self, origin, permission):
         user = self.get_user(origin)
         if not user:
-            raise ENOUSER(origin)
+            raise NoUserError(origin)
         if permission.upper() not in user.perms:
             user.perms.append(permission.upper())
             user.save()
         return user
 
-def ERROR(hdl, obj):
-    hdl.state.nrerror += 1
-    hdl.state.error = obj.error
+def ERROR(clt, obj):
+    clt.state.nrerror += 1
+    clt.state.error = obj.error
 
-def KILL(hdl, obj):
+def KILL(clt, obj):
     pass
 
-def LOG(hdl, obj):
+def LOG(clt, obj):
     pass
 
-def NOTICE(hdl, obj):
+def NOTICE(clt, obj):
     if obj.txt.startswith("VERSION"):
-        txt = "\001VERSION %s %s - %s\001" % (hdl.cfg.name.upper(), hdl.cfg.version or 1, hdl.cfg.username or "obt")
-        hdl.command("NOTICE", obj.channel, txt)
+        txt = "\001VERSION %s %s - %s\001" % (clt.cfg.name.upper(), clt.cfg.version or 1, clt.cfg.username or "ob")
+        clt.command("NOTICE", obj.channel, txt)
 
-def PRIVMSG(hdl, obj):
+def PRIVMSG(clt, obj):
     if obj.txt.startswith("DCC CHAT"):
-        if hdl.cfg.users and not hdl.users.allowed(obj.origin, "USER"):
+        if clt.cfg.users and not clt.users.allowed(obj.origin, "USER"):
             return
         try:
             dcc = DCC()
@@ -485,25 +460,26 @@ def PRIVMSG(hdl, obj):
         except ConnectionError as ex:
             return
     if obj.txt:
-        if obj.txt[0] in [hdl.cfg.cc, "!"]:
+        if obj.txt[0] in [clt.cfg.cc, "!"]:
             obj.txt = obj.txt[1:]
-        elif obj.txt.startswith("%s:" % hdl.cfg.nick):
-            obj.txt = obj.txt[len(hdl.cfg.nick)+1:]
-        if hdl.cfg.users and not hdl.users.allowed(obj.origin, "USER"):
+        elif obj.txt.startswith("%s:" % clt.cfg.nick):
+            obj.txt = obj.txt[len(clt.cfg.nick)+1:]
+        if clt.cfg.users and not clt.users.allowed(obj.origin, "USER"):
             return
         obj.type = "cmd"
-        hdl.put(obj)
+        k.dispatch(obj)
 
-def QUIT(hdl, obj):
-    if obj.orig and obj.orig in hdl.zelf:
-        hdl.reconnect()
+def QUIT(clt, obj):
+    if obj.orig and obj.orig in clt.zelf:
+        clt.reconnect()
 
 def cfg(event):
     c = Cfg()
-    last(c)
+    c.last()
+    event.sets.delkeys(["p", "m"])
     if not event.sets:
         return event.reply(fmt(c, skip=["username", "realname"]))
-    edit(c, event.sets)
+    c.edit(event.sets)
     c.save()
     event.reply("ok")
 
@@ -511,8 +487,9 @@ def dlt(event):
     if not event.args:
         event.reply("dlt <username>")
         return
+    db = Db()
     selector = {"user": event.args[0]}
-    for fn, o in find("user", selector):
+    for fn, o in db.find("omirc.User", selector):
         o._deleted = True
         o.save()
         event.reply("ok")

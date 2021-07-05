@@ -1,14 +1,10 @@
 # This is file is placed in Public Domain.
 
-"commands"
-
-from .krn import Kernel
+from ob import kernel
 
 def __dir__():
-    return ("cmd", "register")
-
-def register(k):
-    k.addcmd(cmd)
+    return ("cmd",)
 
 def cmd(event):
-    event.reply(",".join(sorted(Kernel.modules)))
+    k = kernel()
+    event.reply(",".join(sorted(k.cmds)))

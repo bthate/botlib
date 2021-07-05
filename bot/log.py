@@ -1,17 +1,11 @@
 # This file is in the Public Domain.
 
-"logging"
-
-from bot.obj import Object
+import ob
 
 def __dir__():
-    return ("Log", "log", "register")
+    return ("Log", "log")
 
-def register(k):
-    k.addcmd(log)
-    k.addcls(Log)
-
-class Log(Object):
+class Log(ob.Object):
 
     def __init__(self):
         super().__init__()

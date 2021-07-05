@@ -1,11 +1,8 @@
-# This file is placed in the Public Domain.
+# This file is in the Public Doman.
 
-__version__ = 123
+"genocide version"
 
-from .krn import Kernel
-
-def register(k):
-    k.addcmd(ver)
+__version__ = 35
 
 def ver(event):
-    event.reply("%s %s" % (Kernel.cfg.name.upper(), Kernel.cfg.version))
+    event.reply("OTP-CR-117/19 otp.informationdesk@icc-cpi.int http://pypi.org/project/genocide !")

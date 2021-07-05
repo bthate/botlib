@@ -1,25 +1,18 @@
 # This file is placed in the Public Domain.
 
-"udp to irc relay"
-
+import ob
 import socket
 import time
-
-from .bus import Bus
-from .dbs import last
-from .dft import Default
-from .obj import Object
-from .thr import launch
 
 def __dir__():
     return ("Cfg", "UDP", "init", "toudp")
 
-def init():
+def init(k):
     u = UDP()
     u.start()
     return u
 
-class Cfg(Default):
+class Cfg(ob.Default):
 
     host = "localhost"
     port = 5500
@@ -29,7 +22,7 @@ class Cfg(Default):
         self.host = Cfg.host
         self.port = Cfg.port
 
-class UDP(Object):
+class UDP(ob.Object):
 
     def __init__(self):
         super().__init__()
@@ -42,7 +35,7 @@ class UDP(Object):
         self.cfg = Cfg()
 
     def output(self, txt, addr):
-        Bus.announce(txt.replace("\00", ""))
+        ob.hdl.Bus.announce(txt.replace("\00", ""))
 
     def server(self):
         try:
@@ -59,8 +52,8 @@ class UDP(Object):
             self.output(data, addr)
 
     def start(self):
-        last(self.cfg)
-        launch(self.server)
+        self.cfg.last()
+        ob.launch(self.server)
 
     def stop(self):
         self.stopped = True

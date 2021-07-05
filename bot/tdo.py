@@ -1,29 +1,22 @@
 # This file is in the Public Domain.
 
-"todo"
-
-from .dbs import find
-from .obj import Object
+import ob
 
 def __dir__():
-    return ("Todo", "dne", "register", "tdo")
+    return ("Todo", "dne", "tdo")
 
-def register(k):
-    k.addcmd(dne)
-    k.addcmd(tdo)
-    k.addcls(Todo)
-
-class Todo(Object):
+class Todo(ob.Object):
 
     def __init__(self):
         super().__init__()
         self.txt = ""
 
-def dne(event):
+def dne(clt, event):
     if not event.args:
         event.reply("dne txt==<string>")
         return
-    for fn, o in find("todo", event.gets):
+    db = ob.Db()
+    for fn, o in db.find("om.tdo.Todo", event.gets):
         o._deleted = True
         o.save()
         event.reply("ok")
