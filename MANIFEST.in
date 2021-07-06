@@ -1,2 +1,1 @@
-recursive-include bin *
-recursive-include files *
+include bin/bot
